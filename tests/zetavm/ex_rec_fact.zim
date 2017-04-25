@@ -1,0 +1,70 @@
+#zeta-image
+
+# Recursive factorial function:
+# if (n < 3) return n;
+# else return n * fact(n-1)
+fact_entry = {
+    instrs: [
+        # if n < 3 goto fact_base else goto fact_n_1
+        { op: "get_local", idx: 0 },
+        { op: "push", val: 3 },
+        { op: "lt_i64" },
+        { op: "if_true", then: @fact_base, else: @fact_n_1 },
+    ]
+};
+fact_base = {
+    instrs: [
+        # return the argument n unchanged
+        { op: "get_local", idx: 0 },
+        { op: "ret" },
+    ]
+};
+fact_n_1 = {
+    instrs: [
+        # compute fact(n-1), then goto fact_n_2
+        { op: "get_local", idx: 0 },
+        { op: "push", val: 1 },
+        { op: "sub_i64" },
+        { op: "push", val: @fact },
+        { op: "call", ret_to: @fact_ret, num_args: 1 },
+    ]
+};
+fact_ret = {
+    instrs: [
+        # return n * fact(n-1)
+        { op: "get_local", idx: 0 },
+        { op: "mul_i64" },
+        { op: "ret" },
+    ]
+};
+fact = {
+    name: "fact",
+    num_params: 1,
+    num_locals: 1,
+    entry: @fact_entry
+};
+
+# Main function. This is the program entry point.
+main_entry = {
+    instrs: [
+        # Call fact(7), then goto block main_ret
+        { op: "push", val: 7 },
+        { op: "push", val: @fact },
+        { op: "call", ret_to: @main_ret, num_args: 1 },
+    ]
+};
+main_ret = {
+    instrs: [
+        # Return the result
+        { op: "ret" }
+    ]
+};
+main = {
+    name: "main",
+    num_params: 0,
+    num_locals: 0,
+    entry: @main_entry
+};
+
+# Export the main function
+{ main: @main };

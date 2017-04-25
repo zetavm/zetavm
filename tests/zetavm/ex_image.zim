@@ -1,0 +1,98 @@
+#zeta-image
+
+##############################################################################
+#
+# Example zeta image file
+#
+# Zeta image files can contain objects, arrays, strings, integers,
+# the booleans true and false, hex values (eg: 0xdeadbeef), but also
+# globally defined labels associated with some value.
+#
+##############################################################################
+
+# Booleans
+trueBool = $true;
+falseBool = $false;
+
+# Integers
+int1 = 123;
+int2 = -562;
+
+# Strings, arrays and objects are as in JSON:
+myString = "abcdedf\nfoo\nbar\nbif";
+myArray = [1, 2, 3, 4, 5, "foo"];
+myObject = { a: 1, b: $true, c:525 };
+
+# The labels before colons can be used to refer to values
+# The array below contains references to the three values
+# we just defined above.
+arrayWithRefs = [1, 2, @myArray, @myObject, @myString];
+
+# This is a circular linked list a -> b -> c -> a ...
+# The names a, b, c are globally defined in the image file
+# After the image is parsed, a second phase will link these
+# globally named variables so the linked list nodes in memory
+# all refer to one another correctly.
+a = { prev: @c, next: @b };
+b = { prev: @a, next: @c };
+c = { prec: @b, next: @a };
+
+# This is a function of the form:
+#
+#   sum = function (x, y)
+#   {
+#       return x + y;
+#   }
+#
+# Functions are just objects containing data which describes
+# The function, its arguments, local variables and the bytecode
+# that defines its behavior.
+sum = {
+    name: "main",
+    num_params: 2,           # Two arguments
+    num_locals: 2,           # Two local variables (the arguments)
+    entry: {
+        name: "sum_entry",
+        instrs: [
+            { op: "get_local", idx: 0 },
+            { op: "get_local", idx: 1 },
+            { op: "add_i64" },
+            { op: "ret" }
+        ]
+    }
+};
+
+# This is the main function, it is the entry point of the program.
+# This function calls sum(3,7) and returns the result.
+main = {
+    name: "main",
+    num_params: 0,
+    num_locals: 0,
+    entry: @main_entry
+};
+main_entry = {
+    name: "main_entry",
+    instrs: [
+        { op: "push", val: 7 },
+        { op: "push", val: 3 },
+        { op: "push", val: @sum },
+        { op: "call", ret_to: @main_ret, num_args: 2 },
+
+    ]
+};
+main_ret = {
+    name: "main_ret",
+    # The call to sum returns to this block, which then
+    # returns the value of the call to the caller of main
+    instrs: [
+        { op: "ret" }
+    ]
+};
+
+# Images end with an object defining the symbols exported by this
+# library/program/package. Exporting a "main" function indicates that
+# this is an executable program.
+{
+    str: @myString,
+    main: @main
+};

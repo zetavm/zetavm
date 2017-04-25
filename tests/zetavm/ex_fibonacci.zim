@@ -1,0 +1,120 @@
+#zeta-image
+
+# Fibonacci program example
+
+# Recursive Fibonacci function:
+# if n < 2 return n
+# t0 = fib(n-1)
+# t1 = fib(n-1)
+# return t0 + t1
+fib_entry = {
+    instrs: [
+        # if n < 2 goto fib_base else goto fib_n_1
+        { op: "get_local", idx: 0 },
+        { op: "push", val: 2 },
+        { op: "lt_i64" },
+        { op: "if_true", then: @fib_base, else: @fib_n_1 },
+    ]
+};
+fib_base = {
+    instrs: [
+        # return the argument n unchanged
+        { op: "get_local", idx: 0 },
+        { op: "ret" },
+    ]
+};
+fib_n_1 = {
+    instrs: [
+        # compute fib(n-1), then goto fib_n_2
+        { op: "get_local", idx: 0 },
+        { op: "push", val: 1 },
+        { op: "sub_i64" },
+        { op: "push", val: @fib },
+        { op: "call", ret_to: @fib_n_2, num_args: 1 },
+    ]
+};
+fib_n_2 = {
+    instrs: [
+        # compute fib(n-2), then goto fib_ret
+        { op: "get_local", idx: 0 },
+        { op: "push", val: 2 },
+        { op: "sub_i64" },
+        { op: "push", val: @fib },
+        { op: "call", ret_to: @fib_ret, num_args: 1 },
+    ]
+};
+fib_ret = {
+    instrs: [
+        # return fib(n-1) + fib(n-2)
+        { op: "add_i64" },
+        { op: "ret" },
+    ]
+};
+fib = {
+    name: "fib",
+    num_params: 1,
+    num_locals: 1,
+    entry: @fib_entry
+};
+
+# Main function. This is the program entry point.
+# This function calls fib(14) and the prints the result.
+main_entry = {
+    instrs: [
+        # Import the "api/io" package
+        { op: "push", val:"core/io" },
+        { op: "import" },
+        { op: "dup", idx:0 },
+
+        # Get the print_int64 function and store it in local variable 0
+        { op: "push", val: "print_int64" },
+        { op: "get_field" },
+        { op: "set_local", idx: 0 },
+
+        # Get the print_str function and store it in local variable 1
+        { op: "push", val: "print_str" },
+        { op: "get_field" },
+        { op: "set_local", idx: 1 },
+
+        # Call fib(14), then goto block main_ret
+        { op: "push", val: 14 },
+        { op: "push", val: @fib },
+        { op: "call", ret_to: @main_print_result, num_args: 1 },
+    ]
+};
+main_print_result = {
+    instrs: [
+        # Duplicate the result value so we can return it later
+        { op: "dup", idx:0 },
+
+        # Call print_int64 to print the result of fib
+        { op: "get_local", idx: 0 },
+        { op: "call_host", ret_to: @main_print_endl, num_args: 1 },
+    ]
+};
+main_print_endl = {
+    instrs: [
+        # Print a line terminator with the print_str function
+        { op: "pop" },
+        { op: "push", val: "\n" },
+        { op: "get_local", idx: 1 },
+        { op: "call_host", ret_to: @main_ret, num_args: 1 },
+    ]
+};
+main_ret = {
+    instrs: [
+        # Exit the main function, return the result value
+        { op: "pop" },
+        { op: "ret" },
+    ]
+};
+
+main = {
+    name: "main",
+    num_params: 0,
+    num_locals: 2,
+    entry: @main_entry
+};
+
+# Export the main function
+{ main: @main };

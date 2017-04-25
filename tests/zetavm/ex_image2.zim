@@ -1,0 +1,14 @@
+#!/usr/bin/zeta
+#zeta-image
+
+# Integer
+myNumber = 77;
+
+# String
+myString = 'abc';
+
+# Object
+myObject = { a: 1, b: $true, c:525 };
+
+# The object is exported by this package
+@myObject;

@@ -1,0 +1,13 @@
+# Autoconf output
+autom4te.cache
+aclocal.m4
+config.log
+config.status
+config.h
+
+# Retarded MacOS metadata
+.DS_Store
+
+zeta
+cplush
+*.dSYM
