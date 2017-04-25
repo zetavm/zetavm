@@ -3,6 +3,26 @@
 **Please note that ZetaVM is currently at the early prototype stage. As such,
 it is incomplete and breaking changes may happen often.**
 
+## Installation and Basic Usage
+
+```
+# Clone this repository
+git clone git@github.com:maximecb/zetavm.git
+
+# Run the configure script and compile zetavm
+cd zetavm
+./configure
+make
+
+# Optionally run tests to check that everything works properly
+make test
+
+# To run programs, pass the path to a source file to zetavm
+./zeta benchmarks/fib29.pls
+```
+
+## About ZetaVM
+
 ZetaVM is a Virtual machine and JIT compiler for dynamic programming languages.
 It implements a basic core runtime environment on top of which programming
 dynamic languages can be implemented with relatively little effort.
