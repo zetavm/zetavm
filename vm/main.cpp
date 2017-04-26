@@ -46,12 +46,12 @@ int main(int argc, char** argv)
             return 0;
         }
 
-        std::cerr << "Invalid command-line arguments" << std::endl;
+        std::cout << "Invalid command-line arguments" << std::endl;
     }
 
     catch (RunError& e)
     {
-        std::cerr << "ERROR: " << e.toString() << std::endl;
+        std::cout << "ERROR: " << e.toString() << std::endl;
         return -1;
     }
 

@@ -42,8 +42,9 @@ test: zetavm cplush plush-pkg
 	./$(ZETA_BIN) tests/plush/obj_ext.pls
 	./$(ZETA_BIN) tests/plush/import.pls
 	./$(ZETA_BIN) tests/plush/circular3.pls
-	# Check that source position is reported on assertion failure
+	# Check that source position is reported on errors
 	./$(ZETA_BIN) tests/plush/assert.pls | grep --quiet "3:1"
+	./$(ZETA_BIN) tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
 
 clean:
 	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) config.status config.log

@@ -65,6 +65,22 @@ public:
     }
 };
 
+std::string posToString(Value srcPos)
+{
+    assert (srcPos.isObject());
+    auto srcPosObj = (Object)srcPos;
+
+    auto lineNo = (int64_t)srcPosObj.getField("line_no");
+    auto colNo = (int64_t)srcPosObj.getField("col_no");
+    auto srcName = (std::string)srcPosObj.getField("src_name");
+
+    return (
+        srcName + "@" +
+        std::to_string(lineNo) + ":" +
+        std::to_string(colNo)
+    );
+}
+
 /// Opcode enumeration
 enum Opcode : uint16_t
 {
@@ -814,7 +830,14 @@ Value call(Object fun, ValueVec args)
 
                 if (numArgs != numParams)
                 {
+                    std::string srcPosStr = (
+                        instr.hasField("src_pos")?
+                        (posToString(instr.getField("src_pos")) + " - "):
+                        std::string("")
+                    );
+
                     throw RunError(
+                        srcPosStr +
                         "incorrect argument count in call, received " +
                         std::to_string(numArgs) +
                         ", expected " +
@@ -914,13 +937,7 @@ Value call(Object fun, ValueVec args)
                 if (instr.hasField("src_pos"))
                 {
                     auto srcPos = instr.getField("src_pos");
-                    assert (srcPos.isObject());
-                    auto srcPosObj = (Object)srcPos;
-                    auto lineNo = (int64_t)srcPosObj.getField("line_no");
-                    auto colNo = (int64_t)srcPosObj.getField("col_no");
-                    auto srcName = (std::string)srcPosObj.getField("src_name");
-
-                    std::cout << srcName << "@" << lineNo << ":" << colNo << " - ";
+                    std::cout << posToString(srcPos) << " - ";
                 }
 
                 if (errMsg != "")
