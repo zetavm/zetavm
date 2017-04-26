@@ -1018,6 +1018,9 @@ var parseExprPrec = function (input, minPrec)
         // Consume whitespace
         input:eatWS();
 
+        // Get the current source code position
+        var srcPos = input:getPos();
+
         // Attempt to match an operator in the input
         // with sufficient precedence
         var op = matchOp(input, minPrec, false);
@@ -1042,7 +1045,11 @@ var parseExprPrec = function (input, minPrec)
             // Parse the argument list and create the call expression
             var argExprs = parseExprList(input, ")");
 
-            lhsExpr = CallExpr::{ funExpr:lhsExpr, argExprs:argExprs };
+            lhsExpr = CallExpr::{
+                funExpr:lhsExpr,
+                argExprs:argExprs,
+                srcPos:srcPos
+            };
         }
 
         // If this is a method call expression
@@ -1058,7 +1065,8 @@ var parseExprPrec = function (input, minPrec)
             lhsExpr = MethodCallExpr::{
                 baseExpr: lhsExpr,
                 nameStr: identStr,
-                argExprs: argExprs
+                argExprs: argExprs,
+                srcPos:srcPos
             };
         }
 
@@ -1919,7 +1927,8 @@ var genExpr = function (ctx, expr)
             ctx:addInstr({
                 op: "call_host",
                 ret_to: contBlock,
-                num_args: args.length
+                num_args: args.length,
+                src_pos: expr.srcPos
             });
         }
         else
@@ -1927,7 +1936,8 @@ var genExpr = function (ctx, expr)
             ctx:addInstr({
                 op: "call",
                 ret_to: contBlock,
-                num_args: args.length
+                num_args: args.length,
+                src_pos: expr.srcPos
             });
         }
 
@@ -1958,11 +1968,14 @@ var genExpr = function (ctx, expr)
         runtimeCall(ctx, rt_getProp);
 
         var contBlock = Block.new();
+
         ctx:addInstr({
             op: "call",
             ret_to:contBlock,
-            num_args: args.length+1
+            num_args: args.length+1,
+            src_pos: expr.srcPos
         });
+
         ctx:merge(contBlock);
 
         return;

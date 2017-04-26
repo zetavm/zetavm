@@ -17,7 +17,7 @@ make
 # Optionally run tests to check that everything works properly
 make test
 
-# To run programs, pass the path to a source file to zetavm
+# To run programs, pass the path to a source file to zetavm, for example:
 ./zeta benchmarks/fib29.pls
 ```
 
