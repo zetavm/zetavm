@@ -303,13 +303,13 @@ var output = function (x)
 {
     if (typeof x == "string")
     {
-        call_host io.print_str(x);
+        io.print_str(x);
         return;
     }
 
     if (typeof x == "int64")
     {
-        call_host io.print_int64(x);
+        io.print_int64(x);
         return;
     }
 
@@ -341,5 +341,5 @@ var print = function (x)
 /// Read an entire text file into a string
 var readFile = function (fileName)
 {
-    return call_host io.read_file(fileName);
+    return io.read_file(fileName);
 };

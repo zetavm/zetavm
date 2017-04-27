@@ -726,7 +726,7 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
 
         auto contBlock = new Block();
         ctx.addBranch(
-            callExpr->hostCall? "call_host":"call",
+            "call",
             "ret_to", contBlock,
             "", nullptr,
             "num_args:" + std::to_string(args.size())

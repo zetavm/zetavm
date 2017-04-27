@@ -115,7 +115,6 @@ var ObjectExpr = {
 
 /// Prototype for function call expressions
 var CallExpr = {
-    hostCall: false
 };
 
 /// Prototype for method call expression
@@ -955,24 +954,6 @@ var parseAtom = function (input)
                 parseError(input, "invalid package name expression");
 
             return ImportExpr::{ pkgName:nameExpr.val };
-        }
-
-        // Host function call
-        if (input:match("call_host"))
-        {
-            // Parse the callee expression
-            var calleeExpr = parseExprPrec(input, OP_CALL.prec+1);
-
-            // Parse the argument list
-            input:expect("(");
-            var argExprs = parseExprList(input, ")");
-
-            // Parse the argument list and create the call expression
-            return CallExpr::{
-                funExpr:calleeExpr,
-                argExprs:argExprs,
-                hostCall:true
-            };
         }
 
         // Identifier, variable reference
@@ -1922,24 +1903,12 @@ var genExpr = function (ctx, expr)
 
         var contBlock = Block.new();
 
-        if (expr.hostCall)
-        {
-            ctx:addInstr({
-                op: "call_host",
-                ret_to: contBlock,
-                num_args: args.length,
-                src_pos: expr.srcPos
-            });
-        }
-        else
-        {
-            ctx:addInstr({
-                op: "call",
-                ret_to: contBlock,
-                num_args: args.length,
-                src_pos: expr.srcPos
-            });
-        }
+        ctx:addInstr({
+            op: "call",
+            ret_to: contBlock,
+            num_args: args.length,
+            src_pos: expr.srcPos
+        });
 
         ctx:merge(contBlock);
 

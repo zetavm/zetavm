@@ -133,7 +133,6 @@ enum Opcode : uint16_t
     JUMP,
     IF_TRUE,
     CALL,
-    CALL_HOST,
     RET,
 
     IMPORT,
@@ -252,8 +251,6 @@ Opcode decode(Object instr)
         op = IF_TRUE;
     else if (opStr == "call")
         op = CALL;
-    else if (opStr == "call_host")
-        op = CALL_HOST;
     else if (opStr == "ret")
         op = RET;
 
@@ -824,9 +821,36 @@ Value call(Object fun, ValueVec args)
                 auto retToBB = retToCache.getObj(instr);
                 auto numArgs = numArgsCache.getInt64(instr);
 
-                auto calleeFun = popObj();
+                auto callee = popVal();
+
+                if (stack.size() < numArgs)
+                {
+                    throw RunError(
+                        "stack underflow at call"
+                    );
+                }
+
+                // Copy the arguments into a vector
+                ValueVec args;
+                args.resize(numArgs);
+                for (size_t i = 0; i < numArgs; ++i)
+                    args[numArgs - 1 - i] = popVal();
+
                 static ICache numParamsIC("num_params");
-                auto numParams = numParamsIC.getInt64(calleeFun);
+                size_t numParams;
+                if (callee.isObject())
+                {
+                    numParams = numParamsIC.getInt64(callee);
+                }
+                else if (callee.isHostFn())
+                {
+                    auto hostFn = (HostFn*)(callee.getWord().ptr);
+                    numParams = hostFn->getNumParams();
+                }
+                else
+                {
+                    throw RunError("invalid callee at call site");
+                }
 
                 if (numArgs != numParams)
                 {
@@ -845,70 +869,45 @@ Value call(Object fun, ValueVec args)
                     );
                 }
 
-                if (stack.size() < numArgs)
-                {
-                    throw RunError(
-                        "stack underflow at call"
-                    );
-                }
-
-                // Copy the arguments into a vector
-                ValueVec argVals;
-                argVals.resize(numArgs);
-                for (size_t i = 0; i < numArgs; ++i)
-                    argVals[numArgs - 1 - i] = popVal();
-
-                // Perform the call
-                auto retVal = call(calleeFun, argVals);
-
-                // Push the return value on the stack
-                stack.push_back(retVal);
-
-                branchTo(retToBB);
-            }
-            break;
-
-            // Host function call
-            case CALL_HOST:
-            {
-                static ICache retToIC("ret_to");
-                static ICache numArgsIC("num_args");
-                auto retToBB = retToIC.getObj(instr);
-                auto numArgs = numArgsIC.getInt64(instr);
-                assert (stack.size() >= numArgs + 1);
-
-                // The callee must be a host function
-                auto calleeFun = popVal();
-                assert (calleeFun.isHostFn());
-                auto hostFn = (HostFn*)calleeFun.getWord().ptr;
-
                 Value retVal;
 
-                // Call the host function
-                switch (numArgs)
+                if (callee.isObject())
                 {
-                    case 1:
-                    {
-                        auto a0 = popVal();
-                        retVal = hostFn->call1(a0);
-                    }
-                    break;
+                    // Perform the call
+                    retVal = call(callee, args);
+                }
+                else if (callee.isHostFn())
+                {
+                    auto hostFn = (HostFn*)(callee.getWord().ptr);
 
-                    case 2:
+                    // Call the host function
+                    switch (numArgs)
                     {
-                        auto a1 = popVal();
-                        auto a0 = popVal();
-                        retVal = hostFn->call2(a0, a1);
-                    }
-                    break;
+                        case 0:
+                        retVal = hostFn->call0();
+                        break;
 
-                    default:
-                    assert (false);
+                        case 1:
+                        retVal = hostFn->call1(args[0]);
+                        break;
+
+                        case 2:
+                        retVal = hostFn->call2(args[0], args[1]);
+                        break;
+
+                        case 3:
+                        retVal = hostFn->call3(args[0], args[1], args[2]);
+                        break;
+
+                        default:
+                        assert (false);
+                    }
                 }
 
                 // Push the return value on the stack
                 stack.push_back(retVal);
 
+                // Jump to the return basic block
                 branchTo(retToBB);
             }
             break;

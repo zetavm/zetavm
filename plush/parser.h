@@ -283,12 +283,10 @@ public:
 
     CallExpr(
         ASTExpr* funExpr,
-        std::vector<ASTExpr*> argExprs,
-        bool hostCall = false
+        std::vector<ASTExpr*> argExprs
     )
     : funExpr(funExpr),
-      argExprs(argExprs),
-      hostCall(hostCall)
+      argExprs(argExprs)
     {
     }
 
@@ -296,7 +294,6 @@ public:
 
     ASTExpr* funExpr;
     std::vector<ASTExpr*> argExprs;
-    bool hostCall;
 };
 
 class MethodCallExpr : public ASTExpr

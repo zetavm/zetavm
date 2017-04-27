@@ -14,6 +14,14 @@ HostFn::HostFn(std::string name, size_t numParams, void* fptr)
 {
 }
 
+Value HostFn::call0()
+{
+    assert (fptr);
+    assert (numParams == 0);
+    auto f0 = (Value(*)()) fptr;
+    return f0();
+}
+
 Value HostFn::call1(Value arg0)
 {
     assert (fptr);
@@ -28,6 +36,14 @@ Value HostFn::call2(Value arg0, Value arg1)
     assert (numParams == 2);
     auto f2 = (Value(*)(Value,Value)) fptr;
     return f2(arg0, arg1);
+}
+
+Value HostFn::call3(Value arg0, Value arg1, Value arg2)
+{
+    assert (fptr);
+    assert (numParams == 3);
+    auto f3 = (Value(*)(Value,Value,Value)) fptr;
+    return f3(arg0, arg1, arg2);
 }
 
 void setHostFn(
@@ -46,6 +62,8 @@ void setHostFn(
     pkgObj.setField(name, fnVal);
 }
 
+//============================================================================
+// core/io package
 //============================================================================
 
 Value print_int64(Value val)
@@ -105,12 +123,141 @@ Value read_file(Value fileName)
 Value get_core_io_pkg()
 {
     auto exports = Object::newObject(32);
-
     setHostFn(exports, "print_int64", 1, (void*)print_int64);
     setHostFn(exports, "print_str"  , 1, (void*)print_str);
     setHostFn(exports, "read_file"  , 1, (void*)read_file);
-
     return exports;
+}
+
+//============================================================================
+// core/window package
+//============================================================================
+
+#ifdef HAVE_SDL2
+
+#include <SDL.h>
+
+size_t width = 0;
+size_t height = 0;
+
+std::vector<uint8_t> pixelBuffer;
+
+SDL_Window* window = nullptr;
+SDL_Renderer* renderer = nullptr;
+SDL_Texture* texture = nullptr;
+
+Value create_window(
+    Value titleVal,
+    Value widthVal,
+    Value heightVal
+)
+{
+    SDL_Init(SDL_INIT_VIDEO);
+
+    auto title = (std::string)titleVal;
+    width = (size_t)(int64_t)widthVal;
+    height = (size_t)(int64_t)heightVal;
+
+    window = SDL_CreateWindow(
+        title.c_str(),
+        SDL_WINDOWPOS_UNDEFINED,
+        SDL_WINDOWPOS_UNDEFINED,
+        width,
+        height,
+        0
+    );
+
+    renderer = SDL_CreateRenderer(window, -1, 0);
+
+    texture = SDL_CreateTexture(
+        renderer,
+        SDL_PIXELFORMAT_RGBA8888,
+        SDL_TEXTUREACCESS_STATIC,
+        width,
+        height
+    );
+
+    pixelBuffer.resize(width * height * 4, 0);
+
+    SDL_ShowWindow(window);
+
+    return Value::UNDEF;
+}
+
+Value destroy_window()
+{
+    SDL_DestroyTexture(texture);
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
+    pixelBuffer.clear();
+
+    return Value::UNDEF;
+}
+
+Value process_events()
+{
+    // FIXME
+    // How do we know when quit happened? Return false then?
+    // Maybe change go let users do the polling, write our own loop?
+
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+            case SDL_QUIT:
+            //quit = true;
+            return Value::FALSE;
+            break;
+
+            default:
+            break;
+        }
+    }
+
+    return Value::TRUE;
+}
+
+Value draw_pixels(Value pixelsArray)
+{
+    auto pixels = (Array)pixelsArray;
+
+    assert (pixels.length() == width * height * 3);
+
+    for (size_t pixIdx = 0; pixIdx < width * height; ++pixIdx)
+    {
+        // SDL's RGBA888 is actually ABGR, because of course.
+        pixelBuffer[4*pixIdx+0] = 255;
+        pixelBuffer[4*pixIdx+1] = (uint8_t)(int64_t)pixels.getElem(3*pixIdx+2);
+        pixelBuffer[4*pixIdx+2] = (uint8_t)(int64_t)pixels.getElem(3*pixIdx+1);
+        pixelBuffer[4*pixIdx+3] = (uint8_t)(int64_t)pixels.getElem(3*pixIdx+0);
+    }
+
+    SDL_UpdateTexture(texture, NULL, &pixelBuffer[0], width * 4);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
+    return Value::UNDEF;
+}
+
+#endif // HAVE_SDL2
+
+Value get_core_window_pkg()
+{
+#ifdef HAVE_SDL2
+    auto exports = Object::newObject(32);
+    setHostFn(exports, "create_window"  , 3, (void*)create_window);
+    setHostFn(exports, "destroy_window" , 0, (void*)destroy_window);
+    setHostFn(exports, "process_events" , 0, (void*)process_events);
+    setHostFn(exports, "draw_pixels"    , 1, (void*)draw_pixels);
+    return exports;
+#else
+    return Value::UNDEF;
+#endif
 }
 
 //============================================================================
@@ -182,6 +329,32 @@ Object load(std::string pkgPath)
     return pkg;
 }
 
+std::string findPkgPath(std::string pkgName)
+{
+    // If the package name directly maps to a relative path
+    if (fileExists(pkgName))
+        return pkgName;
+
+    // Look in the package directory
+    auto pkgPath = PKGS_DIR + pkgName + "/package";
+    if (fileExists(pkgPath))
+        return pkgPath;
+
+    // Not found
+    return "";
+}
+
+Value getCorePkg(std::string pkgName)
+{
+    // Internal/core packages
+    if (pkgName == "core/io")
+        return get_core_io_pkg();
+    if (pkgName == "core/window")
+        return get_core_window_pkg();
+
+    return Value::UNDEF;
+}
+
 /// Import a package based on its name, and perform caching
 Value import(std::string pkgName)
 {
@@ -201,39 +374,33 @@ Value import(std::string pkgName)
         return itr->second;
     }
 
-    // Internal/core packages
-    if (pkgName == "core/io")
-        return get_core_io_pkg();
-
-    std::string pkgPath;
-
-    // If the package name directly maps to a relative path
-    if (fileExists(pkgName))
+    // If we can find a package file for this name
+    auto pkgPath = findPkgPath(pkgName);
+    if (pkgPath != "")
     {
-        pkgPath = pkgName;
-    }
-    else
-    {
-        pkgPath = PKGS_DIR + pkgName + "/package";
+        // Load the package file
+        auto pkg = load(pkgPath);
 
-        if (!fileExists(pkgPath))
+        // Cache the package
+        pkgCache[pkgName] = pkg;
+
+        // Initialize the package
+        if (pkg.hasField("init"))
         {
-            // Package not found
-            return Value::UNDEF;
+            callExportFn(pkg, "init");
         }
+
+        return pkg;
     }
 
-    // Load and initialize the package
-    auto pkg = load(pkgPath);
-
-    // Cache the package
-    pkgCache[pkgName] = pkg;
-
-    // Initialize the package
-    if (pkg.hasField("init"))
+    // If we can find a core package for this name
+    auto corePkg = getCorePkg(pkgName);
+    if (corePkg != Value::UNDEF)
     {
-        callExportFn(pkg, "init");
+        pkgCache[pkgName] = corePkg;
+        return corePkg;
     }
 
-    return pkg;
+    // Package not found
+    return Value::UNDEF;
 }

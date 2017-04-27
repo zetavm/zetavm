@@ -89,7 +89,7 @@ main_print_result = {
 
         # Call print_int64 to print the result of fib
         { op: "get_local", idx: 0 },
-        { op: "call_host", ret_to: @main_print_endl, num_args: 1 },
+        { op: "call", ret_to: @main_print_endl, num_args: 1 },
     ]
 };
 main_print_endl = {
@@ -98,7 +98,7 @@ main_print_endl = {
         { op: "pop" },
         { op: "push", val: "\n" },
         { op: "get_local", idx: 1 },
-        { op: "call_host", ret_to: @main_ret, num_args: 1 },
+        { op: "call", ret_to: @main_ret, num_args: 1 },
     ]
 };
 main_ret = {

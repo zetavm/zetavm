@@ -23,8 +23,10 @@ public:
         void* fptr
     );
 
+    Value call0();
     Value call1(Value arg0);
     Value call2(Value arg0, Value arg1);
+    Value call3(Value arg0, Value arg1, Value arg2);
 
     size_t getNumParams() const { return numParams; }
 };

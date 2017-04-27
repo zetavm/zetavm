@@ -823,20 +823,6 @@ ASTExpr* parseAtom(Input& input)
             return new ImportExpr(strExpr->val);
         }
 
-        // Host function call
-        if (input.match("call_host"))
-        {
-            // Parse the callee expression
-            auto calleeExpr = parseExprPrec(input, OP_CALL.prec+1);
-
-            // Parse the argument list
-            input.expect("(");
-            auto argExprs = parseExprList(input, ")");
-
-            // Parse the argument list and create the call expression
-            return new CallExpr(calleeExpr, argExprs, true);
-        }
-
         // Identifier, variable reference
         return new IdentExpr(parseIdentStr(input));
     }
