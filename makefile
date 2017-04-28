@@ -18,6 +18,7 @@ test: zetavm cplush plush-pkg
 	./$(CPLUSH_BIN) --test
 	./plush.sh tests/plush/trivial.pls
 	./plush.sh tests/plush/simple.pls
+	./plush.sh tests/plush/identfn.pls
 	./plush.sh tests/plush/fib.pls
 	./plush.sh tests/plush/for_loop_sum.pls
 	./plush.sh tests/plush/for_loop_cont.pls
@@ -28,8 +29,24 @@ test: zetavm cplush plush-pkg
 	./plush.sh tests/plush/method_calls.pls
 	./plush.sh tests/plush/obj_ext.pls
 	./plush.sh plush/parser.pls tests/plush/parser.pls
+	# Check that the parser benchmark compiles with cplush
+	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.pls
 	# Plush parser package tests
 	./$(ZETA_BIN) tests/plush/trivial.pls
+	./$(ZETA_BIN) tests/plush/simple.pls
+	./$(ZETA_BIN) tests/plush/identfn.pls
+	./$(ZETA_BIN) tests/plush/fib.pls
+	./$(ZETA_BIN) tests/plush/for_loop_sum.pls
+	./$(ZETA_BIN) tests/plush/for_loop_cont.pls
+	./$(ZETA_BIN) tests/plush/for_loop_break.pls
+	./$(ZETA_BIN) tests/plush/array_push.pls
+	./$(ZETA_BIN) tests/plush/method_calls.pls
+	./$(ZETA_BIN) tests/plush/obj_ext.pls
+	./$(ZETA_BIN) tests/plush/import.pls
+	./$(ZETA_BIN) tests/plush/circular3.pls
+	# Check that source position is reported on errors
+	./$(ZETA_BIN) tests/plush/assert.pls | grep --quiet "3:1"
+	./$(ZETA_BIN) tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
 
 clean:
 	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) config.status config.log

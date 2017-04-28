@@ -10,6 +10,7 @@ it is incomplete and breaking changes may happen often.**
 git clone git@github.com:maximecb/zetavm.git
 
 # Run the configure script and compile zetavm
+# Note: run configure with `--with-sdl2` to build graphics support
 cd zetavm
 ./configure
 make
