@@ -1045,7 +1045,7 @@ public:
     */
 };
 
-class BlockVersion : CodeFragment
+class BlockVersion : public CodeFragment
 {
 public:
 
@@ -1093,19 +1093,32 @@ Value* stackPtr = nullptr;
 // Current instruction pointer
 uint8_t* instrPtr = nullptr;
 
+// Write a value to the code heap
+template <typename T> void writeVal(T val)
+{
+    assert (codeHeapAlloc < codeHeapLimit);
+    T* heapPtr = (T*)codeHeapAlloc;
+    *heapPtr = val;
+    codeHeapAlloc += sizeof(T);
+    assert (codeHeapAlloc <= codeHeapLimit);
+}
+
+template <typename T> T readVal()
+{
+    assert (instrPtr + sizeof(T) <= codeHeapLimit);
+    T* valPtr = (T*)instrPtr;
+    auto val = *valPtr;
+    instrPtr += sizeof(T);
+    return val;
+}
+
 /// Initialize the interpreter
 void initInterp()
 {
-    // TODO:
     // Allocate the code heap
-    //codeHeap = nullptr;
-    /// Limit pointer for the code heap
-    //codeHeapLimit = nullptr;
-    /// Current allocation pointer in the code heap
-    //codeHeapAlloc = nullptr;
-
-
-
+    codeHeap = new uint8_t[CODE_HEAP_INIT_SIZE];
+    codeHeapLimit = codeHeap + CODE_HEAP_INIT_SIZE;
+    codeHeapAlloc = codeHeap;
 
     // Allocate the stack
     stackSize = STACK_INIT_SIZE;
@@ -1117,39 +1130,81 @@ void initInterp()
 // TODO: do we already need a versioning context?
 // we need to manage the temp stack size?
 // can technically just use the stack top for this?
-BlockVersion* getBlockVersion(Object Block)
+
+/// Get a version of a block. This version will be a stub
+/// until compiled
+BlockVersion* getBlockVersion(Object block)
 {
-    // TODO: version map lookup
+    auto blockPtr = (refptr)block;
 
-    // Stubs vs not? How does that work?
+    auto versionItr = versionMap.find((refptr)block);
 
+    if (versionItr == versionMap.end())
+    {
+        versionMap[blockPtr] = VersionList();
+    }
+    else
+    {
+        auto versions = versionItr->second;
+        assert (versions.size() == 1);
+        return versions[0];
+    }
 
+    auto newVersion = new BlockVersion(block);
 
-    assert (false);
+    auto& versionList = versionMap[blockPtr];
+    versionList.push_back(newVersion);
+
+    return newVersion;
 }
 
-void compileBlock(Object block)
+void compile(BlockVersion* version)
 {
+    auto block = version->block;
+
     // Block name icache, for debugging
     static ICache nameIC("name");
+    auto name = nameIC.getStr(block);
 
     // Get the instructions array
     static ICache instrsIC("instrs");
     Array instrs = instrsIC.getArr(block);
 
+    // Mark the block start
+    version->startPtr = codeHeapAlloc;
+
     // For each instruction
     for (size_t i = 0; i < instrs.length(); ++i)
     {
+        auto instrVal = instrs.getElem(i);
+        assert (instrVal.isObject());
+        auto instr = (Object)instrVal;
 
+        static ICache opIC("op");
+        auto op = (std::string)opIC.getStr(instr);
 
+        std::cout << "op: " << op << std::endl;
+
+        if (op == "push")
+        {
+            static ICache valIC("val");
+            auto val = valIC.getField(instr);
+            writeVal(PUSH);
+            writeVal(val);
+            continue;
+        }
+
+        if (op == "ret")
+        {
+            writeVal(RET);
+            continue;
+        }
+
+        throw RunError("unhandled opcode in basic block \"" + op + "\"");
     }
 
-
-    // TODO: decode instructions
-
-
-
-    assert (false);
+    // Mark the block end
+    version->endPtr = codeHeapAlloc;
 }
 
 /// Push a value on the stack
@@ -1160,24 +1215,43 @@ void pushVal(Value val)
 }
 
 /// Start/continue execution beginning at a current instruction
-Value execCode(uint8_t* instrPtr)
+Value execCode()
 {
-    // TODO: main interpreter loop
+    assert (instrPtr >= codeHeap);
+    assert (instrPtr < codeHeapLimit);
 
-
-    // TODO: stop when returning to null
-
-
+    // For each instruction to execute
     for (;;)
     {
+        auto op = readVal<Opcode>();
+
+        switch (op)
+        {
+            case PUSH:
+            {
+                auto val = readVal<Value>();
+
+                // TODO
+            }
+            break;
+
+            // TODO: stop when returning to null
+            case RET:
+            {
+                // Pop val from stack
 
 
-        return Value::UNDEF;
+
+            }
+            break;
+
+            default:
+            assert (false);
+        }
+
     }
 
-
-
-
+    assert (false);
 }
 
 /// Begin the execution of a function (top-level call)
@@ -1214,35 +1288,18 @@ Value callFun(Object fun, ValueVec args)
         basePtr[i] = args[i];
     }
 
+    // Get the function entry block
+    static ICache entryIC("entry");
+    auto entryBlock = entryIC.getObj(fun);
 
+    auto entryVer = getBlockVersion(entryBlock);
 
+    // Generate code for the entry block version
+    compile(entryVer);
+    assert (entryVer->length() > 0);
 
-
-    // TODO:
-    // Need to request that the function entry block be compiled
-    // Should we manually queue it for compilation? getBlockVersion
-    // then only creates a "stub" version
-
-    /*
-    Why do we need queueing? In Higgs, this is needed because there
-    is linking happening
-
-    In this system, we could do the linking when stub jumps are
-    patched. Executing jump_stub will call getBlockVersion,
-    compile immediately if needed, then patch the jump. If already
-    compiled. It just patches the jump.
-
-    So when you compile a block, you don't have to queue successors
-    for compilation.
-
-    */
-
-
-
-    //auto retVal = execCode(uint8_t* instrPtr);
-
-
-
+    // Begin execution at the entry block
+    //auto retVal = execCode(entryVer->startPtr);
 
     // Pop the local variables, return address and calling function
     stackPtr += numLocals;
@@ -1250,6 +1307,7 @@ Value callFun(Object fun, ValueVec args)
     assert (stackPtr == stackBottom);
 
     // TODO
+    //return retVal;
     return Value(777);
 }
 
