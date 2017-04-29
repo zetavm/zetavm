@@ -6,7 +6,7 @@
 #include "interp.h"
 #include "core.h"
 
-/// Inline cache to speed up property lookups on instruction objects
+/// Inline cache to speed up property lookups
 class ICache
 {
 private:
@@ -120,6 +120,7 @@ enum Opcode : uint16_t
     // Miscellaneous
     EQ_BOOL,
     HAS_TAG,
+    GET_TAG,
 
     // Array operations
     NEW_ARRAY,
@@ -127,11 +128,13 @@ enum Opcode : uint16_t
     ARRAY_PUSH,
     GET_ELEM,
     SET_ELEM,
-    //ARRAY_CAT,
 
     // Branch instructions
+    // Note: opcode for stub branches is opcode+1
     JUMP,
+    JUMP_STUB,
     IF_TRUE,
+    IF_TRUE_STUB,
     CALL,
     RET,
 
@@ -235,8 +238,6 @@ Opcode decode(Object instr)
         op = GET_ELEM;
     else if (opStr == "set_elem")
         op = SET_ELEM;
-    //else if (opStr == "array_cat")
-    //    op = ARRAY_CAT;
 
     // Miscellaneous
     else if (opStr == "eq_bool")
@@ -734,17 +735,6 @@ Value call(Object fun, ValueVec args)
             }
             break;
 
-            /*
-            case ARRAY_CAT:
-            {
-                auto a = popArray();
-                auto b = popArray();
-                auto c = Array::concat(b, a);
-                stack.push_back(c);
-            }
-            break;
-            */
-
             case EQ_BOOL:
             {
                 auto arg1 = popBool();
@@ -971,10 +961,9 @@ Value callExportFn(
     assert (pkg.hasField(fnName));
     auto fnVal = pkg.getField(fnName);
     assert (fnVal.isObject());
+    auto funObj = Object(fnVal);
 
-    auto init = Object(fnVal);
-
-    return call(init, args);
+    return call(funObj, args);
 }
 
 Value testRunImage(std::string fileName)
@@ -995,4 +984,230 @@ void testInterp()
     assert (testRunImage("tests/zetavm/ex_image.zim") == Value(10));
     assert (testRunImage("tests/zetavm/ex_rec_fact.zim") == Value(5040));
     assert (testRunImage("tests/zetavm/ex_fibonacci.zim") == Value(377));
+}
+
+//============================================================================
+// New interpreter
+//============================================================================
+
+class CodeFragment
+{
+public:
+
+    /// Start index in the executable heap
+    //uint32_t startIdx = uint32_t.max;
+
+    /// End index in the executable heap
+    //uint32_t endIdx = uint32_t.max;
+
+    /*
+    /// Get the length of the code fragment
+    final auto length()
+    {
+        assert (startIdx !is startIdx.max);
+        assert (ended);
+        return endIdx - startIdx;
+    }
+    */
+
+    /*
+    /// Store the start position of the code
+    final void markStart(CodeBlock as)
+    {
+        assert (
+            startIdx is startIdx.max,
+            "start position is already marked"
+        );
+
+        startIdx = cast(uint32_t)as.getWritePos();
+
+        // Add a label string comment
+        if (opts.genasm)
+            as.writeString(this.getName ~ ":");
+    }
+    */
+
+    /*
+    /// Store the end position of the code
+    final void markEnd(CodeBlock as)
+    {
+        assert (
+            !ended,
+            "end position is already marked"
+        );
+
+        endIdx = cast(uint32_t)as.getWritePos();
+
+        // Add this fragment to the back of to the list of compiled fragments
+        vm.fragList.assumeSafeAppend ~= this;
+
+        // Update the generated code size stat
+        stats.genCodeSize += this.length();
+    }
+    */
+
+    /*
+    /// Check if the fragment start has been marked (fragment is instantiated)
+    final bool started()
+    {
+        return startIdx !is startIdx.max;
+    }
+
+    /// Check if the end of the fragment has been marked
+    final bool ended()
+    {
+        return endIdx !is endIdx.max;
+    }
+    */
+};
+
+class BlockVersion : CodeFragment
+{
+public:
+
+    /// Associated block
+    Object block;
+
+    /// Code generation context at block entry
+    //CodeGenCtx ctx;
+
+    /// Branch targets
+    //CodeFragment[] targets;
+
+    BlockVersion(Object block)
+    : block(block)
+    {
+    }
+
+    /*
+    /// Get a pointer to the executable code for this version
+    final auto getCodePtr(CodeBlock cb)
+    {
+        return cb.getAddress(startIdx);
+    }
+    */
+};
+
+typedef std::vector<BlockVersion*> VersionList;
+
+/// Flat array of bytes into which code gets compiled
+uint8_t* codeHeap = nullptr;
+
+/// Limit pointer for the code heap
+uint8_t* codeHeapLimit = nullptr;
+
+/// Current allocation pointer in the code heap
+uint8_t* codeHeapAlloc = nullptr;
+
+/// Map of block objects to lists of versions
+std::unordered_map<refptr, VersionList> versionMap;
+
+/// Ordered list of allocated code fragments
+std::vector<CodeFragment*> fragmentList;
+
+/// Lower stack limit (stack pointer must be greater than this)
+Word* stackLimit = nullptr;
+
+/// Stack bottom (end of the stack memory array)
+Word* stackBottom = nullptr;
+
+/// Stack frame base pointer
+Word* basePtr = nullptr;
+
+/// Current temp stack top pointer
+Word* stackPtr = nullptr;
+
+// Current instruction pointer
+uint8_t* instrPtr = nullptr;
+
+// TODO: do we already need a versioning context?
+// we need to manage the temp stack size?
+// can technically just use the stack top for this?
+BlockVersion* getBlockVersion(Object Block)
+{
+    // TODO: version map lookup
+
+    // Stubs vs not? How does that work?
+
+
+
+    assert (false);
+}
+
+void compileBlock(Object block)
+{
+    // Block name icache, for debugging
+    static ICache nameIC("name");
+
+    // Get the instructions array
+    static ICache instrsIC("instrs");
+    Array instrs = instrsIC.getArr(block);
+
+    // For each instruction
+    for (size_t i = 0; i < instrs.length(); ++i)
+    {
+
+
+    }
+
+
+    // TODO: decode instructions
+
+
+
+    assert (false);
+}
+
+/// Start/continue execution beginning at a current instruction
+void execCode(uint8_t* instrPtr)
+{
+    // TODO: main interpreter loop
+}
+
+/// Begin the execution of a function
+Value callFun(Object fun, ValueVec args)
+{
+    // TODO: push args on the stack
+
+
+
+
+
+    // TODO
+    return Value(777);
+}
+
+/// Call a function exported by a package
+Value callExportFnNew(
+    Object pkg,
+    std::string fnName,
+    ValueVec args = ValueVec()
+)
+{
+    assert (pkg.hasField(fnName));
+    auto fnVal = pkg.getField(fnName);
+    assert (fnVal.isObject());
+    auto funObj = Object(fnVal);
+
+    return callFun(funObj, args);
+}
+
+Value testRunImageNew(std::string fileName)
+{
+    std::cout << "loading image \"" << fileName << "\"" << std::endl;
+
+    auto pkg = parseFile(fileName);
+
+    return callExportFnNew(pkg, "main");
+}
+
+void testInterpNew()
+{
+    // TODO: call main function of simple test
+
+    assert (testRunImageNew("tests/zetavm/ex_ret_cst.zim") == Value(777));
+    //assert (testRunImageNew("tests/zetavm/ex_loop_cnt.zim") == Value(0));
+    //assert (testRunImageNew("tests/zetavm/ex_image.zim") == Value(10));
+    //assert (testRunImageNew("tests/zetavm/ex_rec_fact.zim") == Value(5040));
+    //assert (testRunImageNew("tests/zetavm/ex_fibonacci.zim") == Value(377));
 }

@@ -22,6 +22,7 @@ int main(int argc, char** argv)
             testRuntime();
             testParser();
             testInterp();
+            testInterpNew();
             return 0;
         }
 
