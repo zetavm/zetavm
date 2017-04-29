@@ -44,7 +44,7 @@ Features of the VM will include:
 
 - Immutable UTF-8 strings
 
-- Text-based [image files](zetavm/tests/ex_image.zim) (JSON-like)
+- Text-based [image files](/tests/zetavm/ex_image.zim) (JSON-like)
 
 - Ability to suspend and resume programs
 
@@ -258,7 +258,7 @@ to implement bignums, saturation and other such language features.
 
 ### Image Files
 
-There are example image files in the [/tests](tests) directory of this
+There are example image files in the [/tests/zetavm](tests/zetavm) directory of this
 repository. Image files have a ".zim" file name extension.
 
 Why not use pure JSON:
