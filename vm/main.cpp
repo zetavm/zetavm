@@ -10,11 +10,9 @@ int main(int argc, char** argv)
 {
     try
     {
-        /*
-        initRuntime();
-        initParser();
+        //initRuntime();
+        //initParser();
         initInterp();
-        */
 
         // If we are in test mode
         if (argc == 2 && strcmp(argv[1], "--test") == 0)

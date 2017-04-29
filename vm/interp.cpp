@@ -990,29 +990,33 @@ void testInterp()
 // New interpreter
 //============================================================================
 
+/// Initial code heap size in bytes
+const size_t CODE_HEAP_INIT_SIZE = 1 << 20;
+
+/// Initial stack size in words
+const size_t STACK_INIT_SIZE = 1 << 16;
+
 class CodeFragment
 {
 public:
 
     /// Start index in the executable heap
-    //uint32_t startIdx = uint32_t.max;
+    uint8_t* startPtr = nullptr;
 
     /// End index in the executable heap
-    //uint32_t endIdx = uint32_t.max;
+    uint8_t* endPtr = nullptr;
 
-    /*
     /// Get the length of the code fragment
-    final auto length()
+    size_t length()
     {
-        assert (startIdx !is startIdx.max);
-        assert (ended);
-        return endIdx - startIdx;
+        assert (startPtr);
+        assert (endPtr);
+        return endPtr - startPtr;
     }
-    */
 
     /*
     /// Store the start position of the code
-    final void markStart(CodeBlock as)
+    void markStart(CodeBlock as)
     {
         assert (
             startIdx is startIdx.max,
@@ -1029,7 +1033,7 @@ public:
 
     /*
     /// Store the end position of the code
-    final void markEnd(CodeBlock as)
+    void markEnd(CodeBlock as)
     {
         assert (
             !ended,
@@ -1037,26 +1041,6 @@ public:
         );
 
         endIdx = cast(uint32_t)as.getWritePos();
-
-        // Add this fragment to the back of to the list of compiled fragments
-        vm.fragList.assumeSafeAppend ~= this;
-
-        // Update the generated code size stat
-        stats.genCodeSize += this.length();
-    }
-    */
-
-    /*
-    /// Check if the fragment start has been marked (fragment is instantiated)
-    final bool started()
-    {
-        return startIdx !is startIdx.max;
-    }
-
-    /// Check if the end of the fragment has been marked
-    final bool ended()
-    {
-        return endIdx !is endIdx.max;
     }
     */
 };
@@ -1071,21 +1055,10 @@ public:
     /// Code generation context at block entry
     //CodeGenCtx ctx;
 
-    /// Branch targets
-    //CodeFragment[] targets;
-
     BlockVersion(Object block)
     : block(block)
     {
     }
-
-    /*
-    /// Get a pointer to the executable code for this version
-    final auto getCodePtr(CodeBlock cb)
-    {
-        return cb.getAddress(startIdx);
-    }
-    */
 };
 
 typedef std::vector<BlockVersion*> VersionList;
@@ -1102,23 +1075,44 @@ uint8_t* codeHeapAlloc = nullptr;
 /// Map of block objects to lists of versions
 std::unordered_map<refptr, VersionList> versionMap;
 
-/// Ordered list of allocated code fragments
-std::vector<CodeFragment*> fragmentList;
+/// Size of the stack in words
+size_t stackSize = 0;
 
 /// Lower stack limit (stack pointer must be greater than this)
-Word* stackLimit = nullptr;
+Value* stackLimit = nullptr;
 
 /// Stack bottom (end of the stack memory array)
-Word* stackBottom = nullptr;
+Value* stackBottom = nullptr;
 
 /// Stack frame base pointer
-Word* basePtr = nullptr;
+Value* basePtr = nullptr;
 
 /// Current temp stack top pointer
-Word* stackPtr = nullptr;
+Value* stackPtr = nullptr;
 
 // Current instruction pointer
 uint8_t* instrPtr = nullptr;
+
+/// Initialize the interpreter
+void initInterp()
+{
+    // TODO:
+    // Allocate the code heap
+    //codeHeap = nullptr;
+    /// Limit pointer for the code heap
+    //codeHeapLimit = nullptr;
+    /// Current allocation pointer in the code heap
+    //codeHeapAlloc = nullptr;
+
+
+
+
+    // Allocate the stack
+    stackSize = STACK_INIT_SIZE;
+    stackLimit = new Value[STACK_INIT_SIZE];
+    stackBottom = stackLimit + sizeof(Word);
+    stackPtr = stackBottom;
+}
 
 // TODO: do we already need a versioning context?
 // we need to manage the temp stack size?
@@ -1158,20 +1152,102 @@ void compileBlock(Object block)
     assert (false);
 }
 
-/// Start/continue execution beginning at a current instruction
-void execCode(uint8_t* instrPtr)
+/// Push a value on the stack
+void pushVal(Value val)
 {
-    // TODO: main interpreter loop
+    stackPtr--;
+    stackPtr[0] = val;
 }
 
-/// Begin the execution of a function
+/// Start/continue execution beginning at a current instruction
+Value execCode(uint8_t* instrPtr)
+{
+    // TODO: main interpreter loop
+
+
+    // TODO: stop when returning to null
+
+
+    for (;;)
+    {
+
+
+        return Value::UNDEF;
+    }
+
+
+
+
+}
+
+/// Begin the execution of a function (top-level call)
 Value callFun(Object fun, ValueVec args)
 {
-    // TODO: push args on the stack
+    static ICache numParamsIC("num_params");
+    static ICache numLocalsIC("num_locals");
+    auto numParams = numParamsIC.getInt64(fun);
+    auto numLocals = numLocalsIC.getInt64(fun);
+    assert (args.size() <= numParams);
+    assert (numParams <= numLocals);
+
+    std::cout << "pushing RA" << std::endl;
+
+    // Push the caller function and return address
+    // Note: these are placeholders because we are doing a toplevel call
+    assert (stackPtr == stackBottom);
+    pushVal(Value(0));
+    pushVal(Value(nullptr, TAG_RETADDR));
+
+    // Initialize the base pointer (used to access locals)
+    basePtr = stackPtr - 1;
+
+    // Push space for the local variables
+    stackPtr -= numLocals;
+    assert (stackPtr >= stackLimit);
+
+    std::cout << "pushing locals" << std::endl;
+
+    // Copy the arguments into the locals
+    for (size_t i = 0; i < args.size(); ++i)
+    {
+        //std::cout << "  " << args[i].toString() << std::endl;
+        basePtr[i] = args[i];
+    }
 
 
 
 
+
+    // TODO:
+    // Need to request that the function entry block be compiled
+    // Should we manually queue it for compilation? getBlockVersion
+    // then only creates a "stub" version
+
+    /*
+    Why do we need queueing? In Higgs, this is needed because there
+    is linking happening
+
+    In this system, we could do the linking when stub jumps are
+    patched. Executing jump_stub will call getBlockVersion,
+    compile immediately if needed, then patch the jump. If already
+    compiled. It just patches the jump.
+
+    So when you compile a block, you don't have to queue successors
+    for compilation.
+
+    */
+
+
+
+    //auto retVal = execCode(uint8_t* instrPtr);
+
+
+
+
+    // Pop the local variables, return address and calling function
+    stackPtr += numLocals;
+    stackPtr += 2;
+    assert (stackPtr == stackBottom);
 
     // TODO
     return Value(777);
