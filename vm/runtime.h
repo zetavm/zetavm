@@ -44,8 +44,6 @@ union Word
     int64_t int64;
     int8_t int8;
     refptr ptr;
-
-    Tag tag;
 };
 
 /**
