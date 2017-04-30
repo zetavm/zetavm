@@ -546,4 +546,5 @@ FunExpr* parseString(std::string str, std::string srcName);
 
 FunExpr* parseFile(std::string fileName);
 
+ASTNode* testParseFile(std::string);
 void testParser();
