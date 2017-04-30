@@ -5,10 +5,10 @@
 #include "runtime.h"
 
 /// Undefined value constant
-const Value Value::UNDEF(Word((int64_t)0), TAG_UNDEF);
+const Value Value::UNDEF(Word(int64_t(0)), TAG_UNDEF);
 
 /// Boolean constants
-const Value Value::FALSE(Word((int64_t)0), TAG_BOOL);
+const Value Value::FALSE(Word(int64_t(0)), TAG_BOOL);
 const Value Value::TRUE(Word(1l), TAG_BOOL);
 
 /// Numerical constants
@@ -105,7 +105,7 @@ Note that this function guarantees that the memory is zeroed out
 Value VM::alloc(uint32_t size, Tag tag)
 {
     // FIXME: use an alloc pool of some kind
-    auto ptr = (refptr)calloc(1, size);
+    auto ptr = static_cast<refptr>(calloc(1, size));
 
     // Set the tag in the object header
     *ptr = tag;
@@ -114,27 +114,32 @@ Value VM::alloc(uint32_t size, Tag tag)
     return Value(ptr, tag);
 }
 
+static uint64_t getHeader(refptr obj)
+{
+    auto header = *reinterpret_cast<uint64_t*>(obj);
+    return header;
+}
 void Wrapper::setNextPtr(refptr obj, refptr nextPtr)
 {
     // Get the object header
-    auto header = *(uint64_t*)obj;
+    auto header = getHeader(obj);
 
     // Set the next pointer
-    *(refptr*)(obj + OBJ_OF_NEXT) = nextPtr;
+    *reinterpret_cast<refptr*>(obj + OBJ_OF_NEXT) = nextPtr;
 
     // Set the next pointer flag bit in the object header
-    *(uint64_t*)(obj) = header | HEADER_MSK_NEXT;
+    *reinterpret_cast<uint64_t*>(obj) = header | HEADER_MSK_NEXT;
 }
 
 refptr Wrapper::getNextPtr(refptr obj, refptr notFound)
 {
-    auto header = *(uint64_t*)obj;
+    auto header = getHeader(obj);
     bool hasNextPtr = header & HEADER_MSK_NEXT;
 
     if (!hasNextPtr)
         return notFound;
 
-    auto nextPtr = *(refptr*)(obj + OBJ_OF_NEXT);
+    auto nextPtr = *reinterpret_cast<refptr*>(obj + OBJ_OF_NEXT);
     assert (nextPtr != nullptr);
 
     return nextPtr;
@@ -142,7 +147,7 @@ refptr Wrapper::getNextPtr(refptr obj, refptr notFound)
 
 refptr Wrapper::getObjPtr()
 {
-    auto objPtr = (refptr)val;
+    auto objPtr = static_cast<refptr>(val);
     assert (objPtr != nullptr);
     return getNextPtr(objPtr, objPtr);
 }

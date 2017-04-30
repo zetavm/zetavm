@@ -236,7 +236,7 @@ public:
     bool operator == (const char* that) const;
 
     // FIXME: temporary until string internsing is implemented
-    bool operator == (String that) { return (std::string)*this == (std::string)that; }
+    bool operator == (String that) { return std::string(*this) == std::string(that); }
 
     /// Get the ith character code
     char operator [] (size_t i);
