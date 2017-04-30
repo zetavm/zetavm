@@ -398,8 +398,8 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
                 auto d0 = ch / 16;
                 auto d1 = ch % 16;
                 escStr += "\\x";
-                escStr += (d0 < 10)? ('0' + d0):('A' + d0 - 10);
-                escStr += (d1 < 10)? ('0' + d1):('A' + d1 - 10);
+                escStr += static_cast<char>((d0 < 10) ? ('0' + d0) : ('A' + d0 - 10));
+                escStr += static_cast<char>((d1 < 10) ? ('0' + d1) : ('A' + d1 - 10));
             }
             else if (ch == '\'')
             {
