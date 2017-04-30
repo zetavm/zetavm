@@ -72,10 +72,10 @@ std::string readFile(std::string fileName)
 
     //printf("%ld bytes\n", len);
 
-    char* buf = (char*)malloc(len+1);
+    char* buf = reinterpret_cast<char*>(malloc(len+1));
 
     // Read into the allocated buffer
-    int read = fread(buf, 1, len, file);
+    auto read = fread(buf, 1, len, file);
 
     if (read != len)
     {
@@ -124,7 +124,7 @@ char Input::readCh()
         (ch != '\n' && ch != '\t' && ch != '\r'))
     {
         char hexStr[64];
-        sprintf(hexStr, "0x%02X", (int)ch);
+        sprintf(hexStr, "0x%02X", static_cast<int>(ch));
         throw ParseError(
             *this,
             "invalid character in input, " + std::string(hexStr)
@@ -397,7 +397,7 @@ ASTExpr* parseStringLit(Input& input, char endCh)
                     }
 
                     assert (escVal >= 0 && escVal <= 255);
-                    ch = (char)escVal;
+                    ch = static_cast<char>(escVal);
                 }
                 break;
 
