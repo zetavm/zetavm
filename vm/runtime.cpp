@@ -325,7 +325,7 @@ void Array::push(Value val)
             newArr.push(getElem(i));
 
         // Set the next pointer on this object
-        auto rootObjPtr = (refptr)this->val;
+        auto rootObjPtr = static_cast<refptr>(this->val);
         setNextPtr(rootObjPtr, newArr.getObjPtr());
         assert (getObjPtr() != ptr);
 
@@ -335,14 +335,14 @@ void Array::push(Value val)
         //std::cout << "done extending array" << std::endl;
     }
 
-    auto words = (Word*)(ptr + OF_DATA);
-    auto tags  = (Tag*) (ptr + OF_DATA + cap * sizeof(Word));
+    auto words = reinterpret_cast<Word*>(ptr + OF_DATA);
+    auto tags  = (ptr + OF_DATA + cap * sizeof(Word));
 
     words[len] = val.getWord();
     tags[len] = val.getTag();
 
     // Increment the length
-    *(uint32_t*)(ptr + OF_LEN) = len + 1;
+    *reinterpret_cast<uint32_t*>(ptr + OF_LEN) = len + 1;
 }
 
 /*
@@ -374,10 +374,11 @@ Object Object::newObject(size_t cap)
 
     // Allocate memory
     auto val = vm.alloc(numBytes, TAG_OBJECT);
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
 
     // Set the object capacity
-    *(uint32_t*)(ptr + OF_CAP) = cap;
+    // FIXME type mismatch: decltype(cap) != uint32_t (it is size_t)
+    *reinterpret_cast<uint32_t*>(ptr + OF_CAP) = static_cast<uint32_t>(cap);
 
     // TODO: init object shape, when shapes actually implemented!
 
@@ -396,7 +397,7 @@ Object::Object(Value value)
 size_t Object::getCap()
 {
     auto ptr = getObjPtr();
-    auto cap = *(uint32_t*)(ptr + OF_CAP);
+    auto cap = *reinterpret_cast<uint32_t*>(ptr + OF_CAP);
     assert (cap > 0);
     return cap;
 }
@@ -408,7 +409,7 @@ size_t Object::getSlotIdx(
     bool newField
 )
 {
-    auto values = (Value*)(ptr + OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + OF_FIELDS);
 
     // FIXME: for now, we use a dumb key-pair linear search strategy
     size_t idx = 0;
@@ -421,7 +422,7 @@ size_t Object::getSlotIdx(
         assert (values[idx].isString());
 
         // Slot found
-        if ((String)values[idx] == fieldName)
+        if (static_cast<String>(values[idx]) == fieldName)
             return idx;
     }
 
@@ -464,7 +465,7 @@ void Object::setField(String name, Value value)
 
         // Set the next pointer on this object
         auto newObjPtr = newObj.getObjPtr();
-        auto rootObjPtr = (refptr)val;
+        auto rootObjPtr = static_cast<refptr>(val);
         setNextPtr(rootObjPtr, newObjPtr);
         assert (getObjPtr() != ptr);
 
@@ -474,7 +475,7 @@ void Object::setField(String name, Value value)
 
     // Write the new property
     assert (slotIdx + 1 < cap);
-    auto values = (Value*)(ptr + OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + OF_FIELDS);
     values[slotIdx + 0] = name;
     values[slotIdx + 1] = value;
 }
@@ -483,7 +484,7 @@ Value Object::getField(String name)
 {
     auto ptr = getObjPtr();
     auto cap = getCap();
-    auto values = (Value*)(ptr + OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + OF_FIELDS);
 
     size_t slotIdx = getSlotIdx(ptr, cap, name, false);
 
@@ -495,7 +496,7 @@ bool Object::getField(const char* name, Value& value, size_t& idxCache)
 {
     auto ptr = getObjPtr();
     auto cap = getCap();
-    auto values = (Value*)(ptr + OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + OF_FIELDS);
 
     //std::cout << "Lookup" << std::endl;
     //std::cout << "  name=" << name << std::endl;
@@ -545,7 +546,7 @@ bool ObjFieldItr::valid()
 
     auto ptr = obj.getObjPtr();
     auto cap = obj.getCap();
-    auto values = (Value*)(ptr + Object::OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + Object::OF_FIELDS);
 
     return slotIdx < cap && values[slotIdx].isString();
 }
@@ -554,7 +555,7 @@ std::string ObjFieldItr::get()
 {
     auto ptr = obj.getObjPtr();
     auto cap = obj.getCap();
-    auto values = (Value*)(ptr + Object::OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + Object::OF_FIELDS);
 
     //std::cout << "cap=" << cap << std::endl;
     //std::cout << "tag=" << (int)values[slotIdx].getTag() << std::endl;
@@ -568,7 +569,7 @@ void ObjFieldItr::next()
 {
     auto ptr = obj.getObjPtr();
     auto cap = obj.getCap();
-    auto values = (Value*)(ptr + Object::OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + Object::OF_FIELDS);
 
     slotIdx += 2;
 
@@ -583,10 +584,10 @@ ImgRef::ImgRef(String symbol)
 {
     // Allocate memory
     val = vm.alloc(ImgRef::SIZE, TAG_IMGREF);
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
 
     // Set the string pointer
-    *(refptr*)(ptr + OF_SYM) = (refptr)symbol;
+    *reinterpret_cast<refptr*>(ptr + OF_SYM) = static_cast<refptr>(symbol);
 }
 
 ImgRef::ImgRef(Value val)
@@ -597,13 +598,13 @@ ImgRef::ImgRef(Value val)
 
 std::string ImgRef::getName() const
 {
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
     assert (ptr != nullptr);
 
-    auto strPtr = *(refptr*)(ptr + OF_SYM);
+    auto strPtr = *reinterpret_cast<refptr*>(ptr + OF_SYM);
     Value strVal = Value(strPtr, TAG_STRING);
 
-    return (std::string)strVal;
+    return std::string(strVal);
 }
 
 bool isValidIdent(std::string identStr)
@@ -636,13 +637,13 @@ void testRuntime()
     // Strings
     auto str = String("foobar");
     assert (str.length() == 6);
-    assert ((std::string)str == "foobar");
+    assert (std::string(str) == "foobar");
     assert (str[1] == 'o');
     auto str2 = String("foobar");
     assert (str.length() == 6);
     assert (str2.length() == 6);
     assert (str == str2);
-    assert ((std::string)str == (std::string)str2);
+    assert (std::string(str) == std::string(str2));
 
     // Arrays
     auto arr = Array(2);
