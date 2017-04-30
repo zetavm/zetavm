@@ -251,7 +251,7 @@ public:
 /**
 Register variable declarations within a function body
 */
-void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
+static void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
 {
     if (auto blockStmt = dynamic_cast<BlockStmt*>(stmt))
     {
@@ -363,7 +363,7 @@ std::string genUnit(FunExpr* unitAST)
     return out;
 }
 
-void runtimeCall(CodeGenCtx& ctx, std::string funName, size_t numArgs)
+static void runtimeCall(CodeGenCtx& ctx, std::string funName, size_t numArgs)
 {
     ctx.addStr("op:'push', val:@global_obj");
     ctx.addStr("op:'push', val:'rt_" + funName + "'");
