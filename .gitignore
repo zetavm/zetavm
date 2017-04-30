@@ -4,6 +4,7 @@ aclocal.m4
 config.log
 config.status
 config.h
+makefile
 
 # Retarded MacOS metadata
 .DS_Store
