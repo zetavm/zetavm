@@ -1,3 +1,5 @@
+#zeta-image
+
 main_entry = {
     instrs: [
         { op: "push", val: 10000000 },
