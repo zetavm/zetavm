@@ -102,7 +102,7 @@ VM::VM()
 Allocates a block of memory
 Note that this function guarantees that the memory is zeroed out
 */
-Value VM::alloc(uint32_t size, Tag tag)
+Value VM::alloc(size_t size, Tag tag)
 {
     // FIXME: use an alloc pool of some kind
     auto ptr = static_cast<refptr>(calloc(1, size));

@@ -122,7 +122,7 @@ public:
     VM();
 
     /// Allocate a block of memory on the heap
-    Value alloc(uint32_t size, Tag tag);
+    Value alloc(size_t size, Tag tag);
 
     size_t allocated() const;
 };
