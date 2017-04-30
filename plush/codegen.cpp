@@ -152,7 +152,7 @@ public:
     CodeGenCtx(
         std::string& out,
         Function* fun,
-        bool unitFun,
+        bool, // unitFun (unused)
         Block* curBlock,
         Block* contBlock = nullptr,
         Block* breakBlock = nullptr
@@ -268,7 +268,7 @@ void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
         return;
     }
 
-    if (auto exprStmt = dynamic_cast<ExprStmt*>(stmt))
+    if (auto exprStmt [[gnu::unused]] = dynamic_cast<ExprStmt*>(stmt))
     {
         return;
     }
@@ -287,22 +287,22 @@ void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
         return;
     }
 
-    if (auto contStmt = dynamic_cast<ContStmt*>(stmt))
+    if (auto contStmt [[gnu::unused]] = dynamic_cast<ContStmt*>(stmt))
     {
         return;
     }
 
-    if (auto breakStmt = dynamic_cast<BreakStmt*>(stmt))
+    if (auto breakStmt [[gnu::unused]] = dynamic_cast<BreakStmt*>(stmt))
     {
         return;
     }
 
-    if (auto returnStmt = dynamic_cast<ReturnStmt*>(stmt))
+    if (auto returnStmt [[gnu::unused]] = dynamic_cast<ReturnStmt*>(stmt))
     {
         return;
     }
 
-    if (auto irStmt = dynamic_cast<IRStmt*>(stmt))
+    if (auto irStmt [[gnu::unused]] = dynamic_cast<IRStmt*>(stmt))
     {
         return;
     }
@@ -909,7 +909,7 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
     }
 
     // Loop break statement
-    if (auto contStmt = dynamic_cast<ContStmt*>(stmt))
+    if (auto contStmt [[gnu::unused]] = dynamic_cast<ContStmt*>(stmt))
     {
         if (!ctx.curBlock->isFinalized())
             ctx.addBranch("jump", "to", ctx.contBlock);
@@ -917,7 +917,7 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
     }
 
     // Loop break statement
-    if (auto breakStmt = dynamic_cast<BreakStmt*>(stmt))
+    if (auto breakStmt [[gnu::unused]] = dynamic_cast<BreakStmt*>(stmt))
     {
         if (!ctx.curBlock->isFinalized())
             ctx.addBranch("jump", "to", ctx.breakBlock);
