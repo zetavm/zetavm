@@ -108,7 +108,7 @@ Value VM::alloc(uint32_t size, Tag tag)
     auto ptr = (refptr)calloc(1, size);
 
     // Set the tag in the object header
-    *(Tag*)ptr = tag;
+    *ptr = tag;
 
     // Wrap the pointer in a tagged value
     return Value(ptr, tag);
