@@ -156,13 +156,14 @@ String::String(std::string str)
 
     // Allocate memory
     val = vm.alloc(numBytes, TAG_STRING);
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
 
     // Set the string length
-    *(uint32_t*)(ptr + OF_LEN) = len;
+    // FIXME type mismatch: decltype(len) != uint32_t
+    *reinterpret_cast<uint32_t*>(ptr + OF_LEN) = static_cast<uint32_t>(len);
 
     // Copy the string data
-    strcpy((char*)(ptr + OF_DATA), str.c_str());
+    strcpy(reinterpret_cast<char*>(ptr + OF_DATA), str.c_str());
 }
 
 String::String(Value value)
@@ -173,17 +174,17 @@ String::String(Value value)
 
 uint32_t String::length() const
 {
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
     assert (ptr != nullptr);
-    auto len = *(uint32_t*)(ptr + OF_LEN);
+    auto len = *reinterpret_cast<uint32_t*>(ptr + OF_LEN);
     return len;
 }
 
 const char* String::getDataPtr() const
 {
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
     assert (ptr != nullptr);
-    auto strdata = (char*)(ptr + OF_DATA);
+    auto strdata = reinterpret_cast<char*>(ptr + OF_DATA);
     return strdata;
 }
 
@@ -240,11 +241,12 @@ Array::Array(size_t minCap)
 
     // Allocate memory
     val = vm.alloc(numBytes, TAG_ARRAY);
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
 
     // Set the array capacity and length
-    *(uint32_t*)(ptr + OF_CAP) = minCap;
-    *(uint32_t*)(ptr + OF_LEN) = 0;
+    // FIXME type mismatch: decltype(minCap) != uint32_t (it is size_t)
+    *reinterpret_cast<uint32_t*>(ptr + OF_CAP) = static_cast<uint32_t>(minCap);
+    *reinterpret_cast<uint32_t*>(ptr + OF_LEN) = 0;
 
     // No initialization necessary because vm.alloc
     // provides zeroed out memory, initialized to all zeroes,
@@ -260,14 +262,14 @@ Array::Array(Value value)
 size_t Array::getCap()
 {
     auto ptr = getObjPtr();
-    auto cap = *(uint32_t*)(ptr + OF_CAP);
+    auto cap = *reinterpret_cast<uint32_t*>(ptr + OF_CAP);
     return cap;
 }
 
 uint32_t Array::length()
 {
     auto ptr = getObjPtr();
-    auto len = *(uint32_t*)(ptr + OF_LEN);
+    auto len = *reinterpret_cast<uint32_t*>(ptr + OF_LEN);
     return len;
 }
 
@@ -277,8 +279,8 @@ void Array::setElem(size_t i, Value v)
     auto ptr = getObjPtr();
     auto cap = length();
 
-    auto words = (Word*)(ptr + OF_DATA);
-    auto tags  = (Tag*) (ptr + OF_DATA + cap * sizeof(Word));
+    auto words = reinterpret_cast<Word*>(ptr + OF_DATA);
+    auto tags  = (ptr + OF_DATA + cap * sizeof(Word));
 
     assert (length() <= getCap());
     assert (i < length());
@@ -292,8 +294,8 @@ Value Array::getElem(size_t i)
     auto ptr = getObjPtr();
     auto cap = getCap();
 
-    auto words = (Word*)(ptr + OF_DATA);
-    auto tags  = (Tag*) (ptr + OF_DATA + cap * sizeof(Word));
+    auto words = reinterpret_cast<Word*>(ptr + OF_DATA);
+    auto tags  = (ptr + OF_DATA + cap * sizeof(Word));
 
     assert (length() <= getCap());
     assert (i < length());
