@@ -48,11 +48,11 @@ const OpInfo OP_BIT_XOR = { "^", "", 2, 6, 'l', false, true };
 const OpInfo OP_BIT_OR = { "|", "", 2, 5, 'l', false, true };
 
 /// Logical operators
-const OpInfo OP_AND = { "&&", "", 2, 4, 'l', true };
-const OpInfo OP_OR = { "||", "", 2, 3, 'l', true };
+const OpInfo OP_AND = { "&&", "", 2, 4, 'l', true, false };
+const OpInfo OP_OR = { "||", "", 2, 3, 'l', true, false };
 
 // Assignment
-const OpInfo OP_ASSIGN = { "=", "", 2, 1, 'r', false };
+const OpInfo OP_ASSIGN = { "=", "", 2, 1, 'r', false, false };
 
 /// Read an entire file at once
 std::string readFile(std::string fileName)
