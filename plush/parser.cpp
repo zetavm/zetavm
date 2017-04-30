@@ -720,6 +720,9 @@ const OpInfo* matchOp(Input& input, int minPrec, bool preUnary)
         case 't':
         if (input.next("typeof")) { op = &OP_TYPEOF; break; }
         break;
+
+        default:
+        break;
     }
 
     // If any operator was found
