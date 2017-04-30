@@ -528,8 +528,8 @@ public:
         std::vector<std::string> params
     )
     : name(name),
-      body(body),
-      params(params)
+      params(params),
+      body(body)
     {
     }
 
