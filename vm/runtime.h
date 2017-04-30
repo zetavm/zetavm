@@ -346,7 +346,7 @@ public:
     bool getField(const char* name, Value& value, size_t& idxCache);
 
     bool hasField(std::string name) { return hasField(String(name)); }
-    void setField(std::string name, Value val) { return setField(String(name), val); }
+    void setField(std::string name, Value value) { return setField(String(name), value); }
     Value getField(std::string name) { return getField(String(name)); }
 };
 
