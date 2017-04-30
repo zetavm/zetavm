@@ -18,7 +18,7 @@ make
 # Optionally run tests to check that everything works properly
 make test
 
-# To run programs, pass the path to a source file to zetavm, for example:
+# To run programs, pass the path to a source file to zeta, for example:
 ./zeta benchmarks/fib29.pls
 ```
 
@@ -44,7 +44,7 @@ Features of the VM will include:
 
 - Immutable UTF-8 strings
 
-- Text-based [image files](/tests/zetavm/ex_image.zim) (JSON-like)
+- Text-based [image files](/tests/vm/ex_image.zim) (JSON-like)
 
 - Ability to suspend and resume programs
 
@@ -65,7 +65,7 @@ This section aims to explicitly state the design goals and principles underlying
 
 3. The core features provided by ZetaVM should be minimalistic. It is not possible, nor desirable to try to accomodate every possible use case. A large set of features is more likely to lead to the introduction of corner cases and unpredictable behaviors.
 
-4. The semantics of the features provided by ZetaVM should be simple and straightforward. These should be as few corner cases as possible.
+4. The semantics of the features provided by /vm should be simple and straightforward. These should be as few corner cases as possible.
 
 5. The semantics of the ZetaVM core should be strict and precise, leaving as few undefined behaviors as possible (ideally none). Predictable semantics should be favored over small potential optimization opportunities. This will increase the likelihood that ZetaVM programs behave the same on every platform.
 
@@ -258,7 +258,7 @@ to implement bignums, saturation and other such language features.
 
 ### Image Files
 
-There are example image files in the [/tests/zetavm](tests/zetavm) directory of this
+There are example image files in the [/tests/vm](tests/vm) directory of this
 repository. Image files have a ".zim" file name extension.
 
 Why not use pure JSON:
@@ -312,6 +312,6 @@ Library/package dependencies:
 - With dynamic loading, we can have some APIs be exposed as packages that are not
 present on some machines. Could allow dynamic at first, and change this
 later if it makes no sense.
-- Packages will be loaded through a special `load()` API call
+- Packages will be loaded through the `import` bytecode instruction
   - If necessary, package loading can be optimized by predictive/preemptive
     downloading by the package manager

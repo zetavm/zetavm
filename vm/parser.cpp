@@ -1020,10 +1020,10 @@ void testParser()
     testParseFail("x = 1; y = @x; @x");
 
     // Parse test image files
-    testParseFile("tests/zetavm/ex_image2.zim");
-    testParseFile("tests/zetavm/ex_image.zim");
-    testParseFile("tests/zetavm/ex_ret_cst.zim");
-    testParseFile("tests/zetavm/ex_loop_cnt.zim");
-    testParseFile("tests/zetavm/ex_rec_fact.zim");
-    testParseFile("tests/zetavm/ex_fibonacci.zim");
+    testParseFile("tests/vm/ex_image2.zim");
+    testParseFile("tests/vm/ex_image.zim");
+    testParseFile("tests/vm/ex_ret_cst.zim");
+    testParseFile("tests/vm/ex_loop_cnt.zim");
+    testParseFile("tests/vm/ex_rec_fact.zim");
+    testParseFile("tests/vm/ex_fibonacci.zim");
 }

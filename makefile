@@ -13,7 +13,7 @@ all: zetavm cplush plush-pkg
 test: zetavm cplush plush-pkg
 	# Core zetavm teats
 	./$(ZETA_BIN) --test
-	./$(ZETA_BIN) tests/zetavm/ex_loop_cnt.zim
+	./$(ZETA_BIN) tests/vm/ex_loop_cnt.zim
 	# cplush tests
 	./$(CPLUSH_BIN) --test
 	./plush.sh tests/plush/trivial.pls

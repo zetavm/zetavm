@@ -979,11 +979,11 @@ void testInterp()
 {
     std::cout << "interpreter tests" << std::endl;
 
-    assert (testRunImage("tests/zetavm/ex_ret_cst.zim") == Value(777));
-    assert (testRunImage("tests/zetavm/ex_loop_cnt.zim") == Value(0));
-    assert (testRunImage("tests/zetavm/ex_image.zim") == Value(10));
-    assert (testRunImage("tests/zetavm/ex_rec_fact.zim") == Value(5040));
-    assert (testRunImage("tests/zetavm/ex_fibonacci.zim") == Value(377));
+    assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value(777));
+    assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value(0));
+    assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
+    assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value(5040));
+    assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value(377));
 }
 
 //============================================================================
@@ -1094,7 +1094,7 @@ Value* stackPtr = nullptr;
 uint8_t* instrPtr = nullptr;
 
 // Write a value to the code heap
-template <typename T> void writeVal(T val)
+template <typename T> void writeCode(T val)
 {
     assert (codeHeapAlloc < codeHeapLimit);
     T* heapPtr = (T*)codeHeapAlloc;
@@ -1103,7 +1103,7 @@ template <typename T> void writeVal(T val)
     assert (codeHeapAlloc <= codeHeapLimit);
 }
 
-template <typename T> T readVal()
+template <typename T> T readCode()
 {
     assert (instrPtr + sizeof(T) <= codeHeapLimit);
     T* valPtr = (T*)instrPtr;
@@ -1189,14 +1189,14 @@ void compile(BlockVersion* version)
         {
             static ICache valIC("val");
             auto val = valIC.getField(instr);
-            writeVal(PUSH);
-            writeVal(val);
+            writeCode(PUSH);
+            writeCode(val);
             continue;
         }
 
         if (op == "ret")
         {
-            writeVal(RET);
+            writeCode(RET);
             continue;
         }
 
@@ -1210,8 +1210,17 @@ void compile(BlockVersion* version)
 /// Push a value on the stack
 void pushVal(Value val)
 {
+    assert (stackPtr > stackLimit);
     stackPtr--;
     stackPtr[0] = val;
+}
+
+Value popVal()
+{
+    assert (stackPtr < stackBottom);
+    auto val = stackPtr[0];
+    stackPtr++;
+    return val;
 }
 
 /// Start/continue execution beginning at a current instruction
@@ -1223,25 +1232,48 @@ Value execCode()
     // For each instruction to execute
     for (;;)
     {
-        auto op = readVal<Opcode>();
+        auto op = readCode<Opcode>();
 
         switch (op)
         {
             case PUSH:
             {
-                auto val = readVal<Value>();
-
-                // TODO
+                auto val = readCode<Value>();
+                pushVal(val);
             }
             break;
 
-            // TODO: stop when returning to null
+            case DUP:
+            {
+                // Read the index of the value to duplicate
+                auto idx = readCode<uint16_t>();
+                auto val = stackPtr[idx];
+                pushVal(val);
+            }
+            break;
+
             case RET:
             {
-                // Pop val from stack
+                // TODO:
+                // Get the caller function, base pointer adjustment
 
+                // Get the return address
+                auto retAddrVal = basePtr[1];
+                auto retAddr = retAddrVal.getWord().ptr;
 
+                // Pop the return value
+                auto val = popVal();
 
+                // If this is a top-level return
+                if (retAddr == nullptr)
+                {
+                    return val;
+                }
+                else
+                {
+                    // TODO
+                    assert (false);
+                }
             }
             break;
 
@@ -1299,16 +1331,15 @@ Value callFun(Object fun, ValueVec args)
     assert (entryVer->length() > 0);
 
     // Begin execution at the entry block
-    //auto retVal = execCode(entryVer->startPtr);
+    instrPtr = entryVer->startPtr;
+    auto retVal = execCode();
 
     // Pop the local variables, return address and calling function
     stackPtr += numLocals;
     stackPtr += 2;
     assert (stackPtr == stackBottom);
 
-    // TODO
-    //return retVal;
-    return Value(777);
+    return retVal;
 }
 
 /// Call a function exported by a package
@@ -1339,9 +1370,9 @@ void testInterpNew()
 {
     // TODO: call main function of simple test
 
-    assert (testRunImageNew("tests/zetavm/ex_ret_cst.zim") == Value(777));
-    //assert (testRunImageNew("tests/zetavm/ex_loop_cnt.zim") == Value(0));
-    //assert (testRunImageNew("tests/zetavm/ex_image.zim") == Value(10));
-    //assert (testRunImageNew("tests/zetavm/ex_rec_fact.zim") == Value(5040));
-    //assert (testRunImageNew("tests/zetavm/ex_fibonacci.zim") == Value(377));
+    assert (testRunImageNew("tests/vm/ex_ret_cst.zim") == Value(777));
+    //assert (testRunImageNew("tests/vm/ex_loop_cnt.zim") == Value(0));
+    //assert (testRunImageNew("tests/vm/ex_image.zim") == Value(10));
+    //assert (testRunImageNew("tests/vm/ex_rec_fact.zim") == Value(5040));
+    //assert (testRunImageNew("tests/vm/ex_fibonacci.zim") == Value(377));
 }
