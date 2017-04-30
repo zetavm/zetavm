@@ -1213,7 +1213,7 @@ static void testParseFail(std::string str)
 
     try
     {
-        auto unit = parseString(str, "parser_fail_test");
+        auto unit [[gnu::unused]] = parseString(str, "parser_fail_test");
     }
 
     catch (ParseError e)
