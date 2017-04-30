@@ -105,7 +105,7 @@ Once ZetaVM is past the initial prototyping stage, a JIT compiler will be implem
 
 The VM will eventually ship with a package manager. This package manager will make it trivial to immediately upload code you have written from the command-line and make it available to anyone.
 
-Packages will be versioned and immutable. That is, once a package is uploaded, it will be assigned a verison number, e.g. `"john.imagelib.56"`. This package version will then be frozen and unchangeable. What this means is that once code relies on a specific package version, the dependencies can never be changed and broken. Hence, by freezing the core VM semantics, and freezing submitted packages, we make it possible to write software that never breaks.
+Packages will be versioned and immutable. That is, once a package is uploaded, it will be assigned a version number, e.g. `"john.imagelib.56"`. This package version will then be frozen and unchangeable. What this means is that once code relies on a specific package version, the dependencies can never be changed and broken. Hence, by freezing the core VM semantics, and freezing submitted packages, we make it possible to write software that never breaks.
 
 ## Design Decisions
 
