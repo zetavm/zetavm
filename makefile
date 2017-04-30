@@ -8,10 +8,10 @@ PKGS_DIR=\"$(shell pwd)/packages/\"
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zetavm cplush plush-pkg
+all: zeta cplush plush-pkg
 
-test: zetavm cplush plush-pkg
-	# Core zetavm teats
+test: zeta cplush plush-pkg
+	# Core zetavm tests
 	./$(ZETA_BIN) --test
 	./$(ZETA_BIN) tests/zetavm/ex_loop_cnt.zim
 	# cplush tests
@@ -52,7 +52,7 @@ clean:
 	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) config.status config.log
 
 # Tells make which targets are not files
-.PHONY: all test clean zetavm cplush plush-pkg
+.PHONY: all test clean plush-pkg
 
 ##############################################################################
 # ZetaVM
@@ -67,7 +67,7 @@ vm/interp.cpp   \
 vm/core.cpp     \
 vm/main.cpp     \
 
-zetavm: vm/*.cpp vm/*.h
+zeta: vm/*.cpp vm/*.h
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(ZETA_BIN) $(ZETA_SRCS)
 
 ##############################################################################
