@@ -19,8 +19,8 @@ private:
 
 public:
 
-    ICache(std::string fieldName)
-    : fieldName(fieldName)
+    ICache(std::string fldName)
+    : fieldName(fldName)
     {
     }
 
@@ -821,28 +821,28 @@ Value call(Object fun, ValueVec args)
                 }
 
                 // Copy the arguments into a vector
-                ValueVec args;
-                args.resize(numArgs);
+                ValueVec arguments;
+                arguments.resize(numArgs);
                 for (size_t i = 0; i < numArgs; ++i)
-                    args[numArgs - 1 - i] = popVal();
+                    arguments[numArgs - 1 - i] = popVal();
 
-                static ICache numParamsIC("num_params");
-                size_t numParams;
+                static ICache numberParamsIC("num_params");
+                size_t numberParams;
                 if (callee.isObject())
                 {
-                    numParams = numParamsIC.getInt64(callee);
+                    numberParams = numberParamsIC.getInt64(callee);
                 }
                 else if (callee.isHostFn())
                 {
-                    auto hostFn = (HostFn*)(callee.getWord().ptr);
-                    numParams = hostFn->getNumParams();
+                    auto hostFn = reinterpret_cast<HostFn*>(callee.getWord().ptr);
+                    numberParams = hostFn->getNumParams();
                 }
                 else
                 {
                     throw RunError("invalid callee at call site");
                 }
 
-                if (numArgs != numParams)
+                if (numArgs != numberParams)
                 {
                     std::string srcPosStr = (
                         instr.hasField("src_pos")?
@@ -855,7 +855,7 @@ Value call(Object fun, ValueVec args)
                         "incorrect argument count in call, received " +
                         std::to_string(numArgs) +
                         ", expected " +
-                        std::to_string(numParams)
+                        std::to_string(numberParams)
                     );
                 }
 
@@ -864,7 +864,7 @@ Value call(Object fun, ValueVec args)
                 if (callee.isObject())
                 {
                     // Perform the call
-                    retVal = call(callee, args);
+                    retVal = call(callee, arguments);
                 }
                 else if (callee.isHostFn())
                 {
@@ -878,15 +878,15 @@ Value call(Object fun, ValueVec args)
                         break;
 
                         case 1:
-                        retVal = hostFn->call1(args[0]);
+                        retVal = hostFn->call1(arguments[0]);
                         break;
 
                         case 2:
-                        retVal = hostFn->call2(args[0], args[1]);
+                        retVal = hostFn->call2(arguments[0], arguments[1]);
                         break;
 
                         case 3:
-                        retVal = hostFn->call3(args[0], args[1], args[2]);
+                        retVal = hostFn->call3(arguments[0], arguments[1], arguments[2]);
                         break;
 
                         default:
@@ -1055,8 +1055,8 @@ public:
     /// Code generation context at block entry
     //CodeGenCtx ctx;
 
-    BlockVersion(Object block)
-    : block(block)
+    BlockVersion(Object blk)
+    : block(blk)
     {
     }
 };

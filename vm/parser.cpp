@@ -311,14 +311,14 @@ static Value parseStringLit(Input& input, char endCh)
                     int escVal = 0;
                     for (size_t i = 0; i < 2; ++i)
                     {
-                        auto ch = input.readCh();
-                        if (ch >= '0' && ch <= '9')
+                        auto esc_ch = input.readCh();
+                        if (esc_ch >= '0' && esc_ch <= '9')
                         {
-                            escVal = 16 * escVal + (ch - '0');
+                            escVal = 16 * escVal + (esc_ch - '0');
                         }
-                        else if (ch >= 'A' && ch <= 'F')
+                        else if (esc_ch >= 'A' && esc_ch <= 'F')
                         {
-                            escVal = 16 * escVal + (ch - 'A' + 10);
+                            escVal = 16 * escVal + (esc_ch - 'A' + 10);
                         }
                         else
                         {
