@@ -93,9 +93,10 @@ plush-pkg: plush/parser.pls
 ##############################################################################
 
 CJAVASCRIPT_BIN=cjavascript
-CJAVASCRIPT_SRCS=               \
-javascript/main.cpp    \
-javascript/parser.cpp
+CJAVASCRIPT_SRCS=      \
+javascript/lexer.cpp   \
+javascript/parser.cpp  \
+javascript/main.cpp
 
 cjavascript: javascript/*.cpp javascript/*.h
 	$(CXX) $(CXXFLAGS) -o $(CJAVASCRIPT_BIN) $(CJAVASCRIPT_SRCS)
