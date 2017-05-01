@@ -308,20 +308,20 @@ static Value call(Object fun, ValueVec args)
         return val;
     };
 
-    auto popBool = [&popVal]()
+    auto popBool = [&popVal]() -> bool
     {
         auto val = popVal();
         if (!val.isBool())
             throw RunError("op expects boolean value");
-        return (bool)val;
+        return val;
     };
 
-    auto popInt64 = [&popVal]()
+    auto popInt64 = [&popVal]() -> int64_t
     {
         auto val = popVal();
         if (!val.isInt64())
             throw RunError("op expects int64 value");
-        return (int64_t)val;
+        return val;
     };
 
     auto popStr = [&popVal]()
