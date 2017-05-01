@@ -30,7 +30,7 @@ static std::string readFile(std::string fileName)
     char* buf = (char*)malloc(len+1);
 
     // Read into the allocated buffer
-    int read = fread(buf, 1, len, file);
+    size_t read = fread(buf, 1, len, file);
 
     if (read != len)
     {

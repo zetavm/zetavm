@@ -549,7 +549,7 @@ static Value call(Object fun, ValueVec args)
 
             case GET_CHAR:
             {
-                auto idx = (size_t)popInt64();
+                size_t idx = popInt64();
                 auto str = popStr();
 
                 if (idx >= str.length())
@@ -574,7 +574,7 @@ static Value call(Object fun, ValueVec args)
 
             case GET_CHAR_CODE:
             {
-                auto idx = (size_t)popInt64();
+                size_t idx = popInt64();
                 auto str = popStr();
 
                 if (idx >= str.length())
@@ -705,7 +705,7 @@ static Value call(Object fun, ValueVec args)
             case SET_ELEM:
             {
                 auto val = popVal();
-                auto idx = (size_t)popInt64();
+                size_t idx = popInt64();
                 auto arr = Array(popVal());
 
                 if (idx >= arr.length())
@@ -721,7 +721,7 @@ static Value call(Object fun, ValueVec args)
 
             case GET_ELEM:
             {
-                auto idx = (size_t)popInt64();
+                size_t idx = popInt64();
                 auto arr = Array(popVal());
 
                 if (idx >= arr.length())
