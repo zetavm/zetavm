@@ -55,9 +55,9 @@ Input::Input(std::string fileName)
     // reading it into memory all at once
 }
 
-Input::Input(std::string str, std::string srcName)
+Input::Input(std::string str, std::string sourceName)
 {
-    this->srcName = srcName;
+    this->srcName = sourceName;
     this->inStr = str;
     this->strIdx = 0;
     this->lineNo = 1;

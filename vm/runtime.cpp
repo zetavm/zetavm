@@ -540,8 +540,8 @@ bool Object::getField(const char* name, Value& value, size_t& idxCache)
     return true;
 }
 
-ObjFieldItr::ObjFieldItr(Object obj)
-: obj(obj)
+ObjFieldItr::ObjFieldItr(Object object)
+: obj(object)
 {
 }
 
