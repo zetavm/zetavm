@@ -11,4 +11,5 @@ makefile
 
 zeta
 cplush
+cjs
 *.dSYM
