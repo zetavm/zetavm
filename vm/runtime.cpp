@@ -595,10 +595,10 @@ ImgRef::ImgRef(String symbol)
     *reinterpret_cast<refptr*>(ptr + OF_SYM) = static_cast<refptr>(symbol);
 }
 
-ImgRef::ImgRef(Value val)
+ImgRef::ImgRef(Value value)
 {
-    assert (val.getTag() == TAG_IMGREF);
-    this->val = val;
+    assert (value.getTag() == TAG_IMGREF);
+    this->val = value;
 }
 
 std::string ImgRef::getName() const
