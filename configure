@@ -2256,7 +2256,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # Default C++ compiler options
-CXXFLAGS="-std=c++11 -O0 -Wall -Wextra -Werror -Wfatal-errors -pedantic -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wundef -Wstrict-overflow=5 -Winit-self -Wdisabled-optimization -Wzero-as-null-pointer-constant -Wuseless-cast -Wconversion -Wshadow -Wswitch-default -Wredundant-decls -Wlogical-op -Wmissing-include-dirs -Wmissing-declarations -Wcast-align -Wcast-qual -Wold-style-cast -g -ftrapv -fbounds-check"
+CXXFLAGS="-std=c++11 -O0 -Wall -Wextra -pedantic -Wctor-dtor-privacy -Wnon-virtual-dtor -Wreorder -Woverloaded-virtual -Wundef -Wstrict-overflow=5 -Winit-self -Wdisabled-optimization -Wzero-as-null-pointer-constant -Wuseless-cast -Wconversion -Wshadow -Wswitch-default -Wredundant-decls -Wlogical-op -Wmissing-include-dirs -Wmissing-declarations -Wcast-align -Wcast-qual -Wold-style-cast -Wno-error=return-type -Wno-error=shadow -g -ftrapv -fbounds-check"
 
 # If building with SDL2
 
