@@ -65,7 +65,7 @@ public:
     }
 };
 
-std::string posToString(Value srcPos)
+static std::string posToString(Value srcPos)
 {
     assert (srcPos.isObject());
     auto srcPosObj = (Object)srcPos;
@@ -151,7 +151,7 @@ size_t cycleCount = 0;
 /// Cache of all possible one-character string values
 Value charStrings[256];
 
-Opcode decode(Object instr)
+static Opcode decode(Object instr)
 {
     auto instrPtr = (refptr)instr;
 
@@ -268,7 +268,7 @@ Opcode decode(Object instr)
     return op;
 }
 
-Value call(Object fun, ValueVec args)
+static Value call(Object fun, ValueVec args)
 {
     static ICache numParamsIC("num_params");
     static ICache numLocalsIC("num_locals");
@@ -966,7 +966,7 @@ Value callExportFn(
     return call(funObj, args);
 }
 
-Value testRunImage(std::string fileName)
+static Value testRunImage(std::string fileName)
 {
     std::cout << "loading image \"" << fileName << "\"" << std::endl;
 
@@ -1133,7 +1133,7 @@ void initInterp()
 
 /// Get a version of a block. This version will be a stub
 /// until compiled
-BlockVersion* getBlockVersion(Object block)
+static BlockVersion* getBlockVersion(Object block)
 {
     auto blockPtr = (refptr)block;
 
@@ -1158,7 +1158,7 @@ BlockVersion* getBlockVersion(Object block)
     return newVersion;
 }
 
-void compile(BlockVersion* version)
+static void compile(BlockVersion* version)
 {
     auto block = version->block;
 
@@ -1208,14 +1208,14 @@ void compile(BlockVersion* version)
 }
 
 /// Push a value on the stack
-void pushVal(Value val)
+static void pushVal(Value val)
 {
     assert (stackPtr > stackLimit);
     stackPtr--;
     stackPtr[0] = val;
 }
 
-Value popVal()
+static Value popVal()
 {
     assert (stackPtr < stackBottom);
     auto val = stackPtr[0];
@@ -1224,7 +1224,7 @@ Value popVal()
 }
 
 /// Start/continue execution beginning at a current instruction
-Value execCode()
+static Value execCode()
 {
     assert (instrPtr >= codeHeap);
     assert (instrPtr < codeHeapLimit);
@@ -1287,7 +1287,7 @@ Value execCode()
 }
 
 /// Begin the execution of a function (top-level call)
-Value callFun(Object fun, ValueVec args)
+static Value callFun(Object fun, ValueVec args)
 {
     static ICache numParamsIC("num_params");
     static ICache numLocalsIC("num_locals");
@@ -1343,7 +1343,7 @@ Value callFun(Object fun, ValueVec args)
 }
 
 /// Call a function exported by a package
-Value callExportFnNew(
+static Value callExportFnNew(
     Object pkg,
     std::string fnName,
     ValueVec args = ValueVec()
@@ -1357,7 +1357,7 @@ Value callExportFnNew(
     return callFun(funObj, args);
 }
 
-Value testRunImageNew(std::string fileName)
+static Value testRunImageNew(std::string fileName)
 {
     std::cout << "loading image \"" << fileName << "\"" << std::endl;
 
