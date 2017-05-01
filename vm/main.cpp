@@ -39,7 +39,7 @@ int main(int argc, char** argv)
             if (pkg.hasField("main"))
             {
                 auto retVal = callExportFn(pkg, "main");
-                return (int64_t)retVal;
+                return static_cast<int64_t>(retVal);
             }
 
             return 0;

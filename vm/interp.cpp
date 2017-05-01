@@ -40,7 +40,7 @@ public:
     {
         auto val = getField(obj);
         assert (val.isInt64());
-        return (int64_t)val;
+        return static_cast<int64_t>(val);
     }
 
     String getStr(Object obj)
@@ -68,11 +68,11 @@ public:
 static std::string posToString(Value srcPos)
 {
     assert (srcPos.isObject());
-    auto srcPosObj = (Object)srcPos;
+    auto srcPosObj = static_cast<Object>(srcPos);
 
-    auto lineNo = (int64_t)srcPosObj.getField("line_no");
-    auto colNo = (int64_t)srcPosObj.getField("col_no");
-    auto srcName = (std::string)srcPosObj.getField("src_name");
+    auto lineNo = static_cast<int64_t>(srcPosObj.getField("line_no"));
+    auto colNo = static_cast<int64_t>(srcPosObj.getField("col_no"));
+    auto srcName = std::string(srcPosObj.getField("src_name"));
 
     return (
         srcName + "@" +
@@ -153,7 +153,7 @@ Value charStrings[256];
 
 static Opcode decode(Object instr)
 {
-    auto instrPtr = (refptr)instr;
+    auto instrPtr = static_cast<refptr>(instr);
 
     if (opCache.find(instrPtr) != opCache.end())
     {
@@ -163,7 +163,7 @@ static Opcode decode(Object instr)
 
     // Get the opcode string for this instruction
     static ICache opIC("op");
-    auto opStr = (std::string)opIC.getStr(instr);
+    auto opStr = std::string(opIC.getStr(instr));
 
     //std::cout << "decoding \"" << opStr << "\"" << std::endl;
 
@@ -368,7 +368,7 @@ static Value call(Object fun, ValueVec args)
         static ICache instrsIC("instrs");
         Array instrArr = instrsIC.getArr(targetBB);
 
-        instrs = (Value)instrArr;
+        instrs = static_cast<Value>(instrArr);
         numInstrs = instrArr.length();
         instrIdx = 0;
 
@@ -584,7 +584,7 @@ static Value call(Object fun, ValueVec args)
                     );
                 }
 
-                stack.push_back((int64_t)str[idx]);
+                stack.push_back(static_cast<int64_t>(str[idx]));
             }
             break;
 
@@ -635,7 +635,7 @@ static Value call(Object fun, ValueVec args)
                 {
                     throw RunError(
                         "invalid identifier in set_field \"" +
-                        (std::string)fieldName + "\""
+                        std::string(fieldName) + "\""
                     );
                 }
 
@@ -658,7 +658,7 @@ static Value call(Object fun, ValueVec args)
                 {
                     throw RunError(
                         "get_field failed, missing field \"" +
-                        (std::string)fieldName + "\""
+                        std::string(fieldName) + "\""
                     );
                 }
 
@@ -868,7 +868,7 @@ static Value call(Object fun, ValueVec args)
                 }
                 else if (callee.isHostFn())
                 {
-                    auto hostFn = (HostFn*)(callee.getWord().ptr);
+                    auto hostFn = reinterpret_cast<HostFn*>(callee.getWord().ptr);
 
                     // Call the host function
                     switch (numArgs)
@@ -920,7 +920,7 @@ static Value call(Object fun, ValueVec args)
 
             case ABORT:
             {
-                auto errMsg = (std::string)popStr();
+                auto errMsg = std::string(popStr());
 
                 // If a source position was specified
                 if (instr.hasField("src_pos"))
@@ -1097,7 +1097,7 @@ uint8_t* instrPtr = nullptr;
 template <typename T> void writeCode(T val)
 {
     assert (codeHeapAlloc < codeHeapLimit);
-    T* heapPtr = (T*)codeHeapAlloc;
+    T* heapPtr = reinterpret_cast<T*>(codeHeapAlloc);
     *heapPtr = val;
     codeHeapAlloc += sizeof(T);
     assert (codeHeapAlloc <= codeHeapLimit);
@@ -1106,7 +1106,7 @@ template <typename T> void writeCode(T val)
 template <typename T> T readCode()
 {
     assert (instrPtr + sizeof(T) <= codeHeapLimit);
-    T* valPtr = (T*)instrPtr;
+    T* valPtr = reinterpret_cast<T*>(instrPtr);
     auto val = *valPtr;
     instrPtr += sizeof(T);
     return val;
@@ -1135,9 +1135,9 @@ void initInterp()
 /// until compiled
 static BlockVersion* getBlockVersion(Object block)
 {
-    auto blockPtr = (refptr)block;
+    auto blockPtr = static_cast<refptr>(block);
 
-    auto versionItr = versionMap.find((refptr)block);
+    auto versionItr = versionMap.find(static_cast<refptr>(block));
 
     if (versionItr == versionMap.end())
     {
@@ -1178,10 +1178,10 @@ static void compile(BlockVersion* version)
     {
         auto instrVal = instrs.getElem(i);
         assert (instrVal.isObject());
-        auto instr = (Object)instrVal;
+        auto instr = static_cast<Object>(instrVal);
 
         static ICache opIC("op");
-        auto op = (std::string)opIC.getStr(instr);
+        auto op = std::string(opIC.getStr(instr));
 
         std::cout << "op: " << op << std::endl;
 
