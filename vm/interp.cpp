@@ -568,7 +568,7 @@ static Value call(Object fun, ValueVec args)
                 // Cache single-character strings
                 if (charStrings[ch] == Value::FALSE)
                 {
-                    char buf[2] = { (char)str[idx], '\0' };
+                    char buf[2] = { str[idx], '\0' };
                     charStrings[ch] = String(buf);
                 }
 
