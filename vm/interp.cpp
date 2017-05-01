@@ -828,7 +828,7 @@ static Value call(Object fun, ValueVec args)
                 // Copy the arguments into a vector
                 ValueVec arguments;
                 arguments.resize(numArgs);
-                for (size_t i = 0; i < numArgs; ++i)
+                for (size_t i = 0; i < static_cast<size_t>(numArgs); ++i)
                     arguments[numArgs - 1 - i] = popVal();
 
                 static ICache numberParamsIC("num_params");
@@ -847,7 +847,7 @@ static Value call(Object fun, ValueVec args)
                     throw RunError("invalid callee at call site");
                 }
 
-                if (numArgs != numberParams)
+                if (static_cast<decltype(numberParams)>(numArgs) != numberParams)
                 {
                     std::string srcPosStr = (
                         instr.hasField("src_pos")?
