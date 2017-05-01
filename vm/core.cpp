@@ -60,7 +60,7 @@ static void setHostFn(
 {
     auto fnObj = new HostFn(name, numParams, fptr);
 
-    auto fnVal = Value((refptr)fnObj, TAG_HOSTFN);
+    auto fnVal = Value(reinterpret_cast<refptr>(fnObj), TAG_HOSTFN);
 
     assert (!pkgObj.hasField(name));
 
@@ -74,21 +74,21 @@ static void setHostFn(
 static Value print_int64(Value val)
 {
     assert (val.isInt64());
-    std::cout << (int64_t)val;
+    std::cout << static_cast<int64_t>(val);
     return Value::UNDEF;
 }
 
 static Value print_str(Value val)
 {
     assert (val.isString());
-    std::cout << (std::string)val;
+    std::cout << std::string(val);
     return Value::UNDEF;
 }
 
 static Value read_file(Value fileName)
 {
     assert (fileName.isString());
-    auto nameStr = (std::string)fileName;
+    auto nameStr = std::string(fileName);
 
     std::cout << "reading file: " << nameStr << std::endl;
 
@@ -105,10 +105,10 @@ static Value read_file(Value fileName)
     size_t len = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    char* buf = (char*)malloc(len+1);
+    char* buf = reinterpret_cast<char*>(malloc(len+1));
 
     // Read into the allocated buffer
-    int read = fread(buf, 1, len, file);
+    auto read = fread(buf, 1, len, file);
 
     if (read != len)
     {
@@ -128,9 +128,9 @@ static Value read_file(Value fileName)
 static Value get_core_io_pkg()
 {
     auto exports = Object::newObject(32);
-    setHostFn(exports, "print_int64", 1, (void*)print_int64);
-    setHostFn(exports, "print_str"  , 1, (void*)print_str);
-    setHostFn(exports, "read_file"  , 1, (void*)read_file);
+    setHostFn(exports, "print_int64", 1, reinterpret_cast<void*>(print_int64));
+    setHostFn(exports, "print_str"  , 1, reinterpret_cast<void*>(print_str));
+    setHostFn(exports, "read_file"  , 1, reinterpret_cast<void*>(read_file));
     return exports;
 }
 
