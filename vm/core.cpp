@@ -46,7 +46,7 @@ Value HostFn::call3(Value arg0, Value arg1, Value arg2)
     return f3(arg0, arg1, arg2);
 }
 
-void setHostFn(
+static void setHostFn(
     Object pkgObj,
     std::string name,
     size_t numParams,
@@ -66,21 +66,21 @@ void setHostFn(
 // core/io package
 //============================================================================
 
-Value print_int64(Value val)
+static Value print_int64(Value val)
 {
     assert (val.isInt64());
     std::cout << (int64_t)val;
     return Value::UNDEF;
 }
 
-Value print_str(Value val)
+static Value print_str(Value val)
 {
     assert (val.isString());
     std::cout << (std::string)val;
     return Value::UNDEF;
 }
 
-Value read_file(Value fileName)
+static Value read_file(Value fileName)
 {
     assert (fileName.isString());
     auto nameStr = (std::string)fileName;
@@ -120,7 +120,7 @@ Value read_file(Value fileName)
     return String(buf);
 }
 
-Value get_core_io_pkg()
+static Value get_core_io_pkg()
 {
     auto exports = Object::newObject(32);
     setHostFn(exports, "print_int64", 1, (void*)print_int64);
@@ -246,7 +246,7 @@ Value draw_pixels(Value pixelsArray)
 
 #endif // HAVE_SDL2
 
-Value get_core_window_pkg()
+static Value get_core_window_pkg()
 {
 #ifdef HAVE_SDL2
     auto exports = Object::newObject(32);
@@ -329,7 +329,7 @@ Object load(std::string pkgPath)
     return pkg;
 }
 
-std::string findPkgPath(std::string pkgName)
+static std::string findPkgPath(std::string pkgName)
 {
     // If the package name directly maps to a relative path
     if (fileExists(pkgName))
@@ -344,7 +344,7 @@ std::string findPkgPath(std::string pkgName)
     return "";
 }
 
-Value getCorePkg(std::string pkgName)
+static Value getCorePkg(std::string pkgName)
 {
     // Internal/core packages
     if (pkgName == "core/io")
