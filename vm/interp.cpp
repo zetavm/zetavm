@@ -1199,6 +1199,18 @@ static void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "sub_i64")
+        {
+            writeCode(SUB_I64);
+            continue;
+        }
+
+        if (op == "gt_i64")
+        {
+            writeCode(SUB_I64);
+            continue;
+        }
+
         if (op == "ret")
         {
             writeCode(RET);
@@ -1254,6 +1266,23 @@ static Value execCode()
                 auto idx = readCode<uint16_t>();
                 auto val = stackPtr[idx];
                 pushVal(val);
+            }
+            break;
+
+            case SUB_I64:
+            {
+                auto arg1 = popVal();
+                auto arg0 = popVal();
+                pushVal((int64_t)arg0 - (int64_t)arg1);
+            }
+            break;
+
+            case GT_I64:
+            {
+                auto arg1 = popVal();
+                auto arg0 = popVal();
+                auto boolVal = (int64_t)arg0 > (int64_t)arg1;
+                pushVal(boolVal? Value::TRUE : Value::FALSE);
             }
             break;
 
