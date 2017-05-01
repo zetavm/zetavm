@@ -8,9 +8,9 @@ PKGS_DIR=\"$(shell pwd)/packages/\"
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zeta cplush plush-pkg cjs
+all: zeta cplush plush-pkg cjs cscheme
 
-test: zeta cplush plush-pkg
+test: zeta cplush plush-pkg cscheme
 	# Core zetavm tests
 	./$(ZETA_BIN) --test
 	./$(ZETA_BIN) tests/vm/ex_loop_cnt.zim
@@ -47,6 +47,8 @@ test: zeta cplush plush-pkg
 	# Check that source position is reported on errors
 	./$(ZETA_BIN) tests/plush/assert.pls | grep --quiet "3:1"
 	./$(ZETA_BIN) tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
+	# cscheme tests
+	./$(CSCHEME_BIN) --test
 
 clean:
 	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CJS_BIN) config.status config.log
@@ -100,3 +102,17 @@ js/main.cpp
 
 cjs: js/*.cpp js/*.h
 	$(CXX) $(CXXFLAGS) -o $(CJS_BIN) $(CJS_SRCS)
+
+##############################################################################
+# Scheme compiler
+##############################################################################
+
+CSCHEME_BIN=cscheme
+
+CSCHEME_SRCS=       \
+scheme/parser.cpp   \
+scheme/codegen.cpp  \
+scheme/main.cpp     \
+
+cscheme: scheme/*.cpp scheme/*.h
+	$(CXX) $(CXXFLAGS) -o $(CSCHEME_BIN) $(CSCHEME_SRCS)
