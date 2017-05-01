@@ -274,7 +274,8 @@ static Value call(Object fun, ValueVec args)
     static ICache numLocalsIC("num_locals");
     auto numParams = numParamsIC.getInt64(fun);
     auto numLocals = numLocalsIC.getInt64(fun);
-    assert (args.size() <= numParams);
+    assert (numParams >= 0);
+    assert (args.size() <= static_cast<decltype(args.size())>(numParams));
     assert (numParams <= numLocals);
 
     ValueVec locals;
@@ -412,7 +413,8 @@ static Value call(Object fun, ValueVec args)
                 static ICache icache("idx");
                 auto localIdx = icache.getInt64(instr);
                 //std::cout << "localIdx=" << localIdx << std::endl;
-                assert (localIdx < locals.size());
+                assert (localIdx >= 0);
+                assert (static_cast<decltype(locals.size())>(localIdx) < locals.size());
                 stack.push_back(locals[localIdx]);
             }
             break;
@@ -423,7 +425,8 @@ static Value call(Object fun, ValueVec args)
                 static ICache icache("idx");
                 auto localIdx = icache.getInt64(instr);
                 //std::cout << "localIdx=" << localIdx << std::endl;
-                assert (localIdx < locals.size());
+                assert (localIdx >= 0);
+                assert (static_cast<decltype(locals.size())>(localIdx) < locals.size());
                 locals[localIdx] = popVal();
             }
             break;
@@ -450,7 +453,8 @@ static Value call(Object fun, ValueVec args)
                 static ICache idxIC("idx");
                 auto idx = idxIC.getInt64(instr);
 
-                if (idx >= stack.size())
+                assert (idx >= 0);
+                if (static_cast<decltype(stack.size())>(idx) >= stack.size())
                     throw RunError("stack undeflow, invalid index for dup");
 
                 auto val = stack[stack.size() - 1 - idx];
@@ -813,7 +817,8 @@ static Value call(Object fun, ValueVec args)
 
                 auto callee = popVal();
 
-                if (stack.size() < numArgs)
+                assert (numArgs >= 0);
+                if (stack.size() < static_cast<decltype(stack.size())>(numArgs))
                 {
                     throw RunError(
                         "stack underflow at call"
@@ -1293,7 +1298,8 @@ static Value callFun(Object fun, ValueVec args)
     static ICache numLocalsIC("num_locals");
     auto numParams = numParamsIC.getInt64(fun);
     auto numLocals = numLocalsIC.getInt64(fun);
-    assert (args.size() <= numParams);
+    assert (numParams >= 0);
+    assert (args.size() <= static_cast<decltype(args.size())>(numParams));
     assert (numParams <= numLocals);
 
     std::cout << "pushing RA" << std::endl;
