@@ -563,7 +563,7 @@ static Value call(Object fun, ValueVec args)
                     );
                 }
 
-                auto ch = str[idx];
+                int ch = str[idx];
 
                 // Cache single-character strings
                 if (charStrings[ch] == Value::FALSE)
