@@ -14,11 +14,16 @@ HostFn::HostFn(std::string fnName, size_t numberParams, void* funptr)
 {
 }
 
+using HostFn0 = Value(*)();
+using HostFn1 = Value(*)(Value);
+using HostFn2 = Value(*)(Value, Value);
+using HostFn3 = Value(*)(Value, Value, Value);
+
 Value HostFn::call0()
 {
     assert (fptr);
     assert (numParams == 0);
-    auto f0 = (Value(*)()) fptr;
+    auto f0 = reinterpret_cast<HostFn0>(fptr);
     return f0();
 }
 
@@ -26,7 +31,7 @@ Value HostFn::call1(Value arg0)
 {
     assert (fptr);
     assert (numParams == 1);
-    auto f1 = (Value(*)(Value)) fptr;
+    auto f1 = reinterpret_cast<HostFn1>(fptr);
     return f1(arg0);
 }
 
@@ -34,7 +39,7 @@ Value HostFn::call2(Value arg0, Value arg1)
 {
     assert (fptr);
     assert (numParams == 2);
-    auto f2 = (Value(*)(Value,Value)) fptr;
+    auto f2 = reinterpret_cast<HostFn2>(fptr);
     return f2(arg0, arg1);
 }
 
@@ -42,7 +47,7 @@ Value HostFn::call3(Value arg0, Value arg1, Value arg2)
 {
     assert (fptr);
     assert (numParams == 3);
-    auto f3 = (Value(*)(Value,Value,Value)) fptr;
+    auto f3 = reinterpret_cast<HostFn3>(fptr);
     return f3(arg0, arg1, arg2);
 }
 
