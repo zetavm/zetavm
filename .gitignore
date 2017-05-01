@@ -11,5 +11,5 @@ makefile
 
 zeta
 cplush
-cjavascript
+cjs
 *.dSYM
