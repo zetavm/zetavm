@@ -1060,8 +1060,8 @@ public:
     /// Code generation context at block entry
     //CodeGenCtx ctx;
 
-    BlockVersion(Object blk)
-    : block(blk)
+    BlockVersion(Object block)
+    : block(block)
     {
     }
 };

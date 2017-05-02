@@ -55,7 +55,7 @@ Input::Input(std::string fileName)
     // reading it into memory all at once
 }
 
-Input::Input(std::string str, std::string sourceName)
+Input::Input(std::string str, std::string srcName)
 {
     this->srcName = sourceName;
     this->inStr = str;

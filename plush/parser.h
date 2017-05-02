@@ -79,18 +79,18 @@ private:
 
 public:
 
-    ParseError(std::string message)
+    ParseError(std::string msg)
     {
-        this->msg = message;
+        this->msg = msg;
     }
 
-    ParseError(Input& input, std::string message)
+    ParseError(Input& input, std::string msg)
     {
         this->msg = (
             input.getSrcName() + "@" +
             std::to_string(input.getLineNo()) + ":" +
             std::to_string(input.getColNo()) + " - " +
-            message
+            msg
         );
     }
 
