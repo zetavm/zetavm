@@ -132,6 +132,7 @@ enum Opcode : uint16_t
     // Branch instructions
     // Note: opcode for stub branches is opcode+1
     JUMP,
+    JUMP_STUB,
     IF_TRUE,
     CALL,
     RET,
@@ -663,25 +664,6 @@ Value call(Object fun, ValueVec args)
             }
             break;
 
-            case JUMP:
-            {
-                static ICache icache("to");
-                auto target = icache.getObj(instr);
-                branchTo(target);
-            }
-            break;
-
-            case IF_TRUE:
-            {
-                static ICache thenCache("then");
-                static ICache elseCache("else");
-                auto thenBB = thenCache.getObj(instr);
-                auto elseBB = elseCache.getObj(instr);
-                auto arg0 = popVal();
-                branchTo((arg0 == Value::TRUE)? thenBB:elseBB);
-            }
-            break;
-
             // Regular function call
             case CALL:
             {
@@ -971,14 +953,6 @@ void compile(BlockVersion* version)
 
     auto block = version->block;
 
-    // Block name icache, for debugging
-    //if (block.hasField("name"))
-    //{
-    //    auto name = (String)
-
-
-
-
     // Get the instructions array
     static ICache instrsIC("instrs");
     Array instrs = instrsIC.getArr(block);
@@ -1035,7 +1009,7 @@ void compile(BlockVersion* version)
 
             auto dstVer = getBlockVersion(dstBB);
 
-            writeCode(JUMP);
+            writeCode(JUMP_STUB);
             writeCode(dstVer);
 
             continue;
@@ -1047,6 +1021,7 @@ void compile(BlockVersion* version)
             static ICache elseIC("else");
             auto thenBB = thenIC.getObj(instr);
             auto elseBB = elseIC.getObj(instr);
+
             auto thenVer = getBlockVersion(thenBB);
             auto elseVer = getBlockVersion(elseBB);
 
@@ -1132,22 +1107,29 @@ Value execCode()
             }
             break;
 
-            case JUMP:
+            case JUMP_STUB:
             {
                 auto& dstAddr = readCode<uint8_t*>();
 
-                if (dstAddr < codeHeap || dstAddr >= codeHeapLimit)
-                {
-                    std::cout << "Patching jump" << std::endl;
+                std::cout << "Patching jump" << std::endl;
 
-                    auto dstVer = (BlockVersion*)dstAddr;
-                    if (!dstVer->startPtr)
-                        compile(dstVer);
+                auto dstVer = (BlockVersion*)dstAddr;
 
-                    // Patch the jump
-                    dstAddr = dstVer->startPtr;
-                }
+                if (!dstVer->startPtr)
+                    compile(dstVer);
 
+                // Patch the jump
+                op = JUMP;
+                dstAddr = dstVer->startPtr;
+
+                // Jump to the target
+                instrPtr = dstVer->startPtr;
+            }
+            break;
+
+            case JUMP:
+            {
+                auto& dstAddr = readCode<uint8_t*>();
                 instrPtr = dstAddr;
             }
             break;
