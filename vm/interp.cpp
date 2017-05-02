@@ -333,7 +333,7 @@ static Value call(Object fun, ValueVec args)
         return String(val);
     };
 
-    auto popArray [[gnu::unused]] = [&popVal]()
+    auto popArray = [&popVal]()
     {
         auto val = popVal();
         if (!val.isArray())
