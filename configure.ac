@@ -8,7 +8,7 @@ AC_INIT
 AC_PROG_CXX
 
 # Default C++ compiler options
-CXXFLAGS="-std=c++11 -O0 -g -ftrapv -fbounds-check"
+CXXFLAGS="-std=c++11 -O3 -g -ftrapv -fbounds-check"
 
 # If building with SDL2
 AC_ARG_WITH([sdl2], AS_HELP_STRING([--with-sdl2], [Build with SDL2 for audio/video output]))
