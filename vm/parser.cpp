@@ -57,7 +57,7 @@ Input::Input(std::string fileName)
 
 Input::Input(std::string str, std::string srcName)
 {
-    this->srcName = sourceName;
+    this->srcName = srcName;
     this->inStr = str;
     this->strIdx = 0;
     this->lineNo = 1;
