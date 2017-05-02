@@ -140,132 +140,13 @@ enum Opcode : uint16_t
     ABORT
 };
 
-/// Map from pointers to instruction objects to opcodes
-std::unordered_map<refptr, Opcode> opCache;
-
 /// Total count of instructions executed
 size_t cycleCount = 0;
 
 /// Cache of all possible one-character string values
 Value charStrings[256];
 
-Opcode decode(Object instr)
-{
-    auto instrPtr = (refptr)instr;
-
-    if (opCache.find(instrPtr) != opCache.end())
-    {
-        //std::cout << "cache hit" << std::endl;
-        return opCache[instrPtr];
-    }
-
-    // Get the opcode string for this instruction
-    static ICache opIC("op");
-    auto opStr = (std::string)opIC.getStr(instr);
-
-    //std::cout << "decoding \"" << opStr << "\"" << std::endl;
-
-    Opcode op;
-
-    // Local variable access
-    if (opStr == "get_local")
-        op = GET_LOCAL;
-    else if (opStr == "set_local")
-        op = SET_LOCAL;
-
-    // Stack manipulation
-    else if (opStr == "push")
-        op = PUSH;
-    else if (opStr == "pop")
-        op = POP;
-    else if (opStr == "dup")
-        op = DUP;
-    else if (opStr == "push")
-        op = PUSH;
-
-    // 64-bit integer operations
-    else if (opStr == "add_i64")
-        op = ADD_I64;
-    else if (opStr == "sub_i64")
-        op = SUB_I64;
-    else if (opStr == "mul_i64")
-        op = MUL_I64;
-    else if (opStr == "lt_i64")
-        op = LT_I64;
-    else if (opStr == "le_i64")
-        op = LE_I64;
-    else if (opStr == "gt_i64")
-        op = GT_I64;
-    else if (opStr == "ge_i64")
-        op = GE_I64;
-    else if (opStr == "eq_i64")
-        op = EQ_I64;
-
-    // String operations
-    else if (opStr == "str_len")
-        op = STR_LEN;
-    else if (opStr == "get_char")
-        op = GET_CHAR;
-    else if (opStr == "get_char_code")
-        op = GET_CHAR_CODE;
-    else if (opStr == "str_cat")
-        op = STR_CAT;
-    else if (opStr == "eq_str")
-        op = EQ_STR;
-
-    // Object operations
-    else if (opStr == "new_object")
-        op = NEW_OBJECT;
-    else if (opStr == "has_field")
-        op = HAS_FIELD;
-    else if (opStr == "set_field")
-        op = SET_FIELD;
-    else if (opStr == "get_field")
-        op = GET_FIELD;
-    else if (opStr == "eq_obj")
-        op = EQ_OBJ;
-
-    // Array operations
-    else if (opStr == "new_array")
-        op = NEW_ARRAY;
-    else if (opStr == "array_len")
-        op = ARRAY_LEN;
-    else if (opStr == "array_push")
-        op = ARRAY_PUSH;
-    else if (opStr == "get_elem")
-        op = GET_ELEM;
-    else if (opStr == "set_elem")
-        op = SET_ELEM;
-
-    // Miscellaneous
-    else if (opStr == "eq_bool")
-        op = EQ_BOOL;
-    else if (opStr == "has_tag")
-        op = HAS_TAG;
-
-    // Branch instructions
-    else if (opStr == "jump")
-        op = JUMP;
-    else if (opStr == "if_true")
-        op = IF_TRUE;
-    else if (opStr == "call")
-        op = CALL;
-    else if (opStr == "ret")
-        op = RET;
-
-    // VM interface
-    else if (opStr == "import")
-        op = IMPORT;
-    else if (opStr == "abort")
-        op = ABORT;
-
-    else
-        throw RunError("unknown op in decode \"" + opStr + "\"");
-
-    opCache[instrPtr] = op;
-    return op;
-}
-
+/*
 Value call(Object fun, ValueVec args)
 {
     static ICache numParamsIC("num_params");
@@ -948,45 +829,7 @@ Value call(Object fun, ValueVec args)
 
     assert (false);
 }
-
-/// Call a function exported by a package
-Value callExportFn(
-    Object pkg,
-    std::string fnName,
-    ValueVec args
-)
-{
-    assert (pkg.hasField(fnName));
-    auto fnVal = pkg.getField(fnName);
-    assert (fnVal.isObject());
-    auto funObj = Object(fnVal);
-
-    return call(funObj, args);
-}
-
-Value testRunImage(std::string fileName)
-{
-    std::cout << "loading image \"" << fileName << "\"" << std::endl;
-
-    auto pkg = parseFile(fileName);
-
-    return callExportFn(pkg, "main");
-}
-
-void testInterp()
-{
-    std::cout << "interpreter tests" << std::endl;
-
-    assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value(777));
-    assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value(0));
-    assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
-    assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value(5040));
-    assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value(377));
-}
-
-//============================================================================
-// New interpreter
-//============================================================================
+*/
 
 /// Initial code heap size in bytes
 const size_t CODE_HEAP_INIT_SIZE = 1 << 20;
@@ -1011,36 +854,6 @@ public:
         assert (endPtr);
         return endPtr - startPtr;
     }
-
-    /*
-    /// Store the start position of the code
-    void markStart(CodeBlock as)
-    {
-        assert (
-            startIdx is startIdx.max,
-            "start position is already marked"
-        );
-
-        startIdx = cast(uint32_t)as.getWritePos();
-
-        // Add a label string comment
-        if (opts.genasm)
-            as.writeString(this.getName ~ ":");
-    }
-    */
-
-    /*
-    /// Store the end position of the code
-    void markEnd(CodeBlock as)
-    {
-        assert (
-            !ended,
-            "end position is already marked"
-        );
-
-        endIdx = cast(uint32_t)as.getWritePos();
-    }
-    */
 };
 
 class BlockVersion : public CodeFragment
@@ -1124,10 +937,6 @@ void initInterp()
     stackBottom = stackLimit + sizeof(Word);
     stackPtr = stackBottom;
 }
-
-// TODO: do we already need a versioning context?
-// we need to manage the temp stack size?
-// can technically just use the stack top for this?
 
 /// Get a version of a block. This version will be a stub
 /// until compiled
@@ -1479,10 +1288,10 @@ Value callFun(Object fun, ValueVec args)
 }
 
 /// Call a function exported by a package
-Value callExportFnNew(
+Value callExportFn(
     Object pkg,
     std::string fnName,
-    ValueVec args = ValueVec()
+    ValueVec args
 )
 {
     assert (pkg.hasField(fnName));
@@ -1493,20 +1302,20 @@ Value callExportFnNew(
     return callFun(funObj, args);
 }
 
-Value testRunImageNew(std::string fileName)
+Value testRunImage(std::string fileName)
 {
     std::cout << "loading image \"" << fileName << "\"" << std::endl;
 
     auto pkg = parseFile(fileName);
 
-    return callExportFnNew(pkg, "main");
+    return callExportFn(pkg, "main");
 }
 
-void testInterpNew()
+void testInterp()
 {
-    assert (testRunImageNew("tests/vm/ex_ret_cst.zim") == Value(777));
-    assert (testRunImageNew("tests/vm/ex_loop_cnt.zim") == Value(0));
-    //assert (testRunImageNew("tests/vm/ex_image.zim") == Value(10));
-    //assert (testRunImageNew("tests/vm/ex_rec_fact.zim") == Value(5040));
-    //assert (testRunImageNew("tests/vm/ex_fibonacci.zim") == Value(377));
+    assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value(777));
+    assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value(0));
+    //assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
+    //assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value(5040));
+    //assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value(377));
 }

@@ -16,4 +16,3 @@ Value callExportFn(
 );
 
 void testInterp();
-void testInterpNew();
