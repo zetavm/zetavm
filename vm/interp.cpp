@@ -897,12 +897,28 @@ template <typename T> void writeCode(T val)
 }
 
 /// Return a pointer to a value to read from the code stream
-template <typename T> T& readCode()
+template <typename T> __attribute__((always_inline)) T& readCode()
 {
     assert (instrPtr + sizeof(T) <= codeHeapLimit);
     T* valPtr = (T*)instrPtr;
     instrPtr += sizeof(T);
     return *valPtr;
+}
+
+/// Push a value on the stack
+__attribute__((always_inline)) void pushVal(Value val)
+{
+    assert (stackPtr > stackLimit);
+    stackPtr--;
+    stackPtr[0] = val;
+}
+
+__attribute__((always_inline)) Value popVal()
+{
+    assert (stackPtr < stackBottom);
+    auto val = stackPtr[0];
+    stackPtr++;
+    return val;
 }
 
 /// Initialize the interpreter
@@ -1045,22 +1061,6 @@ void compile(BlockVersion* version)
     version->endPtr = codeHeapAlloc;
 }
 
-/// Push a value on the stack
-void pushVal(Value val)
-{
-    assert (stackPtr > stackLimit);
-    stackPtr--;
-    stackPtr[0] = val;
-}
-
-Value popVal()
-{
-    assert (stackPtr < stackBottom);
-    auto val = stackPtr[0];
-    stackPtr++;
-    return val;
-}
-
 /// Start/continue execution beginning at a current instruction
 Value execCode()
 {
@@ -1143,18 +1143,17 @@ Value execCode()
 
                 if (arg0 == Value::TRUE)
                 {
+                    if (thenAddr < codeHeap || thenAddr >= codeHeapLimit)
+                    {
+                        std::cout << "Patching then target" << std::endl;
 
-                   if (thenAddr < codeHeap || thenAddr >= codeHeapLimit)
-                   {
-                       std::cout << "Patching then target" << std::endl;
-
-                       auto thenVer = (BlockVersion*)thenAddr;
-                       if (!thenVer->startPtr)
+                        auto thenVer = (BlockVersion*)thenAddr;
+                        if (!thenVer->startPtr)
                            compile(thenVer);
 
-                       // Patch the jump
-                       thenAddr = thenVer->startPtr;
-                   }
+                        // Patch the jump
+                        thenAddr = thenVer->startPtr;
+                    }
 
                     instrPtr = thenAddr;
                 }
