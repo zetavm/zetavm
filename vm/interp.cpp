@@ -132,9 +132,7 @@ enum Opcode : uint16_t
     // Branch instructions
     // Note: opcode for stub branches is opcode+1
     JUMP,
-    JUMP_STUB,
     IF_TRUE,
-    IF_TRUE_STUB,
     CALL,
     RET,
 
@@ -1098,7 +1096,7 @@ Value* stackPtr = nullptr;
 // Current instruction pointer
 uint8_t* instrPtr = nullptr;
 
-// Write a value to the code heap
+/// Write a value to the code heap
 template <typename T> void writeCode(T val)
 {
     assert (codeHeapAlloc < codeHeapLimit);
@@ -1108,13 +1106,13 @@ template <typename T> void writeCode(T val)
     assert (codeHeapAlloc <= codeHeapLimit);
 }
 
-template <typename T> T readCode()
+/// Return a pointer to a value to read from the code stream
+template <typename T> T& readCode()
 {
     assert (instrPtr + sizeof(T) <= codeHeapLimit);
     T* valPtr = reinterpret_cast<T*>(instrPtr);
-    auto val = *valPtr;
     instrPtr += sizeof(T);
-    return val;
+    return *valPtr;
 }
 
 /// Initialize the interpreter
@@ -1165,11 +1163,17 @@ static BlockVersion* getBlockVersion(Object block)
 
 static void compile(BlockVersion* version)
 {
+    std::cout << "compiling version" << std::endl;
+
     auto block = version->block;
 
     // Block name icache, for debugging
-    static ICache nameIC("name");
-    auto name = nameIC.getStr(block);
+    //if (block.hasField("name"))
+    //{
+    //    auto name = (String)
+
+
+
 
     // Get the instructions array
     static ICache instrsIC("instrs");
@@ -1199,6 +1203,15 @@ static void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "dup")
+        {
+            static ICache idxIC("idx");
+            auto idx = (uint16_t)idxIC.getInt64(instr);
+            writeCode(DUP);
+            writeCode(idx);
+            continue;
+        }
+
         if (op == "sub_i64")
         {
             writeCode(SUB_I64);
@@ -1207,7 +1220,36 @@ static void compile(BlockVersion* version)
 
         if (op == "gt_i64")
         {
-            writeCode(SUB_I64);
+            writeCode(GT_I64);
+            continue;
+        }
+
+        if (op == "jump")
+        {
+            static ICache toIC("to");
+            auto dstBB = toIC.getObj(instr);
+
+            auto dstVer = getBlockVersion(dstBB);
+
+            writeCode(JUMP);
+            writeCode(dstVer);
+
+            continue;
+        }
+
+        if (op == "if_true")
+        {
+            static ICache thenIC("then");
+            static ICache elseIC("else");
+            auto thenBB = thenIC.getObj(instr);
+            auto elseBB = elseIC.getObj(instr);
+            auto thenVer = getBlockVersion(thenBB);
+            auto elseVer = getBlockVersion(elseBB);
+
+            writeCode(IF_TRUE);
+            writeCode(thenVer);
+            writeCode(elseVer);
+
             continue;
         }
 
@@ -1249,7 +1291,7 @@ static Value execCode()
     // For each instruction to execute
     for (;;)
     {
-        auto op = readCode<Opcode>();
+        auto& op = readCode<Opcode>();
 
         switch (op)
         {
@@ -1286,6 +1328,69 @@ static Value execCode()
             }
             break;
 
+            case JUMP:
+            {
+                auto& dstAddr = readCode<uint8_t*>();
+
+                if (dstAddr < codeHeap || dstAddr >= codeHeapLimit)
+                {
+                    std::cout << "Patching jump" << std::endl;
+
+                    auto dstVer = (BlockVersion*)dstAddr;
+                    if (!dstVer->startPtr)
+                        compile(dstVer);
+
+                    // Patch the jump
+                    dstAddr = dstVer->startPtr;
+                }
+
+                instrPtr = dstAddr;
+            }
+            break;
+
+            case IF_TRUE:
+            {
+                auto& thenAddr = readCode<uint8_t*>();
+                auto& elseAddr = readCode<uint8_t*>();
+
+                auto arg0 = popVal();
+
+                if (arg0 == Value::TRUE)
+                {
+
+                   if (thenAddr < codeHeap || thenAddr >= codeHeapLimit)
+                   {
+                       std::cout << "Patching then target" << std::endl;
+
+                       auto thenVer = (BlockVersion*)thenAddr;
+                       if (!thenVer->startPtr)
+                           compile(thenVer);
+
+                       // Patch the jump
+                       thenAddr = thenVer->startPtr;
+                   }
+
+                    instrPtr = thenAddr;
+                }
+                else
+                {
+                    if (elseAddr < codeHeap || elseAddr >= codeHeapLimit)
+                    {
+                       std::cout << "Patching else target" << std::endl;
+
+                       auto elseVer = (BlockVersion*)elseAddr;
+                       if (!elseVer->startPtr)
+                           compile(elseVer);
+
+                       // Patch the jump
+                       elseAddr = elseVer->startPtr;
+                    }
+
+                    instrPtr = elseAddr;
+                }
+            }
+            break;
+
             case RET:
             {
                 // TODO:
@@ -1312,7 +1417,7 @@ static Value execCode()
             break;
 
             default:
-            assert (false);
+            assert (false && "unhandled instruction in interpreter loop");
         }
 
     }
@@ -1365,6 +1470,8 @@ static Value callFun(Object fun, ValueVec args)
     compile(entryVer);
     assert (entryVer->length() > 0);
 
+    std::cout << "Starting top-level unit execution" << std::endl;
+
     // Begin execution at the entry block
     instrPtr = entryVer->startPtr;
     auto retVal = execCode();
@@ -1403,10 +1510,8 @@ static Value testRunImageNew(std::string fileName)
 
 void testInterpNew()
 {
-    // TODO: call main function of simple test
-
     assert (testRunImageNew("tests/vm/ex_ret_cst.zim") == Value(777));
-    //assert (testRunImageNew("tests/vm/ex_loop_cnt.zim") == Value(0));
+    assert (testRunImageNew("tests/vm/ex_loop_cnt.zim") == Value(0));
     //assert (testRunImageNew("tests/vm/ex_image.zim") == Value(10));
     //assert (testRunImageNew("tests/vm/ex_rec_fact.zim") == Value(5040));
     //assert (testRunImageNew("tests/vm/ex_fibonacci.zim") == Value(377));
