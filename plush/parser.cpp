@@ -55,7 +55,7 @@ const OpInfo OP_OR = { "||", "", 2, 3, 'l', true, false };
 const OpInfo OP_ASSIGN = { "=", "", 2, 1, 'r', false, false };
 
 /// Read an entire file at once
-static std::string readFile(std::string fileName)
+std::string readFile(std::string fileName)
 {
     FILE* file = fopen(fileName.c_str(), "r");
 
@@ -290,7 +290,7 @@ BlockStmt* parseBlockStmt(Input& input, std::string endStr);
 /**
 Parse a decimal integer
 */
-static IntExpr* parseInt(Input& input, bool neg)
+IntExpr* parseInt(Input& input, bool neg)
 {
     int64_t intVal = 0;
 
@@ -322,7 +322,7 @@ static IntExpr* parseInt(Input& input, bool neg)
 /**
 Parse a string literal
 */
-static ASTExpr* parseStringLit(Input& input, char endCh)
+ASTExpr* parseStringLit(Input& input, char endCh)
 {
     //std::cout << "parseStringLit" << std::endl;
 
@@ -418,7 +418,7 @@ static ASTExpr* parseStringLit(Input& input, char endCh)
 /**
 Parse an identifier string
 */
-static std::string parseIdentStr(Input& input)
+std::string parseIdentStr(Input& input)
 {
     std::string ident;
 
@@ -449,7 +449,7 @@ static std::string parseIdentStr(Input& input)
 Parse an if statement
 if <test_expr> then <then_expr> else <else_expr>
 */
-static IfStmt* parseIfStmt(Input& input)
+IfStmt* parseIfStmt(Input& input)
 {
     input.expectWS("(");
     ASTExpr* testExpr = parseExpr(input);
@@ -474,7 +474,7 @@ static IfStmt* parseIfStmt(Input& input)
 /**
 Parse a for loop statement
 */
-static ForStmt* parseForStmt(Input& input)
+ForStmt* parseForStmt(Input& input)
 {
     input.expectWS("(");
 
@@ -524,7 +524,7 @@ static ForStmt* parseForStmt(Input& input)
 /**
 Parse a list of expressions
 */
-static std::vector<ASTExpr*> parseExprList(Input& input, std::string endStr)
+std::vector<ASTExpr*> parseExprList(Input& input, std::string endStr)
 {
     std::vector<ASTExpr*> exprs;
 
@@ -557,7 +557,7 @@ static std::vector<ASTExpr*> parseExprList(Input& input, std::string endStr)
 /**
 Parse an object literal expression
 */
-static ASTExpr* parseObjExpr(Input& input)
+ASTExpr* parseObjExpr(Input& input)
 {
     std::vector<std::string> fieldNames;
     std::vector<ASTExpr*> valExprs;
@@ -599,7 +599,7 @@ static ASTExpr* parseObjExpr(Input& input)
 Parse a function (closure) expression
 function (x,y,z) <body_expr>
 */
-static FunExpr* parseFunExpr(Input& input)
+FunExpr* parseFunExpr(Input& input)
 {
     // If a function name was specified
     std::string name;
@@ -641,7 +641,7 @@ static FunExpr* parseFunExpr(Input& input)
 /**
 Try to match an operator in the input
 */
-static const OpInfo* matchOp(Input& input, int minPrec, bool preUnary)
+const OpInfo* matchOp(Input& input, int minPrec, bool preUnary)
 {
     char ch = input.peekCh();
 
@@ -751,7 +751,7 @@ static const OpInfo* matchOp(Input& input, int minPrec, bool preUnary)
 /**
 Parse an atomic expression
 */
-static ASTExpr* parseAtom(Input& input)
+ASTExpr* parseAtom(Input& input)
 {
     //printf("parseAtom\n");
 
@@ -1131,7 +1131,7 @@ ASTStmt* parseStmt(Input& input)
 /**
 Parse a source unit from an input object
 */
-static FunExpr* parseUnit(Input& input)
+FunExpr* parseUnit(Input& input)
 {
     // Parse the language directive, if specified
     if (input.match("#language"))
@@ -1190,7 +1190,7 @@ FunExpr* parseFile(std::string fileName)
 }
 
 /// Test that the parsing of a string succeeds
-static FunExpr* testParse(std::string str)
+FunExpr* testParse(std::string str)
 {
     std::cout << str << std::endl;
 
@@ -1207,7 +1207,7 @@ static FunExpr* testParse(std::string str)
 }
 
 /// Test that the parsing of a string fails
-static void testParseFail(std::string str)
+void testParseFail(std::string str)
 {
     std::cout << str << std::endl;
 

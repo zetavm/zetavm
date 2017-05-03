@@ -114,7 +114,7 @@ Value VM::alloc(size_t size, Tag tag)
     return Value(ptr, tag);
 }
 
-static uint64_t getHeader(refptr obj)
+uint64_t getHeader(refptr obj)
 {
     auto header = *reinterpret_cast<uint64_t*>(obj);
     return header;

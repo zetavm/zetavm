@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-static bool fileExists(std::string filePath)
+bool fileExists(std::string filePath)
 {
     auto fptr = fopen(filePath.c_str(), "r");
 

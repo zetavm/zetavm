@@ -10,7 +10,7 @@
 #include "parser.h"
 
 /// Read an entire file at once
-static std::string readFile(std::string fileName)
+std::string readFile(std::string fileName)
 {
     FILE* file = fopen(fileName.c_str(), "r");
 
@@ -223,7 +223,7 @@ Value parseExpr(Input& input);
 /**
 Parse a decimal integer
 */
-static Value parseInt(Input& input, bool neg)
+Value parseInt(Input& input, bool neg)
 {
     int64_t intVal = 0;
 
@@ -255,7 +255,7 @@ static Value parseInt(Input& input, bool neg)
 /**
 Parse a string literal
 */
-static Value parseStringLit(Input& input, char endCh)
+Value parseStringLit(Input& input, char endCh)
 {
     //std::cout << "parseStringLit" << std::endl;
 
@@ -351,7 +351,7 @@ static Value parseStringLit(Input& input, char endCh)
 /**
 Parse an identifier string
 */
-static std::string parseIdentStr(Input& input)
+std::string parseIdentStr(Input& input)
 {
     std::string ident;
 
@@ -384,7 +384,7 @@ static std::string parseIdentStr(Input& input)
 /**
 Parse a list of expressions
 */
-static std::vector<Value> parseExprList(Input& input, char endCh)
+std::vector<Value> parseExprList(Input& input, char endCh)
 {
     std::vector<Value> exprs;
 
@@ -425,7 +425,7 @@ static std::vector<Value> parseExprList(Input& input, char endCh)
 /**
 Parse an array literal
 */
-static Value parseArray(Input& input)
+Value parseArray(Input& input)
 {
     auto exprVals = parseExprList(input, ']');
 
@@ -442,7 +442,7 @@ static Value parseArray(Input& input)
 /**
 Parse an object literal
 */
-static Value parseObject(Input& input)
+Value parseObject(Input& input)
 {
     // Allocate an empty object
     Object obj = Object::newObject();
@@ -588,7 +588,7 @@ Value parseExpr(Input& input)
 /**
 Process a value which is potentially a reference
 */
-static Value processRef(
+Value processRef(
     std::unordered_map<std::string, Value>& globalDefs,
     std::vector<Value>& visitStack,
     Value val
@@ -628,7 +628,7 @@ static Value processRef(
 /**
 Resolve the references in values exported by the image
 */
-static Value resolveRefs(
+Value resolveRefs(
     std::unordered_map<std::string, Value>& globalDefs,
     Value exportsTree
 )
@@ -786,7 +786,7 @@ Value parseInput(Input& input)
 }
 
 // Parse the optional hashbang line at the beginning of a file
-static void parseHashbang(Input& input)
+void parseHashbang(Input& input)
 {
     // Parse the hashbang line, if present
     if (input.match("#!"))
@@ -886,7 +886,7 @@ Value parseString(std::string str, std::string srcName)
 }
 
 /// Test that the parsing of a string succeeds
-static Value testParse(std::string str)
+Value testParse(std::string str)
 {
     std::cout << str << std::endl;
 
@@ -904,7 +904,7 @@ static Value testParse(std::string str)
 
 /// Test that the parsing of a string succeeds
 /// and that the type tag is the expected one
-static void testParse(std::string str, Tag expectTag)
+void testParse(std::string str, Tag expectTag)
 {
     auto val = testParse(str);
 
@@ -916,7 +916,7 @@ static void testParse(std::string str, Tag expectTag)
 }
 
 /// Test that the parsing of a string fails
-static void testParseFail(std::string str)
+void testParseFail(std::string str)
 {
     std::cout << str << std::endl;
 
@@ -936,7 +936,7 @@ static void testParseFail(std::string str)
 }
 
 /// Test that the parsing of a file succeeds
-static Value testParseFile(std::string fileName)
+Value testParseFile(std::string fileName)
 {
     std::cout << "parsing image file \"" << fileName << "\"" << std::endl;
     return parseFile(fileName);

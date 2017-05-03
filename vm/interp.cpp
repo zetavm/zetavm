@@ -65,7 +65,7 @@ public:
     }
 };
 
-static std::string posToString(Value srcPos)
+std::string posToString(Value srcPos)
 {
     assert (srcPos.isObject());
     auto srcPosObj = static_cast<Object>(srcPos);
@@ -149,7 +149,7 @@ size_t cycleCount = 0;
 /// Cache of all possible one-character string values
 Value charStrings[256];
 
-static Opcode decode(Object instr)
+Opcode decode(Object instr)
 {
     auto instrPtr = static_cast<refptr>(instr);
 
@@ -266,7 +266,7 @@ static Opcode decode(Object instr)
     return op;
 }
 
-static Value call(Object fun, ValueVec args)
+Value call(Object fun, ValueVec args)
 {
     static ICache numParamsIC("num_params");
     static ICache numLocalsIC("num_locals");
@@ -969,7 +969,7 @@ Value callExportFn(
     return call(funObj, args);
 }
 
-static Value testRunImage(std::string fileName)
+Value testRunImage(std::string fileName)
 {
     std::cout << "loading image \"" << fileName << "\"" << std::endl;
 
@@ -1136,7 +1136,7 @@ void initInterp()
 
 /// Get a version of a block. This version will be a stub
 /// until compiled
-static BlockVersion* getBlockVersion(Object block)
+BlockVersion* getBlockVersion(Object block)
 {
     auto blockPtr = static_cast<refptr>(block);
 
@@ -1161,7 +1161,7 @@ static BlockVersion* getBlockVersion(Object block)
     return newVersion;
 }
 
-static void compile(BlockVersion* version)
+void compile(BlockVersion* version)
 {
     std::cout << "compiling version" << std::endl;
 
@@ -1267,14 +1267,14 @@ static void compile(BlockVersion* version)
 }
 
 /// Push a value on the stack
-static void pushVal(Value val)
+void pushVal(Value val)
 {
     assert (stackPtr > stackLimit);
     stackPtr--;
     stackPtr[0] = val;
 }
 
-static Value popVal()
+Value popVal()
 {
     assert (stackPtr < stackBottom);
     auto val = stackPtr[0];
@@ -1283,7 +1283,7 @@ static Value popVal()
 }
 
 /// Start/continue execution beginning at a current instruction
-static Value execCode()
+Value execCode()
 {
     assert (instrPtr >= codeHeap);
     assert (instrPtr < codeHeapLimit);
@@ -1426,7 +1426,7 @@ static Value execCode()
 }
 
 /// Begin the execution of a function (top-level call)
-static Value callFun(Object fun, ValueVec args)
+Value callFun(Object fun, ValueVec args)
 {
     static ICache numParamsIC("num_params");
     static ICache numLocalsIC("num_locals");
@@ -1485,7 +1485,7 @@ static Value callFun(Object fun, ValueVec args)
 }
 
 /// Call a function exported by a package
-static Value callExportFnNew(
+Value callExportFnNew(
     Object pkg,
     std::string fnName,
     ValueVec args = ValueVec()
@@ -1499,7 +1499,7 @@ static Value callExportFnNew(
     return callFun(funObj, args);
 }
 
-static Value testRunImageNew(std::string fileName)
+Value testRunImageNew(std::string fileName)
 {
     std::cout << "loading image \"" << fileName << "\"" << std::endl;
 
