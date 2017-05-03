@@ -540,8 +540,8 @@ bool Object::getField(const char* name, Value& value, size_t& idxCache)
     return true;
 }
 
-ObjFieldItr::ObjFieldItr(Object object)
-: obj(object)
+ObjFieldItr::ObjFieldItr(Object obj)
+: obj(obj)
 {
 }
 
@@ -594,10 +594,10 @@ ImgRef::ImgRef(String symbol)
     *reinterpret_cast<refptr*>(ptr + OF_SYM) = static_cast<refptr>(symbol);
 }
 
-ImgRef::ImgRef(Value value)
+ImgRef::ImgRef(Value val)
 {
-    assert (value.getTag() == TAG_IMGREF);
-    this->val = value;
+    assert (val.getTag() == TAG_IMGREF);
+    this->val = val;
 }
 
 std::string ImgRef::getName() const

@@ -83,19 +83,19 @@ class ParseError : public RunError
 protected:
 public:
 
-    ParseError(std::string message)
+    ParseError(std::string msg)
     {
-        assert (message.length() > 0);
-        this->msg = message;
+        assert (msg.length() > 0);
+        this->msg = msg;
     }
 
-    ParseError(Input& input, std::string message)
+    ParseError(Input& input, std::string msg)
     {
         this->msg = (
             input.getSrcName() + "@" +
             std::to_string(input.getLineNo()) + ":" +
             std::to_string(input.getColNo()) + " - " +
-            message
+            msg
         );
     }
 

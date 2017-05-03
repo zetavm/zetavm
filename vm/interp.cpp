@@ -19,8 +19,8 @@ private:
 
 public:
 
-    ICache(std::string fldName)
-    : fieldName(fldName)
+    ICache(std::string fieldName)
+    : fieldName(fieldName)
     {
     }
 

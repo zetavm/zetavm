@@ -7,10 +7,10 @@
 #include "parser.h"
 #include "interp.h"
 
-HostFn::HostFn(std::string fnName, size_t numberParams, void* funptr)
-: name(fnName),
-  numParams(numberParams),
-  fptr(funptr)
+HostFn::HostFn(std::string name, size_t numParams, void* fptr)
+: name(name),
+  numParams(numParams),
+  fptr(fptr)
 {
 }
 
