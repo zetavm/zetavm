@@ -19,7 +19,7 @@ const Tag TAG_STRING    = 5;
 const Tag TAG_OBJECT    = 6;
 const Tag TAG_ARRAY     = 7;
 const Tag TAG_HOSTFN    = 8;
-const Tag TAG_RETADDR   = 9;
+const Tag TAG_RAWPTR    = 9;
 const Tag TAG_IMGREF    = 10;
 
 /// Object header size

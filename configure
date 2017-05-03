@@ -2256,7 +2256,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # Default C++ compiler options
-CXXFLAGS="-std=c++11 -O3 -g -ftrapv -fbounds-check"
+CXXFLAGS="-std=c++11 -O3 -g -ftrapv"
 
 # If building with SDL2
 

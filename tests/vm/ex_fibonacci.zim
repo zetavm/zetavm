@@ -76,7 +76,7 @@ main_entry = {
         { op: "get_field" },
         { op: "set_local", idx: 1 },
 
-        # Call fib(14), then goto block main_ret
+        # Call fib(14), then goto block main_print_result
         { op: "push", val: 14 },
         { op: "push", val: @fib },
         { op: "call", ret_to: @main_print_result, num_args: 1 },
@@ -84,7 +84,7 @@ main_entry = {
 };
 main_print_result = {
     instrs: [
-        # Duplicate the result value so we can return it later
+        # Duplicate the result value of fib so we can return it later
         { op: "dup", idx:0 },
 
         # Call print_int64 to print the result of fib
@@ -94,8 +94,10 @@ main_print_result = {
 };
 main_print_endl = {
     instrs: [
-        # Print a line terminator with the print_str function
+        # Pop the return value of the print_int64 function
         { op: "pop" },
+
+        # Print a line terminator with the print_str function
         { op: "push", val: "\n" },
         { op: "get_local", idx: 1 },
         { op: "call", ret_to: @main_ret, num_args: 1 },
@@ -103,8 +105,10 @@ main_print_endl = {
 };
 main_ret = {
     instrs: [
-        # Exit the main function, return the result value
+        # Pop the return value of the print_str function
         { op: "pop" },
+
+        # Exit the main function, return the result value
         { op: "ret" },
     ]
 };
