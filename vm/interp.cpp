@@ -241,12 +241,26 @@ __attribute__((always_inline)) void pushVal(Value val)
     stackPtr[0] = val;
 }
 
+/// Push a boolean on the stack
+__attribute__((always_inline)) void pushBool(bool val)
+{
+    pushVal(val? Value::TRUE:Value::FALSE);
+}
+
 __attribute__((always_inline)) Value popVal()
 {
     assert (stackPtr < stackBase);
     auto val = stackPtr[0];
     stackPtr++;
     return val;
+}
+
+__attribute__((always_inline)) bool popBool()
+{
+    // TODO: throw RunError if wrong type
+    auto val = popVal();
+    assert (val.isBool());
+    return (bool)val;
 }
 
 __attribute__((always_inline)) int64_t popInt64()
@@ -439,6 +453,12 @@ void compile(BlockVersion* version)
         if (op == "new_object")
         {
             writeCode(NEW_OBJECT);
+            continue;
+        }
+
+        if (op == "has_field")
+        {
+            writeCode(HAS_FIELD);
             continue;
         }
 
@@ -636,8 +656,7 @@ Value execCode()
             {
                 auto arg1 = popVal();
                 auto arg0 = popVal();
-                auto boolVal = (int64_t)arg0 < (int64_t)arg1;
-                pushVal(boolVal? Value::TRUE : Value::FALSE);
+                pushBool((int64_t)arg0 < (int64_t)arg1);
             }
             break;
 
@@ -645,8 +664,7 @@ Value execCode()
             {
                 auto arg1 = popVal();
                 auto arg0 = popVal();
-                auto boolVal = (int64_t)arg0 > (int64_t)arg1;
-                pushVal(boolVal? Value::TRUE : Value::FALSE);
+                pushBool((int64_t)arg0 > (int64_t)arg1);
             }
             break;
 
@@ -654,7 +672,6 @@ Value execCode()
             // Misc operations
             //
 
-            /*
             case EQ_BOOL:
             {
                 auto arg1 = popBool();
@@ -662,7 +679,6 @@ Value execCode()
                 pushBool(arg0 == arg1);
             }
             break;
-            */
 
             /*
             // Test if a value has a given tag
@@ -790,7 +806,6 @@ Value execCode()
             }
             break;
 
-            /*
             case HAS_FIELD:
             {
                 auto fieldName = popStr();
@@ -798,7 +813,6 @@ Value execCode()
                 pushBool(obj.hasField(fieldName));
             }
             break;
-            */
 
             case SET_FIELD:
             {
@@ -840,7 +854,6 @@ Value execCode()
             }
             break;
 
-            /*
             case EQ_OBJ:
             {
                 Value arg1 = popVal();
@@ -848,7 +861,6 @@ Value execCode()
                 pushBool(arg0 == arg1);
             }
             break;
-            */
 
             //
             // Array operations
