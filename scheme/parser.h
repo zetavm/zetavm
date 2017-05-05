@@ -132,6 +132,22 @@ public:
     std::string val;
 };
 
+class Integer : public Value
+{
+public:
+
+    Integer(int64_t val): val(val) {}
+
+    virtual ~Integer() {}
+
+    virtual std::string toString() const
+    {
+        return std::to_string(val);
+    }
+
+    int64_t val;
+};
+
 class Pair : public Value
 {
 public:

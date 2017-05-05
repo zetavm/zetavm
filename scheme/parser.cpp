@@ -320,16 +320,93 @@ std::string parseIdentStr(Input& input)
     return ident;
 }
 
+/// Check if the given character is a token delimiter
+static bool isDelimiter(char ch)
+{
+    switch (ch)
+    {
+        case ' ':
+        case '\t':
+        case '(':
+        case ')':
+        case '"':
+        case ';':
+            return true;
+        default:
+            break;
+    }
+
+    return false;
+}
+
+/**
+Parse a number
+*/
+std::unique_ptr<Integer> parseNumber(Input& input)
+{
+    int64_t intVal = 0;
+    bool neg = false;
+
+    // Check if the number is negative
+    if (input.match("-"))
+    {
+        neg = true;
+    }
+
+    for (;;)
+    {
+        // Peek at the next character
+        char ch = input.readCh();
+
+        if (!isdigit(ch))
+            throw ParseError(input, "expected digit");
+
+        int64_t digit = ch - '0';
+        intVal = 10 * intVal + digit;
+
+        // If the next character is not a digit, stop
+        if (!isdigit(input.peekCh()))
+            break;
+    }
+
+    // If the value is negative
+    if (neg)
+    {
+        intVal *= -1;
+    }
+
+    if (!input.eof() && !isDelimiter(input.peekCh()))
+    {
+	throw ParseError(input, "expected delimiter");
+    }
+
+    return std::unique_ptr<Integer>(new Integer(intVal));
+}
+
+/// Check if the given character starts a number
+static bool isInitialNum(char ch)
+{
+    return (ch == '-') || isdigit(ch);
+}
+
 /**
 Parse an atom
 */
 std::unique_ptr<Value> parseAtom(Input& input)
 {
+    char ch = input.peekCh();
+
     // Identifier
-    if (isinitial(input.peekCh()))
+    if (isinitial(ch))
     {
         std::string identStr = parseIdentStr(input);
         return std::unique_ptr<Identifier>(new Identifier(identStr));
+    }
+
+    // Number
+    else if (isInitialNum(ch))
+    {
+        return parseNumber(input);
     }
 
     throw ParseError(input, "unexpected atom");
@@ -553,6 +630,11 @@ void testParser()
     testParseFail("+bar");
     testParseFail("7up");
 
+    // Numbers
+    testParse("7", "7");
+    testParse("123", "123");
+    testParse("-187", "-187");
+
     // Lists
     testParse("()", "()");
     testParse("(())", "(())");
@@ -562,6 +644,11 @@ void testParser()
     testParse("'(foo bar)", "(quote (foo bar))");
     testParse("(define f (lambda (x) x))", "(define f (lambda (x) x))");
     testParse("(define x y)(define y z)", "(define x y)(define y z)");
+    testParse("(1 2 3)", "(1 2 3)");
+    testParse("(4 (-12 3) 100)", "(4 (-12 3) 100)");
+    testParse("'(3 4)", "(quote (3 4))");
+    testParse("'(1 (2 (3)) (4))", "(quote (1 (2 (3)) (4)))");
+    testParse("(* 1 (* 2 3))", "(* 1 (* 2 3))");
     testParseFail("(x y");
     testParseFail("((a b)(c (d)");
     testParseFail("(r s))");
