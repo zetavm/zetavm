@@ -474,13 +474,16 @@ void compile(BlockVersion* version)
         if (op == "call")
         {
             static ICache retToCache("ret_to");
-            auto retToBB = retToCache.getObj(instr);
             static ICache numArgsCache("num_args");
             auto numArgs = (int16_t)numArgsCache.getInt64(instr);
 
+            // Get a version for the call continuation block
+            auto retToBB = retToCache.getObj(instr);
+            auto retVer = getBlockVersion(retToBB);
+
             writeCode(CALL);
             writeCode(numArgs);
-            writeCode(retToBB);
+            writeCode(retVer);
 
             continue;
         }
@@ -986,10 +989,7 @@ Value execCode()
             case CALL:
             {
                 auto numArgs = readCode<uint16_t>();
-                auto retToBB = readCode<Object>();
-
-                // Get a version for the call continuation block
-                auto retVer = getBlockVersion(retToBB);
+                auto retVer = readCode<BlockVersion*>();
 
                 auto callee = popVal();
 
