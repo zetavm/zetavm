@@ -14,12 +14,15 @@ test: zeta cplush plush-pkg cscheme
 	# Core zetavm tests
 	./$(ZETA_BIN) --test
 	./$(ZETA_BIN) tests/vm/ex_loop_cnt.zim
+	./$(ZETA_BIN) tests/vm/sub_fun.zim
+	./$(ZETA_BIN) tests/vm/fun_no_args.zim
 	# cplush tests
 	./$(CPLUSH_BIN) --test
 	./plush.sh tests/plush/trivial.pls
-	./plush.sh tests/plush/simple.pls
+	./plush.sh tests/plush/simple_exprs.pls
 	./plush.sh tests/plush/identfn.pls
 	./plush.sh tests/plush/fib.pls
+	./plush.sh tests/plush/for_loop.pls
 	./plush.sh tests/plush/for_loop_sum.pls
 	./plush.sh tests/plush/for_loop_cont.pls
 	./plush.sh tests/plush/for_loop_break.pls
@@ -30,12 +33,13 @@ test: zeta cplush plush-pkg cscheme
 	./plush.sh tests/plush/obj_ext.pls
 	./plush.sh plush/parser.pls tests/plush/parser.pls
 	# Check that the parser benchmark compiles with cplush
-	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.pls
+	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
 	# Plush parser package tests
 	./$(ZETA_BIN) tests/plush/trivial.pls
-	./$(ZETA_BIN) tests/plush/simple.pls
+	./$(ZETA_BIN) tests/plush/simple_exprs.pls
 	./$(ZETA_BIN) tests/plush/identfn.pls
 	./$(ZETA_BIN) tests/plush/fib.pls
+	./$(ZETA_BIN) tests/plush/for_loop.pls
 	./$(ZETA_BIN) tests/plush/for_loop_sum.pls
 	./$(ZETA_BIN) tests/plush/for_loop_cont.pls
 	./$(ZETA_BIN) tests/plush/for_loop_break.pls

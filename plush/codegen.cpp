@@ -895,12 +895,13 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
             exitBlock
         );
         genStmt(bodyCtx, forStmt->bodyStmt);
-
-        // Generate the increment expression
         if (!bodyCtx.curBlock->isFinalized())
             bodyCtx.addBranch("jump", "to", incrBlock);
+
+        // Generate the increment expression
         auto incrCtx = ctx.subCtx(incrBlock);
         genExpr(incrCtx, forStmt->incrExpr);
+        incrCtx.addOp("pop");
         incrCtx.addBranch("jump", "to", testBlock);
 
         ctx.merge(exitBlock);

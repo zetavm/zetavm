@@ -4,7 +4,8 @@
 function () { return 1; };
 
 // Unary expressions
-assert (!true == false);
+assert (true == true, "boolean equality");
+assert (!true == false, "boolean negate 1");
 assert (!false == true);
 
 // Binary expressions

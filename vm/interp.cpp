@@ -103,6 +103,11 @@ enum Opcode : uint16_t
     GE_I64,
     EQ_I64,
 
+    // Miscellaneous
+    EQ_BOOL,
+    HAS_TAG,
+    GET_TAG,
+
     // String operations
     STR_LEN,
     GET_CHAR,
@@ -117,11 +122,6 @@ enum Opcode : uint16_t
     GET_FIELD,
     EQ_OBJ,
 
-    // Miscellaneous
-    EQ_BOOL,
-    HAS_TAG,
-    GET_TAG,
-
     // Array operations
     NEW_ARRAY,
     ARRAY_LEN,
@@ -130,7 +130,6 @@ enum Opcode : uint16_t
     SET_ELEM,
 
     // Branch instructions
-    // Note: opcode for stub branches is opcode+1
     JUMP,
     JUMP_STUB,
     IF_TRUE,
@@ -244,7 +243,7 @@ __attribute__((always_inline)) void pushVal(Value val)
 /// Push a boolean on the stack
 __attribute__((always_inline)) void pushBool(bool val)
 {
-    pushVal(val? Value::TRUE:Value::FALSE);
+    pushVal(val? (Value::TRUE) : (Value::FALSE));
 }
 
 __attribute__((always_inline)) Value popVal()
@@ -336,13 +335,18 @@ BlockVersion* getBlockVersion(Object block)
 
 void compile(BlockVersion* version)
 {
-    std::cout << "compiling version" << std::endl;
+    //std::cout << "compiling version" << std::endl;
 
     auto block = version->block;
 
     // Get the instructions array
     static ICache instrsIC("instrs");
     Array instrs = instrsIC.getArr(block);
+
+    if (instrs.length() == 0)
+    {
+        throw RunError("empty basic block");
+    }
 
     // Mark the block start
     version->startPtr = codeHeapAlloc;
@@ -357,7 +361,7 @@ void compile(BlockVersion* version)
         static ICache opIC("op");
         auto op = (std::string)opIC.getStr(instr);
 
-        std::cout << "op: " << op << std::endl;
+        //std::cout << "op: " << op << std::endl;
 
         if (op == "push")
         {
@@ -407,6 +411,10 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        //
+        // Integer operations
+        //
+
         if (op == "add_i64")
         {
             writeCode(ADD_I64);
@@ -431,21 +439,37 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "le_i64")
+        {
+            writeCode(LE_I64);
+            continue;
+        }
+
         if (op == "gt_i64")
         {
             writeCode(GT_I64);
             continue;
         }
 
-        if (op == "jump")
+        if (op == "ge_i64")
         {
-            static ICache toIC("to");
-            auto dstBB = toIC.getObj(instr);
+            writeCode(GE_I64);
+            continue;
+        }
 
-            auto dstVer = getBlockVersion(dstBB);
+        if (op == "eq_i64")
+        {
+            writeCode(EQ_I64);
+            continue;
+        }
 
-            writeCode(JUMP_STUB);
-            writeCode(dstVer);
+        //
+        // Miscellaneous ops
+        //
+
+        if (op == "eq_bool")
+        {
+            writeCode(EQ_BOOL);
             continue;
         }
 
@@ -459,6 +483,44 @@ void compile(BlockVersion* version)
             writeCode(tag);
             continue;
         }
+
+        //
+        // String operations
+        //
+
+        if (op == "str_len")
+        {
+            writeCode(STR_LEN);
+            continue;
+        }
+
+        if (op == "get_char")
+        {
+            writeCode(GET_CHAR);
+            continue;
+        }
+
+        if (op == "get_char_code")
+        {
+            writeCode(GET_CHAR_CODE);
+            continue;
+        }
+
+        if (op == "str_cat")
+        {
+            writeCode(STR_CAT);
+            continue;
+        }
+
+        if (op == "eq_str")
+        {
+            writeCode(EQ_STR);
+            continue;
+        }
+
+        //
+        // Object operations
+        //
 
         if (op == "new_object")
         {
@@ -481,6 +543,62 @@ void compile(BlockVersion* version)
         if (op == "get_field")
         {
             writeCode(GET_FIELD);
+            continue;
+        }
+
+        //
+        // Array operations
+        //
+
+        if (op == "new_array")
+        {
+            writeCode(NEW_ARRAY);
+            continue;
+        }
+
+        if (op == "array_len")
+        {
+            writeCode(ARRAY_LEN);
+            continue;
+        }
+
+        if (op == "array_push")
+        {
+            writeCode(ARRAY_PUSH);
+            continue;
+        }
+
+        if (op == "set_elem")
+        {
+            writeCode(SET_ELEM);
+            continue;
+        }
+
+        if (op == "get_elem")
+        {
+            writeCode(GET_ELEM);
+            continue;
+        }
+
+        if (op == "eq_obj")
+        {
+            writeCode(EQ_OBJ);
+            continue;
+        }
+
+        //
+        // Branch instructions
+        //
+
+        if (op == "jump")
+        {
+            static ICache toIC("to");
+            auto dstBB = toIC.getObj(instr);
+
+            auto dstVer = getBlockVersion(dstBB);
+
+            writeCode(JUMP_STUB);
+            writeCode(dstVer);
             continue;
         }
 
@@ -530,7 +648,11 @@ void compile(BlockVersion* version)
             continue;
         }
 
-        // TODO: abort instruction
+        if (op == "abort")
+        {
+            writeCode(ABORT);
+            continue;
+        }
 
         throw RunError("unhandled opcode in basic block \"" + op + "\"");
     }
@@ -568,10 +690,9 @@ Value execCode()
     // For each instruction to execute
     for (;;)
     {
-        //std::cout << "instr" << std::endl;
-
         auto& op = readCode<Opcode>();
 
+        //std::cout << "instr" << std::endl;
         //std::cout << "op=" << (int)op << std::endl;
         //std::cout << "  stack space: " << (stackBase - stackPtr) << std::endl;
 
@@ -615,7 +736,7 @@ Value execCode()
                 auto localIdx = readCode<uint16_t>();
                 //std::cout << "set localIdx=" << localIdx << std::endl;
                 assert (stackPtr > stackLimit);
-                framePtr[localIdx] = popVal();
+                framePtr[-localIdx] = popVal();
             }
             break;
 
@@ -625,11 +746,7 @@ Value execCode()
                 auto localIdx = readCode<uint16_t>();
                 //std::cout << "get localIdx=" << localIdx << std::endl;
                 assert (stackPtr > stackLimit);
-                auto val = framePtr[localIdx];
-
-                //if (val.isInt64())
-                //    std::cout << "  " << (int64_t)val << std::endl;
-
+                auto val = framePtr[-localIdx];
                 pushVal(val);
             }
             break;
@@ -670,11 +787,35 @@ Value execCode()
             }
             break;
 
+            case LE_I64:
+            {
+                auto arg1 = popVal();
+                auto arg0 = popVal();
+                pushBool((int64_t)arg0 <= (int64_t)arg1);
+            }
+            break;
+
             case GT_I64:
             {
                 auto arg1 = popVal();
                 auto arg0 = popVal();
                 pushBool((int64_t)arg0 > (int64_t)arg1);
+            }
+            break;
+
+            case GE_I64:
+            {
+                auto arg1 = popVal();
+                auto arg0 = popVal();
+                pushBool((int64_t)arg0 >= (int64_t)arg1);
+            }
+            break;
+
+            case EQ_I64:
+            {
+                auto arg1 = popVal();
+                auto arg0 = popVal();
+                pushBool((int64_t)arg0 == (int64_t)arg1);
             }
             break;
 
@@ -703,11 +844,10 @@ Value execCode()
             // String operations
             //
 
-            /*
             case STR_LEN:
             {
                 auto str = popStr();
-                stack.push_back(str.length());
+                pushVal(str.length());
             }
             break;
 
@@ -732,7 +872,7 @@ Value execCode()
                     charStrings[ch] = String(buf);
                 }
 
-                stack.push_back(charStrings[ch]);
+                pushVal(charStrings[ch]);
             }
             break;
 
@@ -748,7 +888,7 @@ Value execCode()
                     );
                 }
 
-                stack.push_back((int64_t)str[idx]);
+                pushVal((int64_t)str[idx]);
             }
             break;
 
@@ -757,7 +897,7 @@ Value execCode()
                 auto a = popStr();
                 auto b = popStr();
                 auto c = String::concat(b, a);
-                stack.push_back(c);
+                pushVal(c);
             }
             break;
 
@@ -768,7 +908,6 @@ Value execCode()
                 pushBool(arg0 == arg1);
             }
             break;
-            */
 
             //
             // Object operations
@@ -842,19 +981,18 @@ Value execCode()
             // Array operations
             //
 
-            /*
             case NEW_ARRAY:
             {
                 auto len = popInt64();
                 auto array = Array(len);
-                stack.push_back(array);
+                pushVal(array);
             }
             break;
 
             case ARRAY_LEN:
             {
                 auto arr = Array(popVal());
-                stack.push_back(arr.length());
+                pushVal(arr.length());
             }
             break;
 
@@ -895,10 +1033,9 @@ Value execCode()
                     );
                 }
 
-                stack.push_back(arr.getElem(idx));
+                pushVal(arr.getElem(idx));
             }
             break;
-            */
 
             //
             // Branch instructions
@@ -908,7 +1045,7 @@ Value execCode()
             {
                 auto& dstAddr = readCode<uint8_t*>();
 
-                std::cout << "Patching jump" << std::endl;
+                //std::cout << "Patching jump" << std::endl;
 
                 auto dstVer = (BlockVersion*)dstAddr;
 
@@ -942,7 +1079,7 @@ Value execCode()
                 {
                     if (thenAddr < codeHeap || thenAddr >= codeHeapLimit)
                     {
-                        std::cout << "Patching then target" << std::endl;
+                        //std::cout << "Patching then target" << std::endl;
 
                         auto thenVer = (BlockVersion*)thenAddr;
                         if (!thenVer->startPtr)
@@ -958,7 +1095,7 @@ Value execCode()
                 {
                     if (elseAddr < codeHeap || elseAddr >= codeHeapLimit)
                     {
-                       std::cout << "Patching else target" << std::endl;
+                       //std::cout << "Patching else target" << std::endl;
 
                        auto elseVer = (BlockVersion*)elseAddr;
                        if (!elseVer->startPtr)
@@ -981,18 +1118,22 @@ Value execCode()
 
                 auto callee = popVal();
 
-                // FIXME
-                /*
-                if (stack.size() < numArgs)
+                //std::cout << "call, numArgs=" << numArgs << std::endl;
+
+                if (stackSize() < numArgs)
                 {
                     throw RunError(
                         "stack underflow at call"
                     );
                 }
-                */
 
                 if (callee.isObject())
                 {
+                    // TODO: we could inline cache some function
+                    // information
+                    // start with map of fn objs to structs
+                    // TODO: move callFn into its own function
+
                     // Get a version for the function entry block
                     static ICache entryIC("entry");
                     auto entryBB = entryIC.getObj(callee);
@@ -1000,12 +1141,27 @@ Value execCode()
 
                     if (!entryVer->startPtr)
                     {
-                        std::cout << "compiling function entry block" << std::endl;
+                        //std::cout << "compiling function entry block" << std::endl;
                         compile(entryVer);
                     }
 
                     static ICache localsIC("num_locals");
                     auto numLocals = localsIC.getInt64(callee);
+
+                    static ICache paramsIC("num_params");
+                    auto numParams = paramsIC.getInt64(callee);
+
+                    if (numLocals < numParams)
+                    {
+                        throw RunError(
+                            "not enough locals to store function parameters"
+                        );
+                    }
+
+                    if (numArgs != numParams)
+                    {
+                        throw RunError("argument count mismatch");
+                    }
 
                     // Compute the stack pointer to restore after the call
                     auto prevStackPtr = stackPtr + numArgs;
@@ -1014,10 +1170,11 @@ Value execCode()
                     auto prevFramePtr = framePtr;
 
                     // Point the frame pointer to the first argument
-                    framePtr = stackPtr + numArgs - 1;
-                    stackPtr = framePtr - numLocals;
                     assert (stackPtr > stackLimit);
-                    assert (stackPtr <= framePtr);
+                    framePtr = stackPtr + numArgs - 1;
+
+                    // Pop the arguments, push the callee locals
+                    stackPtr -= numLocals - numArgs;
 
                     pushVal(Value((refptr)prevStackPtr, TAG_RAWPTR));
                     pushVal(Value((refptr)prevFramePtr, TAG_RAWPTR));
@@ -1029,7 +1186,6 @@ Value execCode()
                 else if (callee.isHostFn())
                 {
                     auto hostFn = (HostFn*)callee.getWord().ptr;
-                    //std::cout << "calling host fn with, numArgs=" << numArgs << std::endl;
 
                     // Pointer to the first argument
                     auto args = stackPtr + numArgs - 1;
@@ -1109,8 +1265,6 @@ Value execCode()
                 // If this is a top-level return
                 if (retVer == nullptr)
                 {
-                    std::cout << "top-level return" << std::endl;
-
                     return retVal;
                 }
                 else
@@ -1119,10 +1273,7 @@ Value execCode()
                     pushVal(retVal);
 
                     if (!retVer->startPtr)
-                    {
-                        std::cout << "compiling call continuation" << std::endl;
                         compile(retVer);
-                    }
 
                     instrPtr = retVer->startPtr;
                 }
@@ -1137,17 +1288,19 @@ Value execCode()
             }
             break;
 
-            /*
             case ABORT:
             {
                 auto errMsg = (std::string)popStr();
 
+                // FIXME
+                /*
                 // If a source position was specified
                 if (instr.hasField("src_pos"))
                 {
                     auto srcPos = instr.getField("src_pos");
                     std::cout << posToString(srcPos) << " - ";
                 }
+                */
 
                 if (errMsg != "")
                 {
@@ -1162,7 +1315,6 @@ Value execCode()
                 exit(-1);
             }
             break;
-            */
 
             default:
             assert (false && "unhandled instruction in interpreter loop");
@@ -1173,7 +1325,8 @@ Value execCode()
     assert (false);
 }
 
-/// Begin the execution of a function (top-level call)
+/// Begin the execution of a function
+/// Note: this may be indirectly called from within a running interpreter
 Value callFun(Object fun, ValueVec args)
 {
     static ICache numParamsIC("num_params");
@@ -1183,48 +1336,54 @@ Value callFun(Object fun, ValueVec args)
     assert (args.size() <= numParams);
     assert (numParams <= numLocals);
 
+    // Store the stack size before the call
+    auto preCallSz = stackSize();
+
+    // Save the previous instruction pointer
+    pushVal(Value((refptr)instrPtr, TAG_RAWPTR));
+
+    // Save the previous stack and frame pointers
+    auto prevStackPtr = stackPtr;
+    auto prevFramePtr = framePtr;
+
     // Initialize the frame pointer (used to access locals)
-    assert (stackSize() == 0);
     framePtr = stackPtr - 1;
 
     // Push space for the local variables
     stackPtr -= numLocals;
     assert (stackPtr >= stackLimit);
 
+    // Push the previous stack pointer, previous
+    // frame pointer and return address
+    pushVal(Value((refptr)prevStackPtr, TAG_RAWPTR));
+    pushVal(Value((refptr)prevFramePtr, TAG_RAWPTR));
+    pushVal(Value(nullptr, TAG_RAWPTR));
+
     // Copy the arguments into the locals
     for (size_t i = 0; i < args.size(); ++i)
     {
         //std::cout << "  " << args[i].toString() << std::endl;
-        framePtr[i] = args[i];
+        framePtr[-i] = args[i];
     }
-
-    // Push the previous stack pointer, previous
-    // frame pointer and return address
-    pushVal(Value((refptr)stackPtr, TAG_RAWPTR));
-    pushVal(Value((refptr)framePtr, TAG_RAWPTR));
-    pushVal(Value(nullptr, TAG_RAWPTR));
 
     // Get the function entry block
     static ICache entryIC("entry");
     auto entryBlock = entryIC.getObj(fun);
-
     auto entryVer = getBlockVersion(entryBlock);
 
     // Generate code for the entry block version
     compile(entryVer);
     assert (entryVer->length() > 0);
 
-    std::cout << "Starting top-level unit execution" << std::endl;
-
     // Begin execution at the entry block
     instrPtr = entryVer->startPtr;
     auto retVal = execCode();
 
-    // Pop the local variables
-    stackPtr += numLocals;
+    // Restore the previous instruction pointer
+    instrPtr = (uint8_t*)popVal().getWord().ptr;
 
-    // Check that the stack is empty
-    assert (stackSize() == 0);
+    // Check that the stack size matches what it was before the call
+    assert (stackSize() == preCallSz);
 
     return retVal;
 }

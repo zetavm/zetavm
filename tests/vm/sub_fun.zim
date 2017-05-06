@@ -1,0 +1,56 @@
+#zeta-image
+
+block_236 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'sub_i64' },
+    { op:'ret' },
+  ]
+};
+
+fun_237 = {
+  entry:@block_236,
+  num_params:2,
+  num_locals:2,
+};
+
+block_0 = {
+  instrs: [
+    { op:'push', val:4 },
+    { op:'push', val:3 },
+    { op:'push', val:@fun_237 },
+    { op:'call', ret_to:@block_238, num_args:2 },
+  ]
+};
+
+block_238 = {
+  instrs: [
+    { op:'push', val:1 },
+    { op:'eq_i64' },
+    { op:'if_true', then:@block_241, else:@block_240 },
+  ]
+};
+
+block_240 = {
+  instrs: [
+    { op:'push', val:'assertion failed' },
+    { op:'abort' },
+    { op:'jump', to:@block_241 },
+  ]
+};
+
+block_241 = {
+  instrs: [
+    { op:'push', val:0 },
+    { op:'ret' },
+  ]
+};
+
+fun_1 = {
+  entry:@block_0,
+  num_params:0,
+  num_locals:0,
+};
+
+{ main:@fun_1 };

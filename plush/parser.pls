@@ -2083,12 +2083,13 @@ var genStmt = function (ctx, stmt)
             exitBlock
         );
         genStmt(bodyCtx, stmt.bodyStmt);
-
-        // Generate the increment expression
         if (!bodyCtx.curBlock:hasBranch())
             bodyCtx:addInstr({ op:"jump", to:incrBlock });
+
+        // Generate the increment expression
         var incrCtx = ctx:subCtx(incrBlock);
         genExpr(incrCtx, stmt.incrExpr);
+        incrCtx:addOp("pop");
         incrCtx:addInstr({ op:"jump", to:testBlock });
 
         ctx:merge(exitBlock);

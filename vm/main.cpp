@@ -38,6 +38,14 @@ int main(int argc, char** argv)
             if (pkg.hasField("main"))
             {
                 auto retVal = callExportFn(pkg, "main");
+
+                if (!retVal.isInt64())
+                {
+                    throw RunError(
+                        "main function should return an int64 value"
+                    );
+                }
+
                 return (int64_t)retVal;
             }
 

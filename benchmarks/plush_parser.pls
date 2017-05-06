@@ -1,1834 +1,2422 @@
-#zeta-image
+//============================================================================
+// Abstract Syntax Tree (AST)
+//============================================================================
 
-exports_obj = { init: @fun_1 };
-global_obj = { exports: @exports_obj };
+/// Prototype object for operators
+var OpInfo = {
+    /// Operator string (e.g. "+")
+    str: "",
 
-block_5 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'add_i64' },
-    { op:'ret' },
-  ]
-};
-
-block_4 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_5, else:@block_6 },
-  ]
-};
-
-block_6 = {
-  instrs: [
-    { op:'jump', to:@block_7 },
-  ]
-};
-
-block_2 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_4, else:@block_8 },
-  ]
-};
-
-block_7 = {
-  instrs: [
-    { op:'jump', to:@block_9 },
-  ]
-};
-
-block_8 = {
-  instrs: [
-    { op:'jump', to:@block_9 },
-  ]
-};
-
-block_11 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'str_cat' },
-    { op:'ret' },
-  ]
-};
-
-block_10 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_11, else:@block_12 },
-  ]
-};
-
-block_12 = {
-  instrs: [
-    { op:'jump', to:@block_13 },
-  ]
-};
-
-block_9 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_10, else:@block_14 },
-  ]
-};
-
-block_13 = {
-  instrs: [
-    { op:'jump', to:@block_15 },
-  ]
-};
-
-block_14 = {
-  instrs: [
-    { op:'jump', to:@block_15 },
-  ]
-};
-
-block_15 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_16, else:@block_17 },
-  ]
-};
-
-block_16 = {
-  instrs: [
-    { op:'jump', to:@block_18 },
-  ]
-};
-
-block_17 = {
-  instrs: [
-    { op:'push', val:'unhandled type in addition' },
-    { op:'abort' },
-    { op:'jump', to:@block_18 },
-  ]
-};
-
-block_18 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
-
-fun_3 = {
-  entry:@block_2,
-  num_params:2,
-  num_locals:2,
-};
-
-block_22 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'sub_i64' },
-    { op:'ret' },
-  ]
-};
-
-block_21 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_22, else:@block_23 },
-  ]
-};
-
-block_23 = {
-  instrs: [
-    { op:'jump', to:@block_24 },
-  ]
-};
-
-block_19 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_21, else:@block_25 },
-  ]
-};
-
-block_24 = {
-  instrs: [
-    { op:'jump', to:@block_26 },
-  ]
-};
-
-block_25 = {
-  instrs: [
-    { op:'jump', to:@block_26 },
-  ]
-};
-
-block_26 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_27, else:@block_28 },
-  ]
-};
-
-block_27 = {
-  instrs: [
-    { op:'jump', to:@block_29 },
-  ]
-};
-
-block_28 = {
-  instrs: [
-    { op:'push', val:'unhandled type in subtraction' },
-    { op:'abort' },
-    { op:'jump', to:@block_29 },
-  ]
-};
-
-block_29 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
-
-fun_20 = {
-  entry:@block_19,
-  num_params:2,
-  num_locals:2,
-};
-
-block_32 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'ret' },
-  ]
-};
-
-block_33 = {
-  instrs: [
-    { op:'push', val:$true },
-    { op:'ret' },
-  ]
-};
-
-block_30 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'if_true', then:@block_32, else:@block_33 },
-  ]
-};
-
-block_34 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
-
-fun_31 = {
-  entry:@block_30,
-  num_params:1,
-  num_locals:1,
-};
-
-block_38 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'eq_i64' },
-    { op:'ret' },
-  ]
-};
-
-block_37 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_38, else:@block_39 },
-  ]
-};
-
-block_39 = {
-  instrs: [
-    { op:'jump', to:@block_40 },
-  ]
-};
-
-block_35 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_37, else:@block_41 },
-  ]
-};
-
-block_40 = {
-  instrs: [
-    { op:'jump', to:@block_42 },
-  ]
-};
-
-block_41 = {
-  instrs: [
-    { op:'jump', to:@block_42 },
-  ]
-};
-
-block_44 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'eq_str' },
-    { op:'ret' },
-  ]
-};
-
-block_43 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_44, else:@block_45 },
-  ]
-};
-
-block_45 = {
-  instrs: [
-    { op:'jump', to:@block_46 },
-  ]
-};
-
-block_46 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'ret' },
-  ]
-};
-
-block_42 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_43, else:@block_47 },
-  ]
-};
-
-block_47 = {
-  instrs: [
-    { op:'jump', to:@block_48 },
-  ]
-};
-
-block_50 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'eq_obj' },
-    { op:'ret' },
-  ]
-};
-
-block_49 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'object' },
-    { op:'if_true', then:@block_50, else:@block_51 },
-  ]
-};
-
-block_51 = {
-  instrs: [
-    { op:'jump', to:@block_52 },
-  ]
-};
-
-block_52 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'ret' },
-  ]
-};
-
-block_48 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'object' },
-    { op:'if_true', then:@block_49, else:@block_53 },
-  ]
-};
-
-block_53 = {
-  instrs: [
-    { op:'jump', to:@block_54 },
-  ]
-};
-
-block_56 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'eq_bool' },
-    { op:'ret' },
-  ]
-};
-
-block_55 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'bool' },
-    { op:'if_true', then:@block_56, else:@block_57 },
-  ]
-};
-
-block_57 = {
-  instrs: [
-    { op:'jump', to:@block_58 },
-  ]
-};
-
-block_58 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'ret' },
-  ]
-};
-
-block_54 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'bool' },
-    { op:'if_true', then:@block_55, else:@block_59 },
-  ]
-};
-
-block_59 = {
-  instrs: [
-    { op:'jump', to:@block_60 },
-  ]
-};
-
-block_62 = {
-  instrs: [
-    { op:'push', val:$true },
-    { op:'ret' },
-  ]
-};
-
-block_61 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'undef' },
-    { op:'if_true', then:@block_62, else:@block_63 },
-  ]
-};
-
-block_63 = {
-  instrs: [
-    { op:'jump', to:@block_64 },
-  ]
-};
-
-block_64 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'ret' },
-  ]
-};
-
-block_60 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'undef' },
-    { op:'if_true', then:@block_61, else:@block_65 },
-  ]
-};
-
-block_65 = {
-  instrs: [
-    { op:'jump', to:@block_66 },
-  ]
-};
-
-block_66 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_67, else:@block_68 },
-  ]
-};
-
-block_67 = {
-  instrs: [
-    { op:'jump', to:@block_69 },
-  ]
-};
-
-block_68 = {
-  instrs: [
-    { op:'push', val:'unhandled type in equality comparison' },
-    { op:'abort' },
-    { op:'jump', to:@block_69 },
-  ]
-};
-
-block_69 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
-
-fun_36 = {
-  entry:@block_35,
-  num_params:2,
-  num_locals:2,
-};
-
-block_70 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_eq' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_72, num_args:2 },
-  ]
-};
-
-block_73 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'ret' },
-  ]
-};
-
-block_74 = {
-  instrs: [
-    { op:'push', val:$true },
-    { op:'ret' },
-  ]
-};
-
-block_72 = {
-  instrs: [
-    { op:'if_true', then:@block_73, else:@block_74 },
-  ]
-};
-
-block_75 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
-
-fun_71 = {
-  entry:@block_70,
-  num_params:2,
-  num_locals:2,
-};
-
-block_79 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'le_i64' },
-    { op:'ret' },
-  ]
-};
-
-block_78 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_79, else:@block_80 },
-  ]
-};
-
-block_80 = {
-  instrs: [
-    { op:'jump', to:@block_81 },
-  ]
-};
-
-block_76 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_78, else:@block_82 },
-  ]
-};
-
-block_81 = {
-  instrs: [
-    { op:'jump', to:@block_83 },
-  ]
-};
-
-block_82 = {
-  instrs: [
-    { op:'jump', to:@block_83 },
-  ]
-};
-
-block_85 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'str_len' },
-    { op:'push', val:1 },
-    { op:'eq_i64' },
-    { op:'if_true', then:@block_86, else:@block_87 },
-  ]
-};
-
-block_86 = {
-  instrs: [
-    { op:'jump', to:@block_88 },
-  ]
-};
-
-block_87 = {
-  instrs: [
-    { op:'push', val:'rt_le' },
-    { op:'abort' },
-    { op:'jump', to:@block_88 },
-  ]
-};
-
-block_88 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'str_len' },
-    { op:'push', val:1 },
-    { op:'eq_i64' },
-    { op:'if_true', then:@block_89, else:@block_90 },
-  ]
-};
-
-block_89 = {
-  instrs: [
-    { op:'jump', to:@block_91 },
-  ]
-};
-
-block_90 = {
-  instrs: [
-    { op:'push', val:'rt_le' },
-    { op:'abort' },
-    { op:'jump', to:@block_91 },
-  ]
-};
-
-block_91 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:0 },
-    { op:'get_char_code' },
-    { op:'get_local', idx:1 },
-    { op:'push', val:0 },
-    { op:'get_char_code' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_le' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_92, num_args:2 },
-  ]
-};
-
-block_92 = {
-  instrs: [
-    { op:'ret' },
-  ]
-};
+    /// Closing string (optional)
+    closeStr: "",
 
-block_84 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_85, else:@block_93 },
-  ]
-};
-
-block_93 = {
-  instrs: [
-    { op:'jump', to:@block_94 },
-  ]
-};
-
-block_83 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_84, else:@block_95 },
-  ]
-};
-
-block_94 = {
-  instrs: [
-    { op:'jump', to:@block_96 },
-  ]
-};
-
-block_95 = {
-  instrs: [
-    { op:'jump', to:@block_96 },
-  ]
-};
-
-block_96 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_97, else:@block_98 },
-  ]
-};
-
-block_97 = {
-  instrs: [
-    { op:'jump', to:@block_99 },
-  ]
-};
-
-block_98 = {
-  instrs: [
-    { op:'push', val:'unhandled type in less-than or equal comparison' },
-    { op:'abort' },
-    { op:'jump', to:@block_99 },
-  ]
-};
-
-block_99 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
-
-fun_77 = {
-  entry:@block_76,
-  num_params:2,
-  num_locals:2,
-};
-
-block_103 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'ge_i64' },
-    { op:'ret' },
-  ]
-};
-
-block_102 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_103, else:@block_104 },
-  ]
-};
-
-block_104 = {
-  instrs: [
-    { op:'jump', to:@block_105 },
-  ]
-};
-
-block_100 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_102, else:@block_106 },
-  ]
-};
-
-block_105 = {
-  instrs: [
-    { op:'jump', to:@block_107 },
-  ]
-};
-
-block_106 = {
-  instrs: [
-    { op:'jump', to:@block_107 },
-  ]
-};
-
-block_109 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'str_len' },
-    { op:'push', val:1 },
-    { op:'eq_i64' },
-    { op:'if_true', then:@block_110, else:@block_111 },
-  ]
-};
-
-block_110 = {
-  instrs: [
-    { op:'jump', to:@block_112 },
-  ]
-};
-
-block_111 = {
-  instrs: [
-    { op:'push', val:'rt_ge' },
-    { op:'abort' },
-    { op:'jump', to:@block_112 },
-  ]
-};
-
-block_112 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'str_len' },
-    { op:'push', val:1 },
-    { op:'eq_i64' },
-    { op:'if_true', then:@block_113, else:@block_114 },
-  ]
-};
-
-block_113 = {
-  instrs: [
-    { op:'jump', to:@block_115 },
-  ]
-};
-
-block_114 = {
-  instrs: [
-    { op:'push', val:'rt_ge' },
-    { op:'abort' },
-    { op:'jump', to:@block_115 },
-  ]
-};
-
-block_115 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:0 },
-    { op:'get_char_code' },
-    { op:'get_local', idx:1 },
-    { op:'push', val:0 },
-    { op:'get_char_code' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_ge' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_116, num_args:2 },
-  ]
-};
-
-block_116 = {
-  instrs: [
-    { op:'ret' },
-  ]
-};
-
-block_108 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_109, else:@block_117 },
-  ]
-};
-
-block_117 = {
-  instrs: [
-    { op:'jump', to:@block_118 },
-  ]
-};
-
-block_107 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_108, else:@block_119 },
-  ]
-};
-
-block_118 = {
-  instrs: [
-    { op:'jump', to:@block_120 },
-  ]
-};
-
-block_119 = {
-  instrs: [
-    { op:'jump', to:@block_120 },
-  ]
-};
-
-block_120 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_121, else:@block_122 },
-  ]
-};
-
-block_121 = {
-  instrs: [
-    { op:'jump', to:@block_123 },
-  ]
-};
-
-block_122 = {
-  instrs: [
-    { op:'push', val:'unhandled type in less-than or equal comparison' },
-    { op:'abort' },
-    { op:'jump', to:@block_123 },
-  ]
-};
-
-block_123 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
-
-fun_101 = {
-  entry:@block_100,
-  num_params:2,
-  num_locals:2,
-};
-
-block_127 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'get_local', idx:0 },
-    { op:'has_field' },
-    { op:'ret' },
-  ]
-};
-
-block_126 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'object' },
-    { op:'if_true', then:@block_127, else:@block_128 },
-  ]
-};
-
-block_128 = {
-  instrs: [
-    { op:'jump', to:@block_129 },
-  ]
-};
-
-block_124 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_126, else:@block_130 },
-  ]
-};
-
-block_129 = {
-  instrs: [
-    { op:'jump', to:@block_131 },
-  ]
-};
-
-block_130 = {
-  instrs: [
-    { op:'jump', to:@block_131 },
-  ]
-};
-
-block_131 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_132, else:@block_133 },
-  ]
-};
-
-block_132 = {
-  instrs: [
-    { op:'jump', to:@block_134 },
-  ]
-};
-
-block_133 = {
-  instrs: [
-    { op:'push', val:'unhandled type in the \'in\' operator' },
-    { op:'abort' },
-    { op:'jump', to:@block_134 },
-  ]
-};
-
-block_134 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
-
-fun_125 = {
-  entry:@block_124,
-  num_params:2,
-  num_locals:2,
-};
-
-block_135 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'object' },
-    { op:'if_true', then:@block_137, else:@block_138 },
-  ]
-};
-
-block_137 = {
-  instrs: [
-    { op:'jump', to:@block_139 },
-  ]
-};
-
-block_138 = {
-  instrs: [
-    { op:'push', val:'instanceof only applies to objects' },
-    { op:'abort' },
-    { op:'jump', to:@block_139 },
-  ]
-};
-
-block_139 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'object' },
-    { op:'if_true', then:@block_140, else:@block_141 },
-  ]
-};
-
-block_140 = {
-  instrs: [
-    { op:'jump', to:@block_142 },
-  ]
-};
-
-block_141 = {
-  instrs: [
-    { op:'push', val:'prototype in instanceof must be an object' },
-    { op:'abort' },
-    { op:'jump', to:@block_142 },
-  ]
-};
-
-block_144 = {
-  instrs: [
-    { op:'push', val:$true },
-    { op:'ret' },
-  ]
-};
-
-block_143 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:'proto' },
-    { op:'get_field' },
-    { op:'set_local', idx:2 },
-    { op:'get_local', idx:2 },
-    { op:'get_local', idx:1 },
-    { op:'eq_obj' },
-    { op:'if_true', then:@block_144, else:@block_145 },
-  ]
-};
-
-block_145 = {
-  instrs: [
-    { op:'jump', to:@block_146 },
-  ]
-};
-
-block_146 = {
-  instrs: [
-    { op:'get_local', idx:2 },
-    { op:'get_local', idx:1 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_instOf' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_147, num_args:2 },
-  ]
-};
-
-block_147 = {
-  instrs: [
-    { op:'ret' },
-  ]
-};
-
-block_142 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:'proto' },
-    { op:'has_field' },
-    { op:'if_true', then:@block_143, else:@block_148 },
-  ]
-};
-
-block_148 = {
-  instrs: [
-    { op:'jump', to:@block_149 },
-  ]
-};
-
-block_149 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'ret' },
-  ]
-};
-
-fun_136 = {
-  entry:@block_135,
-  num_params:2,
-  num_locals:3,
-};
-
-block_153 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'get_field' },
-    { op:'ret' },
-  ]
-};
-
-block_152 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'has_field' },
-    { op:'if_true', then:@block_153, else:@block_154 },
-  ]
-};
-
-block_154 = {
-  instrs: [
-    { op:'jump', to:@block_155 },
-  ]
-};
-
-block_156 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:'proto' },
-    { op:'get_field' },
-    { op:'set_local', idx:2 },
-    { op:'get_local', idx:2 },
-    { op:'get_local', idx:1 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_getProp' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_157, num_args:2 },
-  ]
-};
-
-block_157 = {
-  instrs: [
-    { op:'ret' },
-  ]
-};
-
-block_155 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:'proto' },
-    { op:'has_field' },
-    { op:'if_true', then:@block_156, else:@block_158 },
-  ]
-};
-
-block_158 = {
-  instrs: [
-    { op:'jump', to:@block_159 },
-  ]
-};
-
-block_161 = {
-  instrs: [
-    { op:'push', val:'undefined property \"' },
-    { op:'get_local', idx:1 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_add' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_162, num_args:2 },
-  ]
-};
+    /// Operator arity
+    arity: 2,
 
-block_162 = {
-  instrs: [
-    { op:'push', val:'\"' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_add' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_163, num_args:2 },
-  ]
-};
+    /// Precedence level
+    prec: -1,
 
-block_159 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_160, else:@block_161 },
-  ]
-};
+    /// Associativity, left-to-right or right-to-left ('l' or 'r')
+    assoc: "l",
 
-block_160 = {
-  instrs: [
-    { op:'jump', to:@block_164 },
-  ]
-};
+    /// Non-associative flag (e.g.: - and / are not associative)
+    nonAssoc: false,
 
-block_163 = {
-  instrs: [
-    { op:'abort' },
-    { op:'jump', to:@block_164 },
-  ]
+    /// Flag indicating a binary operator can be folded into an assignment
+    foldAssign: false
 };
 
-block_150 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'object' },
-    { op:'if_true', then:@block_152, else:@block_165 },
-  ]
-};
+/// List of existing operators
+var opList = [];
 
-block_164 = {
-  instrs: [
-    { op:'jump', to:@block_166 },
-  ]
+/// Add an operator to the list
+var addOp = function (opInfo)
+{
+    opList:push(opInfo);
+    return opInfo;
 };
 
-block_165 = {
-  instrs: [
-    { op:'jump', to:@block_166 },
-  ]
-};
+/// Object member operator
+var OP_MEMBER = addOp(OpInfo::{ str:".", arity:2, prec:16 });
 
-block_167 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'push', val:'length' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_eq' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_168, num_args:2 },
-  ]
-};
+/// Array indexing
+var OP_INDEX = addOp(OpInfo::{ str:"[", closeStr:"]", arity:2, prec:16 });
 
-block_169 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'array_len' },
-    { op:'ret' },
-  ]
-};
+/// Object extension
+var OP_OBJ_EXT = addOp(OpInfo::{ str:"::", arity:2, prec:16 });
 
-block_168 = {
-  instrs: [
-    { op:'if_true', then:@block_169, else:@block_170 },
-  ]
-};
+/// Function call, variable arity
+var OP_CALL = addOp(OpInfo::{ str:"(", closeStr:")", arity:0, prec:15 });
 
-block_170 = {
-  instrs: [
-    { op:'jump', to:@block_171 },
-  ]
-};
+/// Method call
+var OP_M_CALL = addOp(OpInfo::{ str:":", arity:2, prec:15 });
 
-block_171 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'push', val:'push' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_eq' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_172, num_args:2 },
-  ]
-};
+/// Prefix unary operators
+var OP_NEG = addOp(OpInfo::{ str:"-", arity:1, prec:13, assoc:'r' });
+var OP_NOT = addOp(OpInfo::{ str:"!", arity:1, prec:13, assoc:'r' });
+var OP_TYPEOF = addOp(OpInfo::{ str:"typeof", arity:1, prec:13, assoc:'r' });
 
-block_173 = {
-  instrs: [
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_push' },
-    { op:'get_field' },
-    { op:'ret' },
-  ]
-};
+/// Binary arithmetic operators
+var OP_MUL = addOp(OpInfo::{ str:"*", prec:12, foldAssign:true });
+var OP_ADD = addOp(OpInfo::{ str:"+", prec:11, foldAssign:true });
+var OP_SUB = addOp(OpInfo::{ str:"-", prec:11, foldAssign:true });
 
-block_172 = {
-  instrs: [
-    { op:'if_true', then:@block_173, else:@block_174 },
-  ]
-};
+/// Relational operators
+var OP_LT = addOp(OpInfo::{ str:"<", prec:9 });
+var OP_LE = addOp(OpInfo::{ str:"<=", prec:9 });
+var OP_GT = addOp(OpInfo::{ str:">", prec:9 });
+var OP_GE = addOp(OpInfo::{ str:">=", prec:9 });
+var OP_IN = addOp(OpInfo::{ str:"in", prec:9 });
+//const OpInfo OP_INSTOF = { "instanceof", "", 2, 9, 'l', false, false };
 
-block_174 = {
-  instrs: [
-    { op:'jump', to:@block_175 },
-  ]
-};
+/// Equality comparison
+var OP_EQ = addOp(OpInfo::{ str:"==", prec:8 });
+var OP_NE = addOp(OpInfo::{ str:"!=", prec:8 });
 
-block_166 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'array' },
-    { op:'if_true', then:@block_167, else:@block_176 },
-  ]
-};
+/// Bitwise operators
+//const OpInfo OP_BIT_AND = { "&", "", 2, 7, 'l', false, true };
+//const OpInfo OP_BIT_XOR = { "^", "", 2, 6, 'l', false, true };
+//const OpInfo OP_BIT_OR = { "|", "", 2, 5, 'l', false, true };
 
-block_175 = {
-  instrs: [
-    { op:'jump', to:@block_177 },
-  ]
-};
+/// Logical operators
+var OP_AND = addOp(OpInfo::{ str:"&&", prec:4, foldAssign:true });
+var OP_OR = addOp(OpInfo::{ str:"||", prec:3, foldAssign:true });
 
-block_176 = {
-  instrs: [
-    { op:'jump', to:@block_177 },
-  ]
-};
+// Assignment
+var OP_ASSIGN = addOp(OpInfo::{str:"=", arity:2, prec:1, assoc:'r'});
 
-block_178 = {
-  instrs: [
-    { op:'get_local', idx:1 },
-    { op:'push', val:'length' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_eq' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_179, num_args:2 },
-  ]
+/// Prototype for integer expressions
+var IntExpr = {
 };
 
-block_180 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'str_len' },
-    { op:'ret' },
-  ]
+/// Prototype for string expressions
+var StringExpr = {
 };
 
-block_179 = {
-  instrs: [
-    { op:'if_true', then:@block_180, else:@block_181 },
-  ]
+/// Prototype for identifier expressions
+var IdentExpr = {
 };
 
-block_181 = {
-  instrs: [
-    { op:'jump', to:@block_182 },
-  ]
+/// Prototype for unary expressions
+var UnOpExpr = {
 };
 
-block_177 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_178, else:@block_183 },
-  ]
+/// Prototype for binary expressions
+var BinOpExpr = {
 };
 
-block_182 = {
-  instrs: [
-    { op:'jump', to:@block_184 },
-  ]
+/// Prototype for array expressions
+var ArrayExpr = {
 };
 
-block_183 = {
-  instrs: [
-    { op:'jump', to:@block_184 },
-  ]
+/// Prototype for object expressions
+var ObjectExpr = {
 };
 
-block_186 = {
-  instrs: [
-    { op:'push', val:'unhandled base type in read of property \"' },
-    { op:'get_local', idx:1 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_add' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_187, num_args:2 },
-  ]
+/// Prototype for function call expressions
+var CallExpr = {
 };
 
-block_187 = {
-  instrs: [
-    { op:'push', val:'\"' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_add' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_188, num_args:2 },
-  ]
+/// Prototype for method call expression
+var MethodCallExpr = {
 };
 
-block_184 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_185, else:@block_186 },
-  ]
+/// Prototype for package import expressions
+var ImportExpr = {
 };
 
-block_185 = {
-  instrs: [
-    { op:'jump', to:@block_189 },
-  ]
+/// Prototype for IR instruction expression
+var IRExpr = {
 };
 
-block_188 = {
-  instrs: [
-    { op:'abort' },
-    { op:'jump', to:@block_189 },
-  ]
+/// Prototype for block statements
+var BlockStmt = {
 };
 
-block_189 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
+/// Prototype for variable declaration statements
+var VarStmt = {
 };
 
-fun_151 = {
-  entry:@block_150,
-  num_params:2,
-  num_locals:3,
+/// Prototype for if statements
+var IfStmt = {
 };
 
-block_192 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'get_elem' },
-    { op:'ret' },
-  ]
+/// Prototype for or loop statements
+var ForStmt = {
 };
 
-block_190 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'array' },
-    { op:'if_true', then:@block_192, else:@block_193 },
-  ]
+/// Prototype for expression statements
+var ExprStmt = {
 };
 
-block_193 = {
-  instrs: [
-    { op:'jump', to:@block_194 },
-  ]
+/// Prototype for return statements
+var ReturnStmt = {
 };
 
-block_195 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'get_char' },
-    { op:'ret' },
-  ]
+/// Prototype for break statements
+var BreakStmt = {
 };
 
-block_194 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_195, else:@block_196 },
-  ]
+/// Prototype for continue statements
+var ContStmt = {
 };
 
-block_196 = {
-  instrs: [
-    { op:'jump', to:@block_197 },
-  ]
+/// Prototype for IR instruction statements
+var IRStmt = {
 };
 
-block_197 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_198, else:@block_199 },
-  ]
+/// Prototype for function expressions
+var FunExpr = {
 };
 
-block_198 = {
-  instrs: [
-    { op:'jump', to:@block_200 },
-  ]
-};
+//============================================================================
+// Parser
+//============================================================================
 
-block_199 = {
-  instrs: [
-    { op:'push', val:'assertion failed' },
-    { op:'abort' },
-    { op:'jump', to:@block_200 },
-  ]
-};
+/// Report a parsing error and abort parsing
+var parseError = function (input, errorStr)
+{
+    if (input != false)
+    {
+        output(input.srcName);
+        output("@");
+        output(input.lineNo);
+        output(":");
+        output(input.colNo);
+        output(" - ");
+    }
 
-block_200 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
+    print(errorStr);
 
-fun_191 = {
-  entry:@block_190,
-  num_params:2,
-  num_locals:2,
-};
+    assert (false);
 
-block_201 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'get_local', idx:1 },
-    { op:'array_push' },
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
+    /*
+    assert (
+        false,
+        //input.srcName + "@" + input.lineNo + ":" + input.colNo + " - " +
+        errorStr
+    );
+    */
 };
 
-fun_202 = {
-  entry:@block_201,
-  num_params:2,
-  num_locals:2,
+/// Check if a character is whitespace
+var isSpace = function (ch)
+{
+    // Note: we don't allow other whitespace characters
+    return (ch == ' ' || ch == '\t' || ch == '\n');
 };
 
-block_205 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'io' },
-    { op:'get_field' },
-    { op:'push', val:'print_str' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_getProp' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_206, num_args:2 },
-  ]
+/// Check if a character is a digit
+var isDigit = function (ch)
+{
+    return (ch >= '0' && ch <= '9');
 };
 
-block_206 = {
-  instrs: [
-    { op:'call', ret_to:@block_207, num_args:1 },
-  ]
+/// Check if a character is a letter
+var isAlpha = function (ch)
+{
+    return (
+        (ch >= 'a' && ch <= 'z') ||
+        (ch >= 'A' && ch <= 'Z')
+    );
 };
 
-block_207 = {
-  instrs: [
-    { op:'pop' },
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
+/// Check if a character is alphanumerical
+var isAlnum = function (ch)
+{
+    return (
+        (ch >= 'a' && ch <= 'z') ||
+        (ch >= 'A' && ch <= 'Z') ||
+        (ch >= '0' && ch <= '9')
+    );
 };
 
-block_203 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'string' },
-    { op:'if_true', then:@block_205, else:@block_208 },
-  ]
+/// Prototype for all input objects
+var Input = {
+    srcName: "input prototype object",
+    srcString: "",
+    strIdx: 0,
+    lineNo: 1,
+    colNo: 1
 };
 
-block_208 = {
-  instrs: [
-    { op:'jump', to:@block_209 },
-  ]
+/// Get a source position object for the current position
+Input.getPos = function (self)
+{
+    return {
+        line_no: self.lineNo,
+        col_no: self.colNo,
+        src_name: self.srcName
+    };
 };
 
-block_210 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'io' },
-    { op:'get_field' },
-    { op:'push', val:'print_int64' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_getProp' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_211, num_args:2 },
-  ]
-};
+/// Peek at a character from the input
+Input.peekCh = function (self)
+{
+    if (self.strIdx >= self.srcString.length)
+        return '\0';
 
-block_211 = {
-  instrs: [
-    { op:'call', ret_to:@block_212, num_args:1 },
-  ]
+    return self.srcString[self.strIdx];
 };
 
-block_212 = {
-  instrs: [
-    { op:'pop' },
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
+/// Read a character from the input
+Input.readCh = function (self)
+{
+    var ch = self:peekCh();
 
-block_209 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
-    { op:'if_true', then:@block_210, else:@block_213 },
-  ]
-};
+    assert (
+        !self:eof(),
+        "tried to read past end of input"
+    );
 
-block_213 = {
-  instrs: [
-    { op:'jump', to:@block_214 },
-  ]
-};
+    // Strictly reject invalid input characters
+    if ((ch <= '\x1F' || ch >= '\x7F') &&
+        (ch != '\n' && ch != '\t' && ch != '\r'))
+    {
+        //var hexStr[64];
+        //sprintf(hexStr, "0x%02X", (int)ch);
+        parseError(
+            self,
+            //"invalid character in input, " + std::string(hexStr)
+            "invalid character in input"
+        );
+    }
 
-block_214 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:$true },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_eq' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_215, num_args:2 },
-  ]
-};
+    self.strIdx += 1;
 
-block_216 = {
-  instrs: [
-    { op:'push', val:'true' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'output' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_217, num_args:1 },
-  ]
-};
+    if (ch == '\n')
+    {
+        self.lineNo += 1;
+        self.colNo = 1;
+    }
+    else
+    {
+        self.colNo += 1;
+    }
 
-block_217 = {
-  instrs: [
-    { op:'pop' },
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
+    return ch;
 };
 
-block_215 = {
-  instrs: [
-    { op:'if_true', then:@block_216, else:@block_218 },
-  ]
+/// Test if the end of file has been reached
+Input.eof = function (self)
+{
+    return self:peekCh() == '\0';
 };
 
-block_218 = {
-  instrs: [
-    { op:'jump', to:@block_219 },
-  ]
-};
+/// Peek to check if a string is next in the input
+Input.next = function (self, str)
+{
+    var idx = 0;
 
-block_219 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:$false },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_eq' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_220, num_args:2 },
-  ]
-};
+    for (; idx < str.length; idx += 1)
+    {
+        if (self.strIdx + idx >= self.srcString.length)
+            return false;
 
-block_221 = {
-  instrs: [
-    { op:'push', val:'false' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'output' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_222, num_args:1 },
-  ]
-};
+        if (str[idx] != self.srcString[self.strIdx + idx])
+            return false;
+    }
 
-block_222 = {
-  instrs: [
-    { op:'pop' },
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
+    return true;
 };
 
-block_220 = {
-  instrs: [
-    { op:'if_true', then:@block_221, else:@block_223 },
-  ]
-};
+/// Try and match a given string in the input
+/// The string is consumed if matched
+Input.match = function (self, str)
+{
+    assert (str.length > 0);
 
-block_223 = {
-  instrs: [
-    { op:'jump', to:@block_224 },
-  ]
-};
+    if (self:next(str))
+    {
+        for (var i = 0; i < str.length; i += 1)
+            self:readCh();
 
-block_224 = {
-  instrs: [
-    { op:'push', val:$false },
-    { op:'if_true', then:@block_225, else:@block_226 },
-  ]
-};
+        return true;
+    }
 
-block_225 = {
-  instrs: [
-    { op:'jump', to:@block_227 },
-  ]
+    return false;
 };
 
-block_226 = {
-  instrs: [
-    { op:'push', val:'unhandled type in output function' },
-    { op:'abort' },
-    { op:'jump', to:@block_227 },
-  ]
+/// Fail if the input doesn't match a given string
+Input.expect = function (self, str)
+{
+    if (!self:match(str))
+    {
+        parseError(self, "expected to find '" + str + "'");
+    }
 };
 
-block_227 = {
-  instrs: [
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
+/// Consume whitespace and comments
+Input.eatWS = function (self)
+{
+    // Until the end of the whitespace
+    for (;;)
+    {
+        // If we are at the end of the input, stop
+        if (self:eof())
+        {
+            return;
+        }
 
-fun_204 = {
-  entry:@block_203,
-  num_params:1,
-  num_locals:1,
-};
+        // Consume whitespace characters
+        if (isSpace(self:peekCh()))
+        {
+            self:readCh();
+            continue;
+        }
 
-block_228 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'output' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_230, num_args:1 },
-  ]
-};
+        // If this is a single-line comment
+        if (self:match("//"))
+        {
+            // Read until and end of line is reached
+            for (;;)
+            {
+                if (self:eof())
+                    return;
 
-block_230 = {
-  instrs: [
-    { op:'pop' },
-    { op:'push', val:'\x0A' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'output' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_231, num_args:1 },
-  ]
-};
+                if (self:readCh() == '\n')
+                    break;
+            }
 
-block_231 = {
-  instrs: [
-    { op:'pop' },
-    { op:'push', val:$undef },
-    { op:'ret' },
-  ]
-};
+            continue;
+        }
 
-fun_229 = {
-  entry:@block_228,
-  num_params:1,
-  num_locals:1,
-};
+        // If this is a multi-line comment
+        if (self:match("/*"))
+        {
+            // Read until the end of the comment
+            for (;;)
+            {
+                if (self:eof())
+                {
+                    parseError(
+                        self,
+                        "end of input in multiline comment"
+                    );
+                }
 
-block_232 = {
-  instrs: [
-    { op:'get_local', idx:0 },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'io' },
-    { op:'get_field' },
-    { op:'push', val:'read_file' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_getProp' },
-    { op:'get_field' },
-    { op:'call', ret_to:@block_234, num_args:2 },
-  ]
-};
+                if (self:readCh() == '*' && self:match("/"))
+                {
+                    break;
+                }
+            }
 
-block_234 = {
-  instrs: [
-    { op:'call', ret_to:@block_235, num_args:1 },
-  ]
-};
+            continue;
+        }
 
-block_235 = {
-  instrs: [
-    { op:'ret' },
-  ]
+        // This isn't whitespace, stop
+        break;
+    }
 };
 
-fun_233 = {
-  entry:@block_232,
-  num_params:1,
-  num_locals:1,
+/// Version of next which also eats preceding whitespace
+Input.nextWS = function (self, str)
+{
+    self:eatWS();
+    return self:next(str);
 };
 
-block_0 = {
-  instrs: [
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_add' },
-    { op:'push', val:@fun_3 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_sub' },
-    { op:'push', val:@fun_20 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_not' },
-    { op:'push', val:@fun_31 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_eq' },
-    { op:'push', val:@fun_36 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_ne' },
-    { op:'push', val:@fun_71 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_le' },
-    { op:'push', val:@fun_77 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_ge' },
-    { op:'push', val:@fun_101 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_in' },
-    { op:'push', val:@fun_125 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_instOf' },
-    { op:'push', val:@fun_136 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_getProp' },
-    { op:'push', val:@fun_151 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_getElem' },
-    { op:'push', val:@fun_191 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'rt_push' },
-    { op:'push', val:@fun_202 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'io' },
-    { op:'push', val:'core/io' },
-    { op:'import' },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'output' },
-    { op:'push', val:@fun_204 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'print' },
-    { op:'push', val:@fun_229 },
-    { op:'set_field' },
-    { op:'push', val:@global_obj },
-    { op:'push', val:'readFile' },
-    { op:'push', val:@fun_233 },
-    { op:'set_field' },
-    { op:'push', val:$true },
-    { op:'ret' },
-  ]
+/// Version of match which also eats preceding whitespace
+Input.matchWS = function (self, str)
+{
+    self:eatWS();
+    return self:match(str);
 };
 
-fun_1 = {
-  entry:@block_0,
-  num_params:0,
-  num_locals:0,
-};
+/// Version of expect which eats preceding whitespace
+Input.expectWS = function (self, str)
+{
+    self:eatWS();
+    self:expect(str);
+};
+
+/**
+Parse a decimal integer
+*/
+var parseInt = function (input, neg)
+{
+    var intVal = 0;
 
-@exports_obj;
+    for (;;)
+    {
+        // Peek at the next character
+        var ch = input:readCh();
+
+        if (!isDigit(ch))
+            parseError(input, "expected digit");
+
+        // Find the value of the digit
+        var digitVal = -1;
+        var digitChars = '0123456789';
+        for (var i = 0; i < digitChars.length; i += 1)
+        {
+            if (ch == digitChars[i])
+            {
+                digitVal = i;
+                break;
+            }
+        }
+        assert (
+            digitVal != -1,
+            "digit not found"
+        );
+
+        intVal = 10 * intVal + digitVal;
+
+        // If the next character is not a digit, stop
+        if (!isDigit(input:peekCh()))
+            break;
+    }
+
+    // If the value is negative
+    if (neg)
+    {
+        intVal *= -1;
+    }
+
+    return IntExpr::{ val: intVal };
+};
+
+/**
+Parse a string escape sequence.
+*/
+var parseEscSeq = function (input)
+{
+    var esc = input:readCh();
+
+    if (esc == 'n')
+        return '\n';
+    if (esc == 't')
+        return '\t';
+    if (esc == '0')
+        return '\0';
+    if (esc == '\'')
+        return '\'';
+    if (esc == '\"')
+        return '\"';
+    if (esc == '\\')
+        return '\\';
+
+    // Hexadecimal escape
+    if (esc == 'x')
+    {
+        // TODO: need charcode to string
+        assert (false, "hexadecimal escape sequence");
+
+        /*
+        int escVal = 0;
+        for (var i = 0; i < 2; i += 1)
+        {
+            var ch = input:readCh();
+            if (ch >= '0' && ch <= '9')
+            {
+                escVal = 16 * escVal + (ch - '0');
+            }
+            else if (ch >= 'A' && ch <= 'F')
+            {
+                escVal = 16 * escVal + (ch - 'A' + 10);
+            }
+            else
+            {
+                parseError(
+                    input,
+                    "invalid hexadecimal character escape code"
+                );
+            }
+        }
+
+        assert (escVal >= 0 && escVal <= 255);
+        return (char)escVal;
+        */
+    }
+
+    parseError(
+        input,
+        "invalid character escape sequence"
+    );
+};
+
+/**
+Parse a string literal
+*/
+var parseStringLit = function (input, endCh)
+{
+    var str = '';
+
+    for (;;)
+    {
+        // If this is the end of the input
+        if (input:eof())
+        {
+            parseError(
+                input,
+                "end of input inside string literal"
+            );
+        }
+
+        // Consume this character
+        var ch = input:readCh();
+
+        // If this is the end of the string
+        if (ch == endCh)
+        {
+            break;
+        }
+
+        // Disallow newlines inside strings
+        if (ch == '\r' || ch == '\n')
+        {
+            parseError(
+                input,
+                "newline character in string literal"
+            );
+        }
+
+        // If this is an escape sequence
+        if (ch == '\\')
+        {
+            ch = parseEscSeq(input);
+        }
+
+        str += ch;
+    }
+
+    return StringExpr::{ val: str };
+};
+
+/**
+Parse an identifier string. Returns a character string.
+*/
+var parseIdentStr = function (input)
+{
+    var ident = '';
+
+    var firstCh = input:peekCh();
+
+    if (firstCh != '_' && !isAlpha(firstCh))
+        parseError(input, "invalid identifier start");
+
+    for (;;)
+    {
+        // Peek at the next character
+        var ch = input:peekCh();
+
+        if (!isAlnum(ch) && ch != '_')
+            break;
+
+        // Consume this character
+        ident += input:readCh();
+    }
+
+    if (ident.length == 0)
+        parseError(input, "invalid identifier");
+
+    return ident;
+};
+
+/**
+Parse an if statement
+if (<test_expr>) <then_stmt> else <else_stmt>
+*/
+var parseIfStmt = function (input)
+{
+    input:expectWS("(");
+    var testExpr = parseExpr(input);
+    input:expectWS(")");
+
+    var thenStmt = parseStmt(input);
+
+    // Parse the else clause, if there is one
+    if (input:matchWS("else"))
+    {
+        var elseStmt = parseStmt(input);
+    }
+    else
+    {
+        var elseStmt = BlockStmt::{ stmts: [] };
+    }
+
+    return IfStmt::{
+        testExpr: testExpr,
+        thenStmt: thenStmt,
+        elseStmt: elseStmt
+    };
+};
+
+/**
+Parse a for loop statement
+*/
+var parseForStmt = function (input)
+{
+    input:expectWS("(");
+
+    // Parse the initialization statement
+    var initStmt = false;
+    if (input:matchWS(";"))
+    {
+        initStmt = ExprStmt::{
+            expr: IdentExpr::{ name:"true" }
+        };
+    }
+    else
+    {
+        // Parse the init statement
+        initStmt = parseStmt(input);
+
+        // FIXME: need sanitization check here once we have instanceof
+        //if (cast(VarStmt)initStmt is null && cast(ExprStmt)initStmt is null)
+        //    throw new parseError("invalid for-loop init statement", initStmt.pos);
+    }
+
+    // Parse the test expression
+    var testExpr = false;
+    if (input:matchWS(";"))
+    {
+        testExpr = IdentExpr::{ name:"true" };
+    }
+    else
+    {
+        testExpr = parseExpr(input);
+        input:expectWS(";");
+    }
+
+    // Parse the inccrement expression
+    var incrExpr = false;
+    if (input:matchWS(")"))
+    {
+        incrExpr = IdentExpr::{ name:"true" };
+    }
+    else
+    {
+        incrExpr = parseExpr(input);
+        input:expectWS(")");
+    }
+
+    // Parse the loop body
+    var bodyStmt = parseStmt(input);
+
+    return ForStmt::{
+        initStmt: initStmt,
+        testExpr: testExpr,
+        incrExpr: incrExpr,
+        bodyStmt: bodyStmt
+    };
+};
+
+/**
+Parse a list of expressions
+*/
+var parseExprList = function (input, endStr)
+{
+    var exprs = [];
+
+    // Until the end of the list
+    for (;;)
+    {
+        // If this is the end of the list
+        if (input:matchWS(endStr))
+        {
+            break;
+        }
+
+        // Parse an expression
+        var expr = parseExpr(input);
+        exprs:push(expr);
+
+        // If this is the end of the list
+        if (input:matchWS(endStr))
+        {
+            break;
+        }
+
+        // If this is not the first element, there must be a separator
+        input:expectWS(",");
+    }
+
+    return exprs;
+};
+
+/**
+Parse an object literal expression
+*/
+var parseObjExpr = function (input)
+{
+    var fieldNames = [];
+    var valExprs = [];
+
+    // Until the end of the list
+    for (;;)
+    {
+        // If this is the end of the list
+        if (input:matchWS("}"))
+        {
+            break;
+        }
+
+        // Parse the property name
+        var ident = parseIdentStr(input);
+
+        input:expectWS(":");
+
+        // Parse an expression
+        var expr = parseExpr(input);
+
+        fieldNames:push(ident);
+        valExprs:push(expr);
+
+        // If this is the end of the list
+        if (input:matchWS("}"))
+        {
+            break;
+        }
+
+        // If this is not the first element, there must be a separator
+        input:expectWS(",");
+    }
+
+    return ObjectExpr::{
+        names: fieldNames,
+        exprs: valExprs
+    };
+};
+
+/**
+Parse a function (closure) expression
+function (x,y,z) <body_expr>
+*/
+var parseFunExpr = function (input)
+{
+    // If a function name was specified
+    var name = '';
+    if (!input:nextWS("("))
+    {
+        name = parseIdentStr(input);
+    }
+
+    input:expectWS("(");
+
+    var params = [];
+
+    // Until the end of the argument list
+    for (;;)
+    {
+        // If this is the end of the list
+        if (input:matchWS(")"))
+            break;
+
+        // Parse a parameter name
+        var identStr = parseIdentStr(input);
+        params:push(identStr);
+
+        // If this is the end of the list
+        if (input:matchWS(")"))
+            break;
+
+        // If this is not the first element, there must be a separator
+        input:expect(",");
+    }
+
+    // Parse the function body
+    input:expectWS("{");
+    var body = parseBlockStmt(input, "}");
+
+    return FunExpr::{ name:name, body:body, params:params };
+};
+
+/**
+Try to match an operator in the input
+*/
+var matchOp = function (input, minPrec, preUnary)
+{
+    // FIXME: we probably want to build separate
+    // lists and separate matching functions for
+    // binary and unary operators
+    // the logic here is hairy and inefficient
+
+    // Longest matching operator found
+    var match = false;
+
+    // Length of the longest match found
+    var matchLen = 0;
+
+    // Search through the operators to try and find a match
+    for (var i = 0; i < opList.length; i += 1)
+    {
+        var op = opList[i];
+
+        // If the operator string doesn't match, skip it
+        if (!input:next(op.str))
+        {
+            continue;
+        }
+
+        // If it doesn't have enough precedence or doesn't meet
+        // the arity and associativity requirements, skip it
+        if ((op.prec < minPrec) ||
+            (preUnary && op.arity != 1) ||
+            (!preUnary && op.arity == 1) ||
+            (preUnary && op.assoc != 'r'))
+        {
+            continue;
+        }
+
+        // Update the longest match found
+        var opLen = op.str.length;
+        if (opLen > matchLen)
+        {
+            match = op;
+            matchLen = opLen;
+        }
+    }
+
+    // If no match was found, stop
+    if (match == false)
+    {
+        return false;
+    }
+
+    // Consume the operator string
+    input:expect(match.str);
+
+    return match;
+};
+
+/**
+Parse an atomic expression
+*/
+var parseAtom = function (input)
+{
+    // Consume whitespace
+    input:eatWS();
+
+    // Numerical constant
+    if (isDigit(input:peekCh()))
+    {
+        return parseInt(input, false);
+    }
+
+    // String literal
+    if (input:match("\'"))
+    {
+        return parseStringLit(input, '\'');
+    }
+    if (input:match("\""))
+    {
+        return parseStringLit(input, '\"');
+    }
+
+    // Array literal
+    if (input:match("["))
+    {
+        return ArrayExpr::{
+            exprs: parseExprList(input, "]")
+        };
+    }
+
+    // Object literal
+    if (input:match("{"))
+    {
+        return parseObjExpr(input);
+    }
+
+    // Parenthesized expression
+    if (input:match("("))
+    {
+        var expr = parseExpr(input);
+        input:expectWS(")");
+        return expr;
+    }
+
+    // Try matching a right-associative (prefix) unary operators
+    var op = matchOp(input, 0, true);
+
+    // If a matching operator was found
+    if (op != false)
+    {
+        var expr = parseExprPrec(input, op.prec);
+        return UnOpExpr::{ op:op, expr:expr };
+    }
+
+    // Identifier
+    if (isAlnum(input:peekCh()))
+    {
+        // Function expression
+        if (input:match("function"))
+        {
+            return parseFunExpr(input);
+        }
+
+        if (input:match("import"))
+        {
+            var nameExpr = parseAtom(input);
+
+            if (!('val' in nameExpr))
+                parseError(input, "invalid package name expression");
+
+            return ImportExpr::{ pkgName:nameExpr.val };
+        }
+
+        // Identifier, variable reference
+        return IdentExpr::{ name:parseIdentStr(input) };
+    }
+
+    // Inline IR
+    if (input:match("$"))
+    {
+        var opName = parseIdentStr(input);
+        input:expect("(");
+        var argExprs = parseExprList(input, ")");
+        return IRExpr::{ opName:opName, argExprs:argExprs };
+    }
+
+    // Parsing failed
+    parseError(input, "expected atomic expression");
+};
+
+/**
+Parse an expression using the precedence climbing algorithm
+*/
+var parseExprPrec = function (input, minPrec)
+{
+    // The first call has min precedence 0
+    //
+    // Each call loops to grab everything of the current precedence or
+    // greater and builds a left-sided subtree out of it, associating
+    // operators to their left operand
+    //
+    // If an operator has less than the current precedence, the loop
+    // breaks, returning us to the previous loop level, this will attach
+    // the atom to the previous operator (on the right)
+    //
+    // If an operator has the mininum precedence or greater, it will
+    // associate the current atom to its left and then parse the rhs
+
+    // Parse the first atom
+    var lhsExpr = parseAtom(input);
+
+    for (;;)
+    {
+        // Consume whitespace
+        input:eatWS();
+
+        // Get the current source code position
+        var srcPos = input:getPos();
+
+        // Attempt to match an operator in the input
+        // with sufficient precedence
+        var op = matchOp(input, minPrec, false);
+
+        // If no operator matches, break out
+        if (op == false)
+            break;
+
+        // Compute the minimum precedence for the recursive call (if any)
+        var nextMinPrec = op.prec;
+        if (op.assoc == 'l')
+        {
+            if (op.closeStr.length > 0)
+                nextMinPrec = 0;
+            else
+                nextMinPrec = op.prec + 1;
+        }
+
+        // If this is a regular function call expression
+        if (op == OP_CALL)
+        {
+            // Parse the argument list and create the call expression
+            var argExprs = parseExprList(input, ")");
+
+            lhsExpr = CallExpr::{
+                funExpr:lhsExpr,
+                argExprs:argExprs,
+                srcPos:srcPos
+            };
+        }
+
+        // If this is a method call expression
+        else if (op == OP_M_CALL)
+        {
+            // Parse the identifier string
+            var identStr = parseIdentStr(input);
+
+            // Parse the argument list and create the call expression
+            input:expectWS("(");
+            var argExprs = parseExprList(input, ")");
+
+            lhsExpr = MethodCallExpr::{
+                baseExpr: lhsExpr,
+                nameStr: identStr,
+                argExprs: argExprs,
+                srcPos:srcPos
+            };
+        }
+
+        // If this is a member expression
+        else if (op == OP_MEMBER)
+        {
+            // Parse the identifier string
+            var identStr = parseIdentStr(input);
+
+            // Produce an indexing expression
+            lhsExpr = BinOpExpr::{
+                op: op,
+                lhsExpr: lhsExpr,
+                rhsExpr: IdentExpr::{ name:identStr }
+            };
+        }
+
+        // If this is a binary operator
+        else if (op.arity == 2)
+        {
+            // If the operator can be folded into an assignment expression
+            if (op.foldAssign && input:matchWS("="))
+            {
+                // Recursively parse the rhs
+                var rhsExpr = parseExprPrec(input, OP_ASSIGN.prec + 1);
+
+                // Wrap the binary op in an assignment expression
+                var binExpr = BinOpExpr::{
+                    op: op,
+                    lhsExpr: lhsExpr,
+                    rhsExpr: rhsExpr
+                };
+                var assignExpr = BinOpExpr::{
+                    op: OP_ASSIGN,
+                    lhsExpr: lhsExpr,
+                    rhsExpr: binExpr
+                };
+                lhsExpr = assignExpr;
+            }
+            else
+            {
+                // Recursively parse the rhs
+                var rhsExpr = parseExprPrec(input, nextMinPrec);
+
+                // Create a new parent node for the expressions
+                lhsExpr = BinOpExpr::{
+                    op: op,
+                    lhsExpr: lhsExpr,
+                    rhsExpr: rhsExpr
+                };
+
+                // If specified, match the operator closing string
+                if (op.closeStr.length > 0 && !input:matchWS(op.closeStr))
+                    parseError(input, "expected operator closing");
+            }
+        }
+
+        else
+        {
+            assert (
+                false,
+                "operator not handled correctly"
+            );
+        }
+    }
+
+    // Return the parsed expression
+    return lhsExpr;
+};
+
+/**
+Recursively parse an expression, starting at the least precedence level
+*/
+var parseExpr = function (input)
+{
+    return parseExprPrec(input, 0);
+};
+
+/**
+Parse a block statement
+*/
+var parseBlockStmt = function (input, endStr)
+{
+    var stmts = [];
+
+    // Until the end of the list
+    for (;;)
+    {
+        // Read whitespace
+        input:eatWS();
+
+        // If this is the end of the block statement
+        if ((endStr == "" && input:eof()) ||
+            (endStr != "" && input:match(endStr)))
+        {
+            break;
+        }
+
+        // Parse a statement
+        var stmt = parseStmt(input);
+        stmts:push(stmt);
+    }
+
+    return BlockStmt::{ stmts: stmts };
+};
+
+var parseStmt = function (input)
+{
+    // Sequence/block expression (i.e { a; b; c }
+    if (input:matchWS("{"))
+    {
+        return parseBlockStmt(input, "}");
+    }
+
+    // Variable declaration
+    if (input:matchWS("var"))
+    {
+        input:eatWS();
+        var ident = parseIdentStr(input);
+
+        input:expectWS("=");
+
+        var initExpr = parseExpr(input);
+
+        input:expectWS(";");
+
+        return VarStmt::{ identName:ident, initExpr:initExpr };
+    }
+
+    // If-else statement
+    if (input:matchWS("if"))
+    {
+        return parseIfStmt(input);
+    }
+
+    // For loop statement
+    if (input:matchWS("for"))
+    {
+        return parseForStmt(input);
+    }
+
+    // Return statement
+    if (input:matchWS("break"))
+    {
+        input:expectWS(";");
+        return BreakStmt::{};
+    }
+
+    // Return statement
+    if (input:matchWS("continue"))
+    {
+        input:expectWS(";");
+        return ContStmt::{};
+    }
+
+    // Return statement
+    if (input:matchWS("return"))
+    {
+        if (input:matchWS(";"))
+        {
+            return ReturnStmt::{
+                expr: IdentExpr::{ name:"undef" }
+            };
+        }
+
+        var expr = parseExpr(input);
+        input:expectWS(";");
+
+        return ReturnStmt::{ expr: expr };
+    }
+
+    // Assert statement
+    if (input:nextWS("assert"))
+    {
+        // Get the current position in the input
+        input:eatWS();
+        var srcPos = input:getPos();
+
+        input:matchWS("assert");
+        input:expectWS("(");
+
+        var testExpr = parseExpr(input);
+
+        var errMsg = false;
+        if (input:matchWS(","))
+            errMsg = parseExpr(input);
+        else
+            errMsg = StringExpr::{ val:"assertion failed" };
+
+        input:expectWS(")");
+        input:expectWS(";");
+
+        return IfStmt::{
+            testExpr: testExpr,
+            thenStmt: BlockStmt::{ stmts:[] },
+            elseStmt: IRStmt::{
+                instr: {op: "abort", src_pos: srcPos },
+                argExprs:[errMsg]
+            }
+        };
+    }
+
+    // Expression statement
+    var expr = parseExpr(input);
+    input:expectWS(";");
+    return ExprStmt::{ expr: expr };
+};
+
+/**
+Parse a source unit from an input object
+*/
+var parseUnit = function (input)
+{
+    var blockStmt = parseBlockStmt(input, "");
+
+    // Create the top-level function
+    return FunExpr::{ name: "unit", body: blockStmt, argExprs: [] };
+};
+
+/**
+Parse a source string as a unit
+*/
+var parseString = function (str, srcName)
+{
+    var input = Input::{
+        srcName: srcName,
+        srcString: str
+    };
+
+    return parseUnit(input);
+};
+
+/**
+Parse a source file as a unit
+*/
+var parseFile = function (fileName)
+{
+    var fileData = readFile(fileName);
+
+    var input = Input::{
+        srcName: fileName,
+        srcString: fileData
+    };
+
+    return parseUnit(input);
+};
+
+//============================================================================
+// Code generation
+//============================================================================
+
+var Block = {};
+
+Block.new = function ()
+{
+    return Block::{
+        instrs: [],
+    };
+};
+
+Block.hasBranch = function (block)
+{
+    if (block.instrs.length == 0)
+        return false;
+
+    var lastInstr = block.instrs[block.instrs.length-1];
+    var op = lastInstr.op;
+
+    return (
+        op == 'ret' ||
+        op == 'jump' ||
+        op == 'if_true'
+    );
+};
+
+Block.addInstr = function (block, instr)
+{
+    block.instrs:push(instr);
+};
+
+var Function = {};
+
+Function.new = function (numParams, entryBlock)
+{
+    return Function::{
+        num_params: numParams,
+        num_locals: 0,
+        entry: entryBlock,
+
+        /// List of local variable names
+        localNames: []
+    };
+};
+
+/// Register a local variable declaration
+Function.registerDecl = function (fun, identName)
+{
+    if (fun:hasLocal(identName))
+        return;
+
+    var newIdx = fun.num_locals;
+    fun.localNames:push(identName);
+    fun.num_locals += 1;
+};
+
+Function.hasLocal = function (fun, identName)
+{
+    return fun:getLocalIdx(identName) != -1;
+};
+
+Function.getLocalIdx = function (fun, identName)
+{
+    for (var i = 0; i < fun.localNames.length; i += 1)
+    {
+        if (fun.localNames[i] == identName)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+};
+
+var CodeGenCtx = {};
+
+/// Initial context constructor
+CodeGenCtx.new = function (
+    exportsObj,
+    globalObj,
+    fun,
+    unitFun,
+    curBlock
+)
+{
+    return CodeGenCtx::{
+        exportsObj: exportsObj,
+        globalObj: globalObj,
+        fun: fun,
+        unitFun: unitFun,
+        curBlock: curBlock,
+        contBlock: false,
+        breakBlock: false
+    };
+};
+
+/// Context extension function
+CodeGenCtx.subCtx = function (
+    ctx,
+    startBlock
+)
+{
+    return CodeGenCtx::{
+        exportsObj: ctx.exportsObj,
+        globalObj: ctx.globalObj,
+        fun: ctx.fun,
+        unitFun: ctx.unitFun,
+        curBlock: startBlock,
+        contBlock: ctx.contBlock,
+        breakBlock: ctx.breakBlock
+    };
+};
+
+/// Context extension function for loop contexts
+CodeGenCtx.subCtxLoop = function (
+    ctx,
+    startBlock,
+    contBlock,
+    breakBlock
+)
+{
+    return CodeGenCtx::{
+        exportsObj: ctx.exportsObj,
+        globalObj: ctx.globalObj,
+        fun: ctx.fun,
+        unitFun: ctx.unitFun,
+        curBlock: startBlock,
+        contBlock: contBlock,
+        breakBlock: breakBlock
+    };
+};
+
+/// Continue code generation at a given block
+CodeGenCtx.merge = function (ctx, block)
+{
+    ctx.curBlock = block;
+};
+
+/// Add an instructionN
+CodeGenCtx.addInstr = function (ctx, instr)
+{
+    assert (ctx.curBlock != false);
+    ctx.curBlock:addInstr(instr);
+};
+
+/// Add an instruction with no arguments by opcode name
+CodeGenCtx.addOp = function (ctx, opStr)
+{
+    ctx.curBlock:addInstr({ op: opStr });
+};
+
+/// Add a push instruction
+CodeGenCtx.addPush = function (ctx, val)
+{
+    ctx.curBlock:addInstr({ op:'push', val:val });
+};
+
+/**
+Register variable declarations within a function body
+*/
+var registerDecls = function (fun, stmt, unitFun)
+{
+    if (stmt instanceof BlockStmt)
+    {
+        for (var i = 0; i < stmt.stmts.length; i += 1)
+            registerDecls(fun, stmt.stmts[i], unitFun);
+        return;
+    }
+
+    if (stmt instanceof VarStmt)
+    {
+        // If this is not a unit function, create a new local
+        if (!unitFun)
+            fun:registerDecl(stmt.identName);
+        return;
+    }
+
+    if (stmt instanceof ExprStmt)
+    {
+        return;
+    }
+
+    if (stmt instanceof IfStmt)
+    {
+        registerDecls(fun, stmt.thenStmt, unitFun);
+        registerDecls(fun, stmt.elseStmt, unitFun);
+        return;
+    }
+
+    if (stmt instanceof ForStmt)
+    {
+        registerDecls(fun, stmt.initStmt, unitFun);
+        registerDecls(fun, stmt.bodyStmt, unitFun);
+        return;
+    }
+
+    if (stmt instanceof ContStmt)
+    {
+        return;
+    }
+
+    if (stmt instanceof BreakStmt)
+    {
+        return;
+    }
+
+    if (stmt instanceof ReturnStmt)
+    {
+        return;
+    }
+
+    if (stmt instanceof IRStmt)
+    {
+        return;
+    }
+
+    assert (
+        false,
+        "unknown statement type in registerDecls"
+    );
+};
+
+/**
+Generate code for a code unit
+*/
+var genUnit = function (unitAST)
+{
+    var entryBlock = Block.new();
+
+    var unitFun = Function.new(0, entryBlock);
+
+    // Register variable declarations
+    registerDecls(unitFun, unitAST.body, true);
+
+    var exportsObj = { init: unitFun };
+
+    var globalObj = {
+        exports: exportsObj,
+        print: print
+    };
+
+    // Create the initial context
+    var ctx = CodeGenCtx.new(
+        exportsObj,
+        globalObj,
+        unitFun,
+        true,
+        entryBlock
+    );
+
+    // Generate code for the function body
+    genStmt(ctx, unitAST.body);
+
+    // Add a final return statement to the unit function
+    if (!ctx.curBlock:hasBranch())
+    {
+        ctx:addInstr({ op:'push', val:true });
+        ctx:addInstr({ op:'ret' });
+    }
+
+    return exportsObj;
+};
+
+var runtimeCall = function (ctx, fun)
+{
+    var contBlock = Block.new();
+
+    ctx:addPush(fun);
+
+    ctx:addInstr({
+        op: "call",
+        ret_to: contBlock,
+        num_args: fun.num_params
+    });
+
+    ctx:merge(contBlock);
+};
+
+var genExpr = function (ctx, expr)
+{
+    //print('genExpr');
+
+    if (expr instanceof IntExpr)
+    {
+        ctx:addPush(expr.val);
+        return;
+    }
+
+    if (expr instanceof StringExpr)
+    {
+        ctx:addPush(expr.val);
+        return;
+    }
+
+    if (expr instanceof IdentExpr)
+    {
+        if (expr.name == "exports")
+        {
+            ctx:addPush(ctx.exportsObj);
+            return;
+        }
+
+        if (expr.name == "true")
+        {
+            ctx:addPush(true);
+            return;
+        }
+
+        if (expr.name == "false")
+        {
+            ctx:addPush(false);
+            return;
+        }
+
+        if (expr.name == "undef")
+        {
+            ctx:addPush(undef);
+            return;
+        }
+
+        if (ctx.fun:hasLocal(expr.name))
+        {
+            var localIdx = ctx.fun:getLocalIdx(expr.name);
+            ctx:addInstr({ op:'get_local', idx:localIdx });
+            return;
+        }
+
+        ctx:addPush(ctx.globalObj);
+        ctx:addPush(expr.name);
+        ctx:addOp("get_field");
+
+        return;
+    }
+
+    if (expr instanceof UnOpExpr)
+    {
+        // Logical not
+        if (expr.op == OP_NOT)
+        {
+            genExpr(ctx, expr.expr);
+            runtimeCall(ctx, rt_not);
+            return;
+        }
+
+        // Unary negation
+        if (expr.op == OP_NEG)
+        {
+            // Generate 0 - x
+            ctx:addPush(0);
+            genExpr(ctx, expr.expr);
+            runtimeCall(ctx, rt_sub);
+            return;
+        }
+
+        assert (
+            false,
+            "unhandled unary op"
+        );
+    }
+
+    if (expr instanceof BinOpExpr)
+    {
+        if (expr.op == OP_ASSIGN)
+        {
+            genAssign(ctx, expr.lhsExpr, expr.rhsExpr);
+            return;
+        }
+
+        if (expr.op == OP_AND)
+        {
+            genLogicalAnd(ctx, expr.lhsExpr, expr.rhsExpr);
+            return;
+        }
+
+        if (expr.op == OP_OR)
+        {
+            genLogicalOr(ctx, expr.lhsExpr, expr.rhsExpr);
+            return;
+        }
+
+        if (expr.op == OP_EQ)
+        {
+            // Expression of the form: typeof x == "type_string"
+            if (expr.lhsExpr instanceof UnOpExpr)
+            {
+                if (expr.lhsExpr.op == OP_TYPEOF)
+                {
+                    if (expr.rhsExpr instanceof StringExpr)
+                    {
+                        var tagStr = expr.rhsExpr.val;
+                        genExpr(ctx, expr.lhsExpr.expr);
+                        ctx:addInstr({ op:'has_tag', tag:tagStr });
+                        return;
+                    }
+                }
+            }
+
+            // Equality comparison
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_eq);
+
+            return;
+        }
+
+        // Inequality comparison
+        if (expr.op == OP_NE)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_ne);
+            return;
+        }
+
+        if (expr.op == OP_LT)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            ctx:addOp("lt_i64");
+            return;
+        }
+
+        if (expr.op == OP_LE)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_le);
+            return;
+        }
+
+        if (expr.op == OP_GT)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            ctx:addOp("gt_i64");
+            return;
+        }
+
+        if (expr.op == OP_GE)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_ge);
+            return;
+        }
+
+        if (expr.op == OP_IN)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_in);
+            return;
+        }
+
+        if (expr.op == OP_ADD)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_add);
+            return;
+        }
+
+        if (expr.op == OP_SUB)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_sub);
+            return;
+        }
+
+        if (expr.op == OP_MUL)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            ctx:addOp("mul_i64");
+            return;
+        }
+
+        if (expr.op == OP_MEMBER)
+        {
+            genExpr(ctx, expr.lhsExpr);
+
+            var identExpr = expr.rhsExpr;
+
+            if (!(identExpr instanceof IdentExpr))
+                parseError(false, "invalid rhs in member expression");
+
+            ctx:addInstr({ op:'push', val:identExpr.name });
+
+            runtimeCall(ctx, rt_getProp);
+
+            return;
+        }
+
+        // Indexing operator: a[b]
+        if (expr.op == OP_INDEX)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_getElem);
+            return;
+        }
+
+        // Object extension
+        if (expr.op == OP_OBJ_EXT)
+        {
+            var objExpr = expr.rhsExpr;
+
+            if (!(expr.rhsExpr instanceof ObjectExpr))
+                parseError(input, "invalid rhs in objext extension expression");
+
+            genObjExpr(ctx, expr.lhsExpr, expr.rhsExpr);
+
+            return;
+        }
+
+        assert (
+            false,
+            "unhandled binary op " + expr.op.str
+        );
+    }
+
+    // Object literal expression
+    if (expr instanceof ObjectExpr)
+    {
+        genObjExpr(ctx, false, expr);
+        return;
+    }
+
+    // Array literal expression
+    if (expr instanceof ArrayExpr)
+    {
+        // Create a new array with a sufficient capacity
+        ctx:addInstr({ op:'push', val:expr.exprs.length });
+        ctx:addOp("new_array");
+
+        // For each property
+        for (var i = 0; i < expr.exprs.length; i += 1)
+        {
+            // Duplicate the array value
+            ctx:addInstr({ op:'dup', idx:0 });
+
+            // Evaluate the property value expression
+            genExpr(ctx, expr.exprs[i]);
+
+            // Append the element to the array
+            ctx:addOp("array_push");
+        }
+
+        return;
+    }
+
+    // Function/closure expression
+    if (expr instanceof FunExpr)
+    {
+        var entryBlock = Block.new();
+
+        var fun = Function.new(
+            expr.params.length,
+            entryBlock
+        );
+
+        // Register the function parameter variables
+        for (var i = 0; i < expr.params.length; i += 1)
+            fun:registerDecl(expr.params[i]);
+
+        // Register the variable declarations in the function body
+        registerDecls(fun, expr.body, false);
+
+        var funCtx = CodeGenCtx.new(
+            ctx.exportsObj,
+            ctx.globalObj,
+            fun,
+            false,
+            entryBlock
+        );
+
+        // Generate code for the function body
+        genStmt(funCtx, expr.body);
+
+        if (!funCtx.curBlock:hasBranch())
+        {
+            // Return the undefined value
+            funCtx:addInstr({ op:'push', val:undef });
+            funCtx:addOp("ret");
+        }
+
+        ctx:addInstr({ op:'push', val:fun });
+
+        return;
+    }
+
+    // Function call expression
+    if (expr instanceof CallExpr)
+    {
+        var args = expr.argExprs;
+
+        // Evaluate the arguments in order
+        for (var i = 0; i < args.length; i += 1)
+            genExpr(ctx, args[i]);
+
+        // Evaluate the function expression
+        genExpr(ctx, expr.funExpr);
+
+        var contBlock = Block.new();
+
+        ctx:addInstr({
+            op: "call",
+            ret_to: contBlock,
+            num_args: args.length,
+            src_pos: expr.srcPos
+        });
+
+        ctx:merge(contBlock);
+
+        return;
+    }
+
+    // Method call expression
+    if (expr instanceof MethodCallExpr)
+    {
+        var args = expr.argExprs;
+
+        // Evaluate the base expression (this value)
+        genExpr(ctx, expr.baseExpr);
+
+        // Evaluate the arguments in order
+        for (var i = 0; i < args.length; i += 1)
+            genExpr(ctx, args[i]);
+
+        // Duplicate the base (this) value
+        ctx:addInstr({ op:'dup', idx:args.length });
+
+        // Push the property name
+        ctx:addInstr({ op:'push', val:expr.nameStr });
+
+        // Get the function/method value
+        runtimeCall(ctx, rt_getProp);
+
+        var contBlock = Block.new();
+
+        ctx:addInstr({
+            op: "call",
+            ret_to:contBlock,
+            num_args: args.length+1,
+            src_pos: expr.srcPos
+        });
+
+        ctx:merge(contBlock);
+
+        return;
+    }
+
+    // Inline IR expression
+    if (expr instanceof IRExpr)
+    {
+        // Evaluate the arguments in the order supplied
+        var args = expr.argExprs;
+        for (var i = 0; i < args.length; i += 1)
+            genExpr(ctx, args[i]);
+
+        ctx:addOp(expr.opName);
+
+        return;
+    }
+
+    if (expr instanceof ImportExpr)
+    {
+        ctx:addPush(expr.pkgName);
+        ctx:addOp("import");
+        return;
+    }
+
+    assert (
+        false,
+        "unknown expression type in genExpr"
+    );
+};
+
+var genStmt = function (ctx, stmt)
+{
+    //print('genStmt');
+
+    if (stmt instanceof BlockStmt)
+    {
+        // For each statement
+        for (var i = 0; i < stmt.stmts.length; i += 1)
+        {
+            genStmt(ctx, stmt.stmts[i]);
+
+            if (ctx.curBlock:hasBranch())
+                break;
+        }
+
+        return;
+    }
+
+    if (stmt instanceof VarStmt)
+    {
+        if (ctx.fun:hasLocal(stmt.identName))
+        {
+            genExpr(ctx, stmt.initExpr);
+            var localIdx = ctx.fun:getLocalIdx(stmt.identName);
+            ctx:addInstr({ op:'set_local', idx:localIdx });
+        }
+        else
+        {
+            ctx:addPush(ctx.globalObj);
+            ctx:addPush(stmt.identName);
+            genExpr(ctx, stmt.initExpr);
+            ctx:addOp("set_field");
+        }
+
+        return;
+    }
+
+    if (stmt instanceof ReturnStmt)
+    {
+        //print('*** ReturnStmt');
+        genExpr(ctx, stmt.expr);
+        ctx:addOp("ret");
+        return;
+    }
+
+    if (stmt instanceof ExprStmt)
+    {
+        // Pop (ignore) the value produced by the expression
+        genExpr(ctx, stmt.expr);
+        ctx:addOp("pop");
+        return;
+    }
+
+    if (stmt instanceof IfStmt)
+    {
+        // Evaluate the test expression
+        genExpr(ctx, stmt.testExpr);
+
+        var thenBlock = Block.new();
+        var thenCtx = ctx:subCtx(thenBlock);
+        genStmt(thenCtx, stmt.thenStmt);
+
+        var elseBlock = Block.new();
+        var elseCtx = ctx:subCtx(elseBlock);
+        genStmt(elseCtx, stmt.elseStmt);
+
+        // Insert the conditional branching instruction
+        ctx:addInstr({ op:"if_true", then:thenBlock, else:elseBlock });
+
+        var joinBlock = Block.new();
+        ctx:merge(joinBlock);
+
+        if (!thenCtx.curBlock:hasBranch())
+            thenCtx:addInstr({ op:"jump", to:joinBlock });
+        if (!elseCtx.curBlock:hasBranch())
+            elseCtx:addInstr({ op:"jump", to:joinBlock });
+
+        return;
+    }
+
+    // For-loop statement
+    if (stmt instanceof ForStmt)
+    {
+        // Loop body and exit blocks
+        var testBlock = Block.new();
+        var bodyBlock = Block.new();
+        var incrBlock = Block.new();
+        var exitBlock = Block.new();
+
+        // Generate the initialization statement
+        genStmt(ctx, stmt.initStmt);
+
+        // Evaluate the test expression
+        ctx:addInstr({ op:"jump", to:testBlock });
+        var testCtx = ctx:subCtx(testBlock);
+        genExpr(testCtx, stmt.testExpr);
+
+        // Insert the conditional branching instruction
+        testCtx:addInstr({ op:"if_true", then:bodyBlock, else:exitBlock });
+
+        // Generate the loop body statement
+        var bodyCtx = ctx:subCtxLoop(
+            bodyBlock,
+            incrBlock,
+            exitBlock
+        );
+        genStmt(bodyCtx, stmt.bodyStmt);
+
+        // Generate the increment expression
+        if (!bodyCtx.curBlock:hasBranch())
+            bodyCtx:addInstr({ op:"jump", to:incrBlock });
+        var incrCtx = ctx:subCtx(incrBlock);
+        genExpr(incrCtx, stmt.incrExpr);
+        incrCtx:addInstr({ op:"jump", to:testBlock });
+
+        ctx:merge(exitBlock);
+
+        return;
+    }
+
+    // Loop break statement
+    if (stmt instanceof ContStmt)
+    {
+        if (!ctx.curBlock:hasBranch())
+            ctx:addInstr({ op:"jump", to:ctx.contBlock });
+        return;
+    }
+
+    // Loop break statement
+    if (stmt instanceof BreakStmt)
+    {
+        if (!ctx.curBlock:hasBranch())
+            ctx:addInstr({ op:"jump", to:ctx.breakBlock });
+        return;
+    }
+
+    // IR instruction statement
+    if (stmt instanceof IRStmt)
+    {
+        // Evaluate the arguments in reverse order
+        var args = stmt.argExprs;
+
+        for (var i = 0; i < args.length; i += 1)
+            genExpr(ctx, args[i]);
+
+        ctx:addInstr(stmt.instr);
+
+        return;
+    }
+
+    assert (
+        false,
+        "unknown statement in genStmt"
+    );
+};
+
+var genLogicalAnd = function (ctx, lhsExpr, rhsExpr)
+{
+    var andBlock = Block.new();
+    var doneBlock = Block.new();
+
+    // Evaluate the lhs expression
+    genExpr(ctx, lhsExpr);
+    ctx:addInstr({ op:'dup', idx:0 });
+    ctx:addInstr({ op:"if_true", then:andBlock, else:doneBlock });
+
+    // Evaluate the second expression
+    var andCtx = ctx:subCtx(andBlock);
+    andCtx:addOp("pop");
+    genExpr(andCtx, rhsExpr);
+    andCtx:addInstr({ op:"jump", to:doneBlock });
+
+    ctx:merge(doneBlock);
+};
+
+var genLogicalOr = function (ctx, lhsExpr, rhsExpr)
+{
+    var orBlock = Block.new();
+    var doneBlock = Block.new();
+
+    // Evaluate the lhs expression
+    genExpr(ctx, lhsExpr);
+    ctx:addInstr({ op:'dup', idx:0 });
+    ctx:addInstr({ op:"if_true", then:doneBlock, else:orBlock });
+
+    // If the first expression fails, evaluate the second one
+    var orCtx = ctx:subCtx(orBlock);
+    orCtx:addOp("pop");
+    genExpr(orCtx, rhsExpr);
+    orCtx:addInstr({ op:"jump", to:doneBlock });
+
+    ctx:merge(doneBlock);
+};
+
+var genObjExpr = function (ctx, protoExpr, objExpr)
+{
+    assert (
+        objExpr.names.length == objExpr.exprs.length,
+        "object property names and init exprs do not match"
+    );
+
+    // Create a new object
+    ctx:addInstr({ op:'push', val:objExpr.exprs.length });
+    ctx:addOp("new_object");
+
+    // If a prototype expression is specified
+    if (protoExpr != false)
+    {
+        // Duplicate the object value
+        ctx:addInstr({ op:'dup', idx:0 });
+
+        // Push the prototype property name
+        ctx:addPush("proto");
+
+        // Evaluate the prototype expression
+        genExpr(ctx, protoExpr);
+
+        // Set the prototype field
+        ctx:addOp("set_field");
+    }
+
+    // For each property
+    for (var i = 0; i < objExpr.names.length; i += 1)
+    {
+        // Duplicate the object value
+        ctx:addInstr({ op:'dup', idx:0 });
+
+        // Push the property name
+        ctx:addInstr({ op:'push', val:objExpr.names[i] });
+
+        // Evaluate the property value expression
+        genExpr(ctx, objExpr.exprs[i]);
+
+        ctx:addOp("set_field");
+    }
+};
+
+var genAssign = function (ctx, lhsExpr, rhsExpr)
+{
+    //print('genAssign');
+
+    // Assignment to a variable
+    if (lhsExpr instanceof IdentExpr)
+    {
+        if (lhsExpr.name == "exports")
+        {
+            parseError(false, "cannot assign to exports variable");
+        }
+
+        if (ctx.fun:hasLocal(lhsExpr.name))
+        {
+            var localIdx = ctx.fun:getLocalIdx(lhsExpr.name);
+            genExpr(ctx, rhsExpr);
+            ctx:addInstr({ op:'dup', idx:0 });
+            ctx:addInstr({ op:'set_local', idx:localIdx });
+        }
+        else
+        {
+            genExpr(ctx, rhsExpr);
+            ctx:addPush(ctx.globalObj);
+            ctx:addPush(lhsExpr.name);
+            ctx:addInstr({ op:'dup', idx:2 });
+            ctx:addOp("set_field");
+        }
+
+        return;
+    }
+
+    // Assignment to a property
+    if (lhsExpr instanceof BinOpExpr)
+    {
+        if (lhsExpr.op == OP_MEMBER)
+        {
+            var memberOp = lhsExpr;
+            var identExpr = memberOp.rhsExpr;
+
+            // Evaluate the rhs value
+            genExpr(ctx, rhsExpr);
+
+            // Evaluate the object/base
+            genExpr(ctx, memberOp.lhsExpr);
+
+            ctx:addInstr({ op:'push', val:identExpr.name });
+            ctx:addInstr({ op:'dup', idx:2 });
+            ctx:addOp("set_field");
+
+            return;
+        }
+
+        assert (false);
+    }
+
+    assert (
+        false,
+        "unhandled expression type in genAssign"
+    );
+};
+
+//============================================================================
+// Tests
+//============================================================================
+
+/// Test that the parsing of a string succeeds
+var testParse = function (str)
+{
+    print(str);
+
+    return parseString(str, "parser_test");
+};
+
+/// Test the functionality of the parser
+var testParser = function ()
+{
+    print("parser tests");
+
+    // Identifiers
+    testParse("foobar;");
+    testParse("  foo_bar;  ");
+    testParse("  foo_bar ; ");
+
+    // Literals
+    testParse("123;");
+    testParse("'abc';");
+    testParse("\"double-quoted string!\";");
+    testParse("\"double-quoted string, 'hi'!\";");
+    testParse("'hi'; // comment");
+    testParse("'hi';");
+    testParse("'new\\nline';");
+    testParse("true;");
+    testParse("false;");
+
+    // Array literals
+    testParse("[];");
+    testParse("[1];");
+    testParse("[1,a];");
+    testParse("[1 , a];");
+    testParse("[1,a, ];");
+    testParse("[ 1,\na ];");
+
+    // Object literals
+    testParse("var x = {x:3};");
+    testParse("var x = {x:3,y:2};");
+    testParse("var x = {x:3,y:2+z};");
+    testParse("var x = {x:3,y:2+z,};");
+
+    // Comments
+    testParse("1; // comment");
+    testParse("[ 1//comment\n,a ];");
+    testParse("1 /* comment */ + x;");
+    testParse("1 /* // comment */ + x;");
+
+    // Unary and binary expressions
+    testParse("-1;");
+    testParse("-x + 2;");
+    testParse("x + -1;");
+    testParse("a + b;");
+    testParse("a + b + c;");
+    testParse("a + b - c;");
+    testParse("a + b * c + d;");
+    testParse("a || b || c;");
+    testParse("a && b;");
+    testParse("(a);");
+    testParse("(b ) ;");
+    testParse("(a + b);");
+    testParse("(a + (b + c));");
+    testParse("((a + b) + c);");
+    testParse("(a + b) * (c + d);");
+
+    // Member expression
+    testParse("a.b;");
+    testParse("a.b + c;");
+
+    // Array indexing
+    testParse("a[0];");
+    testParse("a[b];");
+    testParse("a[b+2];");
+    testParse("a[2*b+1];");
+
+    // If statement
+    testParse("if (1) 2; ");
+    testParse("if (1) return 2;");
+    testParse("if (!x) return 1; else return 2;");
+    testParse("if (x <= 2) return 0; ");
+    testParse("if (x == 1) return 2; ");
+    testParse("if (typeof x == 'string') return 2; ");
+    testParse("if ('foo' in obj) return 1;");
+
+    // For loop
+    testParse("for (a; b; c) d;");
+    testParse("for (a; b; c) continue;");
+    testParse("for (a; b; c) break;");
+    testParse("for (;;) d;");
+    testParse("for (i = 0; i < 10; i = i + 1) x;");
+
+    // Assignment
+    testParse("x = 1;");
+    testParse("x = -1;");
+    testParse("a.b = x + y;");
+    testParse("x = y = 1;");
+    testParse("var x = 3;");
+    testParse("x += 3;");
+
+    // Call expressions
+    testParse("a();");
+    testParse("a(b);");
+    testParse("a(b,c);");
+    testParse("a(b,c+1);");
+    testParse("a(b,c+1,);");
+    testParse("x + a(b,c+1);");
+    testParse("x + a(b,c+1) + y;");
+    testParse("a(); b();");
+
+    // Package import
+    testParse("var io = import 'core/io';");
+
+    // Inline IR
+    testParse("$add_i64(1, 2);");
+
+    // Assert statement
+    testParse("assert(x);");
+    testParse("assert(x, 'foo');");
+
+    // Function expression
+    testParse("function () { return 0; }; ");
+    testParse("function (x) {return x;};");
+    testParse("function foo(x) { return x; };");
+    testParse("function (x,y) { return x; };");
+    testParse("function (x,y,) { return x; };");
+    testParse("function (x,y) { return x+y; };");
+    testParse("obj.method = function (this, x) { this.x = x; }; ");
+
+    // Sequence/block expression
+    testParse("{ 1; 2; }");
+    testParse("function (x) { print(x); print(y); };");
+    testParse("function (x) { var y = x + 1; print(y); };");
+
+    // Method calls
+    testParse("o:foo();");
+    testParse("o:foo(1,2);");
+    testParse("x + o:foo(1,2);");
+};
+
+// Run the parser tests
+testParser();
