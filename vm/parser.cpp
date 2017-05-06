@@ -27,10 +27,10 @@ std::string readFile(std::string fileName)
 
     //printf("%ld bytes\n", len);
 
-    char* buf = (char*)malloc(len+1);
+    char* buf = static_cast<char*>(malloc(len+1));
 
     // Read into the allocated buffer
-    int read = fread(buf, 1, len, file);
+    size_t read = fread(buf, 1, len, file);
 
     if (read != len)
     {
@@ -78,7 +78,7 @@ char Input::readCh()
         (ch != '\n' && ch != '\t' && ch != '\r'))
     {
         char hexStr[64];
-        sprintf(hexStr, "0x%02X", (int)ch);
+        sprintf(hexStr, "0x%02X", static_cast<int>(ch));
         throw ParseError(
             *this,
             "invalid character in input, " + std::string(hexStr)
@@ -311,14 +311,14 @@ Value parseStringLit(Input& input, char endCh)
                     int escVal = 0;
                     for (size_t i = 0; i < 2; ++i)
                     {
-                        auto ch = input.readCh();
-                        if (ch >= '0' && ch <= '9')
+                        auto esc_ch = input.readCh();
+                        if (esc_ch >= '0' && esc_ch <= '9')
                         {
-                            escVal = 16 * escVal + (ch - '0');
+                            escVal = 16 * escVal + (esc_ch - '0');
                         }
-                        else if (ch >= 'A' && ch <= 'F')
+                        else if (esc_ch >= 'A' && esc_ch <= 'F')
                         {
-                            escVal = 16 * escVal + (ch - 'A' + 10);
+                            escVal = 16 * escVal + (esc_ch - 'A' + 10);
                         }
                         else
                         {
@@ -330,7 +330,7 @@ Value parseStringLit(Input& input, char endCh)
                     }
 
                     assert (escVal >= 0 && escVal <= 255);
-                    ch = (char)escVal;
+                    ch = static_cast<char>(escVal);
                 }
                 break;
 
@@ -572,7 +572,7 @@ Value parseExpr(Input& input)
 
     std::string chStr = std::string("'") + ch + "'";
     char hexStr[64];
-    sprintf(hexStr, "0x%02X", (int)ch);
+    sprintf(hexStr, "0x%02X", static_cast<int>(ch));
 
     // Parsing failed
     throw ParseError(
@@ -652,7 +652,7 @@ Value resolveRefs(
         // If this is an array or an object
         if (node.isPointer())
         {
-            auto ptr = (refptr)node;
+            auto ptr = static_cast<refptr>(node);
 
             // If this node was previously visited, skip it
             if (visited.find(ptr) != visited.end())

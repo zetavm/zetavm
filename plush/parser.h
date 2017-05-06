@@ -528,8 +528,8 @@ public:
         std::vector<std::string> params
     )
     : name(name),
-      body(body),
-      params(params)
+      params(params),
+      body(body)
     {
     }
 
@@ -546,4 +546,5 @@ FunExpr* parseString(std::string str, std::string srcName);
 
 FunExpr* parseFile(std::string fileName);
 
+ASTNode* testParseFile(std::string);
 void testParser();

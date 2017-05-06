@@ -14,11 +14,16 @@ HostFn::HostFn(std::string name, size_t numParams, void* fptr)
 {
 }
 
+using HostFn0 = Value(*)();
+using HostFn1 = Value(*)(Value);
+using HostFn2 = Value(*)(Value, Value);
+using HostFn3 = Value(*)(Value, Value, Value);
+
 Value HostFn::call0()
 {
     assert (fptr);
     assert (numParams == 0);
-    auto f0 = (Value(*)()) fptr;
+    auto f0 = reinterpret_cast<HostFn0>(fptr);
     return f0();
 }
 
@@ -26,7 +31,7 @@ Value HostFn::call1(Value arg0)
 {
     assert (fptr);
     assert (numParams == 1);
-    auto f1 = (Value(*)(Value)) fptr;
+    auto f1 = reinterpret_cast<HostFn1>(fptr);
     return f1(arg0);
 }
 
@@ -34,7 +39,7 @@ Value HostFn::call2(Value arg0, Value arg1)
 {
     assert (fptr);
     assert (numParams == 2);
-    auto f2 = (Value(*)(Value,Value)) fptr;
+    auto f2 = reinterpret_cast<HostFn2>(fptr);
     return f2(arg0, arg1);
 }
 
@@ -42,7 +47,7 @@ Value HostFn::call3(Value arg0, Value arg1, Value arg2)
 {
     assert (fptr);
     assert (numParams == 3);
-    auto f3 = (Value(*)(Value,Value,Value)) fptr;
+    auto f3 = reinterpret_cast<HostFn3>(fptr);
     return f3(arg0, arg1, arg2);
 }
 
@@ -55,7 +60,7 @@ void setHostFn(
 {
     auto fnObj = new HostFn(name, numParams, fptr);
 
-    auto fnVal = Value((refptr)fnObj, TAG_HOSTFN);
+    auto fnVal = Value(reinterpret_cast<refptr>(fnObj), TAG_HOSTFN);
 
     assert (!pkgObj.hasField(name));
 
@@ -69,21 +74,21 @@ void setHostFn(
 Value print_int64(Value val)
 {
     assert (val.isInt64());
-    std::cout << (int64_t)val;
+    std::cout << static_cast<int64_t>(val);
     return Value::UNDEF;
 }
 
 Value print_str(Value val)
 {
     assert (val.isString());
-    std::cout << (std::string)val;
+    std::cout << std::string(val);
     return Value::UNDEF;
 }
 
 Value read_file(Value fileName)
 {
     assert (fileName.isString());
-    auto nameStr = (std::string)fileName;
+    auto nameStr = std::string(fileName);
 
     std::cout << "reading file: " << nameStr << std::endl;
 
@@ -100,10 +105,10 @@ Value read_file(Value fileName)
     size_t len = ftell(file);
     fseek(file, 0, SEEK_SET);
 
-    char* buf = (char*)malloc(len+1);
+    char* buf = reinterpret_cast<char*>(malloc(len+1));
 
     // Read into the allocated buffer
-    int read = fread(buf, 1, len, file);
+    auto read = fread(buf, 1, len, file);
 
     if (read != len)
     {
@@ -123,9 +128,9 @@ Value read_file(Value fileName)
 Value get_core_io_pkg()
 {
     auto exports = Object::newObject(32);
-    setHostFn(exports, "print_int64", 1, (void*)print_int64);
-    setHostFn(exports, "print_str"  , 1, (void*)print_str);
-    setHostFn(exports, "read_file"  , 1, (void*)read_file);
+    setHostFn(exports, "print_int64", 1, reinterpret_cast<void*>(print_int64));
+    setHostFn(exports, "print_str"  , 1, reinterpret_cast<void*>(print_str));
+    setHostFn(exports, "read_file"  , 1, reinterpret_cast<void*>(read_file));
     return exports;
 }
 

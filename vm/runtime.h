@@ -122,7 +122,7 @@ public:
     VM();
 
     /// Allocate a block of memory on the heap
-    Value alloc(uint32_t size, Tag tag);
+    Value alloc(size_t size, Tag tag);
 
     size_t allocated() const;
 };
@@ -236,7 +236,7 @@ public:
     bool operator == (const char* that) const;
 
     // FIXME: temporary until string internsing is implemented
-    bool operator == (String that) { return (std::string)*this == (std::string)that; }
+    bool operator == (String that) { return std::string(*this) == std::string(that); }
 
     /// Get the ith character code
     char operator [] (size_t i);
@@ -346,7 +346,7 @@ public:
     bool getField(const char* name, Value& value, size_t& idxCache);
 
     bool hasField(std::string name) { return hasField(String(name)); }
-    void setField(std::string name, Value val) { return setField(String(name), val); }
+    void setField(std::string name, Value value) { return setField(String(name), value); }
     Value getField(std::string name) { return getField(String(name)); }
 };
 

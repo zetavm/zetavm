@@ -40,7 +40,7 @@ public:
     {
         auto val = getField(obj);
         assert (val.isInt64());
-        return (int64_t)val;
+        return static_cast<int64_t>(val);
     }
 
     String getStr(Object obj)
@@ -68,11 +68,11 @@ public:
 std::string posToString(Value srcPos)
 {
     assert (srcPos.isObject());
-    auto srcPosObj = (Object)srcPos;
+    auto srcPosObj = static_cast<Object>(srcPos);
 
-    auto lineNo = (int64_t)srcPosObj.getField("line_no");
-    auto colNo = (int64_t)srcPosObj.getField("col_no");
-    auto srcName = (std::string)srcPosObj.getField("src_name");
+    auto lineNo = static_cast<int64_t>(srcPosObj.getField("line_no"));
+    auto colNo = static_cast<int64_t>(srcPosObj.getField("col_no"));
+    auto srcName = std::string(srcPosObj.getField("src_name"));
 
     return (
         srcName + "@" +
@@ -151,7 +151,7 @@ Value charStrings[256];
 
 Opcode decode(Object instr)
 {
-    auto instrPtr = (refptr)instr;
+    auto instrPtr = static_cast<refptr>(instr);
 
     if (opCache.find(instrPtr) != opCache.end())
     {
@@ -161,7 +161,7 @@ Opcode decode(Object instr)
 
     // Get the opcode string for this instruction
     static ICache opIC("op");
-    auto opStr = (std::string)opIC.getStr(instr);
+    auto opStr = std::string(opIC.getStr(instr));
 
     //std::cout << "decoding \"" << opStr << "\"" << std::endl;
 
@@ -272,7 +272,8 @@ Value call(Object fun, ValueVec args)
     static ICache numLocalsIC("num_locals");
     auto numParams = numParamsIC.getInt64(fun);
     auto numLocals = numLocalsIC.getInt64(fun);
-    assert (args.size() <= numParams);
+    assert (numParams >= 0);
+    assert (args.size() <= static_cast<decltype(args.size())>(numParams));
     assert (numParams <= numLocals);
 
     ValueVec locals;
@@ -306,20 +307,20 @@ Value call(Object fun, ValueVec args)
         return val;
     };
 
-    auto popBool = [&popVal]()
+    auto popBool = [&popVal]() -> bool
     {
         auto val = popVal();
         if (!val.isBool())
             throw RunError("op expects boolean value");
-        return (bool)val;
+        return val;
     };
 
-    auto popInt64 = [&popVal]()
+    auto popInt64 = [&popVal]() -> int64_t
     {
         auto val = popVal();
         if (!val.isInt64())
             throw RunError("op expects int64 value");
-        return (int64_t)val;
+        return val;
     };
 
     auto popStr = [&popVal]()
@@ -366,7 +367,7 @@ Value call(Object fun, ValueVec args)
         static ICache instrsIC("instrs");
         Array instrArr = instrsIC.getArr(targetBB);
 
-        instrs = (Value)instrArr;
+        instrs = static_cast<Value>(instrArr);
         numInstrs = instrArr.length();
         instrIdx = 0;
 
@@ -410,7 +411,8 @@ Value call(Object fun, ValueVec args)
                 static ICache icache("idx");
                 auto localIdx = icache.getInt64(instr);
                 //std::cout << "localIdx=" << localIdx << std::endl;
-                assert (localIdx < locals.size());
+                assert (localIdx >= 0);
+                assert (static_cast<decltype(locals.size())>(localIdx) < locals.size());
                 stack.push_back(locals[localIdx]);
             }
             break;
@@ -421,7 +423,8 @@ Value call(Object fun, ValueVec args)
                 static ICache icache("idx");
                 auto localIdx = icache.getInt64(instr);
                 //std::cout << "localIdx=" << localIdx << std::endl;
-                assert (localIdx < locals.size());
+                assert (localIdx >= 0);
+                assert (static_cast<decltype(locals.size())>(localIdx) < locals.size());
                 locals[localIdx] = popVal();
             }
             break;
@@ -448,7 +451,8 @@ Value call(Object fun, ValueVec args)
                 static ICache idxIC("idx");
                 auto idx = idxIC.getInt64(instr);
 
-                if (idx >= stack.size())
+                assert (idx >= 0);
+                if (static_cast<decltype(stack.size())>(idx) >= stack.size())
                     throw RunError("stack undeflow, invalid index for dup");
 
                 auto val = stack[stack.size() - 1 - idx];
@@ -547,7 +551,7 @@ Value call(Object fun, ValueVec args)
 
             case GET_CHAR:
             {
-                auto idx = (size_t)popInt64();
+                size_t idx = popInt64();
                 auto str = popStr();
 
                 if (idx >= str.length())
@@ -557,12 +561,12 @@ Value call(Object fun, ValueVec args)
                     );
                 }
 
-                auto ch = str[idx];
+                int ch = str[idx];
 
                 // Cache single-character strings
                 if (charStrings[ch] == Value::FALSE)
                 {
-                    char buf[2] = { (char)str[idx], '\0' };
+                    char buf[2] = { str[idx], '\0' };
                     charStrings[ch] = String(buf);
                 }
 
@@ -572,7 +576,7 @@ Value call(Object fun, ValueVec args)
 
             case GET_CHAR_CODE:
             {
-                auto idx = (size_t)popInt64();
+                size_t idx = popInt64();
                 auto str = popStr();
 
                 if (idx >= str.length())
@@ -582,7 +586,7 @@ Value call(Object fun, ValueVec args)
                     );
                 }
 
-                stack.push_back((int64_t)str[idx]);
+                stack.push_back(static_cast<int64_t>(str[idx]));
             }
             break;
 
@@ -633,7 +637,7 @@ Value call(Object fun, ValueVec args)
                 {
                     throw RunError(
                         "invalid identifier in set_field \"" +
-                        (std::string)fieldName + "\""
+                        std::string(fieldName) + "\""
                     );
                 }
 
@@ -656,7 +660,7 @@ Value call(Object fun, ValueVec args)
                 {
                     throw RunError(
                         "get_field failed, missing field \"" +
-                        (std::string)fieldName + "\""
+                        std::string(fieldName) + "\""
                     );
                 }
 
@@ -703,7 +707,7 @@ Value call(Object fun, ValueVec args)
             case SET_ELEM:
             {
                 auto val = popVal();
-                auto idx = (size_t)popInt64();
+                size_t idx = popInt64();
                 auto arr = Array(popVal());
 
                 if (idx >= arr.length())
@@ -719,7 +723,7 @@ Value call(Object fun, ValueVec args)
 
             case GET_ELEM:
             {
-                auto idx = (size_t)popInt64();
+                size_t idx = popInt64();
                 auto arr = Array(popVal());
 
                 if (idx >= arr.length())
@@ -811,7 +815,8 @@ Value call(Object fun, ValueVec args)
 
                 auto callee = popVal();
 
-                if (stack.size() < numArgs)
+                assert (numArgs >= 0);
+                if (stack.size() < static_cast<decltype(stack.size())>(numArgs))
                 {
                     throw RunError(
                         "stack underflow at call"
@@ -819,28 +824,28 @@ Value call(Object fun, ValueVec args)
                 }
 
                 // Copy the arguments into a vector
-                ValueVec args;
-                args.resize(numArgs);
-                for (size_t i = 0; i < numArgs; ++i)
-                    args[numArgs - 1 - i] = popVal();
+                ValueVec arguments;
+                arguments.resize(numArgs);
+                for (size_t i = 0; i < static_cast<size_t>(numArgs); ++i)
+                    arguments[numArgs - 1 - i] = popVal();
 
-                static ICache numParamsIC("num_params");
-                size_t numParams;
+                static ICache numberParamsIC("num_params");
+                size_t numberParams;
                 if (callee.isObject())
                 {
-                    numParams = numParamsIC.getInt64(callee);
+                    numberParams = numberParamsIC.getInt64(callee);
                 }
                 else if (callee.isHostFn())
                 {
-                    auto hostFn = (HostFn*)(callee.getWord().ptr);
-                    numParams = hostFn->getNumParams();
+                    auto hostFn = reinterpret_cast<HostFn*>(callee.getWord().ptr);
+                    numberParams = hostFn->getNumParams();
                 }
                 else
                 {
                     throw RunError("invalid callee at call site");
                 }
 
-                if (numArgs != numParams)
+                if (static_cast<decltype(numberParams)>(numArgs) != numberParams)
                 {
                     std::string srcPosStr = (
                         instr.hasField("src_pos")?
@@ -853,7 +858,7 @@ Value call(Object fun, ValueVec args)
                         "incorrect argument count in call, received " +
                         std::to_string(numArgs) +
                         ", expected " +
-                        std::to_string(numParams)
+                        std::to_string(numberParams)
                     );
                 }
 
@@ -862,11 +867,11 @@ Value call(Object fun, ValueVec args)
                 if (callee.isObject())
                 {
                     // Perform the call
-                    retVal = call(callee, args);
+                    retVal = call(callee, arguments);
                 }
                 else if (callee.isHostFn())
                 {
-                    auto hostFn = (HostFn*)(callee.getWord().ptr);
+                    auto hostFn = reinterpret_cast<HostFn*>(callee.getWord().ptr);
 
                     // Call the host function
                     switch (numArgs)
@@ -876,15 +881,15 @@ Value call(Object fun, ValueVec args)
                         break;
 
                         case 1:
-                        retVal = hostFn->call1(args[0]);
+                        retVal = hostFn->call1(arguments[0]);
                         break;
 
                         case 2:
-                        retVal = hostFn->call2(args[0], args[1]);
+                        retVal = hostFn->call2(arguments[0], arguments[1]);
                         break;
 
                         case 3:
-                        retVal = hostFn->call3(args[0], args[1], args[2]);
+                        retVal = hostFn->call3(arguments[0], arguments[1], arguments[2]);
                         break;
 
                         default:
@@ -918,7 +923,7 @@ Value call(Object fun, ValueVec args)
 
             case ABORT:
             {
-                auto errMsg = (std::string)popStr();
+                auto errMsg = std::string(popStr());
 
                 // If a source position was specified
                 if (instr.hasField("src_pos"))
@@ -1095,7 +1100,7 @@ uint8_t* instrPtr = nullptr;
 template <typename T> void writeCode(T val)
 {
     assert (codeHeapAlloc < codeHeapLimit);
-    T* heapPtr = (T*)codeHeapAlloc;
+    T* heapPtr = reinterpret_cast<T*>(codeHeapAlloc);
     *heapPtr = val;
     codeHeapAlloc += sizeof(T);
     assert (codeHeapAlloc <= codeHeapLimit);
@@ -1105,7 +1110,7 @@ template <typename T> void writeCode(T val)
 template <typename T> T& readCode()
 {
     assert (instrPtr + sizeof(T) <= codeHeapLimit);
-    T* valPtr = (T*)instrPtr;
+    T* valPtr = reinterpret_cast<T*>(instrPtr);
     instrPtr += sizeof(T);
     return *valPtr;
 }
@@ -1133,9 +1138,9 @@ void initInterp()
 /// until compiled
 BlockVersion* getBlockVersion(Object block)
 {
-    auto blockPtr = (refptr)block;
+    auto blockPtr = static_cast<refptr>(block);
 
-    auto versionItr = versionMap.find((refptr)block);
+    auto versionItr = versionMap.find(static_cast<refptr>(block));
 
     if (versionItr == versionMap.end())
     {
@@ -1182,10 +1187,10 @@ void compile(BlockVersion* version)
     {
         auto instrVal = instrs.getElem(i);
         assert (instrVal.isObject());
-        auto instr = (Object)instrVal;
+        auto instr = static_cast<Object>(instrVal);
 
         static ICache opIC("op");
-        auto op = (std::string)opIC.getStr(instr);
+        auto op = std::string(opIC.getStr(instr));
 
         std::cout << "op: " << op << std::endl;
 
@@ -1427,7 +1432,8 @@ Value callFun(Object fun, ValueVec args)
     static ICache numLocalsIC("num_locals");
     auto numParams = numParamsIC.getInt64(fun);
     auto numLocals = numLocalsIC.getInt64(fun);
-    assert (args.size() <= numParams);
+    assert (numParams >= 0);
+    assert (args.size() <= static_cast<decltype(args.size())>(numParams));
     assert (numParams <= numLocals);
 
     std::cout << "pushing RA" << std::endl;

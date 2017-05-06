@@ -5,10 +5,10 @@
 #include "runtime.h"
 
 /// Undefined value constant
-const Value Value::UNDEF(Word((int64_t)0), TAG_UNDEF);
+const Value Value::UNDEF(Word(int64_t(0)), TAG_UNDEF);
 
 /// Boolean constants
-const Value Value::FALSE(Word((int64_t)0), TAG_BOOL);
+const Value Value::FALSE(Word(int64_t(0)), TAG_BOOL);
 const Value Value::TRUE(Word(1l), TAG_BOOL);
 
 /// Numerical constants
@@ -102,39 +102,44 @@ VM::VM()
 Allocates a block of memory
 Note that this function guarantees that the memory is zeroed out
 */
-Value VM::alloc(uint32_t size, Tag tag)
+Value VM::alloc(size_t size, Tag tag)
 {
     // FIXME: use an alloc pool of some kind
-    auto ptr = (refptr)calloc(1, size);
+    auto ptr = static_cast<refptr>(calloc(1, size));
 
     // Set the tag in the object header
-    *(Tag*)ptr = tag;
+    *ptr = tag;
 
     // Wrap the pointer in a tagged value
     return Value(ptr, tag);
 }
 
+uint64_t getHeader(refptr obj)
+{
+    auto header = *reinterpret_cast<uint64_t*>(obj);
+    return header;
+}
 void Wrapper::setNextPtr(refptr obj, refptr nextPtr)
 {
     // Get the object header
-    auto header = *(uint64_t*)obj;
+    auto header = getHeader(obj);
 
     // Set the next pointer
-    *(refptr*)(obj + OBJ_OF_NEXT) = nextPtr;
+    *reinterpret_cast<refptr*>(obj + OBJ_OF_NEXT) = nextPtr;
 
     // Set the next pointer flag bit in the object header
-    *(uint64_t*)(obj) = header | HEADER_MSK_NEXT;
+    *reinterpret_cast<uint64_t*>(obj) = header | HEADER_MSK_NEXT;
 }
 
 refptr Wrapper::getNextPtr(refptr obj, refptr notFound)
 {
-    auto header = *(uint64_t*)obj;
+    auto header = getHeader(obj);
     bool hasNextPtr = header & HEADER_MSK_NEXT;
 
     if (!hasNextPtr)
         return notFound;
 
-    auto nextPtr = *(refptr*)(obj + OBJ_OF_NEXT);
+    auto nextPtr = *reinterpret_cast<refptr*>(obj + OBJ_OF_NEXT);
     assert (nextPtr != nullptr);
 
     return nextPtr;
@@ -142,7 +147,7 @@ refptr Wrapper::getNextPtr(refptr obj, refptr notFound)
 
 refptr Wrapper::getObjPtr()
 {
-    auto objPtr = (refptr)val;
+    auto objPtr = static_cast<refptr>(val);
     assert (objPtr != nullptr);
     return getNextPtr(objPtr, objPtr);
 }
@@ -156,13 +161,14 @@ String::String(std::string str)
 
     // Allocate memory
     val = vm.alloc(numBytes, TAG_STRING);
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
 
     // Set the string length
-    *(uint32_t*)(ptr + OF_LEN) = len;
+    // FIXME type mismatch: decltype(len) != uint32_t
+    *reinterpret_cast<uint32_t*>(ptr + OF_LEN) = static_cast<uint32_t>(len);
 
     // Copy the string data
-    strcpy((char*)(ptr + OF_DATA), str.c_str());
+    strcpy(reinterpret_cast<char*>(ptr + OF_DATA), str.c_str());
 }
 
 String::String(Value value)
@@ -173,17 +179,17 @@ String::String(Value value)
 
 uint32_t String::length() const
 {
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
     assert (ptr != nullptr);
-    auto len = *(uint32_t*)(ptr + OF_LEN);
+    auto len = *reinterpret_cast<uint32_t*>(ptr + OF_LEN);
     return len;
 }
 
 const char* String::getDataPtr() const
 {
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
     assert (ptr != nullptr);
-    auto strdata = (char*)(ptr + OF_DATA);
+    auto strdata = reinterpret_cast<char*>(ptr + OF_DATA);
     return strdata;
 }
 
@@ -240,11 +246,12 @@ Array::Array(size_t minCap)
 
     // Allocate memory
     val = vm.alloc(numBytes, TAG_ARRAY);
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
 
     // Set the array capacity and length
-    *(uint32_t*)(ptr + OF_CAP) = minCap;
-    *(uint32_t*)(ptr + OF_LEN) = 0;
+    // FIXME type mismatch: decltype(minCap) != uint32_t (it is size_t)
+    *reinterpret_cast<uint32_t*>(ptr + OF_CAP) = static_cast<uint32_t>(minCap);
+    *reinterpret_cast<uint32_t*>(ptr + OF_LEN) = 0;
 
     // No initialization necessary because vm.alloc
     // provides zeroed out memory, initialized to all zeroes,
@@ -260,14 +267,14 @@ Array::Array(Value value)
 size_t Array::getCap()
 {
     auto ptr = getObjPtr();
-    auto cap = *(uint32_t*)(ptr + OF_CAP);
+    auto cap = *reinterpret_cast<uint32_t*>(ptr + OF_CAP);
     return cap;
 }
 
 uint32_t Array::length()
 {
     auto ptr = getObjPtr();
-    auto len = *(uint32_t*)(ptr + OF_LEN);
+    auto len = *reinterpret_cast<uint32_t*>(ptr + OF_LEN);
     return len;
 }
 
@@ -277,8 +284,8 @@ void Array::setElem(size_t i, Value v)
     auto ptr = getObjPtr();
     auto cap = length();
 
-    auto words = (Word*)(ptr + OF_DATA);
-    auto tags  = (Tag*) (ptr + OF_DATA + cap * sizeof(Word));
+    auto words = reinterpret_cast<Word*>(ptr + OF_DATA);
+    auto tags  = (ptr + OF_DATA + cap * sizeof(Word));
 
     assert (length() <= getCap());
     assert (i < length());
@@ -292,8 +299,8 @@ Value Array::getElem(size_t i)
     auto ptr = getObjPtr();
     auto cap = getCap();
 
-    auto words = (Word*)(ptr + OF_DATA);
-    auto tags  = (Tag*) (ptr + OF_DATA + cap * sizeof(Word));
+    auto words = reinterpret_cast<Word*>(ptr + OF_DATA);
+    auto tags  = (ptr + OF_DATA + cap * sizeof(Word));
 
     assert (length() <= getCap());
     assert (i < length());
@@ -323,7 +330,7 @@ void Array::push(Value val)
             newArr.push(getElem(i));
 
         // Set the next pointer on this object
-        auto rootObjPtr = (refptr)this->val;
+        auto rootObjPtr = static_cast<refptr>(this->val);
         setNextPtr(rootObjPtr, newArr.getObjPtr());
         assert (getObjPtr() != ptr);
 
@@ -333,14 +340,14 @@ void Array::push(Value val)
         //std::cout << "done extending array" << std::endl;
     }
 
-    auto words = (Word*)(ptr + OF_DATA);
-    auto tags  = (Tag*) (ptr + OF_DATA + cap * sizeof(Word));
+    auto words = reinterpret_cast<Word*>(ptr + OF_DATA);
+    auto tags  = (ptr + OF_DATA + cap * sizeof(Word));
 
     words[len] = val.getWord();
     tags[len] = val.getTag();
 
     // Increment the length
-    *(uint32_t*)(ptr + OF_LEN) = len + 1;
+    *reinterpret_cast<uint32_t*>(ptr + OF_LEN) = len + 1;
 }
 
 /*
@@ -372,10 +379,11 @@ Object Object::newObject(size_t cap)
 
     // Allocate memory
     auto val = vm.alloc(numBytes, TAG_OBJECT);
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
 
     // Set the object capacity
-    *(uint32_t*)(ptr + OF_CAP) = cap;
+    // FIXME type mismatch: decltype(cap) != uint32_t (it is size_t)
+    *reinterpret_cast<uint32_t*>(ptr + OF_CAP) = static_cast<uint32_t>(cap);
 
     // TODO: init object shape, when shapes actually implemented!
 
@@ -394,7 +402,7 @@ Object::Object(Value value)
 size_t Object::getCap()
 {
     auto ptr = getObjPtr();
-    auto cap = *(uint32_t*)(ptr + OF_CAP);
+    auto cap = *reinterpret_cast<uint32_t*>(ptr + OF_CAP);
     assert (cap > 0);
     return cap;
 }
@@ -406,7 +414,7 @@ size_t Object::getSlotIdx(
     bool newField
 )
 {
-    auto values = (Value*)(ptr + OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + OF_FIELDS);
 
     // FIXME: for now, we use a dumb key-pair linear search strategy
     size_t idx = 0;
@@ -419,7 +427,7 @@ size_t Object::getSlotIdx(
         assert (values[idx].isString());
 
         // Slot found
-        if ((String)values[idx] == fieldName)
+        if (static_cast<String>(values[idx]) == fieldName)
             return idx;
     }
 
@@ -462,7 +470,7 @@ void Object::setField(String name, Value value)
 
         // Set the next pointer on this object
         auto newObjPtr = newObj.getObjPtr();
-        auto rootObjPtr = (refptr)val;
+        auto rootObjPtr = static_cast<refptr>(val);
         setNextPtr(rootObjPtr, newObjPtr);
         assert (getObjPtr() != ptr);
 
@@ -472,7 +480,7 @@ void Object::setField(String name, Value value)
 
     // Write the new property
     assert (slotIdx + 1 < cap);
-    auto values = (Value*)(ptr + OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + OF_FIELDS);
     values[slotIdx + 0] = name;
     values[slotIdx + 1] = value;
 }
@@ -481,7 +489,7 @@ Value Object::getField(String name)
 {
     auto ptr = getObjPtr();
     auto cap = getCap();
-    auto values = (Value*)(ptr + OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + OF_FIELDS);
 
     size_t slotIdx = getSlotIdx(ptr, cap, name, false);
 
@@ -493,7 +501,7 @@ bool Object::getField(const char* name, Value& value, size_t& idxCache)
 {
     auto ptr = getObjPtr();
     auto cap = getCap();
-    auto values = (Value*)(ptr + OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + OF_FIELDS);
 
     //std::cout << "Lookup" << std::endl;
     //std::cout << "  name=" << name << std::endl;
@@ -543,7 +551,7 @@ bool ObjFieldItr::valid()
 
     auto ptr = obj.getObjPtr();
     auto cap = obj.getCap();
-    auto values = (Value*)(ptr + Object::OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + Object::OF_FIELDS);
 
     return slotIdx < cap && values[slotIdx].isString();
 }
@@ -551,8 +559,7 @@ bool ObjFieldItr::valid()
 std::string ObjFieldItr::get()
 {
     auto ptr = obj.getObjPtr();
-    auto cap = obj.getCap();
-    auto values = (Value*)(ptr + Object::OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + Object::OF_FIELDS);
 
     //std::cout << "cap=" << cap << std::endl;
     //std::cout << "tag=" << (int)values[slotIdx].getTag() << std::endl;
@@ -566,7 +573,7 @@ void ObjFieldItr::next()
 {
     auto ptr = obj.getObjPtr();
     auto cap = obj.getCap();
-    auto values = (Value*)(ptr + Object::OF_FIELDS);
+    auto values = reinterpret_cast<Value*>(ptr + Object::OF_FIELDS);
 
     slotIdx += 2;
 
@@ -581,10 +588,10 @@ ImgRef::ImgRef(String symbol)
 {
     // Allocate memory
     val = vm.alloc(ImgRef::SIZE, TAG_IMGREF);
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
 
     // Set the string pointer
-    *(refptr*)(ptr + OF_SYM) = (refptr)symbol;
+    *reinterpret_cast<refptr*>(ptr + OF_SYM) = static_cast<refptr>(symbol);
 }
 
 ImgRef::ImgRef(Value val)
@@ -595,13 +602,13 @@ ImgRef::ImgRef(Value val)
 
 std::string ImgRef::getName() const
 {
-    auto ptr = (refptr)val;
+    auto ptr = static_cast<refptr>(val);
     assert (ptr != nullptr);
 
-    auto strPtr = *(refptr*)(ptr + OF_SYM);
+    auto strPtr = *reinterpret_cast<refptr*>(ptr + OF_SYM);
     Value strVal = Value(strPtr, TAG_STRING);
 
-    return (std::string)strVal;
+    return std::string(strVal);
 }
 
 bool isValidIdent(std::string identStr)
@@ -634,13 +641,13 @@ void testRuntime()
     // Strings
     auto str = String("foobar");
     assert (str.length() == 6);
-    assert ((std::string)str == "foobar");
+    assert (std::string(str) == "foobar");
     assert (str[1] == 'o');
     auto str2 = String("foobar");
     assert (str.length() == 6);
     assert (str2.length() == 6);
     assert (str == str2);
-    assert ((std::string)str == (std::string)str2);
+    assert (std::string(str) == std::string(str2));
 
     // Arrays
     auto arr = Array(2);
