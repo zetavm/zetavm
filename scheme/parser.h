@@ -32,8 +32,8 @@ public:
 
     ~Input();
 
-    /// Peek at a character from the input
-    char peekCh();
+    /// Peek at a character from the input at the given offset
+    char peekCh(unsigned int offset = 0);
 
     /// Read/consume a character from the input
     char readCh();
