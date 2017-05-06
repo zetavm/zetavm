@@ -394,6 +394,9 @@ public:
 /// Global virtual machine instance
 extern VM vm;
 
+/// Get the tag enumeration value for a given tag string
+Tag strToTag(std::string str);
+
 /// Check if a string is a valid identifier
 bool isValidIdent(std::string identStr);
 

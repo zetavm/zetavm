@@ -446,7 +446,17 @@ void compile(BlockVersion* version)
 
             writeCode(JUMP_STUB);
             writeCode(dstVer);
+            continue;
+        }
 
+        if (op == "has_tag")
+        {
+            static ICache tagIC("tag");
+            auto tagStr = (std::string)tagIC.getStr(instr);
+            auto tag = strToTag(tagStr);
+
+            writeCode(HAS_TAG);
+            writeCode(tag);
             continue;
         }
 
@@ -680,48 +690,14 @@ Value execCode()
             }
             break;
 
-            /*
             // Test if a value has a given tag
             case HAS_TAG:
             {
-                auto tag = popVal().getTag();
-                static ICache tagIC("tag");
-                auto tagStr = tagIC.getStr(instr);
-
-                switch (tag)
-                {
-                    case TAG_UNDEF:
-                    pushBool(tagStr == "undef");
-                    break;
-
-                    case TAG_BOOL:
-                    pushBool(tagStr == "bool");
-                    break;
-
-                    case TAG_INT64:
-                    pushBool(tagStr == "int64");
-                    break;
-
-                    case TAG_STRING:
-                    pushBool(tagStr == "string");
-                    break;
-
-                    case TAG_ARRAY:
-                    pushBool(tagStr == "array");
-                    break;
-
-                    case TAG_OBJECT:
-                    pushBool(tagStr == "object");
-                    break;
-
-                    default:
-                    throw RunError(
-                        "unknown value type in has_tag"
-                    );
-                }
+                auto testTag = readCode<Tag>();
+                auto valTag = popVal().getTag();
+                pushBool(valTag == testTag);
             }
             break;
-            */
 
             //
             // String operations
