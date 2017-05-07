@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #language "lang/python/0"
 
 def fib(n):
