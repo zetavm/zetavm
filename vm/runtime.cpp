@@ -604,20 +604,6 @@ std::string ImgRef::getName() const
     return (std::string)strVal;
 }
 
-Tag strToTag(std::string str)
-{
-    if (str == "undef")     return TAG_UNDEF;
-    if (str == "bool")      return TAG_BOOL;
-    if (str == "int64")     return TAG_INT64;
-    if (str == "float32")   return TAG_FLOAT32;
-    if (str == "float64")   return TAG_FLOAT64;
-    if (str == "string")    return TAG_STRING;
-    if (str == "object")    return TAG_OBJECT;
-    if (str == "array")     return TAG_ARRAY;
-    if (str == "hostfn")    return TAG_HOSTFN;
-    assert (false);
-}
-
 bool isValidIdent(std::string identStr)
 {
     if (identStr.length() == 0)
@@ -638,6 +624,36 @@ bool isValidIdent(std::string identStr)
     }
 
     return true;
+}
+
+Tag strToTag(std::string str)
+{
+    if (str == "undef")     return TAG_UNDEF;
+    if (str == "bool")      return TAG_BOOL;
+    if (str == "int64")     return TAG_INT64;
+    if (str == "float32")   return TAG_FLOAT32;
+    if (str == "float64")   return TAG_FLOAT64;
+    if (str == "string")    return TAG_STRING;
+    if (str == "object")    return TAG_OBJECT;
+    if (str == "array")     return TAG_ARRAY;
+    if (str == "hostfn")    return TAG_HOSTFN;
+    assert (false);
+}
+
+std::string posToString(Value srcPos)
+{
+    assert (srcPos.isObject());
+    auto srcPosObj = (Object)srcPos;
+
+    auto lineNo = (int64_t)srcPosObj.getField("line_no");
+    auto colNo = (int64_t)srcPosObj.getField("col_no");
+    auto srcName = (std::string)srcPosObj.getField("src_name");
+
+    return (
+        srcName + "@" +
+        std::to_string(lineNo) + ":" +
+        std::to_string(colNo)
+    );
 }
 
 /// Unit test for the runtime
@@ -699,8 +715,4 @@ void testRuntime()
     for (auto itr = ObjFieldItr(obj); itr.valid(); itr.next())
         fieldStr += itr.get();
     assert (fieldStr == "foobar");
-
-
-
-
 }

@@ -394,11 +394,14 @@ public:
 /// Global virtual machine instance
 extern VM vm;
 
+/// Check if a string is a valid identifier
+bool isValidIdent(std::string identStr);
+
 /// Get the tag enumeration value for a given tag string
 Tag strToTag(std::string str);
 
-/// Check if a string is a valid identifier
-bool isValidIdent(std::string identStr);
+/// Get a string representation of a source position object
+std::string posToString(Value srcPos);
 
 /// Unit test for the runtime
 void testRuntime();
