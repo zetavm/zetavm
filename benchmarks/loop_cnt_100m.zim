@@ -23,6 +23,8 @@ loop_body = {
 };
 loop_exit = {
     instrs: [
+        { op: "pop" },
+        { op: "push", val:0 },
         { op: "ret" },
     ]
 };

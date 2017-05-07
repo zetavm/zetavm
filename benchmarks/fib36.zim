@@ -108,7 +108,9 @@ main_ret = {
         # Pop the return value of the print_str function
         { op: "pop" },
 
-        # Exit the main function, return the result value
+        # Pop the fib value, return 0 instead
+        { op: "pop" },
+        { op: "push", val:0 },
         { op: "ret" },
     ]
 };
