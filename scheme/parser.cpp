@@ -52,13 +52,13 @@ Input::~Input()
 {
 }
 
-/// Peek at a character from the input
-char Input::peekCh()
+/// Peek at a character from the input at the given offset
+char Input::peekCh(unsigned int offset)
 {
-    if (strIdx >= inStr.length())
+    if (strIdx + offset >= inStr.length())
         return '\0';
 
-    return inStr[strIdx];
+    return inStr[strIdx + offset];
 }
 
 /// Read a character from the input
@@ -229,7 +229,7 @@ void Input::expectWS(const std::string str)
 }
 
 /// Check whether the given character can start an identifier
-static bool isinitial(char ch)
+static bool isInitial(char ch)
 {
     // Is it an alphabetic character
     if (isalpha(ch))
@@ -263,10 +263,10 @@ static bool isinitial(char ch)
 }
 
 /// Check whether the given character can follow the start of an identifier
-static bool issubsequent(char ch)
+static bool isSubsequent(char ch)
 {
     // Is it an initial character *or* digit
-    if (isinitial(ch) || isdigit(ch))
+    if (isInitial(ch) || isdigit(ch))
     {
         return true;
     }
@@ -286,16 +286,101 @@ static bool issubsequent(char ch)
     return false;
 }
 
+/// Check whether the given character is a sign
+static bool isSign(char ch)
+{
+    return ch == '+' || ch == '-';
+}
+
+/// Check whether the given character follows a sign
+static bool isSignSubsequent(char ch)
+{
+    return isInitial(ch) || isSign(ch) || (ch == '@');
+}
+
+/// Check whether the given character follows a dot
+static bool isDotSubsequent(char ch)
+{
+    return isSignSubsequent(ch) || (ch == '.');
+}
+
+/// Check whether the given character is "peculiar"
+static bool isPeculiar(char ch)
+{
+    return isSign(ch) || (ch == '.');
+}
+
 /**
-Parse an identifier string
+Parse a peculiar identifier
 */
-std::string parseIdentStr(Input& input)
+std::unique_ptr<Identifier> parsePeculiarIdentifier(Input& input)
+{
+    std::string ident;
+    auto consumeSubsequent = [&]()
+    {
+        // Consume the sign subsequent
+        ident += input.readCh();
+
+        // Consume legal subsequent characters
+        while (isSubsequent(input.peekCh()))
+        {
+            ident += input.readCh();
+        }
+    };
+    auto consumeDotSubsequent = [&]()
+    {
+        // Consume the '.'
+        ident += input.readCh();
+
+        // Consume the subsequent
+        if (isDotSubsequent(input.peekCh()))
+        {
+            consumeSubsequent();
+        }
+    };
+
+    if (isSign(input.peekCh()))
+    {
+        // Consume the sign
+        ident += input.readCh();
+
+        // Consume the subsequent
+        if (isSignSubsequent(input.peekCh()))
+        {
+            consumeSubsequent();
+        }
+
+        else if (input.peekCh() == '.')
+        {
+            consumeDotSubsequent();
+        }
+
+        // Build the identifier
+        return std::unique_ptr<Identifier>(new Identifier(ident));
+    }
+
+    else if (input.peekCh() == '.')
+    {
+        // Consume the subsequent
+        consumeDotSubsequent();
+
+        // Build the identifier
+        return std::unique_ptr<Identifier>(new Identifier(ident));
+    }
+
+    throw ParseError(input, "expected '.', '+', or '-'");
+}
+
+/**
+Parse an identifier
+*/
+std::unique_ptr<Identifier> parseIdentifier(Input& input)
 {
     std::string ident;
 
     char firstCh = input.peekCh();
 
-    if (!isinitial(firstCh))
+    if (!isInitial(firstCh))
     {
         throw ParseError(input, "invalid identifier start");
     }
@@ -305,7 +390,7 @@ std::string parseIdentStr(Input& input)
         // Peek at the next character
         char ch = input.peekCh();
 
-        if (!issubsequent(ch))
+        if (!isSubsequent(ch))
             break;
 
         // Consume this character
@@ -317,7 +402,76 @@ std::string parseIdentStr(Input& input)
         throw ParseError(input, "invalid identifier");
     }
 
-    return ident;
+    return std::unique_ptr<Identifier>(new Identifier(ident));
+}
+
+/// Check if the given character is a token delimiter
+static bool isDelimiter(char ch)
+{
+    switch (ch)
+    {
+        case ' ':
+        case '\t':
+        case '(':
+        case ')':
+        case '"':
+        case ';':
+            return true;
+        default:
+            break;
+    }
+
+    return false;
+}
+
+/**
+Parse a number
+*/
+std::unique_ptr<Integer> parseNumber(Input& input)
+{
+    int64_t intVal = 0;
+    bool neg = false;
+
+    // Check if the number is negative
+    if (input.match("-"))
+    {
+        neg = true;
+    }
+
+    for (;;)
+    {
+        // Peek at the next character
+        char ch = input.readCh();
+
+        if (!isdigit(ch))
+            throw ParseError(input, "expected digit");
+
+        int64_t digit = ch - '0';
+        intVal = 10 * intVal + digit;
+
+        // If the next character is not a digit, stop
+        if (!isdigit(input.peekCh()))
+            break;
+    }
+
+    // If the value is negative
+    if (neg)
+    {
+        intVal *= -1;
+    }
+
+    if (!input.eof() && !isDelimiter(input.peekCh()))
+    {
+	throw ParseError(input, "expected delimiter");
+    }
+
+    return std::unique_ptr<Integer>(new Integer(intVal));
+}
+
+/// Check if the given character starts a number
+static bool isInitialNum(char ch)
+{
+    return isSign(ch) || isdigit(ch);
 }
 
 /**
@@ -325,11 +479,24 @@ Parse an atom
 */
 std::unique_ptr<Value> parseAtom(Input& input)
 {
-    // Identifier
-    if (isinitial(input.peekCh()))
+    char ch = input.peekCh();
+
+    // Plain identifier
+    if (isInitial(ch))
     {
-        std::string identStr = parseIdentStr(input);
-        return std::unique_ptr<Identifier>(new Identifier(identStr));
+        return parseIdentifier(input);
+    }
+
+    // Peculiar identifier
+    else if (isPeculiar(ch) && !isdigit(input.peekCh(1)))
+    {
+        return parsePeculiarIdentifier(input);
+    }
+
+    // Number
+    else if (isInitialNum(ch))
+    {
+        return parseNumber(input);
     }
 
     throw ParseError(input, "unexpected atom");
@@ -550,8 +717,30 @@ void testParser()
     testParse("lambda", "lambda");
     testParse("empty?", "empty?");
     testParse(":foo", ":foo");
-    testParseFail("+bar");
+    testParse("+bar", "+bar");
+    testParse("+", "+");
+    testParse("-", "-");
+    testParse("-+", "-+");
+    testParse("+@", "+@");
+    testParse("-$", "-$");
+    testParse("+>00+..", "+>00+..");
+    testParse("+..", "+..");
+    testParse("-..1$", "-..1$");
+    testParse("+.-1ab^^$", "+.-1ab^^$");
+    testParse(".-", ".-");
+    testParse(".+", ".+");
+    testParse("..", "..");
+    testParse(".+x0%*", ".+x0%*");
+    testParse("..7q?", "..7q?");
+    testParse("lhs-rhs", "lhs-rhs");
     testParseFail("7up");
+    testParseFail("@foo");
+    testParseFail("#yy");
+
+    // Numbers
+    testParse("7", "7");
+    testParse("123", "123");
+    testParse("-187", "-187");
 
     // Lists
     testParse("()", "()");
@@ -562,6 +751,12 @@ void testParser()
     testParse("'(foo bar)", "(quote (foo bar))");
     testParse("(define f (lambda (x) x))", "(define f (lambda (x) x))");
     testParse("(define x y)(define y z)", "(define x y)(define y z)");
+    testParse("(1 2 3)", "(1 2 3)");
+    testParse("(4 (-12 3) 100)", "(4 (-12 3) 100)");
+    testParse("'(3 4)", "(quote (3 4))");
+    testParse("'(1 (2 (3)) (4))", "(quote (1 (2 (3)) (4)))");
+    testParse("(* 1 (* 2 3))", "(* 1 (* 2 3))");
+    testParse("(+ 4 (- 1 (* 3 5)))", "(+ 4 (- 1 (* 3 5)))");
     testParseFail("(x y");
     testParseFail("((a b)(c (d)");
     testParseFail("(r s))");

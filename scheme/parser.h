@@ -32,8 +32,8 @@ public:
 
     ~Input();
 
-    /// Peek at a character from the input
-    char peekCh();
+    /// Peek at a character from the input at the given offset
+    char peekCh(unsigned int offset = 0);
 
     /// Read/consume a character from the input
     char readCh();
@@ -130,6 +130,22 @@ public:
     }
 
     std::string val;
+};
+
+class Integer : public Value
+{
+public:
+
+    Integer(int64_t val): val(val) {}
+
+    virtual ~Integer() {}
+
+    virtual std::string toString() const
+    {
+        return std::to_string(val);
+    }
+
+    int64_t val;
 };
 
 class Pair : public Value
