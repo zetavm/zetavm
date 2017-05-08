@@ -7,8 +7,15 @@ AC_INIT
 # Configure the C++ compiler
 AC_PROG_CXX
 
-# Default C++ compiler options
-CXXFLAGS="-std=c++11 -O3 -g -ftrapv"
+CXXFLAGS="-std=c++11 -O3 -ftrapv"
+
+# Option to disable assertions and debug information
+AC_ARG_ENABLE(
+    ndebug,
+    "--enable-ndebug disables assertions",
+    [CXXFLAGS="${CXXFLAGS} -DNDEBUG"],
+    [CXXFLAGS="${CXXFLAGS} -g"]
+)
 
 # If building with SDL2
 AC_ARG_WITH([sdl2], AS_HELP_STRING([--with-sdl2], [Build with SDL2 for audio/video output]))
