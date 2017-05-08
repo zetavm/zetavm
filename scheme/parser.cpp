@@ -546,6 +546,38 @@ std::unique_ptr<Integer> parseNumber(Input& input)
     return std::unique_ptr<Integer>(new Integer(intVal));
 }
 
+/// Parse a string
+///
+///   <string> ::= "\"" <string element>* "\""
+///   <string element> ::= <any character other than <vertical line> or "\">
+///     | <inline hex escape> | <mnemonic escape> | "\|"
+///
+/// TODO: Support escapes
+std::unique_ptr<String> parseString(Input& input)
+{
+    std::string strVal;
+
+    // Must be called with a '"' as the current character
+    input.expect("\"");
+
+    while (!input.eof() && (input.peekCh() != '"'))
+    {
+        // Consume this character
+        strVal += input.readCh();
+    }
+
+    // See if the loop ended by EOF
+    if (input.eof())
+    {
+        throw ParseError(input, "end of input inside string literal");
+    }
+
+    // The string must end with a '"'
+    input.expect("\"");
+
+    return std::unique_ptr<String>(new String(strVal));
+}
+
 /// Check if the given character starts a number
 ///
 /// For integers, the first set of <num> is a sign or digit.
@@ -575,6 +607,12 @@ std::unique_ptr<Value> parseAtom(Input& input)
     else if (isInitialNum(ch))
     {
         return parseNumber(input);
+    }
+
+    // String
+    else if (input.peekCh() == '"')
+    {
+        return parseString(input);
     }
 
     throw ParseError(input, "unexpected atom");
@@ -809,6 +847,12 @@ void testParser()
     testParse("7", "7");
     testParse("123", "123");
     testParse("-187", "-187");
+
+    // Strings
+    testParse("\"Hello, World!\"", "\"Hello, World!\"");
+    testParse("\"187\"", "\"187\"");
+    testParse("\"foo, bar, baz\"", "\"foo, bar, baz\"");
+    testParseFail("\"a");
 
     // Lists
     testParse("()", "()");
