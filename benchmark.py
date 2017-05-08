@@ -8,10 +8,6 @@ import csv
 
 def bench(benchPath):
 
-    benchNamePad = benchPath + max((35 - len(benchPath)), 0) * ' '
-    sys.stdout.write(benchNamePad)
-    sys.stdout.flush()
-
     startTime = time.time()
 
     benchCmd = './zeta %s' % benchPath
@@ -30,14 +26,50 @@ def bench(benchPath):
     # Compute the time in milliseconds
     deltaTime = 1000 * (endTime - startTime)
 
-    sys.stdout.write('%6d ms\n' % deltaTime)
+    return deltaTime
+
+# Computes the geometric mean of a list of values
+def geoMean(numList):
+    if len(numList) == 1:
+        return numList[0]
+
+    prod = 1
+    for val in numList:
+        if val != 0:
+            prod *= val
+
+    return prod ** (1.0/len(numList))
+
+def runBenchs():
+
+    benchList = [
+        'benchmarks/img_fill.pls',
+        'benchmarks/incr_field_1m.pls',
+        'benchmarks/fib29.pls',
+        #'benchmarks/fib36.zim',
+        'benchmarks/loop_cnt_100m.zim',
+        'benchmarks/plush_parser.zim',
+        'benchmarks/sqr_wave.pls'
+    ]
+
+    timeVals = []
+
+    for benchPath in benchList:
+
+        sys.stdout.write(benchPath.ljust(35))
+        sys.stdout.flush()
+
+        timeMs = bench(benchPath)
+        timeVals += [timeMs]
+
+        sys.stdout.write('%6d ms\n' % timeMs)
+
+    meanTime = geoMean(timeVals)
+    sys.stdout.write(44 * '-' + '\n')
+    sys.stdout.write('geometric mean'.ljust(35))
+    sys.stdout.write('%6d ms\n' % meanTime)
 
 # TODO: trigger make, NDEBUG?
 
-bench('benchmarks/img_fill.pls')
-bench('benchmarks/incr_field_1m.pls')
-bench('benchmarks/fib29.pls')
-#bench('benchmarks/fib36.zim')
-bench('benchmarks/loop_cnt_100m.zim')
-bench('benchmarks/plush_parser.zim')
-bench('benchmarks/sqr_wave.pls')
+# Run the benchmarks
+runBenchs()
