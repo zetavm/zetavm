@@ -904,65 +904,65 @@ Value execCode()
 
             case ADD_I64:
             {
-                auto arg1 = popVal();
-                auto arg0 = popVal();
-                pushVal((int64_t)arg0 + (int64_t)arg1);
+                auto arg1 = popInt64();
+                auto arg0 = popInt64();
+                pushVal(arg0 + arg1);
             }
             break;
 
             case SUB_I64:
             {
-                auto arg1 = popVal();
-                auto arg0 = popVal();
-                pushVal((int64_t)arg0 - (int64_t)arg1);
+                auto arg1 = popInt64();
+                auto arg0 = popInt64();
+                pushVal(arg0 - arg1);
             }
             break;
 
             case MUL_I64:
             {
-                auto arg1 = popVal();
-                auto arg0 = popVal();
-                pushVal((int64_t)arg0 * (int64_t)arg1);
+                auto arg1 = popInt64();
+                auto arg0 = popInt64();
+                pushVal(arg0 * arg1);
             }
             break;
 
             case LT_I64:
             {
-                auto arg1 = popVal();
-                auto arg0 = popVal();
-                pushBool((int64_t)arg0 < (int64_t)arg1);
+                auto arg1 = popInt64();
+                auto arg0 = popInt64();
+                pushBool(arg0 < arg1);
             }
             break;
 
             case LE_I64:
             {
-                auto arg1 = popVal();
-                auto arg0 = popVal();
-                pushBool((int64_t)arg0 <= (int64_t)arg1);
+                auto arg1 = popInt64();
+                auto arg0 = popInt64();
+                pushBool(arg0 <= arg1);
             }
             break;
 
             case GT_I64:
             {
-                auto arg1 = popVal();
-                auto arg0 = popVal();
-                pushBool((int64_t)arg0 > (int64_t)arg1);
+                auto arg1 = popInt64();
+                auto arg0 = popInt64();
+                pushBool(arg0 > arg1);
             }
             break;
 
             case GE_I64:
             {
-                auto arg1 = popVal();
-                auto arg0 = popVal();
-                pushBool((int64_t)arg0 >= (int64_t)arg1);
+                auto arg1 = popInt64();
+                auto arg0 = popInt64();
+                pushBool(arg0 >= arg1);
             }
             break;
 
             case EQ_I64:
             {
-                auto arg1 = popVal();
-                auto arg0 = popVal();
-                pushBool((int64_t)arg0 == (int64_t)arg1);
+                auto arg1 = popInt64();
+                auto arg0 = popInt64();
+                pushBool(arg0 == arg1);
             }
             break;
 
@@ -1431,7 +1431,10 @@ Value callFun(Object fun, ValueVec args)
     instrPtr = (uint8_t*)popVal().getWord().ptr;
 
     // Check that the stack size matches what it was before the call
-    assert (stackSize() == preCallSz);
+    if (stackSize() != preCallSz)
+    {
+        throw RunError("stack size does not match after call termination");
+    }
 
     return retVal;
 }
@@ -1443,9 +1446,22 @@ Value callExportFn(
     ValueVec args
 )
 {
-    assert (pkg.hasField(fnName));
+    if (!pkg.hasField(fnName))
+    {
+        throw RunError(
+            "package does not export function \"" + fnName + "\""
+        );
+    }
+
     auto fnVal = pkg.getField(fnName);
-    assert (fnVal.isObject());
+
+    if (!fnVal.isObject())
+    {
+        throw RunError(
+            "field \"" + fnName + "\" exported by package is not a function"
+        );
+    }
+
     auto funObj = Object(fnVal);
 
     return callFun(funObj, args);
