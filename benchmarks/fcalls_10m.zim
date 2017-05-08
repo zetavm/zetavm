@@ -1,0 +1,63 @@
+#zeta-image
+
+fn_entry = {
+    instrs: [
+        { op: "push", val:0 },
+        { op: "ret" },
+    ]
+};
+fn = {
+    name: "fn",
+    num_params: 0,
+    num_locals: 0,
+    entry: @fn_entry
+};
+
+main_entry = {
+    instrs: [
+        { op: "push", val: 10000000 },
+        { op: "jump", to: @loop_test },
+    ]
+};
+loop_test = {
+    instrs: [
+        { op: "dup", idx:0 },
+        { op: "push", val: 0 },
+        { op: "gt_i64" },
+        { op: "if_true", then: @loop_body, else: @loop_exit },
+    ]
+};
+loop_body = {
+    instrs: [
+        # Decrement the loop counter
+        { op: "push", val: 1 },
+        { op: "sub_i64" },
+
+        # Do the function call
+        { op: "push", val: @fn },
+        { op: "call", ret_to: @call_cont, num_args: 0 },
+    ]
+};
+call_cont = {
+    instrs: [
+        # Pop the call return value
+        { op: "pop" },
+        { op: "jump", to: @loop_test },
+    ]
+};
+loop_exit = {
+    instrs: [
+        { op: "pop" },
+        { op: "push", val:0 },
+        { op: "ret" },
+    ]
+};
+main = {
+    name: "main",
+    num_params: 0,
+    num_locals: 0,
+    entry: @main_entry
+};
+
+# Export the main function
+{ main: @main };
