@@ -1,3 +1,10 @@
+/// This implementation of Scheme is based off of the R7RS Standard:
+///
+///   * http://trac.sacrideo.us/wg/wiki/R7RSHomePage
+///
+/// References to syntax and semantics implemented in this file are
+/// relative to that standard.
+
 #include <cassert>
 #include <cstring>
 #include <iostream>
@@ -229,6 +236,13 @@ void Input::expectWS(const std::string str)
 }
 
 /// Check whether the given character can start an identifier
+///
+///   <initial> ::= <letter> <special initial>
+///   <letter> ::= "a" | "b" | "c" | ... | "z"
+///     | "A" | "B" | "C" | ... | "Z"
+///   <special initial> ::= "!" | "$" | "%" | "&" | "*" | "/" | ":" | "<"
+///     | "=" | ">" | "?" | "^" | "_" | "~"
+///
 static bool isInitial(char ch)
 {
     // Is it an alphabetic character
@@ -262,7 +276,22 @@ static bool isInitial(char ch)
     return false;
 }
 
+/// Check whether the given character is a sign
+///
+///   <explicit sign> ::= "+" | "-"
+///
+static bool isSign(char ch)
+{
+    return ch == '+' || ch == '-';
+}
+
 /// Check whether the given character can follow the start of an identifier
+///
+///   <subsequent> ::= <initial> | <digit>
+///     | <special subsequent>
+///   <digit> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+///   <special subsequent> ::= <explicit sign> | "." | "@"
+///
 static bool isSubsequent(char ch)
 {
     // Is it an initial character *or* digit
@@ -272,47 +301,49 @@ static bool isSubsequent(char ch)
     }
 
     // Or a "special" subsequent character
-    switch (ch)
+    if (isSign(ch))
     {
-        case '+':
-        case '-':
-        case '.':
-        case '@':
-            return true;
-        default:
-            break;
+        return true;
     }
 
-    return false;
-}
-
-/// Check whether the given character is a sign
-static bool isSign(char ch)
-{
-    return ch == '+' || ch == '-';
+    return (ch == '.') || (ch == '@');
 }
 
 /// Check whether the given character follows a sign
+///
+///   <sign subsequent> ::= <initial> | <explicit sign> | "@"
+///
 static bool isSignSubsequent(char ch)
 {
     return isInitial(ch) || isSign(ch) || (ch == '@');
 }
 
 /// Check whether the given character follows a dot
+///
+///   <dot subsequent> ::= <sign subsequent> | "."
+///
 static bool isDotSubsequent(char ch)
 {
     return isSignSubsequent(ch) || (ch == '.');
 }
 
 /// Check whether the given character is "peculiar"
+///
+/// Per the first set for the peculiar identifier (syntax listed below),
+/// peculiar identifiers start with a sign or ".".
+///
 static bool isPeculiar(char ch)
 {
     return isSign(ch) || (ch == '.');
 }
 
-/**
-Parse a peculiar identifier
-*/
+/// Parse a peculiar identifier
+///
+///   <peculiar identifier> ::= <explicit sign>
+///     | <explicit sign> <sign subsequent> <subsequent>*
+///     | <explicit sign> "." <dot subsequent> <subsequent>*
+///     | "." <dot subsequent> <subsequent>*
+///
 std::unique_ptr<Identifier> parsePeculiarIdentifier(Input& input)
 {
     std::string ident;
@@ -371,9 +402,13 @@ std::unique_ptr<Identifier> parsePeculiarIdentifier(Input& input)
     throw ParseError(input, "expected '.', '+', or '-'");
 }
 
-/**
-Parse an identifier
-*/
+/// Parse an identifier
+///
+///   <identifier> ::= <initial> <subsequent>*
+///     | <vertical line> <symbol element>* <vertical line>
+///     | <peculiar identifier>
+///
+/// TODO: Support for vertical line identifiers
 std::unique_ptr<Identifier> parseIdentifier(Input& input)
 {
     std::string ident;
@@ -406,6 +441,14 @@ std::unique_ptr<Identifier> parseIdentifier(Input& input)
 }
 
 /// Check if the given character is a token delimiter
+///
+///   <delimiter> ::= <whitespace> | <vertical line>
+///     | "(" | ")" | "\"" | ";"
+///   <intraline whitespace> ::= <space or tab>
+///   <whitespace> ::= <intraline whitespace> | <line ending>
+///   <vertical line> ::= "|"
+///   <line ending> ::= <newline> | <return> <newline> | <return>
+///
 static bool isDelimiter(char ch)
 {
     switch (ch)
@@ -424,9 +467,44 @@ static bool isDelimiter(char ch)
     return false;
 }
 
-/**
-Parse a number
-*/
+/// Parse a number
+///
+///   <number> ::= <num 2> | <num 8> | <num 10> | <num 16>
+///   <num R> ::= <prefix R> <complex R>
+///   <complex R> := <real R> | <real R> "@" <real R>
+///     | <real R> "+" <ureal R> "i" | <real R> "-" <ureal R> "i"
+///     | <real R> "+" "i" | <real R> "-" "i" | <real R> <infnan> "i"
+///     | "+" <ureal R> "i" | "-" <ureal R> "i"
+///     | <infnan> "i" | "+" "i" | "-" "i"
+///   <real R> ::= <sign> <ureal R> | <infnan>
+///   <ureal R> ::= <uinteger R>
+///     | <uinteger R> "/" <uinteger R>
+///     | <decimal R>
+///   <decimal 10> ::= <uinteger 10> <suffix>
+///     | "." <digit 10>+ <suffix>
+///     | <digit 10>+ "." <digit 10>* <suffix>
+///   <uinteger R> ::= <digit R>+
+///   <prefix R> ::= <radix R> <exactness>
+///     | <exactness> <radix R>
+///   <infnan> ::= "+inf.0" | "-inf.0" | "+nan.0" | "-nan.0"
+///   <suffix> ::= <empty>
+///     | <exponent marker> <sign> <digit 10>+
+///   <exponent marker> ::= "e"
+///   <sign> ::= <empty> | "+" | "-"
+///   <exactness> ::= <empty> | "#i" | "#e"
+///   <radix 2> ::= "#b"
+///   <radix 8> ::= "#o"
+///   <radix 10> ::= <empty> | "#d"
+///   <radix 16> ::= "#x"
+///   <digit 2> ::= "0" | "1"
+///   <digit 8> ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7"
+///   <digit 10> ::= <digit>
+///   <digit 16> ::= <digit 10> | "a" | "b" | "c" | "d" | "e" | "f"
+///
+/// TODO: Real number support
+/// TODO: Complex number support
+/// TODO: Support for other radices
+///
 std::unique_ptr<Integer> parseNumber(Input& input)
 {
     int64_t intVal = 0;
@@ -469,14 +547,14 @@ std::unique_ptr<Integer> parseNumber(Input& input)
 }
 
 /// Check if the given character starts a number
+///
+/// For integers, the first set of <num> is a sign or digit.
 static bool isInitialNum(char ch)
 {
     return isSign(ch) || isdigit(ch);
 }
 
-/**
-Parse an atom
-*/
+/// Parse an atom
 std::unique_ptr<Value> parseAtom(Input& input)
 {
     char ch = input.peekCh();
@@ -505,17 +583,13 @@ std::unique_ptr<Value> parseAtom(Input& input)
 /// Forward declaration
 std::unique_ptr<Value> parseSExpr(Input& input);
 
-/**
-Cons the two given values into a new pair
-*/
+/// Cons the two given values into a new pair
 std::unique_ptr<Pair> cons(std::unique_ptr<Value> car, std::unique_ptr<Value> cdr)
 {
     return std::unique_ptr<Pair>(new Pair(std::move(car), std::move(cdr)));
 }
 
-/**
-Pares a pair
-*/
+/// Parse a pair
 std::unique_ptr<Value> parseSExprList(Input& input) {
     if (input.eof())
     {
@@ -544,9 +618,7 @@ std::unique_ptr<Value> parseSExprList(Input& input) {
     return cons(std::move(car), parseSExprList(input));
 }
 
-/**
- Parse an S-expression
-*/
+/// Parse an S-expression
 std::unique_ptr<Value> parseSExpr(Input& input)
 {
     // Consume whitespace
@@ -585,9 +657,7 @@ std::unique_ptr<Value> parseSExpr(Input& input)
     return parseAtom(input);
 }
 
-/**
-Parse a program from an input object
-*/
+/// Parse a program from an input object
 std::unique_ptr<Program> parseProgram(Input& input)
 {
     // Parse the language directive, if specified
@@ -629,9 +699,7 @@ std::unique_ptr<Program> parseProgram(Input& input)
     return std::unique_ptr<Program>(new Program(values));
 }
 
-/**
-Parse a source string as a unit
-*/
+/// Parse a source string as a unit
 std::unique_ptr<Program> parseString(const std::string &str, const std::string &srcName)
 {
     Input input(
