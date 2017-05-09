@@ -148,6 +148,22 @@ public:
     int64_t val;
 };
 
+class String : public Value
+{
+public:
+
+    String(const std::string& val): val(val) {}
+
+    virtual ~String() {}
+
+    virtual std::string toString() const
+    {
+        return "\"" + val + "\"";
+    }
+
+    std::string val;
+};
+
 class Pair : public Value
 {
 public:
