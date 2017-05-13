@@ -1,0 +1,118 @@
+#zeta-image
+
+### Scheme base runtime.
+
+exports_obj = {
+  init: @fun_1,
+  write: @write,
+  newline: @newline
+};
+global_obj = { exports: @exports_obj };
+
+### (write obj)
+
+write = {
+  name: 'write',
+  num_params: 1,
+  num_locals: 1,
+  entry: {
+    name: 'write_entry',
+    instrs: [
+      { op:'get_local', idx:0 },
+      { op:'has_tag', tag:'int64' },
+      { op:'if_true', then:@write_int64, else:@write_str },
+    ]
+  }
+};
+
+write_str = {
+  instrs: [
+    { op:'get_local', idx: 0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'get_field' },
+    { op:'push', val:'print_str' },
+    { op:'get_field' },
+    { op:'call', ret_to:@write_ret, num_args:1 },
+  ]
+};
+
+write_int64 = {
+  instrs: [
+    { op:'get_local', idx: 0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'get_field' },
+    { op:'push', val:'print_int64' },
+    { op:'get_field' },
+    { op:'call', ret_to:@write_ret, num_args:1 },
+  ]
+};
+
+### (newline)
+
+newline = {
+  name: 'newline',
+  num_params: 0,
+  num_locals: 0,
+  entry: {
+    name: 'newline_entry',
+    instrs: [
+      # Write a newline.
+      { op:'push', val:'\n' },
+      { op:'push', val:@global_obj },
+      { op:'push', val:'io' },
+      { op:'get_field' },
+      { op:'push', val:'print_str' },
+      { op:'get_field' },
+      { op:'call', ret_to:@write_ret, num_args:1 },
+    ]
+  }
+};
+
+write_ret = {
+  instrs: [
+    # Pop the value from the preceding write.
+    { op:'pop' },
+
+    # Return an undefined value.
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+# Init sequence.
+block_0 = {
+  instrs: [
+    # Setup 'core/io'.
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'push', val:'core/io' },
+    { op:'import' },
+    { op:'set_field' },
+
+    # Export 'write'.
+    { op:'push', val:@global_obj },
+    { op:'push', val:'write' },
+    { op:'push', val:@write },
+    { op:'set_field' },
+
+    # Export 'write'.
+    { op:'push', val:@global_obj },
+    { op:'push', val:'newline' },
+    { op:'push', val:@write },
+    { op:'set_field' },
+
+    # Return the object holding the exported functions.
+    { op:'push', val:@global_obj },
+    { op:'ret' },
+  ]
+};
+
+fun_1 = {
+  entry:@block_0,
+  num_params:0,
+  num_locals:0,
+};
+
+@exports_obj;
