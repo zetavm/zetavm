@@ -219,11 +219,11 @@ void Input::eatWS()
 
 // Forward declaration
 Value parseExpr(Input& input);
-
+Value parseFloatingPart(Input& input, bool neg, int64_t val);
 /**
 Parse a decimal integer
 */
-Value parseInt(Input& input, bool neg)
+Value parseNum(Input& input, bool neg)
 {
     int64_t intVal = 0;
 
@@ -243,6 +243,10 @@ Value parseInt(Input& input, bool neg)
             break;
     }
 
+    if (input.peek() == '.') {
+        return parseFloatingPart(input, neg, intVal);
+    }
+
     // If the value is negative
     if (neg)
     {
@@ -250,6 +254,28 @@ Value parseInt(Input& input, bool neg)
     }
 
     return Value(intVal);
+}
+
+Value parseFloatingPart(Input& input, bool neg, int64_t val)
+{
+    float floatVal = (float)val;
+    input.expect(".");
+    int i = 1;
+    for (;;)
+    {
+        char ch = input.readCh();
+        if (!isdigit(ch))
+            throw ParseError(input, "expected digit");
+        float digit = (float)(ch - '0');
+        floatVal = floatVal + (digit/(10*i++));
+        if (!isdigit(input.peek()))
+            break;
+    }
+    if (neg)
+    {
+        floatVal *= -1;
+    }
+    return Value(floatVal);
 }
 
 /**
@@ -503,13 +529,13 @@ Value parseExpr(Input& input)
     // Numerical value
     if (isdigit(ch))
     {
-        return parseInt(input, false);
+        return parseNum(input, false);
     }
 
     // Negative number
     if (input.match('-'))
     {
-        return parseInt(input, true);
+        return parseNum(input, true);
     }
 
     // String literal
@@ -700,7 +726,7 @@ Value resolveRefs(
             case TAG_UNDEF:
             case TAG_BOOL:
             case TAG_INT64:
-            case TAG_FLOAT64:
+            case TAG_FLOAT32:
             case TAG_STRING:
             continue;
 

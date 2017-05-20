@@ -39,6 +39,9 @@ std::string Value::toString() const
         case TAG_INT64:
         return std::to_string(word.int64);
 
+        case TAG_FLOAT32:
+        return std::to_string(word.float32);
+
         case TAG_STRING:
         //return (std::string)*this;
         return "string";
@@ -80,6 +83,12 @@ Value::operator int64_t () const
 {
     assert (tag == TAG_INT64);
     return word.int64;
+}
+
+Value::operator float () const
+{
+    assert (tag == TAG_FLOAT32);
+    return word.float32;
 }
 
 Value::operator refptr () const
