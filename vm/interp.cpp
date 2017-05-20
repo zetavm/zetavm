@@ -30,7 +30,7 @@ enum Opcode : uint16_t
 
     // Float operations
 
-    ADD_F,
+    ADD_F32,
 
     // Miscellaneous
     EQ_BOOL,
@@ -261,11 +261,11 @@ __attribute__((always_inline)) int64_t popInt64()
     return (int64_t)val;
 }
 
-__attribute__((always_inline)) float popFloat()
+__attribute__((always_inline)) float popFloat32()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
-    assert (val.isFloat());
+    assert (val.isFloat32());
     return (float)val;
 }
 
@@ -469,9 +469,9 @@ void compile(BlockVersion* version)
         //Float ops
         //
 
-        if (op == "add_f")
+        if (op == "add_f32")
         {
-            writeCode(ADD_F);
+            writeCode(ADD_F32);
             continue;
         }
 
@@ -992,10 +992,10 @@ Value execCode()
             // Float operations
             //
 
-            case ADD_F:
+            case ADD_F32:
             {
-                auto arg1 = popFloat();
-                auto arg0 = popFloat();
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
                 pushVal(arg0 + arg1);
             }
             break;

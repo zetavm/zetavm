@@ -77,7 +77,7 @@ public:
 
     bool isBool() const { return tag == TAG_BOOL; }
     bool isInt64() const { return tag == TAG_INT64; }
-    bool isFloat() const { return tag == TAG_FLOAT32; }
+    bool isFloat32() const { return tag == TAG_FLOAT32; }
     bool isString() const { return tag == TAG_STRING; }
     bool isObject() const { return tag == TAG_OBJECT; }
     bool isArray() const { return tag == TAG_ARRAY; }

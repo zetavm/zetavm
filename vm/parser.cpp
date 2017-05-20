@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstring>
+#include <cinttypes>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -243,7 +244,8 @@ Value parseNum(Input& input, bool neg)
             break;
     }
 
-    if (input.peek() == '.') {
+    char next = input.peek();
+    if (next == '.' || next == 'e' || next == 'E' || next == 'f' || next == 'F') {
         return parseFloatingPart(input, neg, intVal);
     }
 
@@ -258,20 +260,19 @@ Value parseNum(Input& input, bool neg)
 
 Value parseFloatingPart(Input& input, bool neg, int64_t val)
 {
-    float floatVal = (float)val;
-    input.expect(".");
-    int i = 1;
-    for (;;)
+    char decimal_part[64];
+    sprintf(decimal_part, "%" PRId64, val);
+    int length = strlen(decimal_part);
+    for (int i = 0;;i++)
     {
-        char ch = input.readCh();
-        if (!isdigit(ch))
-            throw ParseError(input, "expected digit");
-        float digit = (float)(ch - '0');
-        floatVal = floatVal + (digit/(10*i++));
-        if (!isdigit(input.peek()))
+        char next = input.peek();
+        if (isdigit(next) || next == 'e' || next == 'E' || next == '.')
+            decimal_part[length + i++] = input.readCh();
+        else 
             break;
     }
     input.expect("f");
+    float floatVal = atof(decimal_part);
     if (neg)
     {
         floatVal *= -1;

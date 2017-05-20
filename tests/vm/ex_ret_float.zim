@@ -11,7 +11,7 @@
             instrs: [
                 { op: "push", val: 1.0f },
                 { op: "push", val: 2.0f },
-                { op: "add_f" },
+                { op: "add_f32" },
                 { op: "ret" }
             ]
         }
