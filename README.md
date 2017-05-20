@@ -57,7 +57,7 @@ executable programs, or libraries/packages.
 
 ## More Information
 
-For more information, see the documentation under [docs](docs):
+For more information, see the documentation in the [docs](docs) directory:
 
 - [Design and Guiding Principles of ZetaVM](docs/design.md)
 
