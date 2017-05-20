@@ -31,6 +31,9 @@ enum Opcode : uint16_t
     // Float operations
 
     ADD_F32,
+    SUB_F32,
+    MUL_F32,
+    DIV_F32,
 
     // Miscellaneous
     EQ_BOOL,
@@ -472,6 +475,24 @@ void compile(BlockVersion* version)
         if (op == "add_f32")
         {
             writeCode(ADD_F32);
+            continue;
+        }
+
+        if (op == "sub_f32")
+        {
+            writeCode(SUB_F32);
+            continue;
+        }
+
+        if (op == "mul_f32")
+        {
+            writeCode(MUL_F32);
+            continue;
+        }
+
+        if (op == "div_f32")
+        {
+            writeCode(DIV_F32);
             continue;
         }
 
@@ -1000,6 +1021,30 @@ Value execCode()
             }
             break;
 
+            case SUB_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushVal(arg0 - arg1);
+            }
+            break;
+
+            case MUL_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushVal(arg0 * arg1);
+            }
+            break;
+
+            case DIV_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushVal(arg0 / arg1);
+            }
+            break;
+
             //
             // Misc operations
             //
@@ -1512,9 +1557,9 @@ Value testRunImage(std::string fileName)
 
 void testInterp()
 {   
-    //std::cout << "testing " + testRunImage("tests/vm/ex_ret_float.zim").toString();
+    std::cout << "testing " + testRunImage("tests/vm/ex_ret_float.zim").toString();
     assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value((int64_t)777));
-    assert (testRunImage("tests/vm/ex_ret_float.zim") == Value(3.0f));
+    assert (testRunImage("tests/vm/ex_ret_float.zim") == Value(25.5f - (5.0f * (9.0f / (2.0f + 1.0f)))));
     assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value((int64_t)0));
     //assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
     assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value((int64_t)5040));
