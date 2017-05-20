@@ -39,8 +39,10 @@ union Word
 {
     Word(refptr p) { ptr = p; }
     Word(int64_t v) { int64 = v; }
+    Word(float v) { float32 = v; }
     Word() {}
 
+    float float32;
     int64_t int64;
     int8_t int8;
     refptr ptr;
@@ -68,12 +70,14 @@ public:
 
     Value() : Value(FALSE.word, FALSE.tag) {}
     Value(int64_t v) : Value(Word(v), TAG_INT64) {}
+    Value(float v) : Value(Word(v), TAG_FLOAT32) {}
     Value(refptr p, Tag t) : Value(Word(p), t) {}
     Value(Word w, Tag t);
     ~Value() {}
 
     bool isBool() const { return tag == TAG_BOOL; }
     bool isInt64() const { return tag == TAG_INT64; }
+    bool isFloat32() const { return tag == TAG_FLOAT32; }
     bool isString() const { return tag == TAG_STRING; }
     bool isObject() const { return tag == TAG_OBJECT; }
     bool isArray() const { return tag == TAG_ARRAY; }
@@ -88,6 +92,7 @@ public:
 
     operator bool () const;
     operator int64_t () const;
+    operator float () const;
     operator refptr () const;
     operator std::string () const;
 

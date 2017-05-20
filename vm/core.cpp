@@ -300,9 +300,9 @@ Object load(std::string pkgPath)
         auto inputObj = Object::newObject();
         inputObj.setField("src_name", String(input.getSrcName()));
         inputObj.setField("src_string", String(input.getInputStr()));
-        inputObj.setField("str_idx", Value(input.getInputIdx()));
-        inputObj.setField("line_no", Value(input.getLineNo()));
-        inputObj.setField("col_no", Value(input.getColNo()));
+        inputObj.setField("str_idx", Value((int64_t)input.getInputIdx()));
+        inputObj.setField("line_no", Value((int64_t)input.getLineNo()));
+        inputObj.setField("col_no", Value((int64_t)input.getColNo()));
 
         std::cout << "Calling parse_input" << std::endl;
 

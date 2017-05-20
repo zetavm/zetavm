@@ -1,5 +1,6 @@
 #include <cassert>
 #include <cstring>
+#include <cinttypes>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -220,10 +221,12 @@ void Input::eatWS()
 // Forward declaration
 Value parseExpr(Input& input);
 
+Value parseFloatingPart(Input& input, bool neg, int64_t val);
+
 /**
 Parse a decimal integer
 */
-Value parseInt(Input& input, bool neg)
+Value parseNum(Input& input, bool neg)
 {
     int64_t intVal = 0;
 
@@ -243,6 +246,12 @@ Value parseInt(Input& input, bool neg)
             break;
     }
 
+    char next = input.peek();
+    if (next == '.' || next == 'e' || next == 'f')
+    {
+        return parseFloatingPart(input, neg, intVal);
+    }
+
     // If the value is negative
     if (neg)
     {
@@ -250,6 +259,30 @@ Value parseInt(Input& input, bool neg)
     }
 
     return Value(intVal);
+}
+
+Value parseFloatingPart(Input& input, bool neg, int64_t val)
+{
+    char literal[64];
+    sprintf(literal, "%" PRId64, val);
+    int length = strlen(literal);
+    for (int i = 0;;i++)
+    {
+        if (i + length >= 64)
+            throw ParseError(input, "float literal is too long");
+        char next = input.peek();
+        if (isdigit(next) || next == 'e' || next == '.')
+            literal[length + i++] = input.readCh();
+        else 
+            break;
+    }
+    input.expect("f");
+    float floatVal = atof(literal);
+    if (neg)
+    {
+        floatVal *= -1;
+    }
+    return Value(floatVal);
 }
 
 /**
@@ -503,13 +536,13 @@ Value parseExpr(Input& input)
     // Numerical value
     if (isdigit(ch))
     {
-        return parseInt(input, false);
+        return parseNum(input, false);
     }
 
     // Negative number
     if (input.match('-'))
     {
-        return parseInt(input, true);
+        return parseNum(input, true);
     }
 
     // String literal
@@ -700,7 +733,7 @@ Value resolveRefs(
             case TAG_UNDEF:
             case TAG_BOOL:
             case TAG_INT64:
-            case TAG_FLOAT64:
+            case TAG_FLOAT32:
             case TAG_STRING:
             continue;
 

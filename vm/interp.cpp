@@ -28,6 +28,10 @@ enum Opcode : uint16_t
     GE_I64,
     EQ_I64,
 
+    // Float operations
+
+    ADD_F32,
+
     // Miscellaneous
     EQ_BOOL,
     HAS_TAG,
@@ -269,6 +273,14 @@ __attribute__((always_inline)) int64_t popInt64()
     return (int64_t)val;
 }
 
+__attribute__((always_inline)) float popFloat32()
+{
+    // TODO: throw RunError if wrong type
+    auto val = popVal();
+    assert (val.isFloat32());
+    return (float)val;
+}
+
 __attribute__((always_inline)) String popStr()
 {
     // TODO: throw RunError if wrong type
@@ -468,6 +480,16 @@ void compile(BlockVersion* version)
         if (op == "eq_i64")
         {
             writeCode(EQ_I64);
+            continue;
+        }
+
+        //
+        //Float ops
+        //
+
+        if (op == "add_f32")
+        {
+            writeCode(ADD_F32);
             continue;
         }
 
@@ -1005,6 +1027,18 @@ Value execCode()
             break;
 
             //
+            // Float operations
+            //
+
+            case ADD_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushVal(arg0 + arg1);
+            }
+            break;
+
+            //
             // Misc operations
             //
 
@@ -1032,7 +1066,7 @@ Value execCode()
             case STR_LEN:
             {
                 auto str = popStr();
-                pushVal(str.length());
+                pushVal((int64_t)str.length());
             }
             break;
 
@@ -1177,7 +1211,7 @@ Value execCode()
             case ARRAY_LEN:
             {
                 auto arr = Array(popVal());
-                pushVal(arr.length());
+                pushVal((int64_t)arr.length());
             }
             break;
 
@@ -1531,10 +1565,12 @@ Value testRunImage(std::string fileName)
 }
 
 void testInterp()
-{
-    assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value(777));
-    assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value(0));
+{   
+    //std::cout << "testing " + testRunImage("tests/vm/ex_ret_float.zim").toString();
+    assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value((int64_t)777));
+    assert (testRunImage("tests/vm/ex_ret_float.zim") == Value(3.0f));
+    assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value((int64_t)0));
     //assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
-    assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value(5040));
-    assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value(377));
+    assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value((int64_t)5040));
+    assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value((int64_t)377));
 }
