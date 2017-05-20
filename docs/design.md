@@ -1,4 +1,4 @@
-# Design, Goals and Guiding Principles of ZetaVM
+# Design and Guiding Principles of ZetaVM
 
 ## Goals and Guiding Principles
 
