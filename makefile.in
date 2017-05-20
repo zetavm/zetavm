@@ -53,6 +53,7 @@ test: zeta cplush plush-pkg cscheme
 	./$(ZETA_BIN) tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
 	# cscheme tests
 	./$(CSCHEME_BIN) --test
+	./scheme.sh tests/scheme/write.scm
 
 clean:
 	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CJS_BIN) config.status config.log
