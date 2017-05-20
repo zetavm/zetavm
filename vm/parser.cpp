@@ -271,6 +271,7 @@ Value parseFloatingPart(Input& input, bool neg, int64_t val)
         if (!isdigit(input.peek()))
             break;
     }
+    input.expect("f");
     if (neg)
     {
         floatVal *= -1;

@@ -9,8 +9,8 @@
         entry: {
             name: "main_entry",
             instrs: [
-                { op: "push", val: 1.0 },
-                { op: "push", val: 2.0 },
+                { op: "push", val: 1.0f },
+                { op: "push", val: 2.0f },
                 { op: "add_f" },
                 { op: "ret" }
             ]
