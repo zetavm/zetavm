@@ -260,19 +260,19 @@ Value parseNum(Input& input, bool neg)
 
 Value parseFloatingPart(Input& input, bool neg, int64_t val)
 {
-    char decimal_part[64];
-    sprintf(decimal_part, "%" PRId64, val);
-    int length = strlen(decimal_part);
+    char literal[64];
+    sprintf(literal, "%" PRId64, val);
+    int length = strlen(literal);
     for (int i = 0;;i++)
     {
         char next = input.peek();
         if (isdigit(next) || next == 'e' || next == 'E' || next == '.')
-            decimal_part[length + i++] = input.readCh();
+            literal[length + i++] = input.readCh();
         else 
             break;
     }
     input.expect("f");
-    float floatVal = atof(decimal_part);
+    float floatVal = atof(literal);
     if (neg)
     {
         floatVal *= -1;
