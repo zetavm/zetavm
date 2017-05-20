@@ -220,7 +220,9 @@ void Input::eatWS()
 
 // Forward declaration
 Value parseExpr(Input& input);
+
 Value parseFloatingPart(Input& input, bool neg, int64_t val);
+
 /**
 Parse a decimal integer
 */
@@ -245,7 +247,8 @@ Value parseNum(Input& input, bool neg)
     }
 
     char next = input.peek();
-    if (next == '.' || next == 'e' || next == 'E' || next == 'f' || next == 'F') {
+    if (next == '.' || next == 'e' || next == 'f')
+    {
         return parseFloatingPart(input, neg, intVal);
     }
 
@@ -265,8 +268,10 @@ Value parseFloatingPart(Input& input, bool neg, int64_t val)
     int length = strlen(literal);
     for (int i = 0;;i++)
     {
+        if (i + length >= 64)
+            throw ParseError(input, "float literal is too long");
         char next = input.peek();
-        if (isdigit(next) || next == 'e' || next == 'E' || next == '.')
+        if (isdigit(next) || next == 'e' || next == '.')
             literal[length + i++] = input.readCh();
         else 
             break;
