@@ -57,8 +57,10 @@ executable programs, or libraries/packages.
 
 ## More Information
 
-For more information, see the documents under [docs](docs):
+For more information, see the documentation under [docs](docs):
 
-- [Design and Guiding Principles of ZetaVM](docs/design)
+- [Design and Guiding Principles of ZetaVM](docs/design.md)
 
-- [Creating your own Language with ZetaVM](docs/new_language)
+- [Creating your own Language with ZetaVM](docs/new_language.md)
+
+For additional questions and clarifications, feel free to open [an issue](https://github.com/maximecb/zetavm/issues) and tag it as a question.
