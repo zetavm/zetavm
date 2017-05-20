@@ -10,6 +10,8 @@
             name: "main_entry",
             instrs: [
                 { op: "push", val: 1.0f },
+                { op: "push", val: 3.0f },
+                { op: "div_f32" },
                 { op: "ret" }
             ]
         }
