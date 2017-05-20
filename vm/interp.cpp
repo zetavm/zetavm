@@ -1557,7 +1557,7 @@ Value testRunImage(std::string fileName)
 
 void testInterp()
 {   
-    std::cout << "testing " + testRunImage("tests/vm/ex_ret_float.zim").toString();
+    //std::cout << "testing " + testRunImage("tests/vm/ex_ret_float.zim").toString();
     assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value((int64_t)777));
     assert (testRunImage("tests/vm/ex_ret_float.zim") == Value(25.5f - (5.0f * (9.0f / (2.0f + 1.0f)))));
     assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value((int64_t)0));
