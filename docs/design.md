@@ -38,9 +38,9 @@ The first language implemented on top of ZetaVM will be a simple JS-clone called
 
 ### Core Libraries
 
-A set of core libraries/packages will be provided as part of ZetaVM. These will implement a set of simple intput/output APIs to interface with the outside world. The APIs provided will intentionally be kept low-level, simple and minimalistic to minimize the risk of introducing corner cases and undefined behaviors. It is expected that higher-level, more user friendly libraries will be implemented on top of these.
+A set of core libraries will be provided as part of ZetaVM. These will implement a set of simple intput/output APIs to interface with the outside world. The APIs provided will intentionally be kept low-level, simple and minimalistic to minimize the risk of introducing corner cases and undefined behaviors. It is expected that higher-level libraries will be implemented on top of these and provide more user-friendly interfaces.
 
-Libraries should cover services such as file I/O, console I/O, basic 2D graphics (pixel plotting and blitting), mouse and keyboard input as well as raw PCM audio output. The early prototype version of the VM will implement only the most essential libraries.
+The core libraries will cover services such as file I/O, console I/O, basic 2D graphics (pixel plotting and blitting), mouse and keyboard input as well as raw PCM audio output. The early prototype version of the VM will implement only the most essential libraries.
 
 ### JIT Compiler
 
