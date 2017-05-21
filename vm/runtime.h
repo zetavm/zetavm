@@ -12,15 +12,16 @@ typedef uint8_t* refptr;
 /// Type tag constants
 const Tag TAG_UNDEF     = 0;
 const Tag TAG_BOOL      = 1;
-const Tag TAG_INT64     = 2;
-const Tag TAG_FLOAT32   = 3;
-const Tag TAG_FLOAT64   = 4;
-const Tag TAG_STRING    = 5;
-const Tag TAG_OBJECT    = 6;
-const Tag TAG_ARRAY     = 7;
-const Tag TAG_HOSTFN    = 8;
-const Tag TAG_RAWPTR    = 9;
-const Tag TAG_IMGREF    = 10;
+const Tag TAG_INT32     = 2;
+const Tag TAG_INT64     = 3;
+const Tag TAG_FLOAT32   = 4;
+const Tag TAG_FLOAT64   = 5;
+const Tag TAG_STRING    = 6;
+const Tag TAG_OBJECT    = 7;
+const Tag TAG_ARRAY     = 8;
+const Tag TAG_HOSTFN    = 9;
+const Tag TAG_RAWPTR    = 10;
+const Tag TAG_IMGREF    = 11;
 
 /// Object header size
 const size_t HEADER_SIZE = sizeof(intptr_t);
@@ -240,7 +241,7 @@ public:
     /// Comparison with a string literal
     bool operator == (const char* that) const;
 
-    // FIXME: temporary until string internsing is implemented
+    // FIXME: temporary until string interning is implemented
     bool operator == (String that) { return (std::string)*this == (std::string)that; }
 
     /// Get the ith character code

@@ -5,16 +5,16 @@
 #include "runtime.h"
 
 /// Undefined value constant
-const Value Value::UNDEF(Word((int64_t)0), TAG_UNDEF);
+const Value Value::UNDEF(Word(0LL), TAG_UNDEF);
 
 /// Boolean constants
-const Value Value::FALSE(Word((int64_t)0), TAG_BOOL);
-const Value Value::TRUE(Word(1l), TAG_BOOL);
+const Value Value::FALSE(Word(0LL), TAG_BOOL);
+const Value Value::TRUE(Word(1LL), TAG_BOOL);
 
 /// Numerical constants
-const Value Value::ZERO(0l);
-const Value Value::ONE(1l);
-const Value Value::TWO(2l);
+const Value Value::ZERO(0LL);
+const Value Value::ONE(1LL);
+const Value Value::TWO(2LL);
 
 // Global virtual machine instance
 VM vm;

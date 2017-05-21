@@ -5,7 +5,7 @@
 #include "parser.h"
 #include "interp.h"
 #include "core.h"
-#include <math.h>  
+#include <math.h>
 
 /// Opcode enumeration
 enum Opcode : uint16_t
@@ -29,8 +29,7 @@ enum Opcode : uint16_t
     GE_I64,
     EQ_I64,
 
-    // Float operations
-
+    // Floating-point operations
     ADD_F32,
     SUB_F32,
     MUL_F32,
@@ -39,7 +38,6 @@ enum Opcode : uint16_t
     SQRT_F32,
 
     // Conversion operations
-
     I64_TO_F32,
     F32_TO_I64,
 
@@ -495,7 +493,7 @@ void compile(BlockVersion* version)
         }
 
         //
-        //Float ops
+        // Floating-point ops
         //
 
         if (op == "add_f32")
@@ -535,7 +533,7 @@ void compile(BlockVersion* version)
         }
 
         //
-        //Conversion ops
+        // Conversion ops
         //
 
         if (op == "i64_to_f32")
@@ -1084,7 +1082,7 @@ Value execCode()
             break;
 
             //
-            // Float operations
+            // Floating-point operations
             //
 
             case ADD_F32:
@@ -1134,7 +1132,7 @@ Value execCode()
             break;
 
             //
-            //Conversion operations
+            // Conversion operations
             //
 
             case I64_TO_F32:
@@ -1680,7 +1678,7 @@ Value testRunImage(std::string fileName)
 }
 
 void testInterp()
-{   
+{
     assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value((int64_t)777));
     assert (testRunImage("tests/vm/ex_ops_float.zim").toString() == "10.500000");
     assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value((int64_t)0));
