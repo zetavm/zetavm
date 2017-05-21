@@ -263,7 +263,7 @@ Value parseNum(Input& input, bool neg)
 
 Value parseFloatingPart(Input& input, bool neg, int64_t val)
 {
-    char literal[64];
+    char literal[64] = {0};
     sprintf(literal, "%" PRId64, val);
     int length = strlen(literal);
     for (int i = 0;;i++)
@@ -272,7 +272,7 @@ Value parseFloatingPart(Input& input, bool neg, int64_t val)
             throw ParseError(input, "float literal is too long");
         char next = input.peek();
         if (isdigit(next) || next == 'e' || next == '.')
-            literal[length + i++] = input.readCh();
+            literal[length + i] = input.readCh();
         else 
             break;
     }

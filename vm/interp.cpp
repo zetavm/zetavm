@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "interp.h"
 #include "core.h"
+#include <math.h>  
 
 /// Opcode enumeration
 enum Opcode : uint16_t
@@ -31,6 +32,16 @@ enum Opcode : uint16_t
     // Float operations
 
     ADD_F32,
+    SUB_F32,
+    MUL_F32,
+    DIV_F32,
+    SIN_F32,
+    SQRT_F32,
+
+    // Conversion operations
+
+    I64_TO_F32,
+    F32_TO_I64,
 
     // Miscellaneous
     EQ_BOOL,
@@ -490,6 +501,52 @@ void compile(BlockVersion* version)
         if (op == "add_f32")
         {
             writeCode(ADD_F32);
+            continue;
+        }
+
+        if (op == "sub_f32")
+        {
+            writeCode(SUB_F32);
+            continue;
+        }
+
+        if (op == "mul_f32")
+        {
+            writeCode(MUL_F32);
+            continue;
+        }
+
+        if (op == "div_f32")
+        {
+            writeCode(DIV_F32);
+            continue;
+        }
+
+        if (op == "sin_f32")
+        {
+            writeCode(SIN_F32);
+            continue;
+        }
+
+        if (op == "sqrt_f32")
+        {
+            writeCode(SQRT_F32);
+            continue;
+        }
+
+        //
+        //Conversion ops
+        //
+
+        if (op == "i64_to_f32")
+        {
+            writeCode(I64_TO_F32);
+            continue;
+        }
+
+        if (op == "f32_to_i64")
+        {
+            writeCode(F32_TO_I64);
             continue;
         }
 
@@ -1038,6 +1095,62 @@ Value execCode()
             }
             break;
 
+            case SUB_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushVal(arg0 - arg1);
+            }
+            break;
+
+            case MUL_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushVal(arg0 * arg1);
+            }
+            break;
+
+            case DIV_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushVal(arg0 / arg1);
+            }
+            break;
+
+            case SIN_F32:
+            {
+                float arg = popFloat32();
+                pushVal((float)sin(arg));
+            }
+            break;
+
+            case SQRT_F32:
+            {
+                float arg = popFloat32();
+                pushVal((float)sqrt(arg));
+            }
+            break;
+
+            //
+            //Conversion operations
+            //
+
+            case I64_TO_F32:
+            {
+                auto arg0 = popInt64();
+                pushVal((float)arg0);
+            }
+            break;
+
+            case F32_TO_I64:
+            {
+                auto arg0 = popFloat32();
+                pushVal((int64_t)arg0);
+            }
+            break;
+
             //
             // Misc operations
             //
@@ -1561,14 +1674,15 @@ Value testRunImage(std::string fileName)
 
     auto pkg = parseFile(fileName);
 
+    std::cout << callExportFn(pkg, "main").toString() << "\n";
+
     return callExportFn(pkg, "main");
 }
 
 void testInterp()
 {   
-    //std::cout << "testing " + testRunImage("tests/vm/ex_ret_float.zim").toString();
     assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value((int64_t)777));
-    assert (testRunImage("tests/vm/ex_ret_float.zim") == Value(3.0f));
+    assert (testRunImage("tests/vm/ex_ops_float.zim").toString() == "10.500000");
     assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value((int64_t)0));
     //assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
     assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value((int64_t)5040));
