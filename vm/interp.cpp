@@ -75,6 +75,7 @@ enum Opcode : uint16_t
     IF_TRUE,
     CALL,
     RET,
+    THROW,
 
     IMPORT,
     ABORT
@@ -174,6 +175,15 @@ public:
     }
 };
 
+/// Struct to associate information with a return address
+struct RetEntry
+{
+    /// Exception/catch block version (may be null)
+    BlockVersion* excVer = nullptr;
+};
+
+typedef std::vector<BlockVersion*> VersionList;
+
 /// Initial code heap size in bytes
 const size_t CODE_HEAP_INIT_SIZE = 1 << 20;
 
@@ -190,12 +200,14 @@ uint8_t* codeHeapLimit = nullptr;
 uint8_t* codeHeapAlloc = nullptr;
 
 /// Map of block objects to lists of versions
-typedef std::vector<BlockVersion*> VersionList;
 std::unordered_map<refptr, VersionList> versionMap;
 
 /// Map of instructions to block versions
 /// Note: this isn't defined for all instructions
 std::unordered_map<uint8_t*, BlockVersion*> instrMap;
+
+/// Map of return addresses to associated info
+std::unordered_map<BlockVersion*, RetEntry> retAddrMap;
 
 /// Lower stack limit (stack pointer must be greater than this)
 Value* stackLimit = nullptr;
@@ -297,9 +309,15 @@ __attribute__((always_inline)) Object popObj()
 }
 
 /// Compute the stack size (number of slots allocated)
-size_t stackSize()
+__attribute__((always_inline)) size_t stackSize()
 {
     return stackBase - stackPtr;
+}
+
+/// Compute the size of the current frame (number of slots allocated)
+__attribute__((always_inline)) size_t frameSize()
+{
+    return framePtr - stackPtr + 1;
 }
 
 /// Initialize the interpreter
@@ -693,13 +711,27 @@ void compile(BlockVersion* version)
             // Store a mapping of this instruction to the block version
             instrMap[instrPtr] = version;
 
-            static ICache retToCache("ret_to");
             static ICache numArgsCache("num_args");
             auto numArgs = (int16_t)numArgsCache.getInt64(instr);
 
             // Get a version for the call continuation block
+            static ICache retToCache("ret_to");
             auto retToBB = retToCache.getObj(instr);
             auto retVer = getBlockVersion(retToBB);
+
+            RetEntry retEntry;
+
+            if (instr.hasField("throw_to"))
+            {
+                // Get a version for the exception catch block
+                static ICache throwIC("throw_to");
+                auto throwBB = throwIC.getObj(instr);
+                auto throwVer = getBlockVersion(throwBB);
+                retEntry.excVer = throwVer;
+            }
+
+            // Create an entry for the return address
+            retAddrMap[retVer] = retEntry;
 
             writeCode(CALL);
             writeCode(numArgs);
@@ -711,6 +743,12 @@ void compile(BlockVersion* version)
         if (op == "ret")
         {
             writeCode(RET);
+            continue;
+        }
+
+        if (op == "throw")
+        {
+            writeCode(THROW);
             continue;
         }
 
@@ -1478,6 +1516,22 @@ Value execCode()
 
                     instrPtr = retVer->startPtr;
                 }
+            }
+            break;
+
+            // Throw an exception
+            case THROW:
+            {
+
+                // Pop the exception value
+                auto retVal = popVal();
+
+
+
+                assert (false);
+
+
+
             }
             break;
 
