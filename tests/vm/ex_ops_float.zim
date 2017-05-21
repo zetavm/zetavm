@@ -9,9 +9,13 @@
         entry: {
             name: "main_entry",
             instrs: [
-                { op: "push", val: 1.0f },
+                { op: "push", val: 25.5f },
+                { op: "push", val: 9.0f },
                 { op: "push", val: 3.0f },
                 { op: "div_f32" },
+                { op: "push", val: 5.0f },
+                { op: "mul_f32" },
+                { op: "sub_f32" },
                 { op: "ret" }
             ]
         }

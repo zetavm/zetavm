@@ -1627,10 +1627,9 @@ Value testRunImage(std::string fileName)
 
 void testInterp()
 {   
+    float x = 5f;
     assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value((int64_t)777));
-    assert (testRunImage("tests/vm/ex_ret_float.zim") == Value(1.0f));
-    // assert (testRunImage("tests/vm/ex_sin32_sqrt32.zim") == Value((float)sin(50.0f) + (float)sqrt(9.0f)));
-    assert (testRunImage("tests/vm/ex_ops_float.zim") == Value((float)3.0f / 1.0f));
+    assert (testRunImage("tests/vm/ex_ops_float.zim").toString() == "10.500000");
     assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value((int64_t)0));
     //assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
     assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value((int64_t)5040));
