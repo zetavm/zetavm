@@ -56,7 +56,7 @@ sum = {
         instrs: [
             { op: "get_local", idx: 0 },
             { op: "get_local", idx: 1 },
-            { op: "add_i64" },
+            { op: "add_i32" },
             { op: "ret" }
         ]
     }

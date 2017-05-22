@@ -7,7 +7,7 @@ block_5 = {
   instrs: [
     { op:'get_local', idx:0 },
     { op:'get_local', idx:1 },
-    { op:'add_i64' },
+    { op:'add_i32' },
     { op:'ret' },
   ]
 };
@@ -127,7 +127,7 @@ block_22 = {
   instrs: [
     { op:'get_local', idx:0 },
     { op:'get_local', idx:1 },
-    { op:'sub_i64' },
+    { op:'sub_i32' },
     { op:'ret' },
   ]
 };
@@ -238,7 +238,7 @@ block_38 = {
   instrs: [
     { op:'get_local', idx:0 },
     { op:'get_local', idx:1 },
-    { op:'eq_i64' },
+    { op:'eq_i32' },
     { op:'ret' },
   ]
 };
@@ -533,7 +533,7 @@ block_79 = {
   instrs: [
     { op:'get_local', idx:0 },
     { op:'get_local', idx:1 },
-    { op:'le_i64' },
+    { op:'le_i32' },
     { op:'ret' },
   ]
 };
@@ -577,7 +577,7 @@ block_85 = {
     { op:'get_local', idx:0 },
     { op:'str_len' },
     { op:'push', val:1 },
-    { op:'eq_i64' },
+    { op:'eq_i32' },
     { op:'if_true', then:@block_86, else:@block_87 },
   ]
 };
@@ -601,7 +601,7 @@ block_88 = {
     { op:'get_local', idx:1 },
     { op:'str_len' },
     { op:'push', val:1 },
-    { op:'eq_i64' },
+    { op:'eq_i32' },
     { op:'if_true', then:@block_89, else:@block_90 },
   ]
 };
@@ -713,7 +713,7 @@ block_103 = {
   instrs: [
     { op:'get_local', idx:0 },
     { op:'get_local', idx:1 },
-    { op:'ge_i64' },
+    { op:'ge_i32' },
     { op:'ret' },
   ]
 };
@@ -757,7 +757,7 @@ block_109 = {
     { op:'get_local', idx:0 },
     { op:'str_len' },
     { op:'push', val:1 },
-    { op:'eq_i64' },
+    { op:'eq_i32' },
     { op:'if_true', then:@block_110, else:@block_111 },
   ]
 };
@@ -781,7 +781,7 @@ block_112 = {
     { op:'get_local', idx:1 },
     { op:'str_len' },
     { op:'push', val:1 },
-    { op:'eq_i64' },
+    { op:'eq_i32' },
     { op:'if_true', then:@block_113, else:@block_114 },
   ]
 };
@@ -3665,7 +3665,7 @@ block_387 = {
 
 block_391 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_388, else:@block_390 },
   ]
 };
@@ -3873,7 +3873,7 @@ block_410 = {
 block_412 = {
   instrs: [
     { op:'push', val:0 },
-    { op:'gt_i64' },
+    { op:'gt_i32' },
     { op:'if_true', then:@block_413, else:@block_414 },
   ]
 };
@@ -3933,7 +3933,7 @@ block_419 = {
 
 block_423 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_420, else:@block_422 },
   ]
 };
@@ -4864,7 +4864,7 @@ block_537 = {
 
 block_541 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_538, else:@block_540 },
   ]
 };
@@ -4983,7 +4983,7 @@ block_552 = {
   instrs: [
     { op:'push', val:10 },
     { op:'get_local', idx:2 },
-    { op:'mul_i64' },
+    { op:'mul_i32' },
     { op:'get_local', idx:4 },
     { op:'push', val:@global_obj },
     { op:'push', val:'rt_add' },
@@ -5084,7 +5084,7 @@ block_527 = {
 
 block_562 = {
   instrs: [
-    { op:'mul_i64' },
+    { op:'mul_i32' },
     { op:'dup', idx:0 },
     { op:'set_local', idx:2 },
     { op:'pop' },
@@ -7183,7 +7183,7 @@ block_792 = {
 
 block_796 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_793, else:@block_795 },
   ]
 };
@@ -7272,7 +7272,7 @@ block_804 = {
 block_811 = {
   instrs: [
     { op:'get_local', idx:1 },
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'dup', idx:0 },
     { op:'if_true', then:@block_810, else:@block_809 },
   ]
@@ -7474,7 +7474,7 @@ block_829 = {
     { op:'set_local', idx:7 },
     { op:'get_local', idx:7 },
     { op:'get_local', idx:4 },
-    { op:'gt_i64' },
+    { op:'gt_i32' },
     { op:'if_true', then:@block_830, else:@block_831 },
   ]
 };
@@ -8562,7 +8562,7 @@ block_951 = {
 block_948 = {
   instrs: [
     { op:'push', val:0 },
-    { op:'gt_i64' },
+    { op:'gt_i32' },
     { op:'if_true', then:@block_949, else:@block_950 },
   ]
 };
@@ -8863,7 +8863,7 @@ block_987 = {
 block_988 = {
   instrs: [
     { op:'push', val:0 },
-    { op:'gt_i64' },
+    { op:'gt_i32' },
     { op:'dup', idx:0 },
     { op:'if_true', then:@block_985, else:@block_986 },
   ]
@@ -10988,7 +10988,7 @@ block_1187 = {
 
 block_1188 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1184, else:@block_1186 },
   ]
 };
@@ -11584,7 +11584,7 @@ block_1243 = {
 
 block_1244 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1240, else:@block_1242 },
   ]
 };
@@ -14043,7 +14043,7 @@ block_1505 = {
   instrs: [
     { op:'pop' },
     { op:'get_local', idx:0 },
-    { op:'push', val:'lt_i64' },
+    { op:'push', val:'lt_i32' },
     { op:'dup', idx:1 },
     { op:'push', val:'addOp' },
     { op:'push', val:@global_obj },
@@ -14249,7 +14249,7 @@ block_1526 = {
   instrs: [
     { op:'pop' },
     { op:'get_local', idx:0 },
-    { op:'push', val:'gt_i64' },
+    { op:'push', val:'gt_i32' },
     { op:'dup', idx:1 },
     { op:'push', val:'addOp' },
     { op:'push', val:@global_obj },
@@ -14755,7 +14755,7 @@ block_1577 = {
   instrs: [
     { op:'pop' },
     { op:'get_local', idx:0 },
-    { op:'push', val:'mul_i64' },
+    { op:'push', val:'mul_i32' },
     { op:'dup', idx:1 },
     { op:'push', val:'addOp' },
     { op:'push', val:@global_obj },
@@ -15451,7 +15451,7 @@ block_1651 = {
 
 block_1652 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1648, else:@block_1650 },
   ]
 };
@@ -15689,7 +15689,7 @@ block_1675 = {
 
 block_1676 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1672, else:@block_1674 },
   ]
 };
@@ -16049,7 +16049,7 @@ block_1708 = {
 
 block_1712 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1709, else:@block_1711 },
   ]
 };
@@ -16309,7 +16309,7 @@ block_1733 = {
 
 block_1737 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1734, else:@block_1736 },
   ]
 };
@@ -16627,7 +16627,7 @@ block_1762 = {
 
 block_1766 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1763, else:@block_1765 },
   ]
 };
@@ -16890,7 +16890,7 @@ block_1795 = {
 
 block_1796 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1792, else:@block_1794 },
   ]
 };
@@ -18643,7 +18643,7 @@ block_1972 = {
 
 block_1976 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_1973, else:@block_1975 },
   ]
 };
@@ -19517,7 +19517,7 @@ block_2059 = {
 
 block_2060 = {
   instrs: [
-    { op:'lt_i64' },
+    { op:'lt_i32' },
     { op:'if_true', then:@block_2056, else:@block_2058 },
   ]
 };

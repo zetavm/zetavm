@@ -537,7 +537,7 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
         {
             genExpr(ctx, binOp->lhsExpr);
             genExpr(ctx, binOp->rhsExpr);
-            ctx.addOp("lt_i64");
+            ctx.addOp("lt_i32");
             return;
         }
 
@@ -553,7 +553,7 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
         {
             genExpr(ctx, binOp->lhsExpr);
             genExpr(ctx, binOp->rhsExpr);
-            ctx.addOp("gt_i64");
+            ctx.addOp("gt_i32");
             return;
         }
 
@@ -601,7 +601,7 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
         {
             genExpr(ctx, binOp->lhsExpr);
             genExpr(ctx, binOp->rhsExpr);
-            ctx.addOp("mul_i64");
+            ctx.addOp("mul_i32");
             return;
         }
 

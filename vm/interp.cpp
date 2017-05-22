@@ -444,49 +444,49 @@ void compile(BlockVersion* version)
         // Integer operations
         //
 
-        if (op == "add_i64")
+        if (op == "add_i32")
         {
             writeCode(ADD_I32);
             continue;
         }
 
-        if (op == "sub_i64")
+        if (op == "sub_i32")
         {
             writeCode(SUB_I32);
             continue;
         }
 
-        if (op == "mul_i64")
+        if (op == "mul_i32")
         {
             writeCode(MUL_I32);
             continue;
         }
 
-        if (op == "lt_i64")
+        if (op == "lt_i32")
         {
             writeCode(LT_I32);
             continue;
         }
 
-        if (op == "le_i64")
+        if (op == "le_i32")
         {
             writeCode(LE_I32);
             continue;
         }
 
-        if (op == "gt_i64")
+        if (op == "gt_i32")
         {
             writeCode(GT_I32);
             continue;
         }
 
-        if (op == "ge_i64")
+        if (op == "ge_i32")
         {
             writeCode(GE_I32);
             continue;
         }
 
-        if (op == "eq_i64")
+        if (op == "eq_i32")
         {
             writeCode(EQ_I32);
             continue;
@@ -1678,7 +1678,7 @@ void testInterp()
     assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value::int32(777));
     assert (testRunImage("tests/vm/ex_ops_float.zim").toString() == "10.500000");
     assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value::int32(0));
-    //assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
+    assert (testRunImage("tests/vm/ex_image.zim") == Value::int32(10));
     assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value::int32(5040));
     assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value::int32(377));
 }

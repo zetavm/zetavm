@@ -12,7 +12,7 @@ fib_entry = {
         # if n < 2 goto fib_base else goto fib_n_1
         { op: "get_local", idx: 0 },
         { op: "push", val: 2 },
-        { op: "lt_i64" },
+        { op: "lt_i32" },
         { op: "if_true", then: @fib_base, else: @fib_n_1 },
     ]
 };
@@ -28,7 +28,7 @@ fib_n_1 = {
         # compute fib(n-1), then goto fib_n_2
         { op: "get_local", idx: 0 },
         { op: "push", val: 1 },
-        { op: "sub_i64" },
+        { op: "sub_i32" },
         { op: "push", val: @fib },
         { op: "call", ret_to: @fib_n_2, num_args: 1 },
     ]
@@ -38,7 +38,7 @@ fib_n_2 = {
         # compute fib(n-2), then goto fib_ret
         { op: "get_local", idx: 0 },
         { op: "push", val: 2 },
-        { op: "sub_i64" },
+        { op: "sub_i32" },
         { op: "push", val: @fib },
         { op: "call", ret_to: @fib_ret, num_args: 1 },
     ]
@@ -46,7 +46,7 @@ fib_n_2 = {
 fib_ret = {
     instrs: [
         # return fib(n-1) + fib(n-2)
-        { op: "add_i64" },
+        { op: "add_i32" },
         { op: "ret" },
     ]
 };

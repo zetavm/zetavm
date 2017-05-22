@@ -4,7 +4,7 @@ block_236 = {
   instrs: [
     { op:'get_local', idx:0 },
     { op:'get_local', idx:1 },
-    { op:'sub_i64' },
+    { op:'sub_i32' },
     { op:'ret' },
   ]
 };
@@ -27,7 +27,7 @@ block_0 = {
 block_238 = {
   instrs: [
     { op:'push', val:1 },
-    { op:'eq_i64' },
+    { op:'eq_i32' },
     { op:'if_true', then:@block_241, else:@block_240 },
   ]
 };

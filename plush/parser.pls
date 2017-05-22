@@ -1715,7 +1715,7 @@ var genExpr = function (ctx, expr)
         {
             genExpr(ctx, expr.lhsExpr);
             genExpr(ctx, expr.rhsExpr);
-            ctx:addOp("lt_i64");
+            ctx:addOp("lt_i32");
             return;
         }
 
@@ -1731,7 +1731,7 @@ var genExpr = function (ctx, expr)
         {
             genExpr(ctx, expr.lhsExpr);
             genExpr(ctx, expr.rhsExpr);
-            ctx:addOp("gt_i64");
+            ctx:addOp("gt_i32");
             return;
         }
 
@@ -1771,7 +1771,7 @@ var genExpr = function (ctx, expr)
         {
             genExpr(ctx, expr.lhsExpr);
             genExpr(ctx, expr.rhsExpr);
-            ctx:addOp("mul_i64");
+            ctx:addOp("mul_i32");
             return;
         }
 

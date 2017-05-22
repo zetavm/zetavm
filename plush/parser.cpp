@@ -1361,7 +1361,7 @@ void testParser()
     testParse("var io = import 'core/io';");
 
     // Inline IR
-    testParse("var s = $add_i64(1, 2);");
+    testParse("var s = $add_i32(1, 2);");
     testParse("$array_push(arr, val);");
 
     // Assert statement

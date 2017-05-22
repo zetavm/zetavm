@@ -50,7 +50,7 @@ def runBenchs():
         #'benchmarks/fib36.zim',
         'benchmarks/loop_cnt_100m.zim',
         'benchmarks/plush_parser.zim',
-        'benchmarks/sqr_wave.pls'
+        'benchmarks/saw_wave.pls'
     ]
 
     timeVals = []

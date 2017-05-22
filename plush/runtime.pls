@@ -5,7 +5,7 @@ var rt_add = function (x, y)
     {
         if (typeof y == "int32")
         {
-            return $add_i64(x, y);
+            return $add_i32(x, y);
         }
     }
 
@@ -40,7 +40,7 @@ var rt_sub = function (x, y)
     {
         if (typeof y == "int32")
         {
-            return $sub_i64(x, y);
+            return $sub_i32(x, y);
         }
     }
 
@@ -66,7 +66,7 @@ var rt_eq = function (x, y)
     {
         if (typeof y == "int32")
         {
-            return $eq_i64(x, y);
+            return $eq_i32(x, y);
         }
     }
 
@@ -132,7 +132,7 @@ var rt_le = function (x, y)
     {
         if (typeof y == "int32")
         {
-            return $le_i64(x, y);
+            return $le_i32(x, y);
         }
     }
 
@@ -141,8 +141,8 @@ var rt_le = function (x, y)
         if (typeof y == "string")
         {
             // TODO: proper string comparison
-            assert ($eq_i64($str_len(x), 1), "rt_le");
-            assert ($eq_i64($str_len(y), 1), "rt_le");
+            assert ($eq_i32($str_len(x), 1), "rt_le");
+            assert ($eq_i32($str_len(y), 1), "rt_le");
             return $get_char_code(x, 0) <= $get_char_code(y, 0);
         }
     }
@@ -160,7 +160,7 @@ var rt_ge = function (x, y)
     {
         if (typeof y == "int32")
         {
-            return $ge_i64(x, y);
+            return $ge_i32(x, y);
         }
     }
 
@@ -169,8 +169,8 @@ var rt_ge = function (x, y)
         if (typeof y == "string")
         {
             // TODO: proper string comparison
-            assert ($eq_i64($str_len(x), 1), "rt_ge");
-            assert ($eq_i64($str_len(y), 1), "rt_ge");
+            assert ($eq_i32($str_len(x), 1), "rt_ge");
+            assert ($eq_i32($str_len(y), 1), "rt_ge");
             return $get_char_code(x, 0) >= $get_char_code(y, 0);
         }
     }
