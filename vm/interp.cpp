@@ -20,14 +20,14 @@ enum Opcode : uint16_t
     SWAP,
 
     // 64-bit integer operations
-    ADD_I64,
-    SUB_I64,
-    MUL_I64,
-    LT_I64,
-    LE_I64,
-    GT_I64,
-    GE_I64,
-    EQ_I64,
+    ADD_I32,
+    SUB_I32,
+    MUL_I32,
+    LT_I32,
+    LE_I32,
+    GT_I32,
+    GE_I32,
+    EQ_I32,
 
     // Floating-point operations
     ADD_F32,
@@ -38,8 +38,8 @@ enum Opcode : uint16_t
     SQRT_F32,
 
     // Conversion operations
-    I64_TO_F32,
-    F32_TO_I64,
+    I32_TO_F32,
+    F32_TO_I32,
 
     // Miscellaneous
     EQ_BOOL,
@@ -109,11 +109,11 @@ public:
         return val;
     }
 
-    int64_t getInt64(Object obj)
+    int32_t getInt32(Object obj)
     {
         auto val = getField(obj);
-        assert (val.isInt64());
-        return (int64_t)val;
+        assert (val.isInt32());
+        return (int32_t)val;
     }
 
     String getStr(Object obj)
@@ -274,12 +274,12 @@ __attribute__((always_inline)) bool popBool()
     return (bool)val;
 }
 
-__attribute__((always_inline)) int64_t popInt64()
+__attribute__((always_inline)) int32_t popInt32()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
-    assert (val.isInt64());
-    return (int64_t)val;
+    assert (val.isInt32());
+    return (int32_t)val;
 }
 
 __attribute__((always_inline)) float popFloat32()
@@ -410,7 +410,7 @@ void compile(BlockVersion* version)
         if (op == "dup")
         {
             static ICache idxIC("idx");
-            auto idx = (uint16_t)idxIC.getInt64(instr);
+            auto idx = (uint16_t)idxIC.getInt32(instr);
             writeCode(DUP);
             writeCode(idx);
             continue;
@@ -425,7 +425,7 @@ void compile(BlockVersion* version)
         if (op == "get_local")
         {
             static ICache idxIC("idx");
-            auto idx = (uint16_t)idxIC.getInt64(instr);
+            auto idx = (uint16_t)idxIC.getInt32(instr);
             writeCode(GET_LOCAL);
             writeCode(idx);
             continue;
@@ -434,7 +434,7 @@ void compile(BlockVersion* version)
         if (op == "set_local")
         {
             static ICache idxIC("idx");
-            auto idx = (uint16_t)idxIC.getInt64(instr);
+            auto idx = (uint16_t)idxIC.getInt32(instr);
             writeCode(SET_LOCAL);
             writeCode(idx);
             continue;
@@ -446,49 +446,49 @@ void compile(BlockVersion* version)
 
         if (op == "add_i64")
         {
-            writeCode(ADD_I64);
+            writeCode(ADD_I32);
             continue;
         }
 
         if (op == "sub_i64")
         {
-            writeCode(SUB_I64);
+            writeCode(SUB_I32);
             continue;
         }
 
         if (op == "mul_i64")
         {
-            writeCode(MUL_I64);
+            writeCode(MUL_I32);
             continue;
         }
 
         if (op == "lt_i64")
         {
-            writeCode(LT_I64);
+            writeCode(LT_I32);
             continue;
         }
 
         if (op == "le_i64")
         {
-            writeCode(LE_I64);
+            writeCode(LE_I32);
             continue;
         }
 
         if (op == "gt_i64")
         {
-            writeCode(GT_I64);
+            writeCode(GT_I32);
             continue;
         }
 
         if (op == "ge_i64")
         {
-            writeCode(GE_I64);
+            writeCode(GE_I32);
             continue;
         }
 
         if (op == "eq_i64")
         {
-            writeCode(EQ_I64);
+            writeCode(EQ_I32);
             continue;
         }
 
@@ -536,15 +536,15 @@ void compile(BlockVersion* version)
         // Conversion ops
         //
 
-        if (op == "i64_to_f32")
+        if (op == "i32_to_f32")
         {
-            writeCode(I64_TO_F32);
+            writeCode(I32_TO_F32);
             continue;
         }
 
-        if (op == "f32_to_i64")
+        if (op == "f32_to_i32")
         {
-            writeCode(F32_TO_I64);
+            writeCode(F32_TO_I32);
             continue;
         }
 
@@ -710,7 +710,7 @@ void compile(BlockVersion* version)
             instrMap[instrPtr] = version;
 
             static ICache numArgsCache("num_args");
-            auto numArgs = (int16_t)numArgsCache.getInt64(instr);
+            auto numArgs = (int16_t)numArgsCache.getInt32(instr);
 
             // Get a version for the call continuation block
             static ICache retToCache("ret_to");
@@ -770,6 +770,8 @@ void compile(BlockVersion* version)
 
     // Mark the block end
     version->endPtr = codeHeapAlloc;
+
+    //std::cout << "done compiling version" << std::endl;
 }
 
 /// Get the source position for a given instruction, if available
@@ -853,10 +855,10 @@ __attribute__((always_inline)) void funCall(
     }
 
     static ICache localsIC("num_locals");
-    auto numLocals = localsIC.getInt64(fun);
+    auto numLocals = localsIC.getInt32(fun);
 
     static ICache paramsIC("num_params");
-    auto numParams = paramsIC.getInt64(fun);
+    auto numParams = paramsIC.getInt32(fun);
 
     checkArgCount(callInstr, numParams, numArgs);
 
@@ -1017,66 +1019,66 @@ Value execCode()
             // Integer operations
             //
 
-            case ADD_I64:
+            case ADD_I32:
             {
-                auto arg1 = popInt64();
-                auto arg0 = popInt64();
-                pushVal(arg0 + arg1);
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 + arg1));
             }
             break;
 
-            case SUB_I64:
+            case SUB_I32:
             {
-                auto arg1 = popInt64();
-                auto arg0 = popInt64();
-                pushVal(arg0 - arg1);
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 - arg1));
             }
             break;
 
-            case MUL_I64:
+            case MUL_I32:
             {
-                auto arg1 = popInt64();
-                auto arg0 = popInt64();
-                pushVal(arg0 * arg1);
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 * arg1));
             }
             break;
 
-            case LT_I64:
+            case LT_I32:
             {
-                auto arg1 = popInt64();
-                auto arg0 = popInt64();
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
                 pushBool(arg0 < arg1);
             }
             break;
 
-            case LE_I64:
+            case LE_I32:
             {
-                auto arg1 = popInt64();
-                auto arg0 = popInt64();
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
                 pushBool(arg0 <= arg1);
             }
             break;
 
-            case GT_I64:
+            case GT_I32:
             {
-                auto arg1 = popInt64();
-                auto arg0 = popInt64();
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
                 pushBool(arg0 > arg1);
             }
             break;
 
-            case GE_I64:
+            case GE_I32:
             {
-                auto arg1 = popInt64();
-                auto arg0 = popInt64();
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
                 pushBool(arg0 >= arg1);
             }
             break;
 
-            case EQ_I64:
+            case EQ_I32:
             {
-                auto arg1 = popInt64();
-                auto arg0 = popInt64();
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
                 pushBool(arg0 == arg1);
             }
             break;
@@ -1089,7 +1091,7 @@ Value execCode()
             {
                 auto arg1 = popFloat32();
                 auto arg0 = popFloat32();
-                pushVal(arg0 + arg1);
+                pushVal(Value::float32(arg0 + arg1));
             }
             break;
 
@@ -1097,7 +1099,7 @@ Value execCode()
             {
                 auto arg1 = popFloat32();
                 auto arg0 = popFloat32();
-                pushVal(arg0 - arg1);
+                pushVal(Value::float32(arg0 - arg1));
             }
             break;
 
@@ -1105,7 +1107,7 @@ Value execCode()
             {
                 auto arg1 = popFloat32();
                 auto arg0 = popFloat32();
-                pushVal(arg0 * arg1);
+                pushVal(Value::float32(arg0 * arg1));
             }
             break;
 
@@ -1113,21 +1115,21 @@ Value execCode()
             {
                 auto arg1 = popFloat32();
                 auto arg0 = popFloat32();
-                pushVal(arg0 / arg1);
+                pushVal(Value::float32(arg0 / arg1));
             }
             break;
 
             case SIN_F32:
             {
                 float arg = popFloat32();
-                pushVal((float)sin(arg));
+                pushVal(Value::float32(sin(arg)));
             }
             break;
 
             case SQRT_F32:
             {
                 float arg = popFloat32();
-                pushVal((float)sqrt(arg));
+                pushVal(Value::float32(sqrt(arg)));
             }
             break;
 
@@ -1135,17 +1137,17 @@ Value execCode()
             // Conversion operations
             //
 
-            case I64_TO_F32:
+            case I32_TO_F32:
             {
-                auto arg0 = popInt64();
-                pushVal((float)arg0);
+                auto arg0 = popInt32();
+                pushVal(Value::float32(arg0));
             }
             break;
 
-            case F32_TO_I64:
+            case F32_TO_I32:
             {
                 auto arg0 = popFloat32();
-                pushVal((int64_t)arg0);
+                pushVal(Value::int32(arg0));
             }
             break;
 
@@ -1177,13 +1179,13 @@ Value execCode()
             case STR_LEN:
             {
                 auto str = popStr();
-                pushVal((int64_t)str.length());
+                pushVal(Value::int32(str.length()));
             }
             break;
 
             case GET_CHAR:
             {
-                auto idx = (size_t)popInt64();
+                auto idx = (size_t)popInt32();
                 auto str = popStr();
 
                 if (idx >= str.length())
@@ -1208,7 +1210,7 @@ Value execCode()
 
             case GET_CHAR_CODE:
             {
-                auto idx = (size_t)popInt64();
+                auto idx = (size_t)popInt32();
                 auto str = popStr();
 
                 if (idx >= str.length())
@@ -1218,7 +1220,7 @@ Value execCode()
                     );
                 }
 
-                pushVal((int64_t)str[idx]);
+                pushVal(Value::int32(str[idx]));
             }
             break;
 
@@ -1245,7 +1247,7 @@ Value execCode()
 
             case NEW_OBJECT:
             {
-                auto capacity = popInt64();
+                auto capacity = popInt32();
                 auto obj = Object::newObject(capacity);
                 pushVal(obj);
             }
@@ -1313,7 +1315,7 @@ Value execCode()
 
             case NEW_ARRAY:
             {
-                auto len = popInt64();
+                auto len = popInt32();
                 auto array = Array(len);
                 pushVal(array);
             }
@@ -1322,7 +1324,7 @@ Value execCode()
             case ARRAY_LEN:
             {
                 auto arr = Array(popVal());
-                pushVal((int64_t)arr.length());
+                pushVal(Value::int32(arr.length()));
             }
             break;
 
@@ -1337,7 +1339,7 @@ Value execCode()
             case SET_ELEM:
             {
                 auto val = popVal();
-                auto idx = (size_t)popInt64();
+                auto idx = (size_t)popInt32();
                 auto arr = Array(popVal());
 
                 if (idx >= arr.length())
@@ -1353,7 +1355,7 @@ Value execCode()
 
             case GET_ELEM:
             {
-                auto idx = (size_t)popInt64();
+                auto idx = (size_t)popInt32();
                 auto arr = Array(popVal());
 
                 if (idx >= arr.length())
@@ -1520,16 +1522,10 @@ Value execCode()
             // Throw an exception
             case THROW:
             {
-
                 // Pop the exception value
                 auto retVal = popVal();
 
-
-
                 assert (false);
-
-
-
             }
             break;
 
@@ -1578,8 +1574,8 @@ Value callFun(Object fun, ValueVec args)
 {
     static ICache numParamsIC("num_params");
     static ICache numLocalsIC("num_locals");
-    auto numParams = numParamsIC.getInt64(fun);
-    auto numLocals = numLocalsIC.getInt64(fun);
+    auto numParams = numParamsIC.getInt32(fun);
+    auto numLocals = numLocalsIC.getInt32(fun);
     assert (args.size() <= numParams);
     assert (numParams <= numLocals);
 
@@ -1679,10 +1675,10 @@ Value testRunImage(std::string fileName)
 
 void testInterp()
 {
-    assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value((int64_t)777));
+    assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value::int32(777));
     assert (testRunImage("tests/vm/ex_ops_float.zim").toString() == "10.500000");
-    assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value((int64_t)0));
+    assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value::int32(0));
     //assert (testRunImage("tests/vm/ex_image.zim") == Value(10));
-    assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value((int64_t)5040));
-    assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value((int64_t)377));
+    assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value::int32(5040));
+    assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value::int32(377));
 }

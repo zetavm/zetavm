@@ -12,9 +12,9 @@ const Value Value::FALSE(Word(0LL), TAG_BOOL);
 const Value Value::TRUE(Word(1LL), TAG_BOOL);
 
 /// Numerical constants
-const Value Value::ZERO(0LL);
-const Value Value::ONE(1LL);
-const Value Value::TWO(2LL);
+const Value Value::ZERO(Word(0LL), TAG_INT32);
+const Value Value::ONE(Word(1LL), TAG_INT32);
+const Value Value::TWO(Word(2LL), TAG_INT32);
 
 // Global virtual machine instance
 VM vm;
@@ -36,8 +36,8 @@ std::string Value::toString() const
         case TAG_BOOL:
         return (*this == Value::TRUE)? "$true":"$false";
 
-        case TAG_INT64:
-        return std::to_string(word.int64);
+        case TAG_INT32:
+        return std::to_string(word.int32);
 
         case TAG_FLOAT32:
         return std::to_string(word.float32);
@@ -79,10 +79,10 @@ Value::operator bool () const
     return word.int64? 1:0;
 }
 
-Value::operator int64_t () const
+Value::operator int32_t () const
 {
-    assert (tag == TAG_INT64);
-    return word.int64;
+    assert (tag == TAG_INT32);
+    return word.int32;
 }
 
 Value::operator float () const
@@ -639,6 +639,7 @@ Tag strToTag(std::string str)
 {
     if (str == "undef")     return TAG_UNDEF;
     if (str == "bool")      return TAG_BOOL;
+    if (str == "int32")     return TAG_INT32;
     if (str == "int64")     return TAG_INT64;
     if (str == "float32")   return TAG_FLOAT32;
     if (str == "float64")   return TAG_FLOAT64;
@@ -654,8 +655,8 @@ std::string posToString(Value srcPos)
     assert (srcPos.isObject());
     auto srcPosObj = (Object)srcPos;
 
-    auto lineNo = (int64_t)srcPosObj.getField("line_no");
-    auto colNo = (int64_t)srcPosObj.getField("col_no");
+    auto lineNo = (int32_t)srcPosObj.getField("line_no");
+    auto colNo = (int32_t)srcPosObj.getField("col_no");
     auto srcName = (std::string)srcPosObj.getField("src_name");
 
     return (

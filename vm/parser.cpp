@@ -228,7 +228,7 @@ Parse a decimal integer
 */
 Value parseNum(Input& input, bool neg)
 {
-    int64_t intVal = 0;
+    int32_t intVal = 0;
 
     for (;;)
     {
@@ -238,7 +238,7 @@ Value parseNum(Input& input, bool neg)
         if (!isdigit(ch))
             throw ParseError(input, "expected digit");
 
-        int64_t digit = ch - '0';
+        int32_t digit = ch - '0';
         intVal = 10 * intVal + digit;
 
         // If the next character is not a digit, stop
@@ -258,7 +258,7 @@ Value parseNum(Input& input, bool neg)
         intVal *= -1;
     }
 
-    return Value(intVal);
+    return Value::int32(intVal);
 }
 
 Value parseFloatingPart(Input& input, bool neg, int64_t val)
@@ -273,7 +273,7 @@ Value parseFloatingPart(Input& input, bool neg, int64_t val)
         char next = input.peek();
         if (isdigit(next) || next == 'e' || next == '.')
             literal[length + i] = input.readCh();
-        else 
+        else
             break;
     }
     input.expect("f");
@@ -282,7 +282,7 @@ Value parseFloatingPart(Input& input, bool neg, int64_t val)
     {
         floatVal *= -1;
     }
-    return Value(floatVal);
+    return Value::float32(floatVal);
 }
 
 /**
@@ -732,6 +732,7 @@ Value resolveRefs(
 
             case TAG_UNDEF:
             case TAG_BOOL:
+            case TAG_INT32:
             case TAG_INT64:
             case TAG_FLOAT32:
             case TAG_STRING:
@@ -981,7 +982,7 @@ void testParser()
     std::cout << "image parser tests" << std::endl;
 
     // Literals
-    testParse("0;", TAG_INT64);
+    testParse("0;", TAG_INT32);
     testParse("123;");
     testParse("-1;");
     testParse("-127;");
@@ -1037,7 +1038,7 @@ void testParser()
     testParseFail("1; # comment\n!1");
 
     // Global definitions
-    testParse("x = 1; 1;", TAG_INT64);
+    testParse("x = 1; 1;", TAG_INT32);
     testParse("y=2; 2;");
     testParse("x=1; y=2; 2;");
     testParse("foo = 'bar'; 1;");
@@ -1048,7 +1049,7 @@ void testParser()
     testParseFail("x=1 y=2;");
 
     // Global value references
-    testParse("x = 1; @x;", TAG_INT64);
+    testParse("x = 1; @x;", TAG_INT32);
     testParse("x = 1; y = 2; [@x, @y, 3];", TAG_ARRAY);
     testParseFail("x = 1; y = @x; @x");
 

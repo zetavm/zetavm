@@ -1,9 +1,9 @@
 // Addition operator
 var rt_add = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
             return $add_i64(x, y);
         }
@@ -36,9 +36,9 @@ var rt_add = function (x, y)
 /// Subtraction operator
 var rt_sub = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
             return $sub_i64(x, y);
         }
@@ -62,9 +62,9 @@ var rt_not = function (x)
 /// Equality comparison
 var rt_eq = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
             return $eq_i64(x, y);
         }
@@ -128,9 +128,9 @@ var rt_ne = function (x, y)
 /// Less than or equal comparison
 var rt_le = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
             return $le_i64(x, y);
         }
@@ -156,9 +156,9 @@ var rt_le = function (x, y)
 /// Greater than or equal comparison
 var rt_ge = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
             return $ge_i64(x, y);
         }
@@ -287,7 +287,10 @@ var rt_getElem = function (base, idx)
         return $get_char(base, idx);
     }
 
-    assert (false);
+    assert (
+        false,
+        "unhandled type in getElem"
+    );
 };
 
 /// Array push method
@@ -307,9 +310,9 @@ var output = function (x)
         return;
     }
 
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        io.print_int64(x);
+        io.print_int32(x);
         return;
     }
 

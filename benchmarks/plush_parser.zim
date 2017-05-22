@@ -15,7 +15,7 @@ block_5 = {
 block_4 = {
   instrs: [
     { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_5, else:@block_6 },
   ]
 };
@@ -29,7 +29,7 @@ block_6 = {
 block_2 = {
   instrs: [
     { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_4, else:@block_8 },
   ]
 };
@@ -135,7 +135,7 @@ block_22 = {
 block_21 = {
   instrs: [
     { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_22, else:@block_23 },
   ]
 };
@@ -149,7 +149,7 @@ block_23 = {
 block_19 = {
   instrs: [
     { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_21, else:@block_25 },
   ]
 };
@@ -246,7 +246,7 @@ block_38 = {
 block_37 = {
   instrs: [
     { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_38, else:@block_39 },
   ]
 };
@@ -260,7 +260,7 @@ block_39 = {
 block_35 = {
   instrs: [
     { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_37, else:@block_41 },
   ]
 };
@@ -541,7 +541,7 @@ block_79 = {
 block_78 = {
   instrs: [
     { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_79, else:@block_80 },
   ]
 };
@@ -555,7 +555,7 @@ block_80 = {
 block_76 = {
   instrs: [
     { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_78, else:@block_82 },
   ]
 };
@@ -721,7 +721,7 @@ block_103 = {
 block_102 = {
   instrs: [
     { op:'get_local', idx:1 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_103, else:@block_104 },
   ]
 };
@@ -735,7 +735,7 @@ block_104 = {
 block_100 = {
   instrs: [
     { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_102, else:@block_106 },
   ]
 };
@@ -1451,7 +1451,7 @@ block_198 = {
 
 block_199 = {
   instrs: [
-    { op:'push', val:'assertion failed' },
+    { op:'push', val:'unhandled type in getElem' },
     { op:'abort' },
     { op:'jump', to:@block_200 },
   ]
@@ -1534,7 +1534,7 @@ block_210 = {
     { op:'push', val:@global_obj },
     { op:'push', val:'io' },
     { op:'get_field' },
-    { op:'push', val:'print_int64' },
+    { op:'push', val:'print_int32' },
     { op:'push', val:@global_obj },
     { op:'push', val:'rt_getProp' },
     { op:'get_field' },
@@ -1559,7 +1559,7 @@ block_212 = {
 block_209 = {
   instrs: [
     { op:'get_local', idx:0 },
-    { op:'has_tag', tag:'int64' },
+    { op:'has_tag', tag:'int32' },
     { op:'if_true', then:@block_210, else:@block_213 },
   ]
 };

@@ -66,8 +66,8 @@ main_entry = {
         { op: "import" },
         { op: "dup", idx:0 },
 
-        # Get the print_int64 function and store it in local variable 0
-        { op: "push", val: "print_int64" },
+        # Get the print_int32 function and store it in local variable 0
+        { op: "push", val: "print_int32" },
         { op: "get_field" },
         { op: "set_local", idx: 0 },
 
@@ -87,14 +87,14 @@ main_print_result = {
         # Duplicate the result value of fib so we can return it later
         { op: "dup", idx:0 },
 
-        # Call print_int64 to print the result of fib
+        # Call print_int32 to print the result of fib
         { op: "get_local", idx: 0 },
         { op: "call", ret_to: @main_print_endl, num_args: 1 },
     ]
 };
 main_print_endl = {
     instrs: [
-        # Pop the return value of the print_int64 function
+        # Pop the return value of the print_int32 function
         { op: "pop" },
 
         # Print a line terminator with the print_str function

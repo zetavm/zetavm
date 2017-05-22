@@ -45,6 +45,7 @@ union Word
 
     float float32;
     int64_t int64;
+    int32_t int32;
     int8_t int8;
     refptr ptr;
 };
@@ -70,14 +71,16 @@ public:
     static const Value FALSE;
 
     Value() : Value(FALSE.word, FALSE.tag) {}
-    Value(int64_t v) : Value(Word(v), TAG_INT64) {}
-    Value(float v) : Value(Word(v), TAG_FLOAT32) {}
     Value(refptr p, Tag t) : Value(Word(p), t) {}
     Value(Word w, Tag t);
     ~Value() {}
 
+    // Static constructors. These are needed because of type ambiguity.
+    static Value int32(int32_t v) { return Value(Word((int64_t)v), TAG_INT32); }
+    static Value float32(float v) { return Value(Word(v), TAG_FLOAT32); }
+
     bool isBool() const { return tag == TAG_BOOL; }
-    bool isInt64() const { return tag == TAG_INT64; }
+    bool isInt32() const { return tag == TAG_INT32; }
     bool isFloat32() const { return tag == TAG_FLOAT32; }
     bool isString() const { return tag == TAG_STRING; }
     bool isObject() const { return tag == TAG_OBJECT; }
@@ -92,7 +95,7 @@ public:
     std::string toString() const;
 
     operator bool () const;
-    operator int64_t () const;
+    operator int32_t () const;
     operator float () const;
     operator refptr () const;
     operator std::string () const;

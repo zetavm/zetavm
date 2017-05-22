@@ -66,10 +66,10 @@ void setHostFn(
 // core/io package
 //============================================================================
 
-Value print_int64(Value val)
+Value print_int32(Value val)
 {
-    assert (val.isInt64());
-    std::cout << (int64_t)val;
+    assert (val.isInt32());
+    std::cout << (int32_t)val;
     return Value::UNDEF;
 }
 
@@ -123,7 +123,7 @@ Value read_file(Value fileName)
 Value get_core_io_pkg()
 {
     auto exports = Object::newObject(32);
-    setHostFn(exports, "print_int64", 1, (void*)print_int64);
+    setHostFn(exports, "print_int32", 1, (void*)print_int32);
     setHostFn(exports, "print_str"  , 1, (void*)print_str);
     setHostFn(exports, "read_file"  , 1, (void*)read_file);
     return exports;
@@ -155,8 +155,8 @@ Value create_window(
     SDL_Init(SDL_INIT_VIDEO);
 
     auto title = (std::string)titleVal;
-    width = (size_t)(int64_t)widthVal;
-    height = (size_t)(int64_t)heightVal;
+    width = (size_t)(int32_t)widthVal;
+    height = (size_t)(int32_t)heightVal;
 
     window = SDL_CreateWindow(
         title.c_str(),
@@ -231,9 +231,9 @@ Value draw_pixels(Value pixelsArray)
     {
         // SDL's RGBA888 is actually ABGR, because of course.
         pixelBuffer[4*pixIdx+0] = 255;
-        pixelBuffer[4*pixIdx+1] = (uint8_t)(int64_t)pixels.getElem(3*pixIdx+2);
-        pixelBuffer[4*pixIdx+2] = (uint8_t)(int64_t)pixels.getElem(3*pixIdx+1);
-        pixelBuffer[4*pixIdx+3] = (uint8_t)(int64_t)pixels.getElem(3*pixIdx+0);
+        pixelBuffer[4*pixIdx+1] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+2);
+        pixelBuffer[4*pixIdx+2] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+1);
+        pixelBuffer[4*pixIdx+3] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+0);
     }
 
     SDL_UpdateTexture(texture, NULL, &pixelBuffer[0], width * 4);
@@ -300,9 +300,9 @@ Object load(std::string pkgPath)
         auto inputObj = Object::newObject();
         inputObj.setField("src_name", String(input.getSrcName()));
         inputObj.setField("src_string", String(input.getInputStr()));
-        inputObj.setField("str_idx", Value((int64_t)input.getInputIdx()));
-        inputObj.setField("line_no", Value((int64_t)input.getLineNo()));
-        inputObj.setField("col_no", Value((int64_t)input.getColNo()));
+        inputObj.setField("str_idx", Value::int32(input.getInputIdx()));
+        inputObj.setField("line_no", Value::int32(input.getLineNo()));
+        inputObj.setField("col_no", Value::int32(input.getColNo()));
 
         std::cout << "Calling parse_input" << std::endl;
 
