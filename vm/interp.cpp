@@ -35,6 +35,7 @@ enum Opcode : uint16_t
     MUL_F32,
     DIV_F32,
     SIN_F32,
+    COS_F32,
     SQRT_F32,
 
     // Conversion operations
@@ -526,6 +527,12 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "cos_f32")
+        {
+            writeCode(COS_F32);
+            continue;
+        }
+
         if (op == "sqrt_f32")
         {
             writeCode(SQRT_F32);
@@ -746,6 +753,10 @@ void compile(BlockVersion* version)
 
         if (op == "throw")
         {
+            // Store a mapping of this instruction to the block version
+            // Needed to retrieve the identity of the current function
+            instrMap[instrPtr] = version;
+
             writeCode(THROW);
             continue;
         }
@@ -759,6 +770,7 @@ void compile(BlockVersion* version)
         if (op == "abort")
         {
             // Store a mapping of this instruction to the block version
+            // Needed to retrieve the source code position
             instrMap[instrPtr] = version;
 
             writeCode(ABORT);
@@ -1123,6 +1135,13 @@ Value execCode()
             {
                 float arg = popFloat32();
                 pushVal(Value::float32(sin(arg)));
+            }
+            break;
+
+            case COS_F32:
+            {
+                float arg = popFloat32();
+                pushVal(Value::float32(cos(arg)));
             }
             break;
 

@@ -5,16 +5,17 @@
 #include "runtime.h"
 
 /// Undefined value constant
-const Value Value::UNDEF(Word(0LL), TAG_UNDEF);
+/// Note: zeroed memory is automatically undefined
+const Value Value::UNDEF(Word(int64_t(0)), TAG_UNDEF);
 
 /// Boolean constants
-const Value Value::FALSE(Word(0LL), TAG_BOOL);
-const Value Value::TRUE(Word(1LL), TAG_BOOL);
+const Value Value::FALSE(Word(int64_t(0)), TAG_BOOL);
+const Value Value::TRUE(Word(int64_t(1)), TAG_BOOL);
 
 /// Numerical constants
-const Value Value::ZERO(Word(0LL), TAG_INT32);
-const Value Value::ONE(Word(1LL), TAG_INT32);
-const Value Value::TWO(Word(2LL), TAG_INT32);
+const Value Value::ZERO(Word(int64_t(0)), TAG_INT32);
+const Value Value::ONE(Word(int64_t(1)), TAG_INT32);
+const Value Value::TWO(Word(int64_t(2)), TAG_INT32);
 
 // Global virtual machine instance
 VM vm;
