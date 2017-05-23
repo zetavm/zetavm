@@ -162,14 +162,18 @@ class BlockVersion : public CodeFragment
 {
 public:
 
+    /// Associated function
+    Object fun;
+
     /// Associated block
     Object block;
 
     /// Code generation context at block entry
     //CodeGenCtx ctx;
 
-    BlockVersion(Object block)
-    : block(block)
+    BlockVersion(Object fun, Object block)
+    : fun(fun),
+      block(block)
     {
     }
 };
@@ -335,7 +339,10 @@ void initInterp()
 
 /// Get a version of a block. This version will be a stub
 /// until compiled
-BlockVersion* getBlockVersion(Object block)
+BlockVersion* getBlockVersion(
+    Object fun,
+    Object block
+)
 {
     auto blockPtr = (refptr)block;
 
@@ -349,10 +356,12 @@ BlockVersion* getBlockVersion(Object block)
     {
         auto versions = versionItr->second;
         assert (versions.size() == 1);
+        auto version = versions[0];
+        assert (version->fun == fun);
         return versions[0];
     }
 
-    auto newVersion = new BlockVersion(block);
+    auto newVersion = new BlockVersion(fun, block);
 
     auto& versionList = versionMap[blockPtr];
     versionList.push_back(newVersion);
@@ -687,7 +696,7 @@ void compile(BlockVersion* version)
             static ICache toIC("to");
             auto dstBB = toIC.getObj(instr);
 
-            auto dstVer = getBlockVersion(dstBB);
+            auto dstVer = getBlockVersion(version->fun, dstBB);
 
             writeCode(JUMP_STUB);
             writeCode(dstVer);
@@ -701,8 +710,8 @@ void compile(BlockVersion* version)
             auto thenBB = thenIC.getObj(instr);
             auto elseBB = elseIC.getObj(instr);
 
-            auto thenVer = getBlockVersion(thenBB);
-            auto elseVer = getBlockVersion(elseBB);
+            auto thenVer = getBlockVersion(version->fun, thenBB);
+            auto elseVer = getBlockVersion(version->fun, elseBB);
 
             writeCode(IF_TRUE);
             writeCode(thenVer);
@@ -722,7 +731,7 @@ void compile(BlockVersion* version)
             // Get a version for the call continuation block
             static ICache retToCache("ret_to");
             auto retToBB = retToCache.getObj(instr);
-            auto retVer = getBlockVersion(retToBB);
+            auto retVer = getBlockVersion(version->fun, retToBB);
 
             RetEntry retEntry;
 
@@ -731,7 +740,7 @@ void compile(BlockVersion* version)
                 // Get a version for the exception catch block
                 static ICache throwIC("throw_to");
                 auto throwBB = throwIC.getObj(instr);
-                auto throwVer = getBlockVersion(throwBB);
+                auto throwVer = getBlockVersion(version->fun, throwBB);
                 retEntry.excVer = throwVer;
             }
 
@@ -858,7 +867,7 @@ __attribute__((always_inline)) void funCall(
     // Get a version for the function entry block
     static ICache entryIC("entry");
     auto entryBB = entryIC.getObj(fun);
-    auto entryVer = getBlockVersion(entryBB);
+    auto entryVer = getBlockVersion(fun, entryBB);
 
     if (!entryVer->startPtr)
     {
@@ -1631,7 +1640,7 @@ Value callFun(Object fun, ValueVec args)
     // Get the function entry block
     static ICache entryIC("entry");
     auto entryBlock = entryIC.getObj(fun);
-    auto entryVer = getBlockVersion(entryBlock);
+    auto entryVer = getBlockVersion(fun, entryBlock);
 
     // Generate code for the entry block version
     compile(entryVer);
