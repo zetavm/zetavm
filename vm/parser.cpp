@@ -247,7 +247,7 @@ Value parseNum(Input& input, bool neg)
     }
 
     char next = input.peek();
-    if (next == '.' || next == 'e' || next == 'f')
+    if (next == '.' || next == 'e')
     {
         return parseFloatingPart(input, neg, intVal);
     }
