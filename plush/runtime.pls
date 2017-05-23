@@ -101,7 +101,36 @@ var rt_mul = function (x, y)
 
     assert (
         false,
-        "unhandled type in subtraction"
+        "unhandled type in multiplication"
+    );
+};
+
+var rt_div = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "float32") {
+            return $div_f32($i32_to_f32(x), y);
+        }
+        if (typeof y == "int32")
+        {
+            return $div_f32($i32_to_f32(x), $i32_to_f32(y));
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $div_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $div_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in division"
     );
 };
 

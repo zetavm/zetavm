@@ -611,6 +611,14 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             return;
         }
 
+        if (binOp->op == &OP_DIV) 
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "div", 2);
+            return;
+        }
+
         if (binOp->op == &OP_MEMBER)
         {
             genExpr(ctx, binOp->lhsExpr);
