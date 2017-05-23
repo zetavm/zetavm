@@ -39,14 +39,14 @@ int main(int argc, char** argv)
             {
                 auto retVal = callExportFn(pkg, "main");
 
-                if (!retVal.isInt64())
+                if (!retVal.isInt32())
                 {
                     throw RunError(
                         "main function should return an int64 value"
                     );
                 }
 
-                return (int64_t)retVal;
+                return (int32_t)retVal;
             }
 
             return 0;

@@ -179,7 +179,7 @@ var testParser = function ()
     testParse("var io = import 'core/io';");
 
     // Inline IR
-    testParse("$add_i64(1, 2);");
+    testParse("$add_i32(1, 2);");
 
     // Assert statement
     testParse("assert(x);");

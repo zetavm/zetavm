@@ -1,11 +1,11 @@
 // Addition operator
 var rt_add = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
-            return $add_i64(x, y);
+            return $add_i32(x, y);
         }
     }
 
@@ -36,11 +36,11 @@ var rt_add = function (x, y)
 /// Subtraction operator
 var rt_sub = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
-            return $sub_i64(x, y);
+            return $sub_i32(x, y);
         }
     }
 
@@ -62,11 +62,11 @@ var rt_not = function (x)
 /// Equality comparison
 var rt_eq = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
-            return $eq_i64(x, y);
+            return $eq_i32(x, y);
         }
     }
 
@@ -128,11 +128,11 @@ var rt_ne = function (x, y)
 /// Less than or equal comparison
 var rt_le = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
-            return $le_i64(x, y);
+            return $le_i32(x, y);
         }
     }
 
@@ -141,8 +141,8 @@ var rt_le = function (x, y)
         if (typeof y == "string")
         {
             // TODO: proper string comparison
-            assert ($eq_i64($str_len(x), 1), "rt_le");
-            assert ($eq_i64($str_len(y), 1), "rt_le");
+            assert ($eq_i32($str_len(x), 1), "rt_le");
+            assert ($eq_i32($str_len(y), 1), "rt_le");
             return $get_char_code(x, 0) <= $get_char_code(y, 0);
         }
     }
@@ -156,11 +156,11 @@ var rt_le = function (x, y)
 /// Greater than or equal comparison
 var rt_ge = function (x, y)
 {
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        if (typeof y == "int64")
+        if (typeof y == "int32")
         {
-            return $ge_i64(x, y);
+            return $ge_i32(x, y);
         }
     }
 
@@ -169,8 +169,8 @@ var rt_ge = function (x, y)
         if (typeof y == "string")
         {
             // TODO: proper string comparison
-            assert ($eq_i64($str_len(x), 1), "rt_ge");
-            assert ($eq_i64($str_len(y), 1), "rt_ge");
+            assert ($eq_i32($str_len(x), 1), "rt_ge");
+            assert ($eq_i32($str_len(y), 1), "rt_ge");
             return $get_char_code(x, 0) >= $get_char_code(y, 0);
         }
     }
@@ -287,7 +287,10 @@ var rt_getElem = function (base, idx)
         return $get_char(base, idx);
     }
 
-    assert (false);
+    assert (
+        false,
+        "unhandled type in getElem"
+    );
 };
 
 /// Array push method
@@ -307,9 +310,9 @@ var output = function (x)
         return;
     }
 
-    if (typeof x == "int64")
+    if (typeof x == "int32")
     {
-        io.print_int64(x);
+        io.print_int32(x);
         return;
     }
 

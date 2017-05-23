@@ -5,16 +5,17 @@
 #include "runtime.h"
 
 /// Undefined value constant
-const Value Value::UNDEF(Word((int64_t)0), TAG_UNDEF);
+/// Note: zeroed memory is automatically undefined
+const Value Value::UNDEF(Word(int64_t(0)), TAG_UNDEF);
 
 /// Boolean constants
-const Value Value::FALSE(Word((int64_t)0), TAG_BOOL);
-const Value Value::TRUE(Word(1l), TAG_BOOL);
+const Value Value::FALSE(Word(int64_t(0)), TAG_BOOL);
+const Value Value::TRUE(Word(int64_t(1)), TAG_BOOL);
 
 /// Numerical constants
-const Value Value::ZERO(0l);
-const Value Value::ONE(1l);
-const Value Value::TWO(2l);
+const Value Value::ZERO(Word(int64_t(0)), TAG_INT32);
+const Value Value::ONE(Word(int64_t(1)), TAG_INT32);
+const Value Value::TWO(Word(int64_t(2)), TAG_INT32);
 
 // Global virtual machine instance
 VM vm;
@@ -36,8 +37,8 @@ std::string Value::toString() const
         case TAG_BOOL:
         return (*this == Value::TRUE)? "$true":"$false";
 
-        case TAG_INT64:
-        return std::to_string(word.int64);
+        case TAG_INT32:
+        return std::to_string(word.int32);
 
         case TAG_FLOAT32:
         return std::to_string(word.float32);
@@ -79,10 +80,10 @@ Value::operator bool () const
     return word.int64? 1:0;
 }
 
-Value::operator int64_t () const
+Value::operator int32_t () const
 {
-    assert (tag == TAG_INT64);
-    return word.int64;
+    assert (tag == TAG_INT32);
+    return word.int32;
 }
 
 Value::operator float () const
@@ -639,6 +640,7 @@ Tag strToTag(std::string str)
 {
     if (str == "undef")     return TAG_UNDEF;
     if (str == "bool")      return TAG_BOOL;
+    if (str == "int32")     return TAG_INT32;
     if (str == "int64")     return TAG_INT64;
     if (str == "float32")   return TAG_FLOAT32;
     if (str == "float64")   return TAG_FLOAT64;
@@ -654,8 +656,8 @@ std::string posToString(Value srcPos)
     assert (srcPos.isObject());
     auto srcPosObj = (Object)srcPos;
 
-    auto lineNo = (int64_t)srcPosObj.getField("line_no");
-    auto colNo = (int64_t)srcPosObj.getField("col_no");
+    auto lineNo = (int32_t)srcPosObj.getField("line_no");
+    auto colNo = (int32_t)srcPosObj.getField("col_no");
     auto srcName = (std::string)srcPosObj.getField("src_name");
 
     return (

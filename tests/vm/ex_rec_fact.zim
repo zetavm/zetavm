@@ -8,7 +8,7 @@ fact_entry = {
         # if n < 3 goto fact_base else goto fact_n_1
         { op: "get_local", idx: 0 },
         { op: "push", val: 3 },
-        { op: "lt_i64" },
+        { op: "lt_i32" },
         { op: "if_true", then: @fact_base, else: @fact_n_1 },
     ]
 };
@@ -24,7 +24,7 @@ fact_n_1 = {
         # compute fact(n-1), then goto fact_n_2
         { op: "get_local", idx: 0 },
         { op: "push", val: 1 },
-        { op: "sub_i64" },
+        { op: "sub_i32" },
         { op: "push", val: @fact },
         { op: "call", ret_to: @fact_ret, num_args: 1 },
     ]
@@ -33,7 +33,7 @@ fact_ret = {
     instrs: [
         # return n * fact(n-1)
         { op: "get_local", idx: 0 },
-        { op: "mul_i64" },
+        { op: "mul_i32" },
         { op: "ret" },
     ]
 };

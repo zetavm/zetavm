@@ -113,12 +113,12 @@ compiler at code generation time.
 Type tags will be accessible to bytecode as strings, through the
 `has_tag <val>`, `<tag_str>` and `get_tag <val>` instructions. The `has_tag`
 instruction is a dynamic type test which makes it possible to answer questions
-such as "is this value of type `int64`?" at run time.
+such as "is this value of type `int32`?" at run time.
 
 ### Type Errors
 
 What should happen when an operation expecting values of a certain type
-(e.g. `add_i64` expects two `int64` values) receives operands of the wrong type?
+(e.g. `add_i32` expects two `int32` values) receives operands of the wrong type?
 In order to avoid corner cases and undefined behaviors, we will guarantee that
 the VM will halt program execution should a type error of this kind occur.
 
@@ -130,7 +130,7 @@ appropriate.
 
 My work on Higgs and [basic block versioning](http://2016.ecoop.org/event/ecoop-2016-papers-interprocedural-type-specialization-of-javascript-programs-without-type-analysis) leads me to believe
 that it should be possible for the VM to determine the types of operands in almost
-every case. This is because typed operations such as `add_i64` should be guarded by
+every case. This is because typed operations such as `add_i32` should be guarded by
 dynamic type tests. Hence, I do not believe that guaranteeing program
 termination on type errors will cause performance issues. If there is a
 performance cost, it will be small.
@@ -177,11 +177,11 @@ Because arrays are extensible, they will have both an associated length (number 
 
 Below is a tentative list of bytecodes to be provided by ZetaVM:
 
-- stack manipulation: `push_i64`, `push_str`, `pop`, `dup`
-- integer arithmetic: `add_i64`, `sub_i64`, `mul_i64`, `div_i64`, `mod_i64`
+- stack manipulation: `push`, `pop`, `dup`, `swap`
+- integer arithmetic: `add_i32`, `sub_i32`, `mul_i32`, `div_i32`, `mod_i32`
 - floating-point arithmetic: `add_f32`, `sub_f32`, `mul_f32`, `div_f32`, `sqrt_f32`
-- bit manipulation: `lsft_i64`, `ulsft_i64`, `rsft_i64`, `and_i64`, `or_i64`, `xor_i64`, `not_i64`
-- comparisons: `lt_i64`, `gt_i64`, ...
+- bit manipulation: `lsft_i32`, `ulsft_i32`, `rsft_i32`, `and_i32`, `or_i32`, `xor_i32`, `not_i32`
+- comparisons: `lt_i32`, `gt_i32`, ...
 - type tests: `get_tag <val>`, `has_tag <val> <tag>`
 - conditional branches: `if_true <bool_val>`
 - direct branches: `jump`

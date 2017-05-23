@@ -12,7 +12,7 @@ fib_entry = {
         # if n < 2 goto fib_base else goto fib_n_1
         { op: "get_local", idx: 0 },
         { op: "push", val: 2 },
-        { op: "lt_i64" },
+        { op: "lt_i32" },
         { op: "if_true", then: @fib_base, else: @fib_n_1 },
     ]
 };
@@ -28,7 +28,7 @@ fib_n_1 = {
         # compute fib(n-1), then goto fib_n_2
         { op: "get_local", idx: 0 },
         { op: "push", val: 1 },
-        { op: "sub_i64" },
+        { op: "sub_i32" },
         { op: "push", val: @fib },
         { op: "call", ret_to: @fib_n_2, num_args: 1 },
     ]
@@ -38,7 +38,7 @@ fib_n_2 = {
         # compute fib(n-2), then goto fib_ret
         { op: "get_local", idx: 0 },
         { op: "push", val: 2 },
-        { op: "sub_i64" },
+        { op: "sub_i32" },
         { op: "push", val: @fib },
         { op: "call", ret_to: @fib_ret, num_args: 1 },
     ]
@@ -46,7 +46,7 @@ fib_n_2 = {
 fib_ret = {
     instrs: [
         # return fib(n-1) + fib(n-2)
-        { op: "add_i64" },
+        { op: "add_i32" },
         { op: "ret" },
     ]
 };
@@ -66,8 +66,7 @@ main_entry = {
         { op: "import" },
         { op: "dup", idx:0 },
 
-        # Get the print_int64 function and store it in local variable 0
-        { op: "push", val: "print_int64" },
+        { op: "push", val: "print_int32" },
         { op: "get_field" },
         { op: "set_local", idx: 0 },
 
@@ -87,14 +86,12 @@ main_print_result = {
         # Duplicate the result value of fib so we can return it later
         { op: "dup", idx:0 },
 
-        # Call print_int64 to print the result of fib
         { op: "get_local", idx: 0 },
         { op: "call", ret_to: @main_print_endl, num_args: 1 },
     ]
 };
 main_print_endl = {
     instrs: [
-        # Pop the return value of the print_int64 function
         { op: "pop" },
 
         # Print a line terminator with the print_str function

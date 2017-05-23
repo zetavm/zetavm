@@ -33,10 +33,10 @@ assert ('z' in obj);
 assert (!('k' in obj));
 
 // Type tests
-assert (typeof 1 == "int64");
+assert (typeof 1 == "int32", "int type");
 assert (typeof "str" == "string");
 assert (typeof obj == "object");
-assert (typeof obj.x == "int64");
+assert (typeof obj.x == "int32", "int property type");
 assert (typeof undef == "undef");
 
 // Global assignments

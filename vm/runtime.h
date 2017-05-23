@@ -12,15 +12,16 @@ typedef uint8_t* refptr;
 /// Type tag constants
 const Tag TAG_UNDEF     = 0;
 const Tag TAG_BOOL      = 1;
-const Tag TAG_INT64     = 2;
-const Tag TAG_FLOAT32   = 3;
-const Tag TAG_FLOAT64   = 4;
-const Tag TAG_STRING    = 5;
-const Tag TAG_OBJECT    = 6;
-const Tag TAG_ARRAY     = 7;
-const Tag TAG_HOSTFN    = 8;
-const Tag TAG_RAWPTR    = 9;
-const Tag TAG_IMGREF    = 10;
+const Tag TAG_INT32     = 2;
+const Tag TAG_INT64     = 3;
+const Tag TAG_FLOAT32   = 4;
+const Tag TAG_FLOAT64   = 5;
+const Tag TAG_STRING    = 6;
+const Tag TAG_OBJECT    = 7;
+const Tag TAG_ARRAY     = 8;
+const Tag TAG_HOSTFN    = 9;
+const Tag TAG_RAWPTR    = 10;
+const Tag TAG_IMGREF    = 11;
 
 /// Object header size
 const size_t HEADER_SIZE = sizeof(intptr_t);
@@ -44,6 +45,7 @@ union Word
 
     float float32;
     int64_t int64;
+    int32_t int32;
     int8_t int8;
     refptr ptr;
 };
@@ -69,14 +71,16 @@ public:
     static const Value FALSE;
 
     Value() : Value(FALSE.word, FALSE.tag) {}
-    Value(int64_t v) : Value(Word(v), TAG_INT64) {}
-    Value(float v) : Value(Word(v), TAG_FLOAT32) {}
     Value(refptr p, Tag t) : Value(Word(p), t) {}
     Value(Word w, Tag t);
     ~Value() {}
 
+    // Static constructors. These are needed because of type ambiguity.
+    static Value int32(int32_t v) { return Value(Word((int64_t)v), TAG_INT32); }
+    static Value float32(float v) { return Value(Word(v), TAG_FLOAT32); }
+
     bool isBool() const { return tag == TAG_BOOL; }
-    bool isInt64() const { return tag == TAG_INT64; }
+    bool isInt32() const { return tag == TAG_INT32; }
     bool isFloat32() const { return tag == TAG_FLOAT32; }
     bool isString() const { return tag == TAG_STRING; }
     bool isObject() const { return tag == TAG_OBJECT; }
@@ -91,7 +95,7 @@ public:
     std::string toString() const;
 
     operator bool () const;
-    operator int64_t () const;
+    operator int32_t () const;
     operator float () const;
     operator refptr () const;
     operator std::string () const;
@@ -240,7 +244,7 @@ public:
     /// Comparison with a string literal
     bool operator == (const char* that) const;
 
-    // FIXME: temporary until string internsing is implemented
+    // FIXME: temporary until string interning is implemented
     bool operator == (String that) { return (std::string)*this == (std::string)that; }
 
     /// Get the ith character code
