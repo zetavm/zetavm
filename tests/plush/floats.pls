@@ -34,3 +34,13 @@ assert(0.0004 <= 0.0005);
 x = 1.0 == 1.0;
 assert(typeof x == "bool");
 assert(1.0 == 1.0);
+
+//float-string conversion
+
+x = $str_to_f32("1.0");
+assert(typeof x == "float32");
+print(x);
+
+y = $f32_to_str(1.0);
+print(y);
+assert(y == "1.000000");
