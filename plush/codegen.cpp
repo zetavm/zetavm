@@ -387,6 +387,12 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
         return;
     }
 
+    if (auto floatExpr = dynamic_cast<FloatExpr*>(expr))
+    {
+        ctx.addStr("op:'push', val:" + std::to_string(floatExpr->val) + "f");
+        return;
+    }
+
     if (auto strExpr = dynamic_cast<StringExpr*>(expr))
     {
         // Escape the string conservatively
@@ -601,7 +607,15 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
         {
             genExpr(ctx, binOp->lhsExpr);
             genExpr(ctx, binOp->rhsExpr);
-            ctx.addOp("mul_i32");
+            runtimeCall(ctx, "mul", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_DIV) 
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "div", 2);
             return;
         }
 

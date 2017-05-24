@@ -3,9 +3,22 @@ var rt_add = function (x, y)
 {
     if (typeof x == "int32")
     {
+        if (typeof y == "float32") {
+            return $add_f32( $i32_to_f32(x), y);
+        }
         if (typeof y == "int32")
         {
             return $add_i32(x, y);
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $add_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $add_f32(x, $i32_to_f32(y));
         }
     }
 
@@ -38,15 +51,86 @@ var rt_sub = function (x, y)
 {
     if (typeof x == "int32")
     {
+        if (typeof y == "float32") {
+            return $sub_f32( $i32_to_f32(x), y);
+        }
         if (typeof y == "int32")
         {
             return $sub_i32(x, y);
         }
     }
 
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $sub_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $sub_f32(x, $i32_to_f32(y));
+        }
+    }
+
     assert (
         false,
         "unhandled type in subtraction"
+    );
+};
+
+var rt_mul = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "float32") {
+            return $mul_f32( $i32_to_f32(x), y);
+        }
+        if (typeof y == "int32")
+        {
+            return $mul_i32(x, y);
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $mul_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $mul_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in multiplication"
+    );
+};
+
+var rt_div = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "float32") {
+            return $div_f32($i32_to_f32(x), y);
+        }
+        if (typeof y == "int32")
+        {
+            return $div_f32($i32_to_f32(x), $i32_to_f32(y));
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $div_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $div_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in division"
     );
 };
 
@@ -316,6 +400,12 @@ var output = function (x)
         return;
     }
 
+    if (typeof x == "float32")
+    {
+        io.print_float32(x);
+        return;
+    }
+     
     if (x == true)
     {
         output("true");
