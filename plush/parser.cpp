@@ -292,9 +292,7 @@ BlockStmt* parseBlockStmt(Input& input, std::string endStr);
 Parse a number
 */
 
-FloatExpr* parseFloatingPart(Input& input, bool neg, int64_t val) {
-    char literal[64] = {0};
-    sprintf(literal, "%" PRId64, val);
+FloatExpr* parseFloatingPart(Input& input, bool neg, char literal[64]) {
     int length = strlen(literal);
     for (int i = 0;;i++)
     {
@@ -316,9 +314,9 @@ FloatExpr* parseFloatingPart(Input& input, bool neg, int64_t val) {
 
 ASTExpr* parseNum(Input& input, bool neg)
 {
-    int64_t intVal = 0;
+    char literal[64] = {0};
 
-    for (;;)
+    for (int i = 0;;i++)
     {
         // Peek at the next character
         char ch = input.readCh();
@@ -326,8 +324,7 @@ ASTExpr* parseNum(Input& input, bool neg)
         if (!isdigit(ch))
             throw ParseError(input, "expected digit");
 
-        int64_t digit = ch - '0';
-        intVal = 10 * intVal + digit;
+        literal[i] = ch;
 
         // If the next character is not a digit, stop
         if (!isdigit(input.peekCh()))
@@ -335,9 +332,9 @@ ASTExpr* parseNum(Input& input, bool neg)
     }
 
     if (input.peekCh() == '.' || input.peekCh() == 'e') {
-        return parseFloatingPart(input, neg, intVal);
+        return parseFloatingPart(input, neg, literal);
     }
-
+    int intVal = atoi(literal);
     // If the value is negative
     if (neg)
     {

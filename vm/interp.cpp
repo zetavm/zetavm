@@ -19,7 +19,7 @@ enum Opcode : uint16_t
     DUP,
     SWAP,
 
-    // 64-bit integer operations
+    // 32-bit integer operations
     ADD_I32,
     SUB_I32,
     MUL_I32,
@@ -34,6 +34,11 @@ enum Opcode : uint16_t
     SUB_F32,
     MUL_F32,
     DIV_F32,
+    LT_F32,
+    LE_F32,
+    GT_F32,
+    GE_F32,
+    EQ_F32,
     SIN_F32,
     COS_F32,
     SQRT_F32,
@@ -527,6 +532,36 @@ void compile(BlockVersion* version)
         if (op == "div_f32")
         {
             writeCode(DIV_F32);
+            continue;
+        }
+
+        if (op == "lt_f32")
+        {
+            writeCode(LT_F32);
+            continue;
+        }
+
+        if (op == "le_f32")
+        {
+            writeCode(LE_F32);
+            continue;
+        }
+
+        if (op == "gt_f32")
+        {
+            writeCode(GT_F32);
+            continue;
+        }
+
+        if (op == "ge_f32")
+        {
+            writeCode(GE_F32);
+            continue;
+        }
+
+        if (op == "eq_f32")
+        {
+            writeCode(EQ_F32);
             continue;
         }
 
@@ -1137,6 +1172,46 @@ Value execCode()
                 auto arg1 = popFloat32();
                 auto arg0 = popFloat32();
                 pushVal(Value::float32(arg0 / arg1));
+            }
+            break;
+
+            case LT_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 < arg1);
+            }
+            break;
+
+            case LE_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 <= arg1);
+            }
+            break;
+
+            case GT_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 > arg1);
+            }
+            break;
+
+            case GE_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 >= arg1);
+            }
+            break;
+
+            case EQ_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 == arg1);
             }
             break;
 
