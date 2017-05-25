@@ -76,7 +76,7 @@ vm/core.cpp     \
 vm/main.cpp     \
 
 zeta: vm/*.cpp vm/*.h
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $(ZETA_BIN) $(ZETA_SRCS)
+	$(CXX) $(CXXFLAGS) -o $(ZETA_BIN) $(ZETA_SRCS) $(LDFLAGS)
 
 ##############################################################################
 # Plush compiler

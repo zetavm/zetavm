@@ -988,15 +988,17 @@ __attribute__((always_inline)) void hostCall(
         break;
 
         case 1:
-        retVal = hostFn->call1(args[0]);
+        retVal = hostFn->call1(*args);
         break;
 
         case 2:
-        retVal = hostFn->call2(args[0], args[1]);
+        retVal = hostFn->call2(*args, *(args - 1));
         break;
 
         case 3:
-        retVal = hostFn->call3(args[0], args[1], args[2]);
+        {
+            retVal = hostFn->call3(*args, *(args - 1), *(args - 2));
+        }
         break;
 
         default:
