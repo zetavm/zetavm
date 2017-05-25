@@ -1,7 +1,7 @@
 #language "lang/plush/0"
 
 var window = import "core/window";
-assert (window != undef);
+assert (window != undef, "no window");
 assert (typeof window == "object");
 assert ("create_window" in window);
 

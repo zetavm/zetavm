@@ -19,7 +19,7 @@ enum Opcode : uint16_t
     DUP,
     SWAP,
 
-    // 64-bit integer operations
+    // 32-bit integer operations
     ADD_I32,
     SUB_I32,
     MUL_I32,
@@ -34,6 +34,11 @@ enum Opcode : uint16_t
     SUB_F32,
     MUL_F32,
     DIV_F32,
+    LT_F32,
+    LE_F32,
+    GT_F32,
+    GE_F32,
+    EQ_F32,
     SIN_F32,
     COS_F32,
     SQRT_F32,
@@ -41,6 +46,8 @@ enum Opcode : uint16_t
     // Conversion operations
     I32_TO_F32,
     F32_TO_I32,
+    F32_TO_STR,
+    STR_TO_F32,
 
     // Miscellaneous
     EQ_BOOL,
@@ -530,6 +537,36 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "lt_f32")
+        {
+            writeCode(LT_F32);
+            continue;
+        }
+
+        if (op == "le_f32")
+        {
+            writeCode(LE_F32);
+            continue;
+        }
+
+        if (op == "gt_f32")
+        {
+            writeCode(GT_F32);
+            continue;
+        }
+
+        if (op == "ge_f32")
+        {
+            writeCode(GE_F32);
+            continue;
+        }
+
+        if (op == "eq_f32")
+        {
+            writeCode(EQ_F32);
+            continue;
+        }
+
         if (op == "sin_f32")
         {
             writeCode(SIN_F32);
@@ -561,6 +598,18 @@ void compile(BlockVersion* version)
         if (op == "f32_to_i32")
         {
             writeCode(F32_TO_I32);
+            continue;
+        }
+
+        if (op == "f32_to_str")
+        {
+            writeCode(F32_TO_STR);
+            continue;
+        }
+
+        if (op == "str_to_f32")
+        {
+            writeCode(STR_TO_F32);
             continue;
         }
 
@@ -939,15 +988,17 @@ __attribute__((always_inline)) void hostCall(
         break;
 
         case 1:
-        retVal = hostFn->call1(args[0]);
+        retVal = hostFn->call1(*args);
         break;
 
         case 2:
-        retVal = hostFn->call2(args[0], args[1]);
+        retVal = hostFn->call2(*args, *(args - 1));
         break;
 
         case 3:
-        retVal = hostFn->call3(args[0], args[1], args[2]);
+        {
+            retVal = hostFn->call3(*args, *(args - 1), *(args - 2));
+        }
         break;
 
         default:
@@ -1140,6 +1191,46 @@ Value execCode()
             }
             break;
 
+            case LT_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 < arg1);
+            }
+            break;
+
+            case LE_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 <= arg1);
+            }
+            break;
+
+            case GT_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 > arg1);
+            }
+            break;
+
+            case GE_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 >= arg1);
+            }
+            break;
+
+            case EQ_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushBool(arg0 == arg1);
+            }
+            break;
+
             case SIN_F32:
             {
                 float arg = popFloat32();
@@ -1176,6 +1267,21 @@ Value execCode()
             {
                 auto arg0 = popFloat32();
                 pushVal(Value::int32(arg0));
+            }
+            break;
+
+            case F32_TO_STR:
+            {
+                auto arg0 = popFloat32();
+                String str = std::to_string(arg0);
+                pushVal(str);
+            }
+            break;
+
+            case STR_TO_F32:
+            {
+                auto arg0 = popStr();
+                pushVal(Value::float32(std::stof(arg0)));
             }
             break;
 
