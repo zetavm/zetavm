@@ -19,6 +19,7 @@ test: zeta cplush plush-pkg cscheme
 	# cplush tests
 	./$(CPLUSH_BIN) --test
 	./plush.sh tests/plush/trivial.pls
+	./plush.sh tests/plush/floats.pls
 	./plush.sh tests/plush/simple_exprs.pls
 	./plush.sh tests/plush/identfn.pls
 	./plush.sh tests/plush/fib.pls
