@@ -148,9 +148,22 @@ var rt_eq = function (x, y)
 {
     if (typeof x == "int32")
     {
+        if (typeof y == "float32") {
+            return $eq_f32($i32_to_f32(x), y);
+        }
         if (typeof y == "int32")
         {
             return $eq_i32(x, y);
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $eq_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $eq_f32(x, $i32_to_f32(y));
         }
     }
 
@@ -209,14 +222,51 @@ var rt_ne = function (x, y)
         return true;
 };
 
+var rt_lt = function(x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "float32") {
+            return $lt_f32($i32_to_f32(x), y);
+        }
+        if (typeof y == "int32")
+        {
+            return $lt_i32(x, y);
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $lt_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $lt_f32(x, $i32_to_f32(y));
+        }
+    }
+};
+
 /// Less than or equal comparison
 var rt_le = function (x, y)
 {
     if (typeof x == "int32")
     {
+        if (typeof y == "float32") {
+            return $le_f32($i32_to_f32(x), y);
+        }
         if (typeof y == "int32")
         {
             return $le_i32(x, y);
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $le_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $le_f32(x, $i32_to_f32(y));
         }
     }
 
@@ -237,14 +287,51 @@ var rt_le = function (x, y)
     );
 };
 
+var rt_gt = function(x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "float32") {
+            return $gt_f32($i32_to_f32(x), y);
+        }
+        if (typeof y == "int32")
+        {
+            return $gt_i32(x, y);
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $gt_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $gt_f32(x, $i32_to_f32(y));
+        }
+    }
+};
+
 /// Greater than or equal comparison
 var rt_ge = function (x, y)
 {
     if (typeof x == "int32")
     {
+        if (typeof y == "float32") {
+            return $ge_f32($i32_to_f32(x), y);
+        }
         if (typeof y == "int32")
         {
             return $ge_i32(x, y);
+        }
+    }
+
+    if (typeof x == "float32")
+    {
+        if (typeof y == "float32") {
+            return $ge_f32(x, y);
+        }
+        if (typeof y == "int32") {
+            return $ge_f32(x, $i32_to_f32(y));
         }
     }
 
@@ -421,6 +508,44 @@ var output = function (x)
     assert (
         false,
         "unhandled type in output function"
+    );
+};
+
+var sin = function (x)
+{
+
+    if (typeof x == "int32")
+    {
+        return $sin_f32($i32_to_f32(x));
+    }
+
+    if (typeof x == "float32") 
+    {
+        return $sin_f32(x);
+    }
+
+    assert(
+        false,
+        "unhandled type in sin function"
+    );
+};
+
+var sqrt = function (x)
+{
+
+    if (typeof x == "int32")
+    {
+        return $sqrt_f32($i32_to_f32(x));
+    }
+
+    if (typeof x == "float32") 
+    {
+        return $sqrt_f32(x);
+    }
+
+    assert(
+        false,
+        "unhandled type in sin function"
     );
 };
 
