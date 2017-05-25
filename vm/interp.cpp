@@ -352,7 +352,6 @@ BlockVersion* getBlockVersion(
 )
 {
     auto blockPtr = (refptr)block;
-
     auto versionItr = versionMap.find((refptr)block);
 
     if (versionItr == versionMap.end())
@@ -362,17 +361,17 @@ BlockVersion* getBlockVersion(
     else
     {
         auto versions = versionItr->second;
-        assert (versions.size() == 1);
-        auto version = versions[0];
-        assert (version->fun == fun);
-        return versions[0];
+        assert (versions.size() > 0);
+        for (auto version : versions)
+        {
+            if (version->fun == fun)
+                return version;
+        }
     }
 
-    auto newVersion = new BlockVersion(fun, block);
-
     auto& versionList = versionMap[blockPtr];
+    auto newVersion = new BlockVersion(fun, block);
     versionList.push_back(newVersion);
-
     return newVersion;
 }
 
@@ -988,15 +987,15 @@ __attribute__((always_inline)) void hostCall(
         break;
 
         case 1:
-        retVal = hostFn->call1(*args);
+        retVal = hostFn->call1(args[0]);
         break;
 
         case 2:
-        retVal = hostFn->call2(*args, *(args - 1));
+        retVal = hostFn->call2(args[0], args[-1]);
         break;
 
         case 3:
-        retVal = hostFn->call3(*args, *(args - 1), *(args - 2));
+        retVal = hostFn->call3(args[0], args[-1], args[-2]);
         break;
 
         default:

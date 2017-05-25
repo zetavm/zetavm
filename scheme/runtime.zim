@@ -19,8 +19,8 @@ write = {
     name: 'write_entry',
     instrs: [
       { op:'get_local', idx:0 },
-      { op:'has_tag', tag:'int64' },
-      { op:'if_true', then:@write_int64, else:@write_str },
+      { op:'has_tag', tag:'int32' },
+      { op:'if_true', then:@write_int32, else:@write_str },
     ]
   }
 };
@@ -37,13 +37,13 @@ write_str = {
   ]
 };
 
-write_int64 = {
+write_int32 = {
   instrs: [
     { op:'get_local', idx: 0 },
     { op:'push', val:@global_obj },
     { op:'push', val:'io' },
     { op:'get_field' },
-    { op:'push', val:'print_int64' },
+    { op:'push', val:'print_int32' },
     { op:'get_field' },
     { op:'call', ret_to:@write_ret, num_args:1 },
   ]
