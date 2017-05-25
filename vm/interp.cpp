@@ -1553,7 +1553,56 @@ Value execCode()
                 // Pop the exception value
                 auto retVal = popVal();
 
-                assert (false);
+                // Get the current function
+                auto itr = instrMap.find((uint8_t*)&op);
+                assert (itr != instrMap.end());
+                auto fun = itr->second->fun;
+
+                // Get the number of locals in the function
+                static ICache numLocalsIC("num_locals");
+                auto numLocals = numLocalsIC.getInt32(fun);
+
+                // Until we are done unwinding the stack
+                for (;;)
+                {
+                    // Get the saved stack ptr, frame ptr and return address
+                    auto prevStackPtr = framePtr[numLocals - 1 + 1];
+                    auto prevFramePtr = framePtr[numLocals - 1 + 2];
+                    auto retAddr = framePtr[numLocals - 1 + 3];
+
+                    assert (retAddr.getTag() == TAG_RAWPTR);
+                    auto retVer = (BlockVersion*)retAddr.getWord().ptr;
+
+                    // If we are at the top level
+                    if (retVer == nullptr)
+                    {
+                        throw RunError("uncaught user exception");
+                    }
+
+                    // Find the info associated with the return address
+                    assert (retAddrMap.find(retVer) != retAddrMap.end());
+                    auto retEntry = retAddrMap[retVer];
+
+                    // Update the stack and frame pointer
+                    stackPtr = (Value*)prevStackPtr.getWord().ptr;
+                    framePtr = (Value*)prevFramePtr.getWord().ptr;
+
+                    // If there is an exception handler
+                    if (retEntry.excVer)
+                    {
+
+                        // TODO: compile exception handler if needed
+
+
+                        // TODO: pop call arguments?
+
+
+                        // TODO: push exception value on the stack
+
+                        // Done unwinding the stack
+                        break;
+                    }
+                }
             }
             break;
 
