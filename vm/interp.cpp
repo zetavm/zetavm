@@ -996,9 +996,7 @@ __attribute__((always_inline)) void hostCall(
         break;
 
         case 3:
-        {
-            retVal = hostFn->call3(*args, *(args - 1), *(args - 2));
-        }
+        retVal = hostFn->call3(*args, *(args - 1), *(args - 2));
         break;
 
         default:
