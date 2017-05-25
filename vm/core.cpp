@@ -73,6 +73,13 @@ Value print_int32(Value val)
     return Value::UNDEF;
 }
 
+Value print_float32(Value val)
+{
+    assert (val.isFloat32());
+    std::cout << (float)val;
+    return Value::UNDEF;
+}
+
 Value print_str(Value val)
 {
     assert (val.isString());
@@ -124,6 +131,7 @@ Value get_core_io_pkg()
 {
     auto exports = Object::newObject(32);
     setHostFn(exports, "print_int32", 1, (void*)print_int32);
+    setHostFn(exports, "print_float32", 1, (void*)print_float32);
     setHostFn(exports, "print_str"  , 1, (void*)print_str);
     setHostFn(exports, "read_file"  , 1, (void*)read_file);
     return exports;

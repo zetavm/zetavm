@@ -221,16 +221,16 @@ void Input::eatWS()
 // Forward declaration
 Value parseExpr(Input& input);
 
-Value parseFloatingPart(Input& input, bool neg, int64_t val);
+Value parseFloatingPart(Input& input, bool neg, char literal[64]);
 
 /**
 Parse a decimal integer
 */
 Value parseNum(Input& input, bool neg)
 {
-    int32_t intVal = 0;
+    char literal[64] = {0};
 
-    for (;;)
+    for (int i = 0;;i++)
     {
         // Peek at the next character
         char ch = input.readCh();
@@ -238,8 +238,7 @@ Value parseNum(Input& input, bool neg)
         if (!isdigit(ch))
             throw ParseError(input, "expected digit");
 
-        int32_t digit = ch - '0';
-        intVal = 10 * intVal + digit;
+        literal[i] = ch;
 
         // If the next character is not a digit, stop
         if (!isdigit(input.peek()))
@@ -247,11 +246,11 @@ Value parseNum(Input& input, bool neg)
     }
 
     char next = input.peek();
-    if (next == '.' || next == 'e' || next == 'f')
+    if (next == '.' || next == 'e')
     {
-        return parseFloatingPart(input, neg, intVal);
+        return parseFloatingPart(input, neg, literal);
     }
-
+    int intVal = atoi(literal);
     // If the value is negative
     if (neg)
     {
@@ -261,10 +260,8 @@ Value parseNum(Input& input, bool neg)
     return Value::int32(intVal);
 }
 
-Value parseFloatingPart(Input& input, bool neg, int64_t val)
+Value parseFloatingPart(Input& input, bool neg, char literal[64])
 {
-    char literal[64] = {0};
-    sprintf(literal, "%" PRId64, val);
     int length = strlen(literal);
     for (int i = 0;;i++)
     {

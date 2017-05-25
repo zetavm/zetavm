@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cinttypes>
 #include <cstring>
 #include <iostream>
 #include "parser.h"
@@ -288,13 +289,34 @@ ASTStmt* parseStmt(Input& input);
 BlockStmt* parseBlockStmt(Input& input, std::string endStr);
 
 /**
-Parse a decimal integer
+Parse a number
 */
-IntExpr* parseInt(Input& input, bool neg)
-{
-    int64_t intVal = 0;
 
-    for (;;)
+FloatExpr* parseFloatingPart(Input& input, bool neg, char literal[64]) {
+    int length = strlen(literal);
+    for (int i = 0;;i++)
+    {
+        if (i + length >= 64)
+            throw ParseError(input, "float literal is too long");
+        char next = input.peekCh();
+        if (isdigit(next) || next == 'e' || next == '.')
+            literal[length + i] = input.readCh();
+        else
+            break;
+    }
+    float floatVal = atof(literal);
+    if (neg)
+    {
+        floatVal *= -1;
+    }
+    return new FloatExpr(floatVal);
+}
+
+ASTExpr* parseNum(Input& input, bool neg)
+{
+    char literal[64] = {0};
+
+    for (int i = 0;;i++)
     {
         // Peek at the next character
         char ch = input.readCh();
@@ -302,14 +324,17 @@ IntExpr* parseInt(Input& input, bool neg)
         if (!isdigit(ch))
             throw ParseError(input, "expected digit");
 
-        int64_t digit = ch - '0';
-        intVal = 10 * intVal + digit;
+        literal[i] = ch;
 
         // If the next character is not a digit, stop
         if (!isdigit(input.peekCh()))
             break;
     }
 
+    if (input.peekCh() == '.' || input.peekCh() == 'e') {
+        return parseFloatingPart(input, neg, literal);
+    }
+    int intVal = atoi(literal);
     // If the value is negative
     if (neg)
     {
@@ -758,7 +783,7 @@ ASTExpr* parseAtom(Input& input)
     // Numerical constant
     if (isdigit(input.peekCh()))
     {
-        return parseInt(input, false);
+        return parseNum(input, false);
     }
 
     // String literal

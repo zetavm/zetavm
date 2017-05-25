@@ -187,6 +187,16 @@ public:
     int64_t val;
 };
 
+class FloatExpr : public ASTExpr
+{
+public:
+
+    FloatExpr(float val): val(val) {}
+    virtual ~FloatExpr() {}
+
+    float val;
+};
+
 class StringExpr : public ASTExpr
 {
 public:
