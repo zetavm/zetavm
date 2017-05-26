@@ -6,4 +6,3 @@ compiler:
 
 os:
     - linux
-    - osx
