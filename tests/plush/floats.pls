@@ -29,10 +29,15 @@ x = 4.5 * 5.4 / 3 + 3 - 2.5;
 fp_assert(x, 8.6, "float auto casting and arithmetic doesn't work");
 //sin and sqrt
 
-x = sin(50.8);
+var math = import "std/math";
+
+x = math.sin(50.8);
 fp_assert(x, 0.50942, "sin for float doesn't work");
-y = sqrt(30.8);
+y = math.sqrt(30.8);
 fp_assert(y, 5.54977, "sqrt for float doesn't work");
+
+fp_assert(math.sin(math.PI), 0, "sin of PI == 0 is not working");
+fp_assert(math.sin(math.PI/2), 1, "sin of PI/2 == 1 is not working");
 
 // comparisons
 

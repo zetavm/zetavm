@@ -528,44 +528,6 @@ var output = function (x)
     );
 };
 
-var sin = function (x)
-{
-
-    if (typeof x == "int32")
-    {
-        return $sin_f32($i32_to_f32(x));
-    }
-
-    if (typeof x == "float32")
-    {
-        return $sin_f32(x);
-    }
-
-    assert(
-        false,
-        "unhandled type in sin function"
-    );
-};
-
-var sqrt = function (x)
-{
-
-    if (typeof x == "int32")
-    {
-        return $sqrt_f32($i32_to_f32(x));
-    }
-
-    if (typeof x == "float32")
-    {
-        return $sqrt_f32(x);
-    }
-
-    assert(
-        false,
-        "unhandled type in sin function"
-    );
-};
-
 /// Print to standard output and include a line terminator
 var print = function (x)
 {
