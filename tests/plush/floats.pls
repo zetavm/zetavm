@@ -35,6 +35,8 @@ x = math.sin(50.8);
 fp_assert(x, 0.50942, "sin for float doesn't work");
 y = math.sqrt(30.8);
 fp_assert(y, 5.54977, "sqrt for float doesn't work");
+z = math.cos(40);
+fp_assert(z, -0.66693, "cos for float doesn't work");
 
 fp_assert(math.sin(math.PI), 0, "sin of PI == 0 is not working");
 fp_assert(math.sin(math.PI/2), 1, "sin of PI/2 == 1 is not working");
