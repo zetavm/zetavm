@@ -1,3 +1,5 @@
+#language "lang/plush/0"
+
 //============================================================================
 // Abstract Syntax Tree (AST)
 //============================================================================
@@ -486,6 +488,8 @@ var parseEscSeq = function (input)
 
     if (esc == 'n')
         return '\n';
+    if (esc == 'r')
+        return '\r';
     if (esc == 't')
         return '\t';
     if (esc == '0')
@@ -500,21 +504,21 @@ var parseEscSeq = function (input)
     // Hexadecimal escape
     if (esc == 'x')
     {
-        // TODO: need charcode to string
-        assert (false, "hexadecimal escape sequence");
-
-        /*
-        int escVal = 0;
+        var escVal = 0;
         for (var i = 0; i < 2; i += 1)
         {
             var ch = input:readCh();
+            var charCode = $get_char_code(ch, 0);
+
             if (ch >= '0' && ch <= '9')
             {
-                escVal = 16 * escVal + (ch - '0');
+                // ch - '0'
+                escVal = 16 * escVal + (charCode - 48);
             }
             else if (ch >= 'A' && ch <= 'F')
             {
-                escVal = 16 * escVal + (ch - 'A' + 10);
+                // ch - 'A'
+                escVal = 16 * escVal + (charCode - 65 + 10);
             }
             else
             {
@@ -525,9 +529,12 @@ var parseEscSeq = function (input)
             }
         }
 
-        assert (escVal >= 0 && escVal <= 255);
-        return (char)escVal;
-        */
+        assert (
+            escVal >= 0 && escVal <= 255,
+            "invalid hexadecimal escape sequence"
+        );
+
+        return $char_to_str(escVal);
     }
 
     parseError(

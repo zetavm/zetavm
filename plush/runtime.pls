@@ -530,7 +530,6 @@ var output = function (x)
 
 var sin = function (x)
 {
-
     if (typeof x == "int32")
     {
         return $sin_f32($i32_to_f32(x));
