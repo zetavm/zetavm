@@ -459,7 +459,7 @@ void Object::setField(String name, Value value)
         // Create a new object with twice the capacity
         assert (cap > 0);
         auto newCap = 2 * cap;
-        std::cerr << "extending object capacity from " << cap << " to " << newCap << std::endl;
+        //std::cout << "extending object capacity from " << cap << " to " << newCap << std::endl;
         auto newObj = Object::newObject(newCap);
 
         // Copy properties to the new object
