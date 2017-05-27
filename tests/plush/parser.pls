@@ -217,21 +217,6 @@ var testParser = function ()
 
     // Regressions
     //testParseFail("'a' <'");
-
-    // Now using plush parser package tests instead
-    /*
-    testParseFile("tests/plush/fib.pls");
-    testParseFile("tests/plush/simple.pls");
-    testParseFile("tests/plush/for_loop_break.pls");
-    testParseFile("tests/plush/for_loop_cont.pls");
-    testParseFile("tests/plush/fun_locals.pls");
-    testParseFile("tests/plush/method_calls.pls");
-    testParseFile("tests/plush/for_loop_sum.pls");
-    testParseFile("tests/plush/array_push.pls");
-    testParseFile("tests/plush/line_count.pls");
-    testParseFile("tests/plush/obj_ext.pls");
-    testParseFile("plush/runtime.pls");
-    */
 };
 
 // Run the parser tests

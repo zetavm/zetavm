@@ -27,7 +27,7 @@ fp_assert(z, 14.52, "float multiplication doesn't work");
 x = 4.5 * 5.4 / 3 + 3 - 2.5;
 
 fp_assert(x, 8.6, "float auto casting and arithmetic doesn't work");
-//sin and sqrt
+// math library
 
 var math = import "std/math";
 
@@ -38,6 +38,15 @@ fp_assert(y, 5.54977, "sqrt for float doesn't work");
 
 fp_assert(math.sin(math.PI), 0, "sin of PI == 0 is not working");
 fp_assert(math.sin(math.PI/2), 1, "sin of PI/2 == 1 is not working");
+
+fp_assert(math.max(3.0, 2.8), 3.0, "max function on floats is not working");
+assert(math.max(3,2) == 3, "max function on ints is not working");
+
+fp_assert(math.min(3.0, 2.8), 2.8, "min function on floats is not working");
+assert(math.min(3,2) == 2, "min function on ints is not working");
+
+fp_assert(math.abs(-3.5), 3.5, "abs function on floats is not working");
+assert(math.abs(-3) == 3, "abs function on ints is not working");
 
 // comparisons
 

@@ -58,6 +58,7 @@ enum Opcode : uint16_t
     STR_LEN,
     GET_CHAR,
     GET_CHAR_CODE,
+    CHAR_TO_STR,
     STR_CAT,
     EQ_STR,
 
@@ -652,6 +653,12 @@ void compile(BlockVersion* version)
         if (op == "get_char_code")
         {
             writeCode(GET_CHAR_CODE);
+            continue;
+        }
+
+        if (op == "char_to_str")
+        {
+            writeCode(CHAR_TO_STR);
             continue;
         }
 
@@ -1355,6 +1362,14 @@ Value execCode()
             }
             break;
 
+            case CHAR_TO_STR:
+            {
+                auto charCode = (char)popInt32();
+                char buf[2] = { (char)charCode, '\0' };
+                pushVal(String(buf));
+            }
+            break;
+
             case STR_CAT:
             {
                 auto a = popStr();
@@ -1694,13 +1709,20 @@ Value execCode()
                     if (retEntry.excVer)
                     {
 
-                        // TODO: compile exception handler if needed
-
 
                         // TODO: pop call arguments?
 
 
                         // TODO: push exception value on the stack
+
+
+
+
+                        // Compile exception handler if needed
+                        if (!retEntry.excVer->startPtr)
+                            compile(retEntry.excVer);
+
+                        instrPtr = retEntry.excVer->startPtr;
 
                         // Done unwinding the stack
                         break;

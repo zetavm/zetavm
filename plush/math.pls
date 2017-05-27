@@ -16,6 +16,45 @@ exports.sin = function (x)
     );
 };
 
+exports.cos = function (x)
+{
+    if (typeof x == "int32")
+    {
+        return $cos_f32($i32_to_f32(x));
+    }
+
+    if (typeof x == "float32")
+    {
+        return $cos_f32(x);
+    }
+
+    assert(
+        false,
+        "unhandled type in cos function"
+    );
+};
+
+exports.max = function (x, y)
+{
+    if (x > y)
+        return x;
+    return y;
+};
+
+exports.min = function (x, y)
+{
+    if (x < y)
+        return x;
+    return y;
+};
+
+exports.abs = function (x) 
+{
+    if (x < 0)
+        return -x;
+    return x;
+};
+
 exports.sqrt = function (x)
 {
 

@@ -2965,7 +2965,7 @@ block_400 = {
   instrs: [
     { op:'get_local', idx:0 },
     { op:'i32_to_f32' },
-    { op:'sqrt_f32' },
+    { op:'cos_f32' },
     { op:'ret' },
   ]
 };
@@ -2987,7 +2987,7 @@ block_401 = {
 block_403 = {
   instrs: [
     { op:'get_local', idx:0 },
-    { op:'sqrt_f32' },
+    { op:'cos_f32' },
     { op:'ret' },
   ]
 };
@@ -3021,7 +3021,7 @@ block_406 = {
 
 block_407 = {
   instrs: [
-    { op:'push', val:'unhandled type in sin function' },
+    { op:'push', val:'unhandled type in cos function' },
     { op:'abort' },
     { op:'jump', to:@block_408 },
   ]
@@ -3036,6 +3036,224 @@ block_408 = {
 
 fun_399 = {
   entry:@block_398,
+  num_params:1,
+  num_locals:1,
+};
+
+block_409 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_gt' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_411, num_args:2 },
+  ]
+};
+
+block_412 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'ret' },
+  ]
+};
+
+block_411 = {
+  instrs: [
+    { op:'if_true', then:@block_412, else:@block_413 },
+  ]
+};
+
+block_413 = {
+  instrs: [
+    { op:'jump', to:@block_414 },
+  ]
+};
+
+block_414 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'ret' },
+  ]
+};
+
+fun_410 = {
+  entry:@block_409,
+  num_params:2,
+  num_locals:2,
+};
+
+block_415 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_lt' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_417, num_args:2 },
+  ]
+};
+
+block_418 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'ret' },
+  ]
+};
+
+block_417 = {
+  instrs: [
+    { op:'if_true', then:@block_418, else:@block_419 },
+  ]
+};
+
+block_419 = {
+  instrs: [
+    { op:'jump', to:@block_420 },
+  ]
+};
+
+block_420 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'ret' },
+  ]
+};
+
+fun_416 = {
+  entry:@block_415,
+  num_params:2,
+  num_locals:2,
+};
+
+block_421 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_lt' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_423, num_args:2 },
+  ]
+};
+
+block_424 = {
+  instrs: [
+    { op:'push', val:0 },
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_sub' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_425, num_args:2 },
+  ]
+};
+
+block_425 = {
+  instrs: [
+    { op:'ret' },
+  ]
+};
+
+block_423 = {
+  instrs: [
+    { op:'if_true', then:@block_424, else:@block_426 },
+  ]
+};
+
+block_426 = {
+  instrs: [
+    { op:'jump', to:@block_427 },
+  ]
+};
+
+block_427 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'ret' },
+  ]
+};
+
+fun_422 = {
+  entry:@block_421,
+  num_params:1,
+  num_locals:1,
+};
+
+block_430 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'sqrt_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_428 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_430, else:@block_431 },
+  ]
+};
+
+block_431 = {
+  instrs: [
+    { op:'jump', to:@block_432 },
+  ]
+};
+
+block_433 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'sqrt_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_432 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_433, else:@block_434 },
+  ]
+};
+
+block_434 = {
+  instrs: [
+    { op:'jump', to:@block_435 },
+  ]
+};
+
+block_435 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_436, else:@block_437 },
+  ]
+};
+
+block_436 = {
+  instrs: [
+    { op:'jump', to:@block_438 },
+  ]
+};
+
+block_437 = {
+  instrs: [
+    { op:'push', val:'unhandled type in sin function' },
+    { op:'abort' },
+    { op:'jump', to:@block_438 },
+  ]
+};
+
+block_438 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_429 = {
+  entry:@block_428,
   num_params:1,
   num_locals:1,
 };
@@ -3132,6 +3350,38 @@ block_0 = {
     { op:'set_field' },
     { op:'pop' },
     { op:'push', val:@fun_399 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'exports' },
+    { op:'get_field' },
+    { op:'push', val:'cos' },
+    { op:'dup', idx:2 },
+    { op:'set_field' },
+    { op:'pop' },
+    { op:'push', val:@fun_410 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'exports' },
+    { op:'get_field' },
+    { op:'push', val:'max' },
+    { op:'dup', idx:2 },
+    { op:'set_field' },
+    { op:'pop' },
+    { op:'push', val:@fun_416 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'exports' },
+    { op:'get_field' },
+    { op:'push', val:'min' },
+    { op:'dup', idx:2 },
+    { op:'set_field' },
+    { op:'pop' },
+    { op:'push', val:@fun_422 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'exports' },
+    { op:'get_field' },
+    { op:'push', val:'abs' },
+    { op:'dup', idx:2 },
+    { op:'set_field' },
+    { op:'pop' },
+    { op:'push', val:@fun_429 },
     { op:'push', val:@global_obj },
     { op:'push', val:'exports' },
     { op:'get_field' },

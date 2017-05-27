@@ -15,7 +15,7 @@ assert (1 + 2 == 3);
 assert (2 * -1 == -2);
 assert (undef == undef);
 
-// Logical conjunction and disjunction
+// Logical expressions
 assert (true && true);
 assert (!(true && false));
 assert (!(false && true));
@@ -60,6 +60,7 @@ assert ('\0'.length == 1);
 assert ("foo"[0] == "f");
 assert ("foo"[1] == "o");
 assert ("foo" + "bar" == "foobar");
+assert ('\x41' == 'A');
 assert ("f" <= "f");
 assert ("f" <= "g");
 assert ("c" >= "c");
