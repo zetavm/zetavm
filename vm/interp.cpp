@@ -1669,7 +1669,7 @@ Value execCode()
             case THROW:
             {
                 // Pop the exception value
-                auto retVal = popVal();
+                auto excVal = popVal();
 
                 // Get the current function
                 auto itr = instrMap.find((uint8_t*)&op);
@@ -1683,10 +1683,12 @@ Value execCode()
                 // Until we are done unwinding the stack
                 for (;;)
                 {
+                    std::cout << "Unwinding frame" << std::endl;
+
                     // Get the saved stack ptr, frame ptr and return address
-                    auto prevStackPtr = framePtr[numLocals - 1 + 1];
-                    auto prevFramePtr = framePtr[numLocals - 1 + 2];
-                    auto retAddr = framePtr[numLocals - 1 + 3];
+                    auto prevStackPtr = framePtr[-(numLocals + 0)];
+                    auto prevFramePtr = framePtr[-(numLocals + 1)];
+                    auto retAddr      = framePtr[-(numLocals + 2)];
 
                     assert (retAddr.getTag() == TAG_RAWPTR);
                     auto retVer = (BlockVersion*)retAddr.getWord().ptr;
@@ -1694,6 +1696,7 @@ Value execCode()
                     // If we are at the top level
                     if (retVer == nullptr)
                     {
+                        std::cout << "top-level frame" << std::endl;
                         throw RunError("uncaught user exception");
                     }
 
@@ -1705,18 +1708,19 @@ Value execCode()
                     stackPtr = (Value*)prevStackPtr.getWord().ptr;
                     framePtr = (Value*)prevFramePtr.getWord().ptr;
 
+                    if (retEntry.excVer == nullptr)
+                    {
+                        std::cout << "no exception handler" << std::endl;
+                    }
+
                     // If there is an exception handler
                     if (retEntry.excVer)
                     {
-
-
                         // TODO: pop call arguments?
+                        // Shouldn't be necessary, since we restored SP
 
-
-                        // TODO: push exception value on the stack
-
-
-
+                        // Push the exception value on the stack
+                        pushVal(excVal);
 
                         // Compile exception handler if needed
                         if (!retEntry.excVer->startPtr)
@@ -1878,9 +1882,9 @@ Value testRunImage(std::string fileName)
 void testInterp()
 {
     assert (testRunImage("tests/vm/ex_ret_cst.zim") == Value::int32(777));
-    assert (testRunImage("tests/vm/ex_ops_float.zim").toString() == "10.500000");
     assert (testRunImage("tests/vm/ex_loop_cnt.zim") == Value::int32(0));
     assert (testRunImage("tests/vm/ex_image.zim") == Value::int32(10));
     assert (testRunImage("tests/vm/ex_rec_fact.zim") == Value::int32(5040));
     assert (testRunImage("tests/vm/ex_fibonacci.zim") == Value::int32(377));
+    assert (testRunImage("tests/vm/float_ops.zim").toString() == "10.500000");
 }

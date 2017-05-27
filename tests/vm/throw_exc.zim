@@ -1,0 +1,57 @@
+#zeta-image
+
+# Throw the integer 777
+block_236 = {
+  instrs: [
+    { op:'push', val:777 },
+    { op:'throw' },
+  ]
+};
+throw_fun = {
+  entry:@block_236,
+  num_params:2,
+  num_locals:2,
+};
+
+# Call throw_fun and check the return value
+block_0 = {
+  instrs: [
+    { op:'push', val:4 },
+    { op:'push', val:3 },
+    { op:'push', val:@throw_fun },
+    { op:'call', num_args:2, ret_to:@block_ret, throw_to:@block_catch },
+  ]
+};
+block_ret = {
+  # We should never get here
+  instrs: [
+    { op:'push', val:-1 },
+    { op:'ret' },
+  ]
+};
+block_catch = {
+  instrs: [
+    { op:'push', val:777 },
+    { op:'eq_i32' },
+    { op:'if_true', then:@block_241, else:@block_240 },
+  ]
+};
+block_241 = {
+  instrs: [
+    { op:'push', val:0 },
+    { op:'ret' },
+  ]
+};
+block_240 = {
+  instrs: [
+    { op:'push', val:'assertion failed' },
+    { op:'abort' },
+  ]
+};
+fun_1 = {
+  entry:@block_0,
+  num_params:0,
+  num_locals:0,
+};
+
+{ main:@fun_1 };
