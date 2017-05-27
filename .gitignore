@@ -6,14 +6,20 @@ config.status
 config.h
 makefile
 
-# Retarded MacOS metadata
-.DS_Store
-
+# Compiled binaries
 zeta
 cplush
 cjs
 cscheme
 *.dSYM
+
+# Generated files
+benchmarks/plush_parser.zim
+packages/lang/plush/0/package
+packages/std/math/0/package
+
+# Retarded MacOS metadata
+.DS_Store
 
 # Retarded IDE metadata
 .idea
