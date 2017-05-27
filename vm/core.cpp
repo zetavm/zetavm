@@ -7,6 +7,12 @@
 #include "parser.h"
 #include "interp.h"
 
+#ifdef HAVE_SDL2
+
+#include <SDL.h>
+
+#endif
+
 HostFn::HostFn(std::string name, size_t numParams, void* fptr)
 : name(name),
   numParams(numParams),
@@ -60,6 +66,19 @@ void setHostFn(
     assert (!pkgObj.hasField(name));
 
     pkgObj.setField(name, fnVal);
+}
+
+void setInt32Const(
+    Object pkgObj,
+    std::string name,
+    int32_t val
+)
+{
+    auto intVal = Value::int32(val);
+
+    assert (!pkgObj.hasField(name));
+
+    pkgObj.setField(name, intVal);
 }
 
 //============================================================================
@@ -142,8 +161,6 @@ Value get_core_io_pkg()
 //============================================================================
 
 #ifdef HAVE_SDL2
-
-#include <SDL.h>
 
 size_t width = 0;
 size_t height = 0;
@@ -269,6 +286,138 @@ Value get_core_window_pkg()
 }
 
 //============================================================================
+// core/audio package
+//============================================================================
+
+#ifdef HAVE_SDL2
+
+bool paused = true;
+
+Value open_output_device(
+    Value num_channels
+)
+{
+    assert(num_channels.isInt32());
+
+    SDL_Init(SDL_INIT_AUDIO);
+    SDL_AudioSpec want, have;
+
+    SDL_zero(want);
+    want.freq = 44100;
+    want.format = AUDIO_F32;
+    want.channels = (uint8_t)(int32_t)num_channels;
+    want.samples = 4096;
+    want.callback = NULL; /* you wrote this function elsewhere. */
+
+    return Value::int32((int32_t)SDL_OpenAudioDevice(NULL, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE));
+}
+
+Value queue_samples(
+    Value dev,
+    Value samplesArray
+)
+{
+    assert(dev.isInt32());
+    assert(samplesArray.isArray());
+
+    auto devID = (int32_t)dev;
+
+    auto samples = (Array)samplesArray;
+    if (samples.length() == 0) return Value::UNDEF;
+    float samples_buf[samples.length()] = {0};
+
+    for (int i = 0; i < samples.length(); i++) 
+    {
+        auto elem = samples.getElem(i);
+        if (elem.isInt32())
+        {
+            samples_buf[i] = (int32_t)samples.getElem(i);
+            continue;
+        } 
+        if (elem.isFloat32()) 
+        {
+            samples_buf[i] = samples.getElem(i);
+            continue;
+        }
+        assert(false && "the samples must be either int or float");
+        
+    }
+
+    int error = SDL_QueueAudio(devID, samples_buf, sizeof(samples_buf));
+
+    return Value::UNDEF;
+
+}
+
+Value play(
+    Value dev
+)
+{
+    assert(dev.isInt32());
+
+    auto devID = (int32_t)dev;
+    SDL_PauseAudioDevice(devID, 0);
+
+    return Value::UNDEF;
+}
+
+Value pause(
+    Value dev
+)
+{
+    assert(dev.isInt32());
+
+    auto devID = (int32_t)dev;
+    SDL_PauseAudioDevice(devID, 1);
+
+    return Value::UNDEF;
+}
+
+Value get_queue_size(
+    Value dev
+)
+{
+    assert(dev.isInt32());
+
+    auto devID = (int32_t)dev;
+    return Value::int32((int32_t)SDL_GetQueuedAudioSize(devID));
+}
+
+Value close_output_device(
+    Value dev
+)
+{
+    assert(dev.isInt32());
+
+    auto devID = (int32_t)dev;
+    SDL_CloseAudioDevice(devID);
+
+    return Value::UNDEF;
+}
+
+#endif // HAVE_SDL2
+
+Value get_core_audio_pkg()
+{
+#ifdef HAVE_SDL2
+    auto exports = Object::newObject(32);
+    setHostFn(exports, "open_output_device" , 1, (void*)open_output_device);
+    setHostFn(exports, "close_output_device", 1, (void*)close_output_device);
+    setHostFn(exports, "queue_samples"      , 2, (void*)queue_samples);
+    setHostFn(exports, "get_queue_size"     , 1, (void*)get_queue_size);
+    setHostFn(exports, "play"               , 1, (void*)play);
+    setHostFn(exports, "pause"              , 1, (void*)pause);
+    setInt32Const(exports, "MONO", 1);
+    setInt32Const(exports, "STEREO", 2);
+    setInt32Const(exports, "QUAD", 4);
+    setInt32Const(exports, "FIVEPOINTONE", 6);
+    return exports;
+#else
+    return Value::UNDEF;
+#endif
+}
+
+//============================================================================
 
 // Cache of loaded packages
 std::unordered_map<std::string, Value> pkgCache;
@@ -359,6 +508,8 @@ Value getCorePkg(std::string pkgName)
         return get_core_io_pkg();
     if (pkgName == "core/window")
         return get_core_window_pkg();
+    if (pkgName == "core/audio")
+        return get_core_audio_pkg();
 
     return Value::UNDEF;
 }
