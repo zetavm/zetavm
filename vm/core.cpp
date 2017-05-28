@@ -68,19 +68,6 @@ void setHostFn(
     pkgObj.setField(name, fnVal);
 }
 
-void setInt32Const(
-    Object pkgObj,
-    std::string name,
-    int32_t val
-)
-{
-    auto intVal = Value::int32(val);
-
-    assert (!pkgObj.hasField(name));
-
-    pkgObj.setField(name, intVal);
-}
-
 //============================================================================
 // core/io package
 //============================================================================
