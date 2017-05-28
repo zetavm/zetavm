@@ -319,9 +319,12 @@ Value queue_samples(
 {
     assert(dev.isInt32());
     assert(samplesArray.isArray());
-
+    
     auto devID = (int32_t)dev;
-
+    if (paused) {
+        paused = false;
+        SDL_PauseAudioDevice(devID, 0);
+    }
     auto samples = (Array)samplesArray;
     if (samples.length() == 0) return Value::UNDEF;
     float samples_buf[samples.length()] = {0};
@@ -329,17 +332,14 @@ Value queue_samples(
     for (int i = 0; i < samples.length(); i++) 
     {
         auto elem = samples.getElem(i);
-        if (elem.isInt32())
-        {
-            samples_buf[i] = (int32_t)samples.getElem(i);
-            continue;
-        } 
         if (elem.isFloat32()) 
         {
-            samples_buf[i] = samples.getElem(i);
+            float sample = (float)elem > 1.0f ? 1.0f : elem;
+            sample = sample < -1.0f ? -1.0f : sample;
+            samples_buf[i] = sample;
             continue;
         }
-        assert(false && "the samples must be either int or float");
+        assert(false && "the samples must be floats");
         
     }
 
@@ -347,30 +347,6 @@ Value queue_samples(
 
     return Value::UNDEF;
 
-}
-
-Value play(
-    Value dev
-)
-{
-    assert(dev.isInt32());
-
-    auto devID = (int32_t)dev;
-    SDL_PauseAudioDevice(devID, 0);
-
-    return Value::UNDEF;
-}
-
-Value pause(
-    Value dev
-)
-{
-    assert(dev.isInt32());
-
-    auto devID = (int32_t)dev;
-    SDL_PauseAudioDevice(devID, 1);
-
-    return Value::UNDEF;
 }
 
 Value get_queue_size(
@@ -405,12 +381,6 @@ Value get_core_audio_pkg()
     setHostFn(exports, "close_output_device", 1, (void*)close_output_device);
     setHostFn(exports, "queue_samples"      , 2, (void*)queue_samples);
     setHostFn(exports, "get_queue_size"     , 1, (void*)get_queue_size);
-    setHostFn(exports, "play"               , 1, (void*)play);
-    setHostFn(exports, "pause"              , 1, (void*)pause);
-    setInt32Const(exports, "MONO", 1);
-    setInt32Const(exports, "STEREO", 2);
-    setInt32Const(exports, "QUAD", 4);
-    setInt32Const(exports, "FIVEPOINTONE", 6);
     return exports;
 #else
     return Value::UNDEF;
