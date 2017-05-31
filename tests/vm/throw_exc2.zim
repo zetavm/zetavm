@@ -1,0 +1,79 @@
+#zeta-image
+
+# Throw the second input argument plus one
+throw_entry = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op: 'push', val:1 },
+    { op: 'add_i32' },
+    { op:'throw' },
+  ]
+};
+throw_fun = {
+  entry:@throw_entry,
+  num_params:2,
+  num_locals:2,
+};
+
+# Call the function throw_fun and pass through the arguments
+call_entry = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'push', val:@throw_fun },
+    { op:'call', num_args:2, ret_to:@call_ret },
+  ]
+};
+call_ret = {
+  instrs: [
+    {op:'ret'}
+  ]
+};
+call_fun = {
+  entry:@call_entry,
+  num_params:2,
+  num_locals:2,
+};
+
+# Call throw_fun and check the return value
+block_0 = {
+  instrs: [
+    { op:'push', val:4 },
+    { op:'push', val:555 },
+    { op:'push', val:@call_fun },
+    { op:'call', num_args:2, ret_to:@block_ret, throw_to:@block_catch },
+  ]
+};
+block_ret = {
+  # We should never get here
+  instrs: [
+    { op:'push', val:-1 },
+    { op:'ret' },
+  ]
+};
+block_catch = {
+  instrs: [
+    { op:'push', val:556 },
+    { op:'eq_i32' },
+    { op:'if_true', then:@block_241, else:@block_240 },
+  ]
+};
+block_241 = {
+  instrs: [
+    { op:'push', val:0 },
+    { op:'ret' },
+  ]
+};
+block_240 = {
+  instrs: [
+    { op:'push', val:'assertion failed' },
+    { op:'abort' },
+  ]
+};
+fun_1 = {
+  entry:@block_0,
+  num_params:0,
+  num_locals:0,
+};
+
+{ main:@fun_1 };

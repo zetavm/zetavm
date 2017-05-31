@@ -17,6 +17,7 @@ test: all
 	./$(ZETA_BIN) tests/vm/sub_fun.zim
 	./$(ZETA_BIN) tests/vm/fun_no_args.zim
 	./$(ZETA_BIN) tests/vm/throw_exc.zim
+	./$(ZETA_BIN) tests/vm/throw_exc2.zim
 	# cplush tests (C++ plush compiler implementation)
 	./$(CPLUSH_BIN) --test
 	./plush.sh tests/plush/trivial.pls
