@@ -294,9 +294,15 @@ Value open_output_device(
     want.format = AUDIO_F32;
     want.channels = (uint8_t)(int32_t)num_channels;
     want.samples = 4096;
-    want.callback = NULL; /* you wrote this function elsewhere. */
+    want.callback = NULL;
 
-    return Value::int32((int32_t)SDL_OpenAudioDevice(NULL, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE));
+    auto devId = (int32_t)SDL_OpenAudioDevice(NULL, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE);
+
+    assert (want.format == have.format);
+    assert (want.freq == have.freq);
+    assert (want.channels = have.channels);
+
+    return Value::int32(devId);
 }
 
 Value queue_samples(
@@ -306,28 +312,33 @@ Value queue_samples(
 {
     assert(dev.isInt32());
     assert(samplesArray.isArray());
-    
     auto devID = (int32_t)dev;
-    if (paused) {
+
+    if (paused)
+    {
         paused = false;
         SDL_PauseAudioDevice(devID, 0);
     }
-    auto samples = (Array)samplesArray;
-    if (samples.length() == 0) return Value::UNDEF;
-    float samples_buf[samples.length()] = {0};
 
-    for (int i = 0; i < samples.length(); i++) 
+    auto samples = (Array)samplesArray;
+
+    if (samples.length() == 0)
+        return Value::UNDEF;
+
+    float samples_buf[samples.length()];
+
+    for (int i = 0; i < samples.length(); i++)
     {
         auto elem = samples.getElem(i);
-        if (elem.isFloat32()) 
+
+        if (!elem.isFloat32())
         {
-            float sample = (float)elem > 1.0f ? 1.0f : elem;
-            sample = sample < -1.0f ? -1.0f : sample;
-            samples_buf[i] = sample;
-            continue;
+            throw RunError("audio samples must be float32");
         }
-        assert(false && "the samples must be floats");
-        
+
+        float sample = (float)elem > 1.0f ? 1.0f : elem;
+        sample = sample < -1.0f ? -1.0f : sample;
+        samples_buf[i] = sample;
     }
 
     int error = SDL_QueueAudio(devID, samples_buf, sizeof(samples_buf));
@@ -343,7 +354,11 @@ Value get_queue_size(
     assert(dev.isInt32());
 
     auto devID = (int32_t)dev;
-    return Value::int32((int32_t)SDL_GetQueuedAudioSize(devID));
+
+    auto numBytes = SDL_GetQueuedAudioSize(devID);
+    auto numSamples = numBytes / 4;
+
+    return Value::int32((int32_t)numSamples);
 }
 
 Value close_output_device(
