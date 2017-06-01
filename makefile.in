@@ -39,6 +39,7 @@ test: all
 	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
 	# Self-hosted plush parser tests (parser.pls)
 	./$(ZETA_BIN) tests/plush/trivial.pls
+	./$(ZETA_BIN) tests/plush/floats.pls
 	./$(ZETA_BIN) tests/plush/simple_exprs.pls
 	./$(ZETA_BIN) tests/plush/identfn.pls
 	./$(ZETA_BIN) tests/plush/fib.pls
