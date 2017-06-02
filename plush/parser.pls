@@ -92,6 +92,9 @@ var OP_ASSIGN = addOp(OpInfo::{str:"=", arity:2, prec:1, assoc:'r'});
 var IntExpr = {
 };
 
+var FloatExpr = {    
+};
+
 /// Prototype for string expressions
 var StringExpr = {
 };
@@ -433,17 +436,68 @@ Input.expectWS = function (self, str)
     self:expect(str);
 };
 
-/**
-Parse a decimal integer
+/** 
+Parse a number
 */
-var parseInt = function (input, neg)
+var parseNum = function (input, neg) 
 {
-    var intVal = 0;
-
+    var literal = "";
     for (;;)
     {
         // Peek at the next character
         var ch = input:readCh();
+
+        if (!isDigit(ch))
+            parseError(input, "expected digit");
+        literal = literal + ch;
+        // If the next character is not a digit, stop
+        if (!isDigit(input:peekCh()))
+            break;
+    }
+    var next = input:peekCh();
+    if (next == "." || next == "e") 
+    {
+        return parseFloat(input, neg, literal);
+    }
+    return parseInt(literal, neg);
+};
+
+/**
+Parse a floating point number
+*/
+var parseFloat = function (input, neg, literal)
+{
+    for (;;)
+    {
+        // Peek at the next character
+        var ch = input:readCh();
+
+        if (!isDigit(ch) && ch != "e" && ch != ".")
+            parseError(input, "expected digit, dot or e");
+        literal = literal + ch;
+        // If the next character is not a digit, stop
+        if (!isDigit(input:peekCh()) && ch != "e" && ch != ".")
+            break;
+    }
+    var floatVal = $str_to_f32(literal);
+    if (neg)
+    {
+        floatVal *= -1;
+    }
+    return FloatExpr::{ val: floatVal };
+};
+
+/**
+Parse a decimal integer
+*/
+var parseInt = function (literal, neg)
+{
+    var intVal = 0;
+
+    for (var j = 0;j < literal.length; j += 1)
+    {
+        // Peek at the next character
+        var ch = literal[j];
 
         if (!isDigit(ch))
             parseError(input, "expected digit");
@@ -465,10 +519,6 @@ var parseInt = function (input, neg)
         );
 
         intVal = 10 * intVal + digitVal;
-
-        // If the next character is not a digit, stop
-        if (!isDigit(input:peekCh()))
-            break;
     }
 
     // If the value is negative
@@ -900,7 +950,7 @@ var parseAtom = function (input)
     // Numerical constant
     if (isDigit(input:peekCh()))
     {
-        return parseInt(input, false);
+        return parseNum(input, false);
     }
 
     // String literal
@@ -1593,6 +1643,12 @@ var genExpr = function (ctx, expr)
         return;
     }
 
+    if (expr instanceof FloatExpr)
+    {
+        ctx:addPush(expr.val);
+        return;
+    }
+
     if (expr instanceof StringExpr)
     {
         ctx:addPush(expr.val);
@@ -1723,7 +1779,7 @@ var genExpr = function (ctx, expr)
         {
             genExpr(ctx, expr.lhsExpr);
             genExpr(ctx, expr.rhsExpr);
-            ctx:addOp("lt_i32");
+            runtimeCall(ctx, rt_lt);
             return;
         }
 
@@ -1739,7 +1795,7 @@ var genExpr = function (ctx, expr)
         {
             genExpr(ctx, expr.lhsExpr);
             genExpr(ctx, expr.rhsExpr);
-            ctx:addOp("gt_i32");
+            runtimeCall(ctx, rt_gt);
             return;
         }
 
