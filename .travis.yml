@@ -5,6 +5,7 @@ matrix:
   include:
     # works on Trusty
     - os: linux
+      compiler: clang
       addons:
         apt:
           sources:
@@ -16,6 +17,7 @@ matrix:
         
     # works on Precise and Trusty
     - os: linux
+      compiler: gcc
       addons:
         apt:
           sources:
@@ -33,5 +35,3 @@ language: cpp
 
 script: ./configure && make && make test
 
-os:
-    - linux
