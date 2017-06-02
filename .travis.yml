@@ -1,3 +1,6 @@
+# More up to date Ubuntu distribution
+dist: trusty
+
 language: cpp
 
 compiler:
