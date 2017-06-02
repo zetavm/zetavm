@@ -429,7 +429,7 @@ var rt_getProp = function (base, name)
             return rt_getProp(proto, name);
         }
 
-        assert (false, 'undefined property "' + name + '"' );
+        assert (false, 'undefined property "' + name + '"');
     }
 
     if (typeof base == "array")
