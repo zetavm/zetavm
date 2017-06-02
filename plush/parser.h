@@ -446,6 +446,25 @@ public:
     ASTStmt* bodyStmt;
 };
 
+class TryStmt : public ASTStmt
+{
+public:
+
+    TryStmt(
+        ASTStmt* tryStmt,
+        ASTExpr* catchStmt
+    )
+    : tryStmt(tryStmt),
+      catchStmt(catchStmt)
+    {
+    }
+
+    virtual ~TryStmt() {}
+
+    ASTStmt* tryStmt;
+    ASTExpr* catchStmt;
+};
+
 class ReturnStmt : public ASTStmt
 {
 public:
