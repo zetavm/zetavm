@@ -439,7 +439,6 @@ Input.expectWS = function (self, str)
 /** 
 Parse a number
 */
-
 var parseNum = function (input, neg) 
 {
     var literal = "";
@@ -466,7 +465,6 @@ var parseNum = function (input, neg)
 /**
 Parse a floating point number
 */
-
 var parseFloat = function (input, neg, literal)
 {
     for (;;)
