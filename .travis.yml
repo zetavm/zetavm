@@ -1,37 +1,30 @@
-# More up to date Ubuntu distribution
-dist: trusty
+sudo: required
+
+dist: trusty 
+
+services:
+    - docker 
+
+language: bash
 
 matrix:
   include:
-    # works on Trusty
-    - os: linux
-      compiler: clang
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-4.0
-          packages:
-            - clang-4.0
-      env:
-        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
-        
     # works on Precise and Trusty
     - os: linux
-      compiler: gcc
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-5
       env:
-         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+         - CXX="g++"
 
+    # works on Precise and Trusty
+    - os: linux
+      env:
+         - CXX="clang++"
 
-before_install:
-    - eval "${MATRIX_EVAL}"
+install:
+    - docker build -t zetavm/testing .
+    - docker run -td --name zetavm -e CXX=$CXX zetavm/testing
 
-language: cpp
-
-script: ./configure && make && make test
+script:
+    - docker exec zetavm ./configure
+    - docker exec zetavm make
+    - docker exec zetavm make test
 
