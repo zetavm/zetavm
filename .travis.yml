@@ -5,7 +5,7 @@ dist: trusty
 services:
     - docker 
 
-language: cpp
+language: bash
 
 matrix:
   include:
