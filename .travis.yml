@@ -12,16 +12,16 @@ matrix:
     # works on Precise and Trusty
     - os: linux
       env:
-         - MATRIX_EVAL="docker run -td --name zetavm zetavm/testing"
+         - CXX="g++"
 
     # works on Precise and Trusty
     - os: linux
       env:
-         - MATRIX_EVAL="docker run -td --name zetavm -e CXX=clang++ zetavm/testing"
+         - CXX="clang++"
 
 install:
     - docker build -t zetavm/testing .
-    - eval "${MATRIX_EVAL}"
+    - docker run -td --name zetavm -e CXX=$CXX zetavm/testing
 
 script:
     - docker exec zetavm ./configure
