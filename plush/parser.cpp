@@ -547,6 +547,24 @@ ForStmt* parseForStmt(Input& input)
 }
 
 /**
+Parse a try-catch statement
+*/
+TryStmt* parseTryStmt(Input& input)
+{
+    input.expectWS("(");
+
+    auto bodyStmt = parseStmt(input);
+
+    input.expectWS("(");
+    auto catchVar = parseIdentStr(input);
+    input.expectWS(")");
+
+    auto catchStmt = parseStmt(input);
+
+    return new TryStmt(bodyStmt, catchStmt, catchVar);
+}
+
+/**
 Parse a list of expressions
 */
 std::vector<ASTExpr*> parseExprList(Input& input, std::string endStr)
@@ -1097,6 +1115,12 @@ ASTStmt* parseStmt(Input& input)
         return new ContStmt();
     }
 
+    // Try/catch statement
+    if (input.match("try"))
+    {
+        return parseTryStmt(input);
+    }
+
     // Return statement
     if (input.match("return"))
     {
@@ -1107,6 +1131,14 @@ ASTStmt* parseStmt(Input& input)
         input.expectWS(";");
 
         return new ReturnStmt(expr);
+    }
+
+    // Throw statement
+    if (input.match("throw"))
+    {
+        auto expr = parseExpr(input);
+        input.expectWS(";");
+        return new ThrowStmt(expr);
     }
 
     // Assert statement

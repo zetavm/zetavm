@@ -146,6 +146,9 @@ public:
     /// Loop break block
     Block* breakBlock;
 
+    /// Try catch block
+    Block* catchBlock;
+
     /// Unit function flag
     bool unitFun;
 
@@ -155,13 +158,15 @@ public:
         bool unitFun,
         Block* curBlock,
         Block* contBlock = nullptr,
-        Block* breakBlock = nullptr
+        Block* breakBlock = nullptr,
+        Block* catchBlock = nullptr
     )
     : out(out),
       fun(fun),
       curBlock(curBlock),
       contBlock(contBlock),
-      breakBlock(breakBlock)
+      breakBlock(breakBlock),
+      catchBlock(catchBlock)
     {
     }
 
@@ -169,7 +174,8 @@ public:
     CodeGenCtx subCtx(
         Block* startBlock = nullptr,
         Block* contBlock = nullptr,
-        Block* breakBlock = nullptr
+        Block* breakBlock = nullptr,
+        Block* catchBlock = nullptr
     )
     {
         return CodeGenCtx(
@@ -178,7 +184,8 @@ public:
             this->unitFun,
             startBlock? startBlock:this->curBlock,
             contBlock? contBlock:this->contBlock,
-            breakBlock? breakBlock:this->breakBlock
+            breakBlock? breakBlock:this->breakBlock,
+            catchBlock? catchBlock:this->catchBlock
         );
     }
 
@@ -294,6 +301,18 @@ void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
 
     if (auto breakStmt = dynamic_cast<BreakStmt*>(stmt))
     {
+        return;
+    }
+
+    if (auto tryStmt = dynamic_cast<TryStmt*>(stmt))
+    {
+        registerDecls(fun, tryStmt->bodyStmt, unitFun);
+        registerDecls(fun, tryStmt->catchStmt, unitFun);
+
+        // If this is not a unit function, create a new local
+        if (!unitFun)
+            fun->registerDecl(tryStmt->catchVar);
+
         return;
     }
 
@@ -611,7 +630,7 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             return;
         }
 
-        if (binOp->op == &OP_DIV) 
+        if (binOp->op == &OP_DIV)
         {
             genExpr(ctx, binOp->lhsExpr);
             genExpr(ctx, binOp->rhsExpr);
@@ -936,6 +955,44 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
     {
         if (!ctx.curBlock->isFinalized())
             ctx.addBranch("jump", "to", ctx.breakBlock);
+        return;
+    }
+
+    // Try/catch statement
+    if (auto tryStmt = dynamic_cast<TryStmt*>(stmt))
+    {
+        auto bodyBlock = new Block();
+        auto catchBlock = new Block();
+        auto joinBlock = new Block();
+
+        ctx.addBranch("jump", "to", bodyBlock);
+
+        // Generate the loop body statement
+        auto bodyCtx = ctx.subCtx(
+            bodyBlock,
+            nullptr,
+            nullptr,
+            catchBlock
+        );
+        genStmt(bodyCtx, tryStmt->bodyStmt);
+        if (!bodyCtx.curBlock->isFinalized())
+            bodyCtx.addBranch("jump", "to", joinBlock);
+
+        auto catchCtx = ctx.subCtx(
+            catchBlock
+        );
+
+        // Pop the exception value and assign it to the catch variable
+        auto localIdx = ctx.fun->getLocalIdx(tryStmt->catchVar);
+        catchCtx.addStr("op:'set_local', idx:" + std::to_string(localIdx));
+
+        // Generate the catch statement
+        genStmt(catchCtx, tryStmt->catchStmt);
+        if (!catchCtx.curBlock->isFinalized())
+            catchCtx.addBranch("jump", "to", joinBlock);
+
+        ctx.merge(joinBlock);
+
         return;
     }
 

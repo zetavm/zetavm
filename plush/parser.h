@@ -451,18 +451,21 @@ class TryStmt : public ASTStmt
 public:
 
     TryStmt(
-        ASTStmt* tryStmt,
-        ASTExpr* catchStmt
+        ASTStmt* bodyStmt,
+        ASTStmt* catchStmt,
+        std::string catchVar
     )
-    : tryStmt(tryStmt),
-      catchStmt(catchStmt)
+    : bodyStmt(bodyStmt),
+      catchStmt(catchStmt),
+      catchVar(catchVar)
     {
     }
 
     virtual ~TryStmt() {}
 
-    ASTStmt* tryStmt;
-    ASTExpr* catchStmt;
+    ASTStmt* bodyStmt;
+    ASTStmt* catchStmt;
+    std::string catchVar;
 };
 
 class ReturnStmt : public ASTStmt
@@ -475,6 +478,20 @@ public:
     }
 
     virtual ~ReturnStmt() {}
+
+    ASTExpr* expr;
+};
+
+class ThrowStmt : public ASTStmt
+{
+public:
+
+    ThrowStmt(ASTExpr* expr)
+    : expr(expr)
+    {
+    }
+
+    virtual ~ThrowStmt() {}
 
     ASTExpr* expr;
 };
