@@ -1,11 +1,30 @@
-# More up to date Ubuntu distribution
-dist: trusty
+sudo: required
 
-language: cpp
+dist: trusty 
 
-compiler:
-    - clang
-    - gcc
+services:
+    - docker 
 
-os:
-    - linux
+language: bash
+
+matrix:
+  include:
+    # works on Precise and Trusty
+    - os: linux
+      env:
+         - CXX="g++"
+
+    # works on Precise and Trusty
+    - os: linux
+      env:
+         - CXX="clang++"
+
+install:
+    - docker build -t zetavm/testing .
+    - docker run -td --name zetavm -e CXX=$CXX zetavm/testing
+
+script:
+    - docker exec zetavm ./configure
+    - docker exec zetavm make
+    - docker exec zetavm make test
+

@@ -1,5 +1,7 @@
 # ZetaVM
 
+[![Build Status](https://travis-ci.org/maximecb/zetavm.svg?branch=master)](https://travis-ci.org/maximecb/zetavm)
+
 **Please note that ZetaVM is currently at the early prototype stage. As such,
 it is incomplete and breaking changes may happen often.**
 
