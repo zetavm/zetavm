@@ -391,8 +391,10 @@ void runtimeCall(CodeGenCtx& ctx, std::string funName, size_t numArgs)
     auto contBlock = new Block();
     ctx.addBranch(
         "call",
-        "ret_to", contBlock,
-        "", nullptr,
+        "ret_to",
+        contBlock,
+        ctx.catchBlock? "throw_to":"",
+        ctx.catchBlock,
         "num_args:" + std::to_string(numArgs)
     );
     ctx.merge(contBlock);
@@ -760,8 +762,10 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
         auto contBlock = new Block();
         ctx.addBranch(
             "call",
-            "ret_to", contBlock,
-            "", nullptr,
+            "ret_to",
+            contBlock,
+            ctx.catchBlock? "throw_to":"",
+            ctx.catchBlock,
             "num_args:" + std::to_string(args.size())
         );
         ctx.merge(contBlock);
@@ -864,6 +868,13 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
     {
         genExpr(ctx, returnStmt->expr);
         ctx.addBranch("ret");
+        return;
+    }
+
+    if (auto throwStmt = dynamic_cast<ThrowStmt*>(stmt))
+    {
+        genExpr(ctx, throwStmt->expr);
+        runtimeCall(ctx, "throw", 1);
         return;
     }
 

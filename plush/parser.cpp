@@ -551,10 +551,9 @@ Parse a try-catch statement
 */
 TryStmt* parseTryStmt(Input& input)
 {
-    input.expectWS("(");
-
     auto bodyStmt = parseStmt(input);
 
+    input.expectWS("catch");
     input.expectWS("(");
     auto catchVar = parseIdentStr(input);
     input.expectWS(")");
@@ -1451,6 +1450,10 @@ void testParser()
     testParseFail("x + o:foo (1,2);");
     testParseFail("x + o:foo (1,2);");
     testParseFail("(o:foo)();");
+
+    // Try, catch and throw
+    testParse("throw x;");
+    testParse("try {} catch (e) {}");
 
     // There is no empty statement
     testParseFail(";");

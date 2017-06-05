@@ -1,4 +1,10 @@
-// Addition operator
+/// Throw an exception
+var rt_throw = function (e)
+{
+    $throw(e);
+};
+
+/// Addition operator
 var rt_add = function (x, y)
 {
     if (typeof x == "int32")
