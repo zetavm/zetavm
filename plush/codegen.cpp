@@ -322,12 +322,17 @@ void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
         return;
     }
 
+    if (auto throwStmt = dynamic_cast<ThrowStmt*>(stmt))
+    {
+        return;
+    }
+
     if (auto irStmt = dynamic_cast<IRStmt*>(stmt))
     {
         return;
     }
 
-    assert (false);
+    assert (false && "unhandled statement type in registerDecls");
 }
 
 // Forward declarations

@@ -2,8 +2,7 @@
 
 var foo = function()
 {
-
-
+    throw "foo";
 };
 
 try
@@ -13,6 +12,7 @@ try
 catch (e)
 {
     print('caught exception');
+    assert (e == "foo");
 }
 
 print('done');
