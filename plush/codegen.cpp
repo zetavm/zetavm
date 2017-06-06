@@ -163,6 +163,7 @@ public:
     )
     : out(out),
       fun(fun),
+      unitFun(unitFun),
       curBlock(curBlock),
       contBlock(contBlock),
       breakBlock(breakBlock),
@@ -993,9 +994,22 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
             catchBlock
         );
 
-        // Pop the exception value and assign it to the catch variable
-        auto localIdx = ctx.fun->getLocalIdx(tryStmt->catchVar);
-        catchCtx.addStr("op:'set_local', idx:" + std::to_string(localIdx));
+        // Assign the exception value to the catch variable
+        if (catchCtx.unitFun)
+        {
+            catchCtx.addStr("op:'push', val:@global_obj");
+            catchCtx.addStr("op:'push', val:'" + tryStmt->catchVar + "'");
+            catchCtx.addStr("op:'dup', idx:2");
+            catchCtx.addOp("set_field");
+            catchCtx.addOp("pop");
+        }
+        else
+        {
+            std::cout << "getting local" << std::endl;
+
+            auto localIdx = ctx.fun->getLocalIdx(tryStmt->catchVar);
+            catchCtx.addStr("op:'set_local', idx:" + std::to_string(localIdx));
+        }
 
         // Generate the catch statement
         genStmt(catchCtx, tryStmt->catchStmt);
