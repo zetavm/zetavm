@@ -189,6 +189,9 @@ public:
 /// Struct to associate information with a return address
 struct RetEntry
 {
+    /// Return block version
+    BlockVersion* retVer;
+
     /// Exception/catch block version (may be null)
     BlockVersion* excVer = nullptr;
 };
@@ -789,6 +792,7 @@ void compile(BlockVersion* version)
             auto retVer = getBlockVersion(version->fun, retToBB);
 
             RetEntry retEntry;
+            retEntry.retVer = retVer;
 
             if (instr.hasField("throw_to"))
             {
@@ -1674,16 +1678,18 @@ Value execCode()
                 // Get the current function
                 auto itr = instrMap.find((uint8_t*)&op);
                 assert (itr != instrMap.end());
-                auto fun = itr->second->fun;
-
-                // Get the number of locals in the function
-                static ICache numLocalsIC("num_locals");
-                auto numLocals = numLocalsIC.getInt32(fun);
+                auto curFun = itr->second->fun;
 
                 // Until we are done unwinding the stack
                 for (;;)
                 {
                     std::cout << "Unwinding frame" << std::endl;
+
+                    // Get the number of locals in the function
+                    static ICache numLocalsIC("num_locals");
+                    auto numLocals = numLocalsIC.getInt32(curFun);
+
+                    std::cout << "numLocals=" << numLocals << std::endl;
 
                     // Get the saved stack ptr, frame ptr and return address
                     auto prevStackPtr = framePtr[-(numLocals + 0)];
@@ -1703,6 +1709,9 @@ Value execCode()
                     // Find the info associated with the return address
                     assert (retAddrMap.find(retVer) != retAddrMap.end());
                     auto retEntry = retAddrMap[retVer];
+
+                    // Get the function associated with the return address
+                    curFun = retEntry.retVer->fun;
 
                     // Update the stack and frame pointer
                     stackPtr = (Value*)prevStackPtr.getWord().ptr;
