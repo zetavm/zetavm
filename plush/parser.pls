@@ -182,9 +182,20 @@ var FunExpr = {
 /// Report a parsing error and abort parsing
 var parseError = function (input, errorStr)
 {
+    var srcPos = false;
+
+    if (input != false)
+    {
+        srcPos = {
+            src_name: input.srcName,
+            line_no: input.lineNo,
+            col_no: input.colNo
+        };
+    }
+
     throw {
         msg: errorStr,
-        input: input
+        src_pos: srcPos
     };
 };
 
