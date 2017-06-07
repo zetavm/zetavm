@@ -1683,13 +1683,13 @@ Value execCode()
                 // Until we are done unwinding the stack
                 for (;;)
                 {
-                    std::cout << "Unwinding frame" << std::endl;
+                    //std::cout << "Unwinding frame" << std::endl;
 
                     // Get the number of locals in the function
                     static ICache numLocalsIC("num_locals");
                     auto numLocals = numLocalsIC.getInt32(curFun);
 
-                    std::cout << "numLocals=" << numLocals << std::endl;
+                    //std::cout << "numLocals=" << numLocals << std::endl;
 
                     // Get the saved stack ptr, frame ptr and return address
                     auto prevStackPtr = framePtr[-(numLocals + 0)];
@@ -1716,11 +1716,6 @@ Value execCode()
                     // Update the stack and frame pointer
                     stackPtr = (Value*)prevStackPtr.getWord().ptr;
                     framePtr = (Value*)prevFramePtr.getWord().ptr;
-
-                    if (retEntry.excVer == nullptr)
-                    {
-                        std::cout << "no exception handler" << std::endl;
-                    }
 
                     // If there is an exception handler
                     if (retEntry.excVer)

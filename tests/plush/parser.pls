@@ -119,28 +119,28 @@ var testParser = function ()
     testParse("(a + (b + c));");
     testParse("((a + b) + c);");
     testParse("(a + b) * (c + d);");
-    //testParseFail("*a;");
-    //testParseFail("a*;");
-    //testParseFail("a # b;");
-    //testParseFail("a +;");
-    //testParseFail("a + b # c;");
-    //testParseFail("(a;");
-    //testParseFail("(a + b));");
-    //testParseFail("((a + b);");
+    testParseFail("*a;");
+    testParseFail("a*;");
+    testParseFail("a # b;");
+    testParseFail("a +;");
+    testParseFail("a + b # c;");
+    testParseFail("(a;");
+    testParseFail("(a + b));");
+    testParseFail("((a + b);");
 
     // Member expression
     testParse("a.b;");
     testParse("a.b + c;");
-    //testParseFail("a. b;");
-    //testParseFail("a.'b';");
+    testParseFail("a. b;");
+    testParseFail("a.'b';");
 
     // Array indexing
     testParse("a[0];");
     testParse("a[b];");
     testParse("a[b+2];");
     testParse("a[2*b+1];");
-    //testParseFail("a[];");
-    //testParseFail("a[0 1];");
+    testParseFail("a[];");
+    testParseFail("a[0 1];");
 
     // If statement
     testParse("if (1) 2; ");
@@ -165,12 +165,12 @@ var testParser = function ()
     testParse("x = y = 1;");
     testParse("var x = 3;");
     testParse("x += 3;");
-    //testParseFail("var");
-    //testParseFail("let");
-    //testParseFail("let x");
-    //testParseFail("let x=");
-    //testParseFail("var +");
-    //testParseFail("var 3");
+    testParseFail("var");
+    testParseFail("let");
+    testParseFail("let x");
+    testParseFail("let x=");
+    testParseFail("var +");
+    testParseFail("var 3");
 
     // Call expressions
     testParse("a();");
@@ -181,7 +181,7 @@ var testParser = function ()
     testParse("x + a(b,c+1);");
     testParse("x + a(b,c+1) + y;");
     testParse("a(); b();");
-    //testParseFail("a(b c+1);");
+    testParseFail("a(b c+1);");
 
     // Package import
     testParse("var io = import 'core/io';");
@@ -192,7 +192,7 @@ var testParser = function ()
     // Assert statement
     testParse("assert(x);");
     testParse("assert(x, 'foo');");
-    //testParseFail("assert(x, 'foo', z);");
+    testParseFail("assert(x, 'foo', z);");
 
     // Function expression
     testParse("function () { return 0; }; ");
@@ -202,29 +202,27 @@ var testParser = function ()
     testParse("function (x,y,) { return x; };");
     testParse("function (x,y) { return x+y; };");
     testParse("obj.method = function (this, x) { this.x = x; }; ");
-    //testParseFail("function (x,y)");
+    testParseFail("function (x,y)");
 
     // Sequence/block expression
     testParse("{ 1; 2; }");
     testParse("function (x) { print(x); print(y); };");
     testParse("function (x) { var y = x + 1; print(y); };");
-    //testParseFail("{ a, }");
-    //testParseFail("{ a, b }");
-    //testParseFail("function foo () { a, };");
+    testParseFail("{ a, }");
+    testParseFail("{ a, b }");
+    testParseFail("function foo () { a, };");
 
     // Method calls
     testParse("o:foo();");
     testParse("o:foo(1,2);");
     testParse("x + o:foo(1,2);");
-    //testParseFail("x + o:foo (1,2);");
-    //testParseFail("x + o:foo (1,2);");
-    //testParseFail("(o:foo)();");
+    testParseFail("(o:foo)();");
 
     // There is no empty statement
-    //testParseFail(";");
+    testParseFail(";");
 
     // Regressions
-    //testParseFail("'a' <'");
+    testParseFail("'a' <'");
 };
 
 // Run the parser tests
