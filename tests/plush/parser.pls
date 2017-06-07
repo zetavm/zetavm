@@ -3,43 +3,51 @@ var testParse = function (str)
 {
     print(str);
 
-    return parseString(str, "parser_test");
-
-    /*
     try
     {
         return parseString(str, "parser_test");
     }
 
-    catch (std::exception& e)
+    catch (e)
     {
+        /*
         std::cout << e.what() << std::endl;
         exit(-1);
+
+        if (input != false)
+        {
+            output(input.srcName);
+            output("@");
+            output(input.lineNo);
+            output(":");
+            output(input.colNo);
+            output(" - ");
+        }
+        */
+
+        assert (false);
     }
-    */
 };
 
-/*
 /// Test that the parsing of a string fails
-void testParseFail(std::string str)
+var testParseFail = function (str)
 {
-    std::cout << str << std::endl;
+    print(str);
 
     try
     {
-        var unit = parseString(str, "parser_fail_test");
+        parseString(str, "parser_fail_test");
     }
 
-    catch (ParseError e)
+    catch (e)
     {
         return;
     }
 
-    std::cout << "parsing did not fail for: " << std::endl;
-    std::cout << str << std::endl;
-    exit(-1);
-}
-*/
+    print("parsing did not fail for: ");
+    print(str);
+    assert (false);
+};
 
 /// Test that the parsing of a file succeeds
 var testParseFile = function (fileName)
@@ -68,8 +76,8 @@ var testParser = function ()
     testParse("'new\\nline';");
     testParse("true;");
     testParse("false;");
-    //testParseFail("'invalid\\iesc'");
-    //testParseFail("'str' []");
+    testParseFail("'invalid\\iesc'");
+    testParseFail("'str' []");
 
     // Array literals
     testParse("[];");
@@ -78,22 +86,22 @@ var testParser = function ()
     testParse("[1 , a];");
     testParse("[1,a, ];");
     testParse("[ 1,\na ];");
-    //testParseFail("[,];");
+    testParseFail("[,];");
 
     // Object literals
     testParse("var x = {x:3};");
     testParse("var x = {x:3,y:2};");
     testParse("var x = {x:3,y:2+z};");
     testParse("var x = {x:3,y:2+z,};");
-    //testParseFail("var x = {,};");
+    testParseFail("var x = {,};");
 
     // Comments
     testParse("1; // comment");
     testParse("[ 1//comment\n,a ];");
     testParse("1 /* comment */ + x;");
     testParse("1 /* // comment */ + x;");
-    //testParseFail("1; // comment\n#1");
-    //testParseFail("1; /* */ */");
+    testParseFail("1; // comment\n#1");
+    testParseFail("1; /* */ */");
 
     // Unary and binary expressions
     testParse("-1;");

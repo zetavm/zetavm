@@ -92,7 +92,7 @@ var OP_ASSIGN = addOp(OpInfo::{str:"=", arity:2, prec:1, assoc:'r'});
 var IntExpr = {
 };
 
-var FloatExpr = {    
+var FloatExpr = {
 };
 
 /// Prototype for string expressions
@@ -182,27 +182,10 @@ var FunExpr = {
 /// Report a parsing error and abort parsing
 var parseError = function (input, errorStr)
 {
-    if (input != false)
-    {
-        output(input.srcName);
-        output("@");
-        output(input.lineNo);
-        output(":");
-        output(input.colNo);
-        output(" - ");
-    }
-
-    print(errorStr);
-
-    assert (false);
-
-    /*
-    assert (
-        false,
-        //input.srcName + "@" + input.lineNo + ":" + input.colNo + " - " +
-        errorStr
-    );
-    */
+    throw {
+        msg: errorStr,
+        input: input
+    };
 };
 
 /// Check if a character is whitespace
@@ -436,10 +419,10 @@ Input.expectWS = function (self, str)
     self:expect(str);
 };
 
-/** 
+/**
 Parse a number
 */
-var parseNum = function (input, neg) 
+var parseNum = function (input, neg)
 {
     var literal = "";
     for (;;)
@@ -455,7 +438,7 @@ var parseNum = function (input, neg)
             break;
     }
     var next = input:peekCh();
-    if (next == "." || next == "e") 
+    if (next == "." || next == "e")
     {
         return parseFloat(input, neg, literal);
     }
