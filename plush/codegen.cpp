@@ -1010,8 +1010,6 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
         }
         else
         {
-            std::cout << "getting local" << std::endl;
-
             auto localIdx = ctx.fun->getLocalIdx(tryStmt->catchVar);
             catchCtx.addStr("op:'set_local', idx:" + std::to_string(localIdx));
         }

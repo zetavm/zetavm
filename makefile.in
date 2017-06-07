@@ -36,6 +36,7 @@ test: all
 	./plush.sh tests/plush/method_calls.pls
 	./plush.sh tests/plush/obj_ext.pls
 	./plush.sh tests/plush/throw_exc.pls
+	./plush.sh tests/plush/throw_exc2.pls
 	./plush.sh plush/parser.pls tests/plush/parser.pls
 	# Check that the parser benchmark compiles with cplush
 	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
