@@ -67,6 +67,7 @@ enum Opcode : uint16_t
     HAS_FIELD,
     SET_FIELD,
     GET_FIELD,
+    GET_FIELD_LIST,
     EQ_OBJ,
 
     // Array operations
@@ -702,6 +703,12 @@ void compile(BlockVersion* version)
         if (op == "get_field")
         {
             writeCode(GET_FIELD);
+            continue;
+        }
+
+        if (op == "get_field_list")
+        {
+            writeCode(GET_FIELD_LIST);
             continue;
         }
 
@@ -1543,6 +1550,19 @@ Value execCode()
 
                 auto val = obj.getField(fieldName);
                 pushVal(val);
+            }
+            break;
+
+            case GET_FIELD_LIST:
+            {
+                Value arg0 = popVal();
+                Array array = Array(0);
+                for (auto itr = ObjFieldItr(arg0); itr.valid(); itr.next())
+                {                    
+                    auto fieldName = (String)itr.get();
+                    array.push(fieldName);
+                }
+                pushVal(array);
             }
             break;
 
