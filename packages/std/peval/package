@@ -1,0 +1,27 @@
+#language "lang/plush/0"
+
+exports.curry = function (fun, argVal)
+{
+    assert (
+        fun.num_params > 0,
+        "cannot curry function with no arguments"
+    );
+
+    var argIdx = fun.num_params - 1;
+
+    var newEntry = {
+        instrs: [
+            { op:'push', val:argVal },
+            { op:'set_local', idx:argIdx },
+            { op:'jump', to:fun.entry }
+        ]
+    };
+
+    var newFun = {
+        num_params: fun.num_params - 1,
+        num_locals: fun.num_locals,
+        entry: newEntry
+    };
+
+    return newFun;
+};
