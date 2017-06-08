@@ -1025,6 +1025,101 @@ __attribute__((always_inline)) void hostCall(
     instrPtr = retVer->startPtr;
 }
 
+/// Implementation of the throw instruction
+void throwExc(
+    uint8_t* throwInstr,
+    Value excVal
+)
+{
+    // Get the current function
+    auto itr = instrMap.find(throwInstr);
+    assert (itr != instrMap.end());
+    auto curFun = itr->second->fun;
+
+    // Until we are done unwinding the stack
+    for (;;)
+    {
+        //std::cout << "Unwinding frame" << std::endl;
+
+        // Get the number of locals in the function
+        static ICache numLocalsIC("num_locals");
+        auto numLocals = numLocalsIC.getInt32(curFun);
+
+        //std::cout << "numLocals=" << numLocals << std::endl;
+
+        // Get the saved stack ptr, frame ptr and return address
+        auto prevStackPtr = framePtr[-(numLocals + 0)];
+        auto prevFramePtr = framePtr[-(numLocals + 1)];
+        auto retAddr      = framePtr[-(numLocals + 2)];
+
+        assert (retAddr.getTag() == TAG_RAWPTR);
+        auto retVer = (BlockVersion*)retAddr.getWord().ptr;
+
+        // If we are at the top level
+        if (retVer == nullptr)
+        {
+            std::string errMsg;
+
+            if (excVal.isObject())
+            {
+                auto excObj = Object(excVal);
+
+                if (excObj.hasField("src_pos"))
+                {
+                    auto srcPosVal = excObj.getField("src_pos");
+                    errMsg += posToString(srcPosVal) + " - ";
+                }
+
+                if (excObj.hasField("msg"))
+                {
+                    auto errMsgVal = excObj.getField("msg");
+                    errMsg += errMsgVal.toString();
+                }
+                else
+                {
+                    errMsg += "uncaught user exception object";
+                }
+            }
+            else
+            {
+                std::string errMsg = excVal.toString();
+            }
+
+            throw RunError(errMsg);
+        }
+
+        // Find the info associated with the return address
+        assert (retAddrMap.find(retVer) != retAddrMap.end());
+        auto retEntry = retAddrMap[retVer];
+
+        // Get the function associated with the return address
+        curFun = retEntry.retVer->fun;
+
+        // Update the stack and frame pointer
+        stackPtr = (Value*)prevStackPtr.getWord().ptr;
+        framePtr = (Value*)prevFramePtr.getWord().ptr;
+
+        // If there is an exception handler
+        if (retEntry.excVer)
+        {
+            // TODO: pop call arguments?
+            // Shouldn't be necessary, since we restored SP
+
+            // Push the exception value on the stack
+            pushVal(excVal);
+
+            // Compile exception handler if needed
+            if (!retEntry.excVer->startPtr)
+                compile(retEntry.excVer);
+
+            instrPtr = retEntry.excVer->startPtr;
+
+            // Done unwinding the stack
+            break;
+        }
+    }
+}
+
 /// Start/continue execution beginning at a current instruction
 Value execCode()
 {
@@ -1674,68 +1769,7 @@ Value execCode()
             {
                 // Pop the exception value
                 auto excVal = popVal();
-
-                // Get the current function
-                auto itr = instrMap.find((uint8_t*)&op);
-                assert (itr != instrMap.end());
-                auto curFun = itr->second->fun;
-
-                // Until we are done unwinding the stack
-                for (;;)
-                {
-                    //std::cout << "Unwinding frame" << std::endl;
-
-                    // Get the number of locals in the function
-                    static ICache numLocalsIC("num_locals");
-                    auto numLocals = numLocalsIC.getInt32(curFun);
-
-                    //std::cout << "numLocals=" << numLocals << std::endl;
-
-                    // Get the saved stack ptr, frame ptr and return address
-                    auto prevStackPtr = framePtr[-(numLocals + 0)];
-                    auto prevFramePtr = framePtr[-(numLocals + 1)];
-                    auto retAddr      = framePtr[-(numLocals + 2)];
-
-                    assert (retAddr.getTag() == TAG_RAWPTR);
-                    auto retVer = (BlockVersion*)retAddr.getWord().ptr;
-
-                    // If we are at the top level
-                    if (retVer == nullptr)
-                    {
-                        std::cout << "top-level frame" << std::endl;
-                        throw RunError("uncaught user exception");
-                    }
-
-                    // Find the info associated with the return address
-                    assert (retAddrMap.find(retVer) != retAddrMap.end());
-                    auto retEntry = retAddrMap[retVer];
-
-                    // Get the function associated with the return address
-                    curFun = retEntry.retVer->fun;
-
-                    // Update the stack and frame pointer
-                    stackPtr = (Value*)prevStackPtr.getWord().ptr;
-                    framePtr = (Value*)prevFramePtr.getWord().ptr;
-
-                    // If there is an exception handler
-                    if (retEntry.excVer)
-                    {
-                        // TODO: pop call arguments?
-                        // Shouldn't be necessary, since we restored SP
-
-                        // Push the exception value on the stack
-                        pushVal(excVal);
-
-                        // Compile exception handler if needed
-                        if (!retEntry.excVer->startPtr)
-                            compile(retEntry.excVer);
-
-                        instrPtr = retEntry.excVer->startPtr;
-
-                        // Done unwinding the stack
-                        break;
-                    }
-                }
+                throwExc((uint8_t*)&op, excVal);
             }
             break;
 

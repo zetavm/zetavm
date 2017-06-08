@@ -407,7 +407,7 @@ Object load(std::string pkgPath)
     // If a language package is specified
     if (langPkgName != "")
     {
-        std::cout << "Loading language package" << std::endl;
+        //std::cout << "Loading language package" << std::endl;
 
         auto langPkgVal = import(langPkgName);
 
@@ -433,14 +433,14 @@ Object load(std::string pkgPath)
         inputObj.setField("line_no", Value::int32(input.getLineNo()));
         inputObj.setField("col_no", Value::int32(input.getColNo()));
 
-        std::cout << "Calling parse_input" << std::endl;
+        //std::cout << "Calling parse_input" << std::endl;
 
         // Call the parse_input method exported by the parser package
         ValueVec args;
         args.push_back(inputObj);
         exportVal = callExportFn(langPkg, "parse_input", args);
 
-        std::cout << "Returned from parse_input" << std::endl;
+        //std::cout << "Returned from parse_input" << std::endl;
     }
     else
     {

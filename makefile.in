@@ -58,6 +58,7 @@ test: all
 	# Check that source position is reported on errors
 	./$(ZETA_BIN) tests/plush/assert.pls | grep --quiet "3:1"
 	./$(ZETA_BIN) tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
+	./$(ZETA_BIN) tests/plush/parse_error.pls | grep --quiet "parse_error.pls@5:6"
 	# cscheme tests
 	./$(CSCHEME_BIN) --test
 	./scheme.sh tests/scheme/write.scm

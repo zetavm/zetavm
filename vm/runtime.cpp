@@ -44,8 +44,7 @@ std::string Value::toString() const
         return std::to_string(word.float32);
 
         case TAG_STRING:
-        //return (std::string)*this;
-        return "string";
+        return (std::string)*this;
 
         case TAG_ARRAY:
         return "array";
