@@ -12,8 +12,7 @@ assert (b.y == 3);
 a.foo = function (self) { return self.x; };
 assert (b:foo() == 3);
 
-// testing get_field_list
-
+// test the get_field_list instruction
 var c = { x:1, y:2, z:3 };
 var field_list = $get_field_list(c);
 assert(field_list.length == 3);
