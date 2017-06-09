@@ -42,38 +42,75 @@ var playSound = function (sampleFun, numSeconds)
 // TODO: move to peval package
 var curry2 = function (f, x, y)
 {
-    return curry(f, curry(f, y), x);
-};
-
-/// Produces a sine wave of a given frequency
-var sine = function (time, freq)
-{
-    return math.sin(time * freq * 2 * math.PI);
+    return curry(curry(f, y), x);
 };
 
 // TODO: saw wave
 
-/// Attack-decay envelope
-var ADEnv = function (time, attack, decay)
+/// Produces a sine wave of a given frequency
+var sine = function (freq)
 {
-    if (time < attack)
+    var f = function (time, freq)
     {
-        return time / attack;
-    }
+        return math.sin(time * freq * 2 * math.PI);
+    };
 
-    time = time - attack;
-
-    if (time < decay)
-    {
-        return 1 - (time / decay);
-    }
-
-    return 0;
+    return curry(f, freq);
 };
 
-// TODO: mul function
+/// Attack-decay envelope
+var ADEnv = function (attack, decay)
+{
+    var f = function (time, attack, decay)
+    {
+        if (time < attack)
+        {
+            return time / attack;
+        }
 
-var sampleFun = curry(sine, 300);
+        time = time - attack;
+
+        if (time < decay)
+        {
+            return 1 - (time / decay);
+        }
+
+        return 0;
+    };
+
+    return curry2(f, attack, decay);
+};
+
+var mul = function (f1, f2)
+{
+    var f = function (time, f1, f2)
+    {
+        return f1(time) * f2(time);
+    };
+
+    return curry2(f, f1, f2);
+};
+
+var repeat = function (mod, f)
+{
+    var rf = function (time, f, mod)
+    {
+        var quot = time / mod;
+        var tquot = $f32_to_i32(quot);
+        var fmod = time - tquot * mod;
+        return f(fmod);
+    };
+
+    return curry2(rf, f, mod);
+};
+
+var sampleFun = repeat(
+    0.22,
+    mul(
+        sine(600),
+        ADEnv(0.02, 0.1)
+    )
+);
 
 
 
@@ -84,4 +121,4 @@ var sampleFun = curry(sine, 300);
 
 
 
-playSound(sampleFun, 1.5);
+playSound(sampleFun, 1.0);
