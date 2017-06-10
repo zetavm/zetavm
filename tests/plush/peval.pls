@@ -1,6 +1,6 @@
 #language "lang/plush/0"
 
-var peval = import 'std/peval';
+var peval = import 'std/peval/0';
 
 var id = function (x)
 {
