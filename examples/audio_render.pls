@@ -2,10 +2,13 @@
 
 var audio = import "core/audio";
 var math = import "std/math/0";
-var peval = import "std/peval";
+var peval = import "std/peval/0";
 var curry = peval.curry;
+var curry2 = peval.curry2;
+
 var dev = audio.open_output_device(1);
 
+/// Produce sample a by sampling a function of time
 var genSamples = function (sampleFun, numSeconds)
 {
     var sampleRate = 44100;
@@ -25,9 +28,12 @@ var genSamples = function (sampleFun, numSeconds)
     return samples;
 };
 
+/// Sample a sound-generating function and play back the result
 var playSound = function (sampleFun, numSeconds)
 {
+    // Generate samples to play back
     var samples = genSamples(sampleFun, numSeconds);
+
     audio.queue_samples(dev, samples);
 
     // Wait until the sound is done playing
@@ -37,12 +43,6 @@ var playSound = function (sampleFun, numSeconds)
         if (queueSize == 0)
             break;
     }
-};
-
-// TODO: move to peval package
-var curry2 = function (f, x, y)
-{
-    return curry(curry(f, y), x);
 };
 
 // TODO: saw wave
@@ -104,11 +104,13 @@ var repeat = function (mod, f)
     return curry2(rf, f, mod);
 };
 
+
+
 var sampleFun = repeat(
     0.22,
     mul(
         sine(600),
-        ADEnv(0.02, 0.1)
+        ADEnv(0.01, 0.1)
     )
 );
 

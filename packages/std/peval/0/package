@@ -1,6 +1,6 @@
 #language "lang/plush/0"
 
-exports.curry = function (fun, argVal)
+var curry = function (fun, argVal)
 {
     assert (
         fun.num_params > 0,
@@ -25,3 +25,11 @@ exports.curry = function (fun, argVal)
 
     return newFun;
 };
+
+var curry2 = function (f, x, y)
+{
+    return curry(curry(f, y), x);
+};
+
+exports.curry = curry;
+exports.curry2 = curry2;
