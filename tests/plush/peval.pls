@@ -17,3 +17,6 @@ assert (ret7() == 7);
 
 var add1 = peval.curry(add, 1);
 assert (add1(5) == 6);
+
+var addNone = peval.curry2(add, 1, 2);
+assert (addNone() == 3);

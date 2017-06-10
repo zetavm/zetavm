@@ -2,6 +2,8 @@
 
 var curry = function (fun, argVal)
 {
+    //print('currying');
+
     assert (
         fun.num_params > 0,
         "cannot curry function with no arguments"
@@ -31,5 +33,11 @@ var curry2 = function (f, x, y)
     return curry(curry(f, y), x);
 };
 
+var curry3 = function (f, x, y, z)
+{
+    return curry(curry(curry(f, z), y), x);
+};
+
 exports.curry = curry;
 exports.curry2 = curry2;
+exports.curry3 = curry3;

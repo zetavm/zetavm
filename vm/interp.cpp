@@ -323,6 +323,11 @@ __attribute__((always_inline)) Object popObj()
     return (Object)val;
 }
 
+size_t codeHeapSize()
+{
+    return codeHeapAlloc - codeHeap;
+}
+
 /// Compute the stack size (number of slots allocated)
 __attribute__((always_inline)) size_t stackSize()
 {
@@ -859,6 +864,7 @@ void compile(BlockVersion* version)
     version->endPtr = codeHeapAlloc;
 
     //std::cout << "done compiling version" << std::endl;
+    //std::cout << codeHeapSize() << std::endl;
 }
 
 /// Get the source position for a given instruction, if available
@@ -1558,7 +1564,7 @@ Value execCode()
                 Value arg0 = popVal();
                 Array array = Array(0);
                 for (auto itr = ObjFieldItr(arg0); itr.valid(); itr.next())
-                {                    
+                {
                     auto fieldName = (String)itr.get();
                     array.push(fieldName);
                 }

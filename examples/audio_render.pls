@@ -5,6 +5,7 @@ var math = import "std/math/0";
 var peval = import "std/peval/0";
 var curry = peval.curry;
 var curry2 = peval.curry2;
+var curry3 = peval.curry3;
 
 var dev = audio.open_output_device(1);
 
@@ -19,7 +20,7 @@ var genSamples = function (sampleFun, numSeconds)
     {
         var t = numSeconds * (1.0 * i / numSamples);
 
-        print(t);
+        //print(t);
 
         var s = sampleFun(t);
         samples:push(s);
@@ -45,7 +46,24 @@ var playSound = function (sampleFun, numSeconds)
     }
 };
 
-// TODO: saw wave
+var silent = function (t)
+{
+    return 0.0;
+};
+
+/// Produces a saw wave of a given frequency
+var saw = function (freq)
+{
+    var f = function (time, freq)
+    {
+        var pos = time * freq;
+        var ipos = $f32_to_i32(pos);
+        var rem = pos - ipos;
+        return -1.0 + 2.0 * rem;
+    };
+
+    return curry(f, freq);
+};
 
 /// Produces a sine wave of a given frequency
 var sine = function (freq)
@@ -91,27 +109,66 @@ var mul = function (f1, f2)
     return curry2(f, f1, f2);
 };
 
-var repeat = function (mod, f)
+var add = function (f1, f2)
 {
-    var rf = function (time, f, mod)
+    var f = function (time, f1, f2)
     {
-        var quot = time / mod;
+        return f1(time) + f2(time);
+    };
+
+    return curry2(f, f1, f2);
+};
+
+var repeat = function (interv, f)
+{
+    var rf = function (time, f, interv)
+    {
+        var quot = time / interv;
         var tquot = $f32_to_i32(quot);
-        var fmod = time - tquot * mod;
+        var fmod = time - tquot * interv;
         return f(fmod);
     };
 
-    return curry2(rf, f, mod);
+    return curry2(rf, f, interv);
 };
 
+var seq = function (interv, funs)
+{
+    var cat = function (t, interv, f1, f2)
+    {
+        if (t < interv)
+            return f1(t);
 
+        return f2(t - interv);
+    };
 
-var sampleFun = repeat(
-    0.22,
-    mul(
-        sine(600),
-        ADEnv(0.01, 0.1)
-    )
+    var f = silent;
+
+    for (var i = funs.length - 1; i >= 0; i -= 1)
+    {
+        //print('cat');
+        f = curry3(cat, interv, funs[i], f);
+    }
+
+    return f;
+};
+
+var pluck = function (freq)
+{
+    return mul(
+        saw(freq/2.0),
+        ADEnv(0.005, 0.1)
+    );
+};
+
+var sampleFun = seq(
+    0.2,
+    [
+        pluck(300),
+        pluck(400),
+        pluck(500),
+        pluck(400)
+    ]
 );
 
 
