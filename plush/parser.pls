@@ -473,6 +473,7 @@ var parseFloat = function (input, neg, literal)
         if (!isDigit(input:peekCh()) && ch != "e" && ch != ".")
             break;
     }
+    input:expect("f");
     var floatVal = $str_to_f32(literal);
     if (neg)
     {
@@ -1241,14 +1242,14 @@ var parseStmt = function (input)
         return parseForStmt(input);
     }
 
-    // Return statement
+    // Break statement
     if (input:matchWS("break"))
     {
         input:expectWS(";");
         return BreakStmt::{};
     }
 
-    // Return statement
+    // Continue statement
     if (input:matchWS("continue"))
     {
         input:expectWS(";");
