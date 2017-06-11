@@ -304,6 +304,7 @@ FloatExpr* parseFloatingPart(Input& input, bool neg, char literal[64]) {
         else
             break;
     }
+    input.expect("f");
     float floatVal = atof(literal);
     if (neg)
     {

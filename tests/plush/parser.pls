@@ -68,6 +68,10 @@ var testParser = function ()
 
     // Literals
     testParse("123;");
+    testParse("3.56f;");
+    testParse("3e2f;");
+    testParseFail("3.56;");
+    testParseFail("3e2;");
     testParse("'abc';");
     testParse("\"double-quoted string!\";");
     testParse("\"double-quoted string, 'hi'!\";");

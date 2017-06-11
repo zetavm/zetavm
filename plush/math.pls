@@ -74,5 +74,5 @@ exports.sqrt = function (x)
     );
 };
 
-exports.PI = 3.14159265358979323846;
-exports.E  = 2.71828182845904523536;
+exports.PI = 3.14159265358979323846f;
+exports.E  = 2.71828182845904523536f;
