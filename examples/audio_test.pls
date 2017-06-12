@@ -17,8 +17,8 @@ var genSamples = function ()
     {
         s = math.sin(i * sinCoeff);
 
-        // Try to find a cutoff point that is near zero so the audio can loop
-        if (i > bufSize && math.abs(s) < 0.002)
+        // Find a cutoff point that is near zero so the audio can loop
+        if (i > bufSize && math.abs(s) < 0.002f)
             break;
 
         samples:push(s);

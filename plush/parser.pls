@@ -1586,8 +1586,10 @@ var genUnit = function (unitAST)
 
     var exportsObj = { init: unitFun };
 
+    // Globally visible definitions
     var globalObj = {
         exports: exportsObj,
+        output: output,
         print: print
     };
 
