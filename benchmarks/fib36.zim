@@ -53,7 +53,7 @@ fib_ret = {
 fib = {
     name: "fib",
     num_params: 1,
-    num_locals: 1,
+    num_locals: 2,
     entry: @fib_entry
 };
 
@@ -115,7 +115,7 @@ main_ret = {
 main = {
     name: "main",
     num_params: 0,
-    num_locals: 2,
+    num_locals: 3,
     entry: @main_entry
 };
 

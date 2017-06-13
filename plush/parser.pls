@@ -1385,9 +1385,11 @@ var Function = {};
 
 Function.new = function (numParams, entryBlock)
 {
+    // Note: functions always have at least 1 local
+    // to store the hidden function/closure argument
     return Function::{
         num_params: numParams,
-        num_locals: 0,
+        num_locals: 1,
         entry: entryBlock,
 
         /// List of local variable names

@@ -1,0 +1,97 @@
+#zeta-image
+
+# This is the entry block for the closures we will create
+# It returns a value stored on the function/closure object
+clos_entry = {
+  instrs: [
+    # Push the closure object (hidden closure argument, local 0)
+    { op:'get_local', idx:0 },
+
+    # Get the magic field stored on the closure
+    { op:'push', val:'magic' },
+    { op:'get_field' },
+
+    { op:'ret' },
+  ]
+};
+
+make_entry = {
+  instrs: [
+    # Create an object for the new closure
+    { op:'push', val:4 },
+    { op:'new_object' },
+
+    # Set num_params = 0
+    { op:'dup', idx:0 },
+    { op:'push', val:'num_params' },
+    { op:'push', val:0 },
+    { op:'set_field' },
+
+    # Set num_locals = 1
+    { op:'dup', idx:0 },
+    { op:'push', val:'num_locals' },
+    { op:'push', val:1 },
+    { op:'set_field' },
+
+    # Set entry = @clos_entry
+    { op:'dup', idx:0 },
+    { op:'push', val:'entry' },
+    { op:'push', val:@clos_entry },
+    { op:'set_field' },
+
+    # Set magic = 7
+    { op:'dup', idx:0 },
+    { op:'push', val:'magic' },
+    { op:'push', val:7 },
+    { op:'set_field' },
+
+    # Return the closure object
+    { op:'ret' },
+  ]
+};
+make_closure = {
+  entry:@make_entry,
+  num_params:0,
+  num_locals:1,
+};
+
+# Create the closure
+main_entry = {
+  instrs: [
+    { op:'push', val:@make_closure },
+    { op:'call', num_args:0, ret_to:@main_1 },
+  ]
+};
+# Call the closure
+main_1 ={
+  instrs: [
+    { op:'call', num_args:0, ret_to:@main_2 },
+  ]
+};
+# Check that the closure return value is as expected
+main_2 = {
+  instrs: [
+    { op:'push', val:7 },
+    { op:'eq_i32' },
+    { op:'if_true', then:@main_succeed, else:@main_fail },
+  ]
+};
+main_succeed = {
+  instrs: [
+    { op:'push', val:0 },
+    { op:'ret' },
+  ]
+};
+main_fail = {
+  instrs: [
+    { op:'push', val:'closure returned the wrong value' },
+    { op:'abort' },
+  ]
+};
+main = {
+  entry:@main_entry,
+  num_params:0,
+  num_locals:1,
+};
+
+{ main:@main };

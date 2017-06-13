@@ -955,7 +955,8 @@ __attribute__((always_inline)) void funCall(
 
     checkArgCount(callInstr, numParams, numArgs);
 
-    if (numLocals < numParams)
+    // Note: the hidden function/closure parameter is always present
+    if (numLocals < numParams + 1)
     {
         throw RunError(
             "not enough locals to store function parameters"
@@ -976,6 +977,9 @@ __attribute__((always_inline)) void funCall(
     // Point the frame pointer to the first argument
     assert (stackPtr > stackLimit);
     framePtr = stackPtr + numArgs - 1;
+
+    // Store the function/pointer argument
+    framePtr[-numArgs] = fun;
 
     // Pop the arguments, push the callee locals
     stackPtr -= numLocals - numArgs;
@@ -1846,8 +1850,20 @@ Value callFun(Object fun, ValueVec args)
     static ICache numLocalsIC("num_locals");
     auto numParams = numParamsIC.getInt32(fun);
     auto numLocals = numLocalsIC.getInt32(fun);
-    assert (args.size() <= numParams);
-    assert (numParams <= numLocals);
+
+    if (args.size() != numParams)
+    {
+        throw RunError(
+            "argument count mismatch in top-level call"
+        );
+    }
+
+    if (numLocals < numParams + 1)
+    {
+        throw RunError(
+            "not enough locals to store function parameters in top-level call"
+        );
+    }
 
     // Store the stack size before the call
     auto preCallSz = stackSize();
@@ -1878,6 +1894,9 @@ Value callFun(Object fun, ValueVec args)
         //std::cout << "  " << args[i].toString() << std::endl;
         framePtr[-i] = args[i];
     }
+
+    // Store the function/closure parameter
+    framePtr[-numParams] = fun;
 
     // Get the function entry block
     static ICache entryIC("entry");

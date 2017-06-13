@@ -12,7 +12,7 @@ throw_entry = {
 throw_fun = {
   entry:@throw_entry,
   num_params:2,
-  num_locals:2,
+  num_locals:3,
 };
 
 # Call the function throw_fun and pass through the arguments
@@ -32,7 +32,7 @@ call_ret = {
 call_fun = {
   entry:@call_entry,
   num_params:2,
-  num_locals:2,
+  num_locals:3,
 };
 
 # Call throw_fun and check the return value
@@ -73,7 +73,7 @@ block_240 = {
 fun_1 = {
   entry:@block_0,
   num_params:0,
-  num_locals:0,
+  num_locals:1,
 };
 
 { main:@fun_1 };

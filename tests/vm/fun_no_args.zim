@@ -4,7 +4,7 @@
 fun_237 = {
   entry:@block_236,
   num_params:0,
-  num_locals:0,
+  num_locals:1,
 };
 block_236 = {
   instrs: [
@@ -17,7 +17,7 @@ block_236 = {
 fun_1 = {
   entry:@block_0,
   num_params:0,
-  num_locals:0,
+  num_locals:1,
 };
 block_0 = {
   instrs: [

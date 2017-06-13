@@ -5,7 +5,7 @@
     main: {
         name: "main",
         num_params: 0,
-        num_locals: 0,
+        num_locals: 1,
         entry: {
             name: "main_entry",
             instrs: [

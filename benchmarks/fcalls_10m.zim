@@ -9,7 +9,7 @@ fn_entry = {
 fn = {
     name: "fn",
     num_params: 0,
-    num_locals: 0,
+    num_locals: 1,
     entry: @fn_entry
 };
 
@@ -55,7 +55,7 @@ loop_exit = {
 main = {
     name: "main",
     num_params: 0,
-    num_locals: 0,
+    num_locals: 1,
     entry: @main_entry
 };
 
