@@ -1,6 +1,6 @@
 # ZetaVM
 
-[![Build Status](https://travis-ci.org/zetavm/zetavm.svg?branch=master)](https://travis-ci.org/maximecb/zetavm)
+[![Build Status](https://travis-ci.org/zetavm/zetavm.svg?branch=master)](https://travis-ci.org/zetavm/zetavm)
 
 **Please note that ZetaVM is currently at the early prototype stage. As such,
 it is incomplete and breaking changes may happen often.**
@@ -48,6 +48,8 @@ Features of the VM will include:
 
 - Text-based [image files](/tests/vm/ex_image.zim) (JSON-like)
 
+- First-class stack-based bytecode
+
 - Ability to suspend and resume programs
 
 - Built-in graphical and audio libraries
@@ -65,4 +67,6 @@ For more information, see the documentation in the [docs](docs) directory:
 
 - [Creating your own Language with ZetaVM](docs/new_language.md)
 
-For additional questions and clarifications, feel free to open [an issue](https://github.com/maximecb/zetavm/issues) and tag it as a question.
+There are also a few blog post about [Zeta](https://pointersgonewild.com/category/zeta/) and its design.
+
+For additional questions and clarifications, [open a GitHub issue](https://github.com/maximecb/zetavm/issues) and tag it as a question.
