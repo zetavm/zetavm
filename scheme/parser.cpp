@@ -13,7 +13,7 @@
 /// Read an entire file at once
 std::string readFile(std::string fileName)
 {
-    FILE* file = fopen(fileName.c_str(), "r");
+    FILE* file = fopen(fileName.c_str(), "rb");
 
     if (!file)
     {
