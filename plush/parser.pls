@@ -61,6 +61,7 @@ var OP_TYPEOF = addOp(OpInfo::{ str:"typeof", arity:1, prec:13, assoc:'r' });
 /// Binary arithmetic operators
 var OP_MUL = addOp(OpInfo::{ str:"*", prec:12, foldAssign:true });
 var OP_DIV = addOp(OpInfo::{ str:"/", prec:12, foldAssign:true });
+var OP_MOD = addOp(OpInfo::{ str:"%", prec:12, foldAssign:true });
 var OP_ADD = addOp(OpInfo::{ str:"+", prec:11, foldAssign:true });
 var OP_SUB = addOp(OpInfo::{ str:"-", prec:11, foldAssign:true });
 
@@ -1843,6 +1844,14 @@ var genExpr = function (ctx, expr)
             genExpr(ctx, expr.lhsExpr);
             genExpr(ctx, expr.rhsExpr);
             runtimeCall(ctx, rt_div);
+            return;
+        }
+
+        if (expr.op == OP_MOD)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_mod);
             return;
         }
 

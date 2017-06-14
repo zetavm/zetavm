@@ -124,6 +124,7 @@ var rt_div = function (x, y)
         {
             return $div_f32($i32_to_f32(x), y);
         }
+
         if (typeof y == "int32")
         {
             return $div_f32($i32_to_f32(x), $i32_to_f32(y));
@@ -136,7 +137,9 @@ var rt_div = function (x, y)
         {
             return $div_f32(x, y);
         }
-        if (typeof y == "int32") {
+
+        if (typeof y == "int32")
+        {
             return $div_f32(x, $i32_to_f32(y));
         }
     }
@@ -144,6 +147,23 @@ var rt_div = function (x, y)
     assert (
         false,
         "unhandled type in division"
+    );
+};
+
+/// Integer modulo/remainer operator
+var rt_mod = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "int32")
+        {
+            return $mod_i32(x, y);
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in modulo"
     );
 };
 

@@ -648,6 +648,14 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             return;
         }
 
+        if (binOp->op == &OP_MOD)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "mod", 2);
+            return;
+        }
+
         if (binOp->op == &OP_MEMBER)
         {
             genExpr(ctx, binOp->lhsExpr);

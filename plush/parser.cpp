@@ -719,6 +719,10 @@ const OpInfo* matchOp(Input& input, int minPrec, bool preUnary)
         op = &OP_DIV;
         break;
 
+        case '%':
+        op = &OP_MOD;
+        break;
+
         case '+':
         if (input.next("+")) { op = &OP_ADD; break; }
         break;

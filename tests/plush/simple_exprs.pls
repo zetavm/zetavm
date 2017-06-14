@@ -13,6 +13,8 @@ assert (1 < 2);
 assert (1 <= 2);
 assert (1 + 2 == 3);
 assert (2 * -1 == -2);
+assert (4 % 2 == 0);
+assert (5 % 2 == 1);
 assert (undef == undef);
 
 // Logical expressions

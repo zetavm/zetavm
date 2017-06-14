@@ -23,6 +23,8 @@ enum Opcode : uint16_t
     ADD_I32,
     SUB_I32,
     MUL_I32,
+    DIV_I32,
+    MOD_I32,
     LT_I32,
     LE_I32,
     GT_I32,
@@ -488,6 +490,18 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "div_i32")
+        {
+            writeCode(DIV_I32);
+            continue;
+        }
+
+        if (op == "mod_i32")
+        {
+            writeCode(MOD_I32);
+            continue;
+        }
+
         if (op == "lt_i32")
         {
             writeCode(LT_I32);
@@ -765,7 +779,6 @@ void compile(BlockVersion* version)
         {
             static ICache toIC("to");
             auto dstBB = toIC.getObj(instr);
-
             auto dstVer = getBlockVersion(version->fun, dstBB);
 
             writeCode(JUMP_STUB);
@@ -1235,6 +1248,22 @@ Value execCode()
             }
             break;
 
+            case DIV_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 / arg1));
+            }
+            break;
+
+            case MOD_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 % arg1));
+            }
+            break;
+
             case LT_I32:
             {
                 auto arg1 = popInt32();
@@ -1657,14 +1686,27 @@ Value execCode()
                 auto dstVer = (BlockVersion*)dstAddr;
 
                 if (!dstVer->startPtr)
+                {
+                    // If the heap allocation pointer is right
+                    // after the jump instruction
+                    if (instrPtr == codeHeapAlloc)
+                    {
+                        // The jump is redundant, so we will write the
+                        // next block over this jump instruction
+                        instrPtr = codeHeapAlloc = (uint8_t*)&op;
+                    }
+
                     compile(dstVer);
+                }
+                else
+                {
+                    // Patch the jump
+                    op = JUMP;
+                    dstAddr = dstVer->startPtr;
 
-                // Patch the jump
-                op = JUMP;
-                dstAddr = dstVer->startPtr;
-
-                // Jump to the target
-                instrPtr = dstVer->startPtr;
+                    // Jump to the target
+                    instrPtr = dstVer->startPtr;
+                }
             }
             break;
 
