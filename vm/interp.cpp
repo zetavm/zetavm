@@ -1479,9 +1479,8 @@ Value execCode()
                 }
 
                 auto ch = str[idx];
-
                 // Cache single-character strings
-                if (charStrings[ch] == Value::FALSE)
+                if (charStrings[ch] == Value::UNDEF)
                 {
                     char buf[2] = { (char)str[idx], '\0' };
                     charStrings[ch] = String(buf);
