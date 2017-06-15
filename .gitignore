@@ -12,15 +12,18 @@ cplush
 cjs
 cscheme
 *.dSYM
+*.exe
+*.dll
 
 # Generated files
 benchmarks/plush_parser.zim
 packages/lang/plush/0/package
 packages/std/math/0/package
+parseOut.txt
 
-# Retarded MacOS metadata
+# Moronic MacOS metadata
 .DS_Store
 
-# Retarded IDE metadata
+# Infantile IDE metadata
 .idea
 .vscode
