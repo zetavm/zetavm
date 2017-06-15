@@ -4,10 +4,6 @@ LDFLAGS=@LDFLAGS@
 # TODO: change this when doing make install? Move to configure?
 # Directory in which packages are found
 PKGS_DIR=\"$(CURDIR)/packages/\"
-# The previous line was:
-# PKGS_DIR=\"$(shell pwd)/packages/\"
-# There may need to be some fine-tuning to account for OS specifics. CURDIR is
-# part of GNU Make, so it may be successful when shell commands aren't.
 
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
