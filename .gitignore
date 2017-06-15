@@ -12,8 +12,6 @@ cplush
 cjs
 cscheme
 *.dSYM
-
-# Hey, it works on Windows too!
 *.exe
 *.dll
 
