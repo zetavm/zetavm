@@ -325,7 +325,10 @@ Input.next = function (self, str)
 /// The string is consumed if matched
 Input.match = function (self, str)
 {
-    assert (str.length > 0);
+    assert (
+        str.length > 0,
+        "match with empty string"
+    );
 
     if (self:next(str))
     {
@@ -429,6 +432,42 @@ Input.expectWS = function (self, str)
 {
     self:eatWS();
     self:expect(str);
+};
+
+/// Match a keyword string
+/// Note: this expects a non-keyword character after the keyword
+/// That is, matchKW("assert") will not match "assertFun"
+Input.matchKW = function (self, str)
+{
+    // Whitespace before keywords doesn't matter
+    self:eatWS();
+
+    // If the string is not next in the input, no match
+    if (!self:next(str))
+        return false;
+
+    var len = str.length;
+
+    // If we're at the end of the string, this is a match
+    if (self.strIdx + len >= self.srcString.length)
+    {
+        self:match(str);
+        return true;
+    }
+
+    // Get the character after the keyword
+    var postCh = self.srcString[self.strIdx + len];
+
+    // If the next character is valid in an identifier, then
+    // this is not a real match
+    if (isAlnum(postCh) || postCh == '_')
+    {
+        return false;
+    }
+
+    // This is a match, consume the keyword string
+    self:match(str);
+    return true;
 };
 
 /**
@@ -681,7 +720,7 @@ var parseIfStmt = function (input)
     var thenStmt = parseStmt(input);
 
     // Parse the else clause, if there is one
-    if (input:matchWS("else"))
+    if (input:matchKW("else"))
     {
         var elseStmt = parseStmt(input);
     }
@@ -1217,7 +1256,7 @@ var parseStmt = function (input)
     }
 
     // Variable declaration
-    if (input:matchWS("var"))
+    if (input:matchKW("var"))
     {
         input:eatWS();
         var ident = parseIdentStr(input);
@@ -1232,33 +1271,33 @@ var parseStmt = function (input)
     }
 
     // If-else statement
-    if (input:matchWS("if"))
+    if (input:matchKW("if"))
     {
         return parseIfStmt(input);
     }
 
     // For loop statement
-    if (input:matchWS("for"))
+    if (input:matchKW("for"))
     {
         return parseForStmt(input);
     }
 
     // Break statement
-    if (input:matchWS("break"))
+    if (input:matchKW("break"))
     {
         input:expectWS(";");
         return BreakStmt::{};
     }
 
     // Continue statement
-    if (input:matchWS("continue"))
+    if (input:matchKW("continue"))
     {
         input:expectWS(";");
         return ContStmt::{};
     }
 
     // Return statement
-    if (input:matchWS("return"))
+    if (input:matchKW("return"))
     {
         if (input:matchWS(";"))
         {
@@ -1273,14 +1312,13 @@ var parseStmt = function (input)
         return ReturnStmt::{ expr: expr };
     }
 
-    // Assert statement
-    if (input:nextWS("assert"))
-    {
-        // Get the current position in the input
-        input:eatWS();
-        var srcPos = input:getPos();
+    // Get the current position in the input
+    input:eatWS();
+    var srcPos = input:getPos();
 
-        input:matchWS("assert");
+    // Assert statement
+    if (input:matchKW("assert"))
+    {
         input:expectWS("(");
 
         var testExpr = parseExpr(input);
