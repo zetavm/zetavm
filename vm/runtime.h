@@ -70,7 +70,7 @@ public:
     static const Value TRUE;
     static const Value FALSE;
 
-    Value() : Value(FALSE.word, FALSE.tag) {}
+    Value() : Value(UNDEF.word, UNDEF.tag) {}
     Value(refptr p, Tag t) : Value(Word(p), t) {}
     Value(Word w, Tag t);
     ~Value() {}
