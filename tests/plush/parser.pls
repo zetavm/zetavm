@@ -10,22 +10,10 @@ var testParse = function (str)
 
     catch (e)
     {
-        /*
-        std::cout << e.what() << std::endl;
-        exit(-1);
-
-        if (input != false)
-        {
-            output(input.srcName);
-            output("@");
-            output(input.lineNo);
-            output(":");
-            output(input.colNo);
-            output(" - ");
-        }
-        */
-
-        assert (false);
+        assert (
+            false,
+            e.msg
+        );
     }
 };
 
@@ -44,9 +32,10 @@ var testParseFail = function (str)
         return;
     }
 
-    print("parsing did not fail for: ");
-    print(str);
-    assert (false);
+    assert (
+        false,
+        "parsing did not fail for:\n" + str
+    );
 };
 
 /// Test that the parsing of a file succeeds
@@ -196,7 +185,12 @@ var testParser = function ()
     // Assert statement
     testParse("assert(x);");
     testParse("assert(x, 'foo');");
+    testParse("assertFP(x);");
     testParseFail("assert(x, 'foo', z);");
+
+    // Throw statement
+    //testParse("throw 'foo';");
+    //testParseFail("throw2;");
 
     // Function expression
     testParse("function () { return 0; }; ");
@@ -226,6 +220,8 @@ var testParser = function ()
     testParseFail(";");
 
     // Regressions
+    testParse("returned = 2;");
+    testParse("varxy = 7;");
     testParseFail("'a' <'");
 };
 
