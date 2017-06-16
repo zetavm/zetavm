@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <string>
+#include <cstring>
 
 /// Type tag, 8 bits
 typedef uint8_t Tag;
@@ -245,7 +246,13 @@ public:
     bool operator == (const char* that) const;
 
     // FIXME: temporary until string interning is implemented
-    bool operator == (String that) { return (std::string)*this == (std::string)that; }
+    bool operator == (String that) { 
+        auto len1 = length();     
+        auto len2 = that.length();     
+        const char* dataptr1 = getDataPtr(); 
+        const char* dataptr2 = that.getDataPtr(); 
+        return len1 == len2 && strncmp(dataptr1, dataptr2, len1) == 0;
+    }
 
     /// Get the ith character code
     char operator [] (size_t i);
