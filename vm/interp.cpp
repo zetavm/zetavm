@@ -199,6 +199,25 @@ struct RetEntry
     BlockVersion* excVer = nullptr;
 };
 
+/// Information stored by call instructions
+struct CallInfo
+{
+    // Number of call site arguments
+    uint32_t numArgs;
+
+    // Block version to return to after the call
+    BlockVersion* retVer;
+
+    // Last seen (cached) function
+    refptr lastFn = nullptr;
+
+    // Number of locals for the cached function
+    uint32_t numLocals = 0;
+
+    // Entry version for the cached function
+    BlockVersion* entryVer = nullptr;
+};
+
 typedef std::vector<BlockVersion*> VersionList;
 
 /// Initial code heap size in bytes
@@ -835,6 +854,12 @@ void compile(BlockVersion* version)
             writeCode(numArgs);
             writeCode(retVer);
 
+
+            CallInfo callInfo;
+            //writeCode(callInfo);
+
+
+
             continue;
         }
 
@@ -916,10 +941,10 @@ void checkArgCount(
     size_t numArgs
 )
 {
-    Value srcPos = getSrcPos(instrPtr);
-
     if (numArgs != numParams)
     {
+        Value srcPos = getSrcPos(instrPtr);
+
         std::string srcPosStr = (
             srcPos.isObject()?
             (posToString(srcPos) + " - "):
@@ -944,11 +969,6 @@ __attribute__((always_inline)) void funCall(
     BlockVersion* retVer
 )
 {
-    // TODO: we could inline cache some function
-    // information
-    // start with map of fn objs to structs
-    // TODO: move callFn into its own function
-
     // Get a version for the function entry block
     static ICache entryIC("entry");
     auto entryBB = entryIC.getObj(fun);
