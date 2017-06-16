@@ -990,7 +990,6 @@ void checkArgCount(
     if (numArgs != numParams)
     {
         Value srcPos = getSrcPos(instrPtr);
-
         std::string srcPosStr = (
             srcPos.isObject()?
             (posToString(srcPos) + " - "):
