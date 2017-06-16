@@ -19,10 +19,16 @@ assert (undef == undef);
 assert ((3 ^ -2) == -3);
 assert ((7 & 3) == 3);
 assert ((5 | 2) == 7);
+assert ((1 << 1) == 2);
+assert ((1 >> 31) == 0);
+assert ((1 >>> 31) == 0);
+assert ((63 >> 4) == 3);
+assert ((63 >>> 4) == 3);
 assert ((-1 << 1) == -2);
 assert ((-1 >> 31) == -1);
 assert ((-1 >>> 31) == 1);
 assert (~0 == -1);
+assert (~-256 == 255);
 
 // Logical expressions
 assert (true && true);
@@ -32,6 +38,13 @@ assert (true || true);
 assert (true || false);
 assert (false || true);
 assert (!(false || false));
+assert ((true & true) == true);
+assert ((true & false) == false);
+assert ((true | false) == true);
+assert ((false | false) == false);
+assert ((true ^ false) == true);
+assert ((true ^ true) == false);
+assert (((true | false) ^ (true & false)) == true);
 
 // Objects and properties
 var obj = { x:1, y:2, z:3, w:1+2 };
