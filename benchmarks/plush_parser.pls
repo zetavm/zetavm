@@ -56,7 +56,6 @@ var OP_M_CALL = addOp(OpInfo::{ str:":", arity:2, prec:15 });
 /// Prefix unary operators
 var OP_NEG = addOp(OpInfo::{ str:"-", arity:1, prec:13, assoc:'r' });
 var OP_NOT = addOp(OpInfo::{ str:"!", arity:1, prec:13, assoc:'r' });
-//const OpInfo OP_BIT_NOT = { "~", "", 1, 13, 'r', false, false };
 var OP_TYPEOF = addOp(OpInfo::{ str:"typeof", arity:1, prec:13, assoc:'r' });
 
 /// Binary arithmetic operators
@@ -80,9 +79,6 @@ var OP_NE = addOp(OpInfo::{ str:"!=", prec:8 });
 //const OpInfo OP_BIT_AND = { "&", "", 2, 7, 'l', false, true };
 //const OpInfo OP_BIT_XOR = { "^", "", 2, 6, 'l', false, true };
 //const OpInfo OP_BIT_OR = { "|", "", 2, 5, 'l', false, true };
-//const OpInfo OP_BIT_SHL  = { "<<", "", 2, 10, 'l', true, true };
-//const OpInfo OP_BIT_SHR  = { ">>", "", 2, 10, 'l', true, true };
-//const OpInfo OP_BIT_USHR = { ">>>", "", 2, 10, 'l', true, true };
 
 /// Logical operators
 var OP_AND = addOp(OpInfo::{ str:"&&", prec:4, foldAssign:true });
@@ -1780,54 +1776,6 @@ var genExpr = function (ctx, expr)
             ctx:addOp("mul_i32");
             return;
         }
-
-//        if (expr.op == OP_BIT_SHL)
-//        {
-//            genExpr(ctx, expr.lhsExpr);
-//            genExpr(ctx, expr.rhsExpr);
-//            ctx:addOp("shl_i32");
-//            return;
-//        }
-//
-//        if (expr.op == OP_BIT_SHR)
-//        {
-//            genExpr(ctx, expr.lhsExpr);
-//            genExpr(ctx, expr.rhsExpr);
-//            ctx:addOp("shr_i32");
-//            return;
-//        }
-//
-//        if (expr.op == OP_BIT_USHR)
-//        {
-//            genExpr(ctx, expr.lhsExpr);
-//            genExpr(ctx, expr.rhsExpr);
-//            ctx:addOp("ushr_i32");
-//            return;
-//        }
-//
-//        if (expr.op == OP_BIT_AND)
-//        {
-//            genExpr(ctx, expr.lhsExpr);
-//            genExpr(ctx, expr.rhsExpr);
-//            ctx:addOp("band_i32");
-//            return;
-//        }
-//
-//        if (expr.op == OP_BIT_OR)
-//        {
-//            genExpr(ctx, expr.lhsExpr);
-//            genExpr(ctx, expr.rhsExpr);
-//            ctx:addOp("band_i32");
-//            return;
-//        }
-//
-//        if (expr.op == OP_BIT_XOR)
-//        {
-//            genExpr(ctx, expr.lhsExpr);
-//            genExpr(ctx, expr.rhsExpr);
-//            ctx:addOp("band_i32");
-//            return;
-//        }
 
         if (expr.op == OP_MEMBER)
         {

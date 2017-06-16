@@ -31,6 +31,7 @@ enum Opcode : uint16_t
     AND_I32,
     OR_I32,
     XOR_I32,
+    NOT_I32,
     LT_I32,
     LE_I32,
     GT_I32,
@@ -541,6 +542,12 @@ void compile(BlockVersion* version)
         if (op == "xor_i32")
         {
             writeCode(XOR_I32);
+            continue;
+        }
+		
+        if (op == "not_i32")
+        {
+            writeCode(NOT_I32);
             continue;
         }
 		
@@ -1351,6 +1358,13 @@ Value execCode()
                 auto arg1 = popInt32();
                 auto arg0 = popInt32();
                 pushVal(Value::int32(arg0 ^ arg1));
+            }
+            break;
+
+            case NOT_I32:
+            {
+                auto arg0 = popInt32();
+                pushVal(Value::int32(~arg0));
             }
             break;
 

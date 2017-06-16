@@ -513,13 +513,11 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             return;
         }
 
-        // Bitwise negation
+        // Bitwise not; one's-complement, or flipping each bit
         if (unOp->op == &OP_BIT_NOT)
         {
-            // Generate -1 - x
-            ctx.addPush("-1");
             genExpr(ctx, unOp->expr);
-            runtimeCall(ctx, "sub", 2);
+            runtimeCall(ctx, "bit_not", 1);
             return;
         }
 

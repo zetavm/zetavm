@@ -1759,13 +1759,11 @@ var genExpr = function (ctx, expr)
             return;
         }
 
-        // Unary negation
+        // Unary bitwise not; one's-complement
         if (expr.op == OP_BIT_NOT)
         {
-            // Generate -1 - x
-            ctx:addPush(-1);
             genExpr(ctx, expr.expr);
-            runtimeCall(ctx, rt_sub);
+            runtimeCall(ctx, rt_bit_not);
             return;
         }
 

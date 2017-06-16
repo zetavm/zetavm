@@ -293,6 +293,19 @@ var rt_xor = function (x, y)
     );
 };
 
+/// Bitwise not; one's-complement
+var rt_bit_not = function (x)
+{
+    if (typeof x == "int32")
+    {
+        return $not_i32(x);
+	}
+	assert (
+        false,
+        "unhandled type in bitwise not"
+    );
+};
+
 /// Logical negation
 var rt_not = function (x)
 {
