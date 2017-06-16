@@ -255,7 +255,7 @@ template <typename T> void writeCode(T val)
 }
 
 /// Return a pointer to a value to read from the code stream
-template <typename T> __attribute__((always_inline)) T& readCode()
+template <typename T> __attribute__((always_inline)) inline T& readCode()
 {
     assert (instrPtr + sizeof(T) <= codeHeapLimit);
     T* valPtr = (T*)instrPtr;
@@ -264,7 +264,7 @@ template <typename T> __attribute__((always_inline)) T& readCode()
 }
 
 /// Push a value on the stack
-__attribute__((always_inline)) void pushVal(Value val)
+__attribute__((always_inline)) inline void pushVal(Value val)
 {
     assert (stackPtr > stackLimit);
     stackPtr--;
@@ -272,12 +272,12 @@ __attribute__((always_inline)) void pushVal(Value val)
 }
 
 /// Push a boolean on the stack
-__attribute__((always_inline)) void pushBool(bool val)
+__attribute__((always_inline)) inline void pushBool(bool val)
 {
     pushVal(val? (Value::TRUE) : (Value::FALSE));
 }
 
-__attribute__((always_inline)) Value popVal()
+__attribute__((always_inline)) inline Value popVal()
 {
     assert (stackPtr < stackBase);
     auto val = stackPtr[0];
@@ -285,7 +285,7 @@ __attribute__((always_inline)) Value popVal()
     return val;
 }
 
-__attribute__((always_inline)) bool popBool()
+__attribute__((always_inline)) inline bool popBool()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -293,7 +293,7 @@ __attribute__((always_inline)) bool popBool()
     return (bool)val;
 }
 
-__attribute__((always_inline)) int32_t popInt32()
+__attribute__((always_inline)) inline int32_t popInt32()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -301,7 +301,7 @@ __attribute__((always_inline)) int32_t popInt32()
     return (int32_t)val;
 }
 
-__attribute__((always_inline)) float popFloat32()
+__attribute__((always_inline)) inline float popFloat32()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -309,7 +309,7 @@ __attribute__((always_inline)) float popFloat32()
     return (float)val;
 }
 
-__attribute__((always_inline)) String popStr()
+__attribute__((always_inline)) inline String popStr()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -317,7 +317,7 @@ __attribute__((always_inline)) String popStr()
     return (String)val;
 }
 
-__attribute__((always_inline)) Object popObj()
+__attribute__((always_inline)) inline Object popObj()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -331,13 +331,13 @@ size_t codeHeapSize()
 }
 
 /// Compute the stack size (number of slots allocated)
-__attribute__((always_inline)) size_t stackSize()
+__attribute__((always_inline)) inline size_t stackSize()
 {
     return stackBase - stackPtr;
 }
 
 /// Compute the size of the current frame (number of slots allocated)
-__attribute__((always_inline)) size_t frameSize()
+__attribute__((always_inline)) inline size_t frameSize()
 {
     return framePtr - stackPtr + 1;
 }
@@ -937,7 +937,7 @@ void checkArgCount(
 }
 
 /// Perform a user function call
-__attribute__((always_inline)) void funCall(
+__attribute__((always_inline)) inline void funCall(
     uint8_t* callInstr,
     Object fun,
     size_t numArgs,
@@ -1006,7 +1006,7 @@ __attribute__((always_inline)) void funCall(
 }
 
 /// Perform a host function call
-__attribute__((always_inline)) void hostCall(
+__attribute__((always_inline)) inline void hostCall(
     uint8_t* callInstr,
     Value fun,
     size_t numArgs,
