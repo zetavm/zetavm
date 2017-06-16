@@ -1109,6 +1109,7 @@ var parseExprPrec = function (input, minPrec)
         // If no operator matches, break out
         if (op == false)
             break;
+
         // Compute the minimum precedence for the recursive call (if any)
         var nextMinPrec = op.prec;
         if (op.assoc == 'l')
