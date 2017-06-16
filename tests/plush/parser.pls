@@ -104,6 +104,7 @@ var testParser = function ()
     testParse("a + b + c;");
     testParse("a + b - c;");
     testParse("a + b * c + d;");
+    testParse("x || y;");
     testParse("a || b || c;");
     testParse("a && b;");
     testParse("(a);");

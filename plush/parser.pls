@@ -56,6 +56,7 @@ var OP_M_CALL = addOp(OpInfo::{ str:":", arity:2, prec:15 });
 /// Prefix unary operators
 var OP_NEG = addOp(OpInfo::{ str:"-", arity:1, prec:13, assoc:'r' });
 var OP_NOT = addOp(OpInfo::{ str:"!", arity:1, prec:13, assoc:'r' });
+var OP_BIT_NOT = addOp(OpInfo::{ str:"~", arity:1, prec:13, assoc:'r' });
 var OP_TYPEOF = addOp(OpInfo::{ str:"typeof", arity:1, prec:13, assoc:'r' });
 
 /// Binary arithmetic operators
@@ -64,6 +65,16 @@ var OP_DIV = addOp(OpInfo::{ str:"/", prec:12, foldAssign:true });
 var OP_MOD = addOp(OpInfo::{ str:"%", prec:12, foldAssign:true });
 var OP_ADD = addOp(OpInfo::{ str:"+", prec:11, foldAssign:true });
 var OP_SUB = addOp(OpInfo::{ str:"-", prec:11, foldAssign:true });
+
+/// Bitwise shifts
+var OP_BIT_SHL = addOp(OpInfo::{ str:"<<", prec:10, foldAssign:true });
+var OP_BIT_SHR = addOp(OpInfo::{ str:">>", prec:10, foldAssign:true });
+var OP_BIT_USHR = addOp(OpInfo::{ str:">>>", prec:10, foldAssign:true });
+
+/// Bitwise/logical operators
+var OP_BIT_AND = addOp(OpInfo::{ str:"&", prec:7, foldAssign:true });
+var OP_BIT_XOR = addOp(OpInfo::{ str:"^", prec:6, foldAssign:true });
+var OP_BIT_OR = addOp(OpInfo::{ str:"|", prec:5, foldAssign:true });
 
 /// Relational operators
 var OP_LT = addOp(OpInfo::{ str:"<", prec:9 });
@@ -76,11 +87,6 @@ var OP_IN = addOp(OpInfo::{ str:"in", prec:9 });
 /// Equality comparison
 var OP_EQ = addOp(OpInfo::{ str:"==", prec:8 });
 var OP_NE = addOp(OpInfo::{ str:"!=", prec:8 });
-
-/// Bitwise operators
-//const OpInfo OP_BIT_AND = { "&", "", 2, 7, 'l', false, true };
-//const OpInfo OP_BIT_XOR = { "^", "", 2, 6, 'l', false, true };
-//const OpInfo OP_BIT_OR = { "|", "", 2, 5, 'l', false, true };
 
 /// Logical operators
 var OP_AND = addOp(OpInfo::{ str:"&&", prec:4, foldAssign:true });
@@ -333,8 +339,9 @@ Input.match = function (self, str)
     if (self:next(str))
     {
         for (var i = 0; i < str.length; i += 1)
+        {
             self:readCh();
-
+        }
         return true;
     }
 
@@ -1102,7 +1109,6 @@ var parseExprPrec = function (input, minPrec)
         // If no operator matches, break out
         if (op == false)
             break;
-
         // Compute the minimum precedence for the recursive call (if any)
         var nextMinPrec = op.prec;
         if (op.assoc == 'l')
@@ -1110,7 +1116,7 @@ var parseExprPrec = function (input, minPrec)
             if (op.closeStr.length > 0)
                 nextMinPrec = 0;
             else
-                nextMinPrec = op.prec + 1;
+                nextMinPrec = op.prec;
         }
 
         // If this is a regular function call expression
@@ -1753,6 +1759,16 @@ var genExpr = function (ctx, expr)
             return;
         }
 
+        // Unary negation
+        if (expr.op == OP_BIT_NOT)
+        {
+            // Generate -1 - x
+            ctx:addPush(-1);
+            genExpr(ctx, expr.expr);
+            runtimeCall(ctx, rt_sub);
+            return;
+        }
+
         assert (
             false,
             "unhandled unary op"
@@ -1890,6 +1906,54 @@ var genExpr = function (ctx, expr)
             genExpr(ctx, expr.lhsExpr);
             genExpr(ctx, expr.rhsExpr);
             runtimeCall(ctx, rt_mod);
+            return;
+        }
+
+        if (expr.op == OP_BIT_SHL)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_shl);
+            return;
+        }
+        
+        if (expr.op == OP_BIT_SHR)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_shr);
+            return;
+        }
+        
+        if (expr.op == OP_BIT_USHR)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_ushr);
+            return;
+        }
+        
+        if (expr.op == OP_BIT_AND)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_and);
+            return;
+        }
+
+        if (expr.op == OP_BIT_OR)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_or);
+            return;
+        }
+
+        if (expr.op == OP_BIT_XOR)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_xor);
             return;
         }
 

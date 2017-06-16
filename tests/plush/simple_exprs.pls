@@ -16,6 +16,13 @@ assert (2 * -1 == -2);
 assert (4 % 2 == 0);
 assert (5 % 2 == 1);
 assert (undef == undef);
+assert ((3 ^ -2) == -3);
+assert ((7 & 3) == 3);
+assert ((5 | 2) == 7);
+assert ((-1 << 1) == -2);
+assert ((-1 >> 31) == -1);
+assert ((-1 >>> 31) == 1);
+assert (~0 == -1);
 
 // Logical expressions
 assert (true && true);

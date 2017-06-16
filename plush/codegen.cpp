@@ -513,6 +513,16 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             return;
         }
 
+        // Bitwise negation
+        if (unOp->op == &OP_BIT_NOT)
+        {
+            // Generate -1 - x
+            ctx.addPush("-1");
+            genExpr(ctx, unOp->expr);
+            runtimeCall(ctx, "sub", 2);
+            return;
+        }
+
         assert (false && "unhandled unary op");
     }
 
@@ -653,6 +663,54 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             genExpr(ctx, binOp->lhsExpr);
             genExpr(ctx, binOp->rhsExpr);
             runtimeCall(ctx, "mod", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_SHL)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "shl", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_SHR)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "shr", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_USHR)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "ushr", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_AND)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "and", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_OR)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "or", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_XOR)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "xor", 2);
             return;
         }
 
