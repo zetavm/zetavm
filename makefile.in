@@ -3,7 +3,7 @@ LDFLAGS=@LDFLAGS@
 
 # TODO: change this when doing make install? Move to configure?
 # Directory in which packages are found
-PKGS_DIR=\"$(shell pwd)/packages/\"
+PKGS_DIR=\"$(CURDIR)/packages/\"
 
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
