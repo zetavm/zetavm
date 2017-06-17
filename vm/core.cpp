@@ -462,12 +462,21 @@ std::string findPkgPath(std::string pkgName)
 {
     // If the package name directly maps to a relative path
     if (fileExists(pkgName))
+    {
         return pkgName;
+    }
 
     // Look in the package directory
     auto pkgPath = PKGS_DIR + pkgName + "/package";
     if (fileExists(pkgPath))
+    {
+        assert (
+            regex_match(pkgName, std::regex("([a-z0-9]+/)*[0-9]+")) &&
+            "package found in package directory without version number"
+        );
+
         return pkgPath;
+    }
 
     // Not found
     return "";
@@ -490,7 +499,7 @@ Value getCorePkg(std::string pkgName)
 Value import(std::string pkgName)
 {
     // Package names may only contain lowercase identifiers
-    // separated by single forward slashes
+    // separated by single forward slashes. A file extension may be present.
     std::regex ex("([a-z0-9]+/)*[a-z0-9]+.?[a-z0-9]+");
     if(!regex_match(pkgName, ex))
     {
