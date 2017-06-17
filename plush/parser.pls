@@ -66,12 +66,10 @@ var OP_MOD = addOp(OpInfo::{ str:"%", prec:12, foldAssign:true });
 var OP_ADD = addOp(OpInfo::{ str:"+", prec:11, foldAssign:true });
 var OP_SUB = addOp(OpInfo::{ str:"-", prec:11, foldAssign:true });
 
-/// Bitwise shifts
+/// Bitwise operators
 var OP_BIT_SHL = addOp(OpInfo::{ str:"<<", prec:10, foldAssign:true });
 var OP_BIT_SHR = addOp(OpInfo::{ str:">>", prec:10, foldAssign:true });
 var OP_BIT_USHR = addOp(OpInfo::{ str:">>>", prec:10, foldAssign:true });
-
-/// Bitwise/logical operators
 var OP_BIT_AND = addOp(OpInfo::{ str:"&", prec:7, foldAssign:true });
 var OP_BIT_XOR = addOp(OpInfo::{ str:"^", prec:6, foldAssign:true });
 var OP_BIT_OR = addOp(OpInfo::{ str:"|", prec:5, foldAssign:true });

@@ -229,21 +229,13 @@ var rt_and = function (x, y)
         }
     }
 	
-	if (typeof x == "bool")
-    {
-        if (typeof y == "bool")
-        {
-            return (x && y);
-        }
-    }
-
     assert (
         false,
         "unhandled type in bitwise and"
     );
 };
 
-/// bitwise and operator
+/// bitwise or operator
 var rt_or = function (x, y)
 {
     if (typeof x == "int32")
@@ -253,14 +245,6 @@ var rt_or = function (x, y)
             return $or_i32(x, y);
         }
     }
-	
-	if (typeof x == "bool")
-    {
-        if (typeof y == "bool")
-        {
-            return (x || y);
-        }
-    }
 
     assert (
         false,
@@ -268,7 +252,7 @@ var rt_or = function (x, y)
     );
 };
 
-/// bitwise and operator
+/// bitwise exclusive-or operator
 var rt_xor = function (x, y)
 {
     if (typeof x == "int32")
@@ -276,14 +260,6 @@ var rt_xor = function (x, y)
         if (typeof y == "int32")
         {
             return $xor_i32(x, y);
-        }
-    }
-
-    if (typeof x == "bool")
-    {
-        if (typeof y == "bool")
-        {
-            return (x != y);
         }
     }
 
