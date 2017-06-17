@@ -43,13 +43,6 @@ assert (true || true);
 assert (true || false);
 assert (false || true);
 assert (!(false || false));
-assert ((true & true) == true);
-assert ((true & false) == false);
-assert ((true | false) == true);
-assert ((false | false) == false);
-assert ((true ^ false) == true);
-assert ((true ^ true) == false);
-assert (((true | false) ^ (true & false)) == true);
 
 // Objects and properties
 var obj = { x:1, y:2, z:3, w:1+2 };
