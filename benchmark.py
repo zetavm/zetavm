@@ -52,6 +52,7 @@ def runBenchs():
         'benchmarks/plush_parser.zim',
         'benchmarks/saw_wave.pls',
         'benchmarks/sine_wave.pls',
+        'benchmarks/func_audio.pls'
     ]
 
     timeVals = []
