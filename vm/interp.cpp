@@ -209,20 +209,20 @@ struct RetEntry
 /// Information stored by call instructions
 struct CallInfo
 {
-    // Number of call site arguments
-    uint32_t numArgs;
-
     // Block version to return to after the call
     BlockVersion* retVer;
 
     // Last seen (cached) function
     refptr lastFn = nullptr;
 
-    // Number of locals for the cached function
-    uint32_t numLocals = 0;
-
     // Entry version for the cached function
     BlockVersion* entryVer = nullptr;
+
+    // Number of locals for the cached function
+    uint16_t numLocals = 0;
+
+    // Number of call site arguments
+    uint16_t numArgs;
 };
 
 typedef std::vector<BlockVersion*> VersionList;
@@ -551,25 +551,25 @@ void compile(BlockVersion* version)
             writeCode(AND_I32);
             continue;
         }
-		
+
         if (op == "or_i32")
         {
             writeCode(OR_I32);
             continue;
         }
-		
+
         if (op == "xor_i32")
         {
             writeCode(XOR_I32);
             continue;
         }
-		
+
         if (op == "not_i32")
         {
             writeCode(NOT_I32);
             continue;
         }
-		
+
         if (op == "lt_i32")
         {
             writeCode(LT_I32);
@@ -790,6 +790,10 @@ void compile(BlockVersion* version)
         if (op == "get_field")
         {
             writeCode(GET_FIELD);
+
+            // Cached property slot index
+            writeCode(size_t(0));
+
             continue;
         }
 
@@ -1355,7 +1359,7 @@ Value execCode()
                 pushVal(Value::int32(arg0 >> arg1));
             }
             break;
-			
+
             case USHR_I32:
             {
                 auto arg1 = popInt32();
@@ -1709,7 +1713,12 @@ Value execCode()
                 auto fieldName = popStr();
                 auto obj = popObj();
 
-                if (!obj.hasField(fieldName))
+                // Get the cached slot index
+                auto& slotIdx = readCode<size_t>();
+
+                Value val;
+
+                if (!obj.getField(fieldName.getDataPtr(), val, slotIdx))
                 {
                     throw RunError(
                         "get_field failed, missing field \"" +
@@ -1717,7 +1726,6 @@ Value execCode()
                     );
                 }
 
-                auto val = obj.getField(fieldName);
                 pushVal(val);
             }
             break;

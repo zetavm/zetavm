@@ -503,16 +503,18 @@ bool Object::getField(const char* name, Value& value, size_t& idxCache)
     //std::cout << "  name=" << name << std::endl;
     //std::cout << "  idxCache=" << idxCache << std::endl;
 
-    assert (idxCache < cap);
-    auto nameSlot = values[idxCache];
-    if (nameSlot.isString())
+    if (idxCache < cap)
     {
-        auto nameSlotStr = String(nameSlot);
-        if (strcmp(nameSlotStr.getDataPtr(), name) == 0)
+        auto nameSlot = values[idxCache];
+        if (nameSlot.isString())
         {
-            //std::cout << "  cache hit" << std::endl;
-            value = values[idxCache + 1];
-            return true;
+            auto nameSlotStr = String(nameSlot);
+            if (strcmp(nameSlotStr.getDataPtr(), name) == 0)
+            {
+                //std::cout << "  cache hit" << std::endl;
+                value = values[idxCache + 1];
+                return true;
+            }
         }
     }
 
