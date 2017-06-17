@@ -17,6 +17,7 @@ cscheme
 benchmarks/plush_parser.zim
 packages/lang/plush/0/package
 packages/std/math/0/package
+packages/lang/p/*
 
 # Retarded MacOS metadata
 .DS_Store
