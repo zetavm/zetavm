@@ -1,9 +1,11 @@
 #language "lang/plush/0"
 
+/**
+Do currying, functional-style partial evaluation of a function with
+respect to its last argument.
+*/
 var curry = function (fun, argVal)
 {
-    //print('currying');
-
     var numParams = fun.params.length;
 
     assert (
@@ -42,6 +44,86 @@ var curry3 = function (f, x, y, z)
     return curry(curry(curry(f, z), y), x);
 };
 
+/**
+Do partial evaluation on a function with a dictionary of
+parameter names and values.
+*/
+var peval = function (fun, argsObj)
+{
+    assert (
+        typeof argsObj == "object",
+        "peval expects an object as a second argument"
+    );
+
+    var keys = $get_field_list(argsObj);
+
+    assert (
+        keys.length <= fun.params.length,
+        "too many arguments passed to peval"
+    );
+
+    // Assemble the new parameter list
+    var newParams = [];
+    for (var i = 0; i < fun.params.length; i += 1)
+    {
+        var param = fun.params[i];
+        if (!(param in argsObj))
+            newParams:push(param);
+    }
+
+    var newEntry = {
+        instrs: [
+        ]
+    };
+
+    // For each function parameter
+    for (var i = 0; i < fun.params.length; i += 1)
+    {
+        var param = fun.params[i];
+
+        if (param in argsObj)
+        {
+            // Get the argument value from the argument object
+            var val = argsObj[param];
+            newEntry.instrs:push({ op:'push', val:val });
+        }
+        else
+        {
+            // Get the value from the new function parameter
+            for (var j = 0; j < newParams.length; j += 1)
+            {
+                if (newParams[j] == param)
+                {
+                    newEntry.instrs:push({ op:'get_local', idx:j });
+                    break;
+                }
+            }
+        }
+    }
+
+    // For each function parameter, in reverse order
+    for (var i = fun.params.length - 1; i >= 0; i -= 1)
+    {
+        newEntry.instrs:push({ op:'set_local', idx:i });
+    }
+
+    assert (
+        newParams.length == fun.params.length - keys.length,
+        "names supplied to peval do not map to function parameters"
+    );
+
+    newEntry.instrs:push({ op:'jump', to:fun.entry });
+
+    var newFun = {
+        params: newParams,
+        num_locals: fun.num_locals,
+        entry: newEntry
+    };
+
+    return newFun;
+};
+
 exports.curry = curry;
 exports.curry2 = curry2;
 exports.curry3 = curry3;
+exports.peval = peval;

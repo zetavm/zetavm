@@ -228,7 +228,7 @@ var rt_and = function (x, y)
             return $and_i32(x, y);
         }
     }
-	
+
     assert (
         false,
         "unhandled type in bitwise and"
@@ -614,6 +614,11 @@ var rt_getElem = function (base, idx)
         // TODO: check bounds
         //if (index < $str_len(base))
         return $get_char(base, idx);
+    }
+
+    if (typeof base == "object")
+    {
+        return $get_field(base, idx);
     }
 
     assert (
