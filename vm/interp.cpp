@@ -965,43 +965,48 @@ __attribute__((always_inline)) inline void funCall(
     CallInfo& callInfo
 )
 {
-    // Get a version for the function entry block
-    static ICache entryIC("entry");
-    auto entryBB = entryIC.getObj(fun);
-    auto entryVer = getBlockVersion(fun, entryBB);
-
-    if (!entryVer->startPtr)
-    {
-        //std::cout << "compiling function entry block" << std::endl;
-        compile(entryVer);
-    }
-
-    static ICache localsIC("num_locals");
-    auto numLocals = localsIC.getInt32(fun);
-
-    static ICache paramsIC("num_params");
-    auto numParams = paramsIC.getInt32(fun);
-
-
-
-
-
-
-
-
-
     size_t numArgs = callInfo.numArgs;
-    BlockVersion* retVer = callInfo.retVer;
 
-    checkArgCount(callInstr, numParams, numArgs);
-
-    // Note: the hidden function/closure parameter is always present
-    if (numLocals < numParams + 1)
+    // If the function does not match the inline cache
+    if (callInfo.lastFn != (refptr)fun)
     {
-        throw RunError(
-            "not enough locals to store function parameters"
-        );
+        // Get a version for the function entry block
+        static ICache entryIC("entry");
+        auto entryBB = entryIC.getObj(fun);
+        auto entryVer = getBlockVersion(fun, entryBB);
+
+        if (!entryVer->startPtr)
+        {
+            //std::cout << "compiling function entry block" << std::endl;
+            compile(entryVer);
+        }
+
+        static ICache localsIC("num_locals");
+        auto numLocals = localsIC.getInt32(fun);
+
+        static ICache paramsIC("num_params");
+        auto numParams = paramsIC.getInt32(fun);
+
+        // Check that the argument count matches
+        checkArgCount(callInstr, numParams, numArgs);
+
+        // Note: the hidden function/closure parameter is always present
+        if (numLocals < numParams + 1)
+        {
+            throw RunError(
+                "not enough locals to store function parameters"
+            );
+        }
+
+        // Update the inline cache
+        callInfo.lastFn = (refptr)fun;
+        callInfo.numLocals = numLocals;
+        callInfo.entryVer = entryVer;
     }
+
+    size_t numLocals = callInfo.numLocals;
+    BlockVersion* entryVer = callInfo.entryVer;
+    BlockVersion* retVer = callInfo.retVer;
 
     // Compute the stack pointer to restore after the call
     auto prevStackPtr = stackPtr + numArgs;
