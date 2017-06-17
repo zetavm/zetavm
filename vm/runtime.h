@@ -95,10 +95,30 @@ public:
 
     std::string toString() const;
 
-    operator bool () const;
-    operator int32_t () const;
-    operator float () const;
-    operator refptr () const;
+    inline operator bool () const
+    {
+        assert (tag == TAG_BOOL);
+        return word.int64? 1:0;
+    }
+
+    inline operator int32_t () const
+    {
+        assert (tag == TAG_INT32);
+        return word.int32;
+    }
+
+    inline operator float () const
+    {
+        assert (tag == TAG_FLOAT32);
+        return word.float32;
+    }
+
+    inline operator refptr () const
+    {
+        assert (isPointer());
+        return word.ptr;
+    }
+    
     operator std::string () const;
 
     bool operator == (const Value& that) const
