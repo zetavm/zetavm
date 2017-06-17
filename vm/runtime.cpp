@@ -20,12 +20,6 @@ const Value Value::TWO(Word(int64_t(2)), TAG_INT32);
 // Global virtual machine instance
 VM vm;
 
-Value::Value(Word w, Tag t)
-{
-    word = w;
-    tag = t;
-}
-
 /// Produce a string representation of a value
 std::string Value::toString() const
 {

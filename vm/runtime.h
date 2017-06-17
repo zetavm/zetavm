@@ -73,7 +73,7 @@ public:
 
     Value() : Value(UNDEF.word, UNDEF.tag) {}
     Value(refptr p, Tag t) : Value(Word(p), t) {}
-    Value(Word w, Tag t);
+    Value(Word w, Tag t) : word(w), tag(t) {};
     ~Value() {}
 
     // Static constructors. These are needed because of type ambiguity.
