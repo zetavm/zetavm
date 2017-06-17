@@ -851,14 +851,11 @@ void compile(BlockVersion* version)
             retAddrMap[retVer] = retEntry;
 
             writeCode(CALL);
-            writeCode(numArgs);
-            writeCode(retVer);
-
 
             CallInfo callInfo;
-            //writeCode(callInfo);
-
-
+            callInfo.numArgs = numArgs;
+            callInfo.retVer = retVer;
+            writeCode(callInfo);
 
             continue;
         }
@@ -965,8 +962,7 @@ void checkArgCount(
 __attribute__((always_inline)) void funCall(
     uint8_t* callInstr,
     Object fun,
-    size_t numArgs,
-    BlockVersion* retVer
+    CallInfo& callInfo
 )
 {
     // Get a version for the function entry block
@@ -986,6 +982,17 @@ __attribute__((always_inline)) void funCall(
     static ICache paramsIC("num_params");
     auto numParams = paramsIC.getInt32(fun);
 
+
+
+
+
+
+
+
+
+    size_t numArgs = callInfo.numArgs;
+    BlockVersion* retVer = callInfo.retVer;
+
     checkArgCount(callInstr, numParams, numArgs);
 
     // Note: the hidden function/closure parameter is always present
@@ -994,11 +1001,6 @@ __attribute__((always_inline)) void funCall(
         throw RunError(
             "not enough locals to store function parameters"
         );
-    }
-
-    if (numArgs != numParams)
-    {
-        throw RunError("argument count mismatch");
     }
 
     // Compute the stack pointer to restore after the call
@@ -1782,12 +1784,11 @@ Value execCode()
             // Regular function call
             case CALL:
             {
-                auto numArgs = readCode<uint16_t>();
-                auto retVer = readCode<BlockVersion*>();
+                auto& callInfo = readCode<CallInfo>();
 
                 auto callee = popVal();
 
-                if (stackSize() < numArgs)
+                if (stackSize() < callInfo.numArgs)
                 {
                     throw RunError(
                         "stack underflow at call"
@@ -1796,11 +1797,20 @@ Value execCode()
 
                 if (callee.isObject())
                 {
-                    funCall((uint8_t*)&op, callee, numArgs, retVer);
+                    funCall(
+                        (uint8_t*)&op,
+                        callee,
+                        callInfo
+                    );
                 }
                 else if (callee.isHostFn())
                 {
-                    hostCall((uint8_t*)&op, callee, numArgs, retVer);
+                    hostCall(
+                        (uint8_t*)&op,
+                        callee,
+                        callInfo.numArgs,
+                        callInfo.retVer
+                    );
                 }
                 else
                 {
