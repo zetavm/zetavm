@@ -124,6 +124,7 @@ var rt_div = function (x, y)
         {
             return $div_f32($i32_to_f32(x), y);
         }
+
         if (typeof y == "int32")
         {
             return $div_f32($i32_to_f32(x), $i32_to_f32(y));
@@ -136,7 +137,9 @@ var rt_div = function (x, y)
         {
             return $div_f32(x, y);
         }
-        if (typeof y == "int32") {
+
+        if (typeof y == "int32")
+        {
             return $div_f32(x, $i32_to_f32(y));
         }
     }
@@ -144,6 +147,138 @@ var rt_div = function (x, y)
     assert (
         false,
         "unhandled type in division"
+    );
+};
+
+/// Integer modulo/remainer operator
+var rt_mod = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "int32")
+        {
+            return $mod_i32(x, y);
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in modulo"
+    );
+};
+
+/// bitwise left-shift operator
+var rt_shl = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "int32")
+        {
+            return $shl_i32(x, y);
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in bitwise left shift"
+    );
+};
+
+/// bitwise right-shift operator (sign-extending)
+var rt_shr = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "int32")
+        {
+            return $shr_i32(x, y);
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in bitwise right shift"
+    );
+};
+
+/// bitwise unsigned right-shift operator
+var rt_ushr = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "int32")
+        {
+            return $ushr_i32(x, y);
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in bitwise unsigned right shift"
+    );
+};
+
+/// bitwise and operator
+var rt_and = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "int32")
+        {
+            return $and_i32(x, y);
+        }
+    }
+	
+    assert (
+        false,
+        "unhandled type in bitwise and"
+    );
+};
+
+/// bitwise or operator
+var rt_or = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "int32")
+        {
+            return $or_i32(x, y);
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in bitwise or"
+    );
+};
+
+/// bitwise exclusive-or operator
+var rt_xor = function (x, y)
+{
+    if (typeof x == "int32")
+    {
+        if (typeof y == "int32")
+        {
+            return $xor_i32(x, y);
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in xor"
+    );
+};
+
+/// Bitwise not; one's-complement
+var rt_bit_not = function (x)
+{
+    if (typeof x == "int32")
+    {
+        return $not_i32(x);
+	}
+	assert (
+        false,
+        "unhandled type in bitwise not"
     );
 };
 

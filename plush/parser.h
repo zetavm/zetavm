@@ -156,6 +156,10 @@ extern const OpInfo OP_NE;
 extern const OpInfo OP_BIT_AND;
 extern const OpInfo OP_BIT_XOR;
 extern const OpInfo OP_BIT_OR;
+extern const OpInfo OP_BIT_NOT;
+extern const OpInfo OP_BIT_SHL;  // shift left
+extern const OpInfo OP_BIT_SHR;  // sign-extending shift right
+extern const OpInfo OP_BIT_USHR; // unsigned shift right
 extern const OpInfo OP_AND;
 extern const OpInfo OP_OR;
 extern const OpInfo OP_ASSIGN;

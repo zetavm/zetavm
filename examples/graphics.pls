@@ -8,9 +8,7 @@ assert ("create_window" in window);
 var width = 256;
 var height = 256;
 
-window.create_window("Font Rendering Test", width, height);
-
-// TODO
+window.create_window("Graphics Test", width, height);
 
 var buf = [];
 for (var y = 0; y < height; y += 1)
@@ -30,7 +28,9 @@ for (var i = 0;; i += 1)
     if (result == false)
         break;
 
-    print(i);
+    output('frame ');
+    output(i);
+    output('\n');
 
     window.draw_pixels(buf);
 }

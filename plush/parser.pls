@@ -56,13 +56,23 @@ var OP_M_CALL = addOp(OpInfo::{ str:":", arity:2, prec:15 });
 /// Prefix unary operators
 var OP_NEG = addOp(OpInfo::{ str:"-", arity:1, prec:13, assoc:'r' });
 var OP_NOT = addOp(OpInfo::{ str:"!", arity:1, prec:13, assoc:'r' });
+var OP_BIT_NOT = addOp(OpInfo::{ str:"~", arity:1, prec:13, assoc:'r' });
 var OP_TYPEOF = addOp(OpInfo::{ str:"typeof", arity:1, prec:13, assoc:'r' });
 
 /// Binary arithmetic operators
 var OP_MUL = addOp(OpInfo::{ str:"*", prec:12, foldAssign:true });
 var OP_DIV = addOp(OpInfo::{ str:"/", prec:12, foldAssign:true });
+var OP_MOD = addOp(OpInfo::{ str:"%", prec:12, foldAssign:true });
 var OP_ADD = addOp(OpInfo::{ str:"+", prec:11, foldAssign:true });
 var OP_SUB = addOp(OpInfo::{ str:"-", prec:11, foldAssign:true });
+
+/// Bitwise operators
+var OP_BIT_SHL = addOp(OpInfo::{ str:"<<", prec:10, foldAssign:true });
+var OP_BIT_SHR = addOp(OpInfo::{ str:">>", prec:10, foldAssign:true });
+var OP_BIT_USHR = addOp(OpInfo::{ str:">>>", prec:10, foldAssign:true });
+var OP_BIT_AND = addOp(OpInfo::{ str:"&", prec:7, foldAssign:true });
+var OP_BIT_XOR = addOp(OpInfo::{ str:"^", prec:6, foldAssign:true });
+var OP_BIT_OR = addOp(OpInfo::{ str:"|", prec:5, foldAssign:true });
 
 /// Relational operators
 var OP_LT = addOp(OpInfo::{ str:"<", prec:9 });
@@ -75,11 +85,6 @@ var OP_IN = addOp(OpInfo::{ str:"in", prec:9 });
 /// Equality comparison
 var OP_EQ = addOp(OpInfo::{ str:"==", prec:8 });
 var OP_NE = addOp(OpInfo::{ str:"!=", prec:8 });
-
-/// Bitwise operators
-//const OpInfo OP_BIT_AND = { "&", "", 2, 7, 'l', false, true };
-//const OpInfo OP_BIT_XOR = { "^", "", 2, 6, 'l', false, true };
-//const OpInfo OP_BIT_OR = { "|", "", 2, 5, 'l', false, true };
 
 /// Logical operators
 var OP_AND = addOp(OpInfo::{ str:"&&", prec:4, foldAssign:true });
@@ -324,13 +329,17 @@ Input.next = function (self, str)
 /// The string is consumed if matched
 Input.match = function (self, str)
 {
-    assert (str.length > 0);
+    assert (
+        str.length > 0,
+        "match with empty string"
+    );
 
     if (self:next(str))
     {
         for (var i = 0; i < str.length; i += 1)
+        {
             self:readCh();
-
+        }
         return true;
     }
 
@@ -428,6 +437,42 @@ Input.expectWS = function (self, str)
 {
     self:eatWS();
     self:expect(str);
+};
+
+/// Match a keyword string
+/// Note: this expects a non-keyword character after the keyword
+/// That is, matchKW("assert") will not match "assertFun"
+Input.matchKW = function (self, str)
+{
+    // Whitespace before keywords doesn't matter
+    self:eatWS();
+
+    // If the string is not next in the input, no match
+    if (!self:next(str))
+        return false;
+
+    var len = str.length;
+
+    // If we're at the end of the string, this is a match
+    if (self.strIdx + len >= self.srcString.length)
+    {
+        self:match(str);
+        return true;
+    }
+
+    // Get the character after the keyword
+    var postCh = self.srcString[self.strIdx + len];
+
+    // If the next character is valid in an identifier, then
+    // this is not a real match
+    if (isAlnum(postCh) || postCh == '_')
+    {
+        return false;
+    }
+
+    // This is a match, consume the keyword string
+    self:match(str);
+    return true;
 };
 
 /**
@@ -680,7 +725,7 @@ var parseIfStmt = function (input)
     var thenStmt = parseStmt(input);
 
     // Parse the else clause, if there is one
-    if (input:matchWS("else"))
+    if (input:matchKW("else"))
     {
         var elseStmt = parseStmt(input);
     }
@@ -1070,7 +1115,7 @@ var parseExprPrec = function (input, minPrec)
             if (op.closeStr.length > 0)
                 nextMinPrec = 0;
             else
-                nextMinPrec = op.prec + 1;
+                nextMinPrec = op.prec;
         }
 
         // If this is a regular function call expression
@@ -1216,7 +1261,7 @@ var parseStmt = function (input)
     }
 
     // Variable declaration
-    if (input:matchWS("var"))
+    if (input:matchKW("var"))
     {
         input:eatWS();
         var ident = parseIdentStr(input);
@@ -1231,33 +1276,33 @@ var parseStmt = function (input)
     }
 
     // If-else statement
-    if (input:matchWS("if"))
+    if (input:matchKW("if"))
     {
         return parseIfStmt(input);
     }
 
     // For loop statement
-    if (input:matchWS("for"))
+    if (input:matchKW("for"))
     {
         return parseForStmt(input);
     }
 
     // Break statement
-    if (input:matchWS("break"))
+    if (input:matchKW("break"))
     {
         input:expectWS(";");
         return BreakStmt::{};
     }
 
     // Continue statement
-    if (input:matchWS("continue"))
+    if (input:matchKW("continue"))
     {
         input:expectWS(";");
         return ContStmt::{};
     }
 
     // Return statement
-    if (input:matchWS("return"))
+    if (input:matchKW("return"))
     {
         if (input:matchWS(";"))
         {
@@ -1272,14 +1317,13 @@ var parseStmt = function (input)
         return ReturnStmt::{ expr: expr };
     }
 
-    // Assert statement
-    if (input:nextWS("assert"))
-    {
-        // Get the current position in the input
-        input:eatWS();
-        var srcPos = input:getPos();
+    // Get the current position in the input
+    input:eatWS();
+    var srcPos = input:getPos();
 
-        input:matchWS("assert");
+    // Assert statement
+    if (input:matchKW("assert"))
+    {
         input:expectWS("(");
 
         var testExpr = parseExpr(input);
@@ -1385,9 +1429,11 @@ var Function = {};
 
 Function.new = function (numParams, entryBlock)
 {
+    // Note: functions always have at least 1 local
+    // to store the hidden function/closure argument
     return Function::{
         num_params: numParams,
-        num_locals: 0,
+        num_locals: 1,
         entry: entryBlock,
 
         /// List of local variable names
@@ -1586,8 +1632,10 @@ var genUnit = function (unitAST)
 
     var exportsObj = { init: unitFun };
 
+    // Globally visible definitions
     var globalObj = {
         exports: exportsObj,
+        output: output,
         print: print
     };
 
@@ -1707,6 +1755,14 @@ var genExpr = function (ctx, expr)
             ctx:addPush(0);
             genExpr(ctx, expr.expr);
             runtimeCall(ctx, rt_sub);
+            return;
+        }
+
+        // Unary bitwise not; one's-complement
+        if (expr.op == OP_BIT_NOT)
+        {
+            genExpr(ctx, expr.expr);
+            runtimeCall(ctx, rt_bit_not);
             return;
         }
 
@@ -1839,6 +1895,62 @@ var genExpr = function (ctx, expr)
             genExpr(ctx, expr.lhsExpr);
             genExpr(ctx, expr.rhsExpr);
             runtimeCall(ctx, rt_div);
+            return;
+        }
+
+        if (expr.op == OP_MOD)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_mod);
+            return;
+        }
+
+        if (expr.op == OP_BIT_SHL)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_shl);
+            return;
+        }
+        
+        if (expr.op == OP_BIT_SHR)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_shr);
+            return;
+        }
+        
+        if (expr.op == OP_BIT_USHR)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_ushr);
+            return;
+        }
+        
+        if (expr.op == OP_BIT_AND)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_and);
+            return;
+        }
+
+        if (expr.op == OP_BIT_OR)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_or);
+            return;
+        }
+
+        if (expr.op == OP_BIT_XOR)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_xor);
             return;
         }
 

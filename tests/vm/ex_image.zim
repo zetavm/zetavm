@@ -49,8 +49,10 @@ c = { prec: @b, next: @a };
 # that defines its behavior.
 sum = {
     name: "main",
-    num_params: 2,           # Two arguments
-    num_locals: 2,           # Two local variables (the arguments)
+    # Two arguments
+    num_params: 2,
+    # Three local variables (two arguments and a hidden closure argument)
+    num_locals: 3,
     entry: {
         name: "sum_entry",
         instrs: [
@@ -67,7 +69,7 @@ sum = {
 main = {
     name: "main",
     num_params: 0,
-    num_locals: 0,
+    num_locals: 1,
     entry: @main_entry
 };
 main_entry = {

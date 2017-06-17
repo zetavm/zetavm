@@ -14,7 +14,7 @@ global_obj = { exports: @exports_obj };
 write = {
   name: 'write',
   num_params: 1,
-  num_locals: 1,
+  num_locals: 2,
   entry: {
     name: 'write_entry',
     instrs: [
@@ -54,7 +54,7 @@ write_int32 = {
 newline = {
   name: 'newline',
   num_params: 0,
-  num_locals: 0,
+  num_locals: 1,
   entry: {
     name: 'newline_entry',
     instrs: [
@@ -112,7 +112,7 @@ block_0 = {
 fun_1 = {
   entry:@block_0,
   num_params:0,
-  num_locals:0,
+  num_locals:1,
 };
 
 @exports_obj;

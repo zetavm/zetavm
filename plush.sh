@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Stop at the first error
+set -e
+
 PKG_FILE=`mktemp`
 
 if [ "$#" -ne 1 ]; then

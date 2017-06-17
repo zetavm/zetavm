@@ -40,7 +40,7 @@ fact_ret = {
 fact = {
     name: "fact",
     num_params: 1,
-    num_locals: 1,
+    num_locals: 2,
     entry: @fact_entry
 };
 
@@ -62,7 +62,7 @@ main_ret = {
 main = {
     name: "main",
     num_params: 0,
-    num_locals: 0,
+    num_locals: 1,
     entry: @main_entry
 };
 

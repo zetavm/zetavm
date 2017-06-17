@@ -200,14 +200,9 @@ const char* String::getDataPtr() const
 String::operator std::string ()
 {
     auto len = length();
+    const char* dataptr = getDataPtr();
 
-    std::string str;
-    str.reserve(len);
-
-    for (size_t i = 0; i < len; ++i)
-        str += (*this)[i];
-
-    return str;
+    return std::string(dataptr, len);
 }
 
 bool String::operator == (const char* that) const

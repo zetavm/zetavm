@@ -18,7 +18,7 @@ var genSamples = function (sampleFun, numSeconds)
 
     for (var i = 0; i < numSamples; i += 1)
     {
-        var t = numSeconds * (1.0 * i / numSamples);
+        var t = numSeconds * (1.0f * i / numSamples);
 
         //print(t);
 
@@ -48,7 +48,7 @@ var playSound = function (sampleFun, numSeconds)
 
 var silent = function (t)
 {
-    return 0.0;
+    return 0.0f;
 };
 
 /// Produces a saw wave of a given frequency
@@ -59,7 +59,7 @@ var saw = function (freq)
         var pos = time * freq;
         var ipos = $f32_to_i32(pos);
         var rem = pos - ipos;
-        return -1.0 + 2.0 * rem;
+        return -1 + 2.0f * rem;
     };
 
     return curry(f, freq);
@@ -156,13 +156,13 @@ var seq = function (interv, funs)
 var pluck = function (freq)
 {
     return mul(
-        saw(freq/2.0),
-        ADEnv(0.005, 0.1)
+        saw(freq/2.0f),
+        ADEnv(0.005f, 0.1f)
     );
 };
 
 var sampleFun = seq(
-    0.2,
+    0.2f,
     [
         pluck(300),
         pluck(400),
@@ -180,4 +180,4 @@ var sampleFun = seq(
 
 
 
-playSound(sampleFun, 1.0);
+playSound(sampleFun, 1.0f);

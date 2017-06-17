@@ -68,7 +68,10 @@ private:
     size_t idNo;
 
     size_t numParams;
-    size_t numLocals;
+
+    // Functions always have at least 1 local
+    // to store the hidden function/closure argument
+    size_t numLocals = 1;
 
     Block* entryBlock;
 
@@ -82,7 +85,6 @@ public:
         Block* entryBlock
     )
     : numParams(numParams),
-      numLocals(0),
       entryBlock(entryBlock)
     {
         idNo = lastIdNo++;

@@ -22,6 +22,7 @@ const OpInfo OP_M_CALL = { ":", "", 2, 14, 'l', false, false };
 /// Prefix unary operators
 const OpInfo OP_NEG = { "-", "", 1, 13, 'r', false, false };
 const OpInfo OP_NOT = { "!", "", 1, 13, 'r', false, false };
+const OpInfo OP_BIT_NOT = { "~", "", 1, 13, 'r', false, false };
 const OpInfo OP_TYPEOF = { "typeof", "", 1, 13, 'r', false, false };
 
 /// Binary arithmetic operators
@@ -44,9 +45,12 @@ const OpInfo OP_EQ = { "==", "", 2, 8, 'l', false, false };
 const OpInfo OP_NE = { "!=", "", 2, 8, 'l', false, false };
 
 /// Bitwise operators
-const OpInfo OP_BIT_AND = { "&", "", 2, 7, 'l', false, true };
-const OpInfo OP_BIT_XOR = { "^", "", 2, 6, 'l', false, true };
-const OpInfo OP_BIT_OR = { "|", "", 2, 5, 'l', false, true };
+const OpInfo OP_BIT_AND = { "&", "", 2, 7, 'l', true, true };
+const OpInfo OP_BIT_XOR = { "^", "", 2, 6, 'l', true, true };
+const OpInfo OP_BIT_OR = { "|", "", 2, 5, 'l', true, true };
+const OpInfo OP_BIT_SHL  = { "<<", "", 2, 10, 'l', false, true };  // shift left
+const OpInfo OP_BIT_SHR  = { ">>", "", 2, 10, 'l', false, true };  // sign-extending shift right
+const OpInfo OP_BIT_USHR = { ">>>", "", 2, 10, 'l', false, true }; // unsigned shift right
 
 /// Logical operators
 const OpInfo OP_AND = { "&&", "", 2, 4, 'l', true };
@@ -58,7 +62,7 @@ const OpInfo OP_ASSIGN = { "=", "", 2, 1, 'r', false };
 /// Read an entire file at once
 std::string readFile(std::string fileName)
 {
-    FILE* file = fopen(fileName.c_str(), "r");
+    FILE* file = fopen(fileName.c_str(), "rb");
 
     if (!file)
     {
@@ -719,6 +723,10 @@ const OpInfo* matchOp(Input& input, int minPrec, bool preUnary)
         op = &OP_DIV;
         break;
 
+        case '%':
+        op = &OP_MOD;
+        break;
+
         case '+':
         if (input.next("+")) { op = &OP_ADD; break; }
         break;
@@ -729,11 +737,14 @@ const OpInfo* matchOp(Input& input, int minPrec, bool preUnary)
 
         case '<':
         if (input.next("<=")) { op = &OP_LE; break; }
+        if (input.next("<<")) { op = &OP_BIT_SHL; break; }
         if (input.next("<")) { op = &OP_LT; break; }
         break;
 
         case '>':
         if (input.next(">=")) { op = &OP_GE; break; }
+        if (input.next(">>>")) { op = &OP_BIT_USHR; break; }
+        if (input.next(">>")) { op = &OP_BIT_SHR; break; }
         if (input.next(">")) { op = &OP_GT; break; }
         break;
 
@@ -754,10 +765,20 @@ const OpInfo* matchOp(Input& input, int minPrec, bool preUnary)
 
         case '|':
         if (input.next("||")) { op = &OP_OR; break; }
+        if (input.next("|")) { op = &OP_BIT_OR; break; }
         break;
 
         case '&':
         if (input.next("&&")) { op = &OP_AND; break; }
+        if (input.next("&")) { op = &OP_BIT_AND; break; }
+        break;
+
+        case '^':
+        op = &OP_BIT_XOR;
+        break;
+
+        case '~':
+        op = &OP_BIT_NOT;
         break;
 
         case 't':

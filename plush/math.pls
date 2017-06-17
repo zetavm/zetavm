@@ -70,7 +70,7 @@ exports.sqrt = function (x)
 
     assert(
         false,
-        "unhandled type in sin function"
+        "unhandled type in sqrt function"
     );
 };
 

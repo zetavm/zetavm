@@ -23,6 +23,15 @@ enum Opcode : uint16_t
     ADD_I32,
     SUB_I32,
     MUL_I32,
+    DIV_I32,
+    MOD_I32,
+    SHL_I32,
+    SHR_I32,
+    USHR_I32,
+    AND_I32,
+    OR_I32,
+    XOR_I32,
+    NOT_I32,
     LT_I32,
     LE_I32,
     GT_I32,
@@ -197,6 +206,25 @@ struct RetEntry
     BlockVersion* excVer = nullptr;
 };
 
+/// Information stored by call instructions
+struct CallInfo
+{
+    // Number of call site arguments
+    uint32_t numArgs;
+
+    // Block version to return to after the call
+    BlockVersion* retVer;
+
+    // Last seen (cached) function
+    refptr lastFn = nullptr;
+
+    // Number of locals for the cached function
+    uint32_t numLocals = 0;
+
+    // Entry version for the cached function
+    BlockVersion* entryVer = nullptr;
+};
+
 typedef std::vector<BlockVersion*> VersionList;
 
 /// Initial code heap size in bytes
@@ -253,7 +281,7 @@ template <typename T> void writeCode(T val)
 }
 
 /// Return a pointer to a value to read from the code stream
-template <typename T> __attribute__((always_inline)) T& readCode()
+template <typename T> __attribute__((always_inline)) inline T& readCode()
 {
     assert (instrPtr + sizeof(T) <= codeHeapLimit);
     T* valPtr = (T*)instrPtr;
@@ -262,7 +290,7 @@ template <typename T> __attribute__((always_inline)) T& readCode()
 }
 
 /// Push a value on the stack
-__attribute__((always_inline)) void pushVal(Value val)
+__attribute__((always_inline)) inline void pushVal(Value val)
 {
     assert (stackPtr > stackLimit);
     stackPtr--;
@@ -270,12 +298,12 @@ __attribute__((always_inline)) void pushVal(Value val)
 }
 
 /// Push a boolean on the stack
-__attribute__((always_inline)) void pushBool(bool val)
+__attribute__((always_inline)) inline void pushBool(bool val)
 {
     pushVal(val? (Value::TRUE) : (Value::FALSE));
 }
 
-__attribute__((always_inline)) Value popVal()
+__attribute__((always_inline)) inline Value popVal()
 {
     assert (stackPtr < stackBase);
     auto val = stackPtr[0];
@@ -283,7 +311,7 @@ __attribute__((always_inline)) Value popVal()
     return val;
 }
 
-__attribute__((always_inline)) bool popBool()
+__attribute__((always_inline)) inline bool popBool()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -291,7 +319,7 @@ __attribute__((always_inline)) bool popBool()
     return (bool)val;
 }
 
-__attribute__((always_inline)) int32_t popInt32()
+__attribute__((always_inline)) inline int32_t popInt32()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -299,7 +327,7 @@ __attribute__((always_inline)) int32_t popInt32()
     return (int32_t)val;
 }
 
-__attribute__((always_inline)) float popFloat32()
+__attribute__((always_inline)) inline float popFloat32()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -307,7 +335,7 @@ __attribute__((always_inline)) float popFloat32()
     return (float)val;
 }
 
-__attribute__((always_inline)) String popStr()
+__attribute__((always_inline)) inline String popStr()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -315,7 +343,7 @@ __attribute__((always_inline)) String popStr()
     return (String)val;
 }
 
-__attribute__((always_inline)) Object popObj()
+__attribute__((always_inline)) inline Object popObj()
 {
     // TODO: throw RunError if wrong type
     auto val = popVal();
@@ -329,13 +357,13 @@ size_t codeHeapSize()
 }
 
 /// Compute the stack size (number of slots allocated)
-__attribute__((always_inline)) size_t stackSize()
+__attribute__((always_inline)) inline size_t stackSize()
 {
     return stackBase - stackPtr;
 }
 
 /// Compute the size of the current frame (number of slots allocated)
-__attribute__((always_inline)) size_t frameSize()
+__attribute__((always_inline)) inline size_t frameSize()
 {
     return framePtr - stackPtr + 1;
 }
@@ -488,6 +516,60 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "div_i32")
+        {
+            writeCode(DIV_I32);
+            continue;
+        }
+
+        if (op == "mod_i32")
+        {
+            writeCode(MOD_I32);
+            continue;
+        }
+
+        if (op == "shl_i32")
+        {
+            writeCode(SHL_I32);
+            continue;
+        }
+
+        if (op == "shr_i32")
+        {
+            writeCode(SHR_I32);
+            continue;
+        }
+
+        if (op == "ushr_i32")
+        {
+            writeCode(USHR_I32);
+            continue;
+        }
+
+        if (op == "and_i32")
+        {
+            writeCode(AND_I32);
+            continue;
+        }
+		
+        if (op == "or_i32")
+        {
+            writeCode(OR_I32);
+            continue;
+        }
+		
+        if (op == "xor_i32")
+        {
+            writeCode(XOR_I32);
+            continue;
+        }
+		
+        if (op == "not_i32")
+        {
+            writeCode(NOT_I32);
+            continue;
+        }
+		
         if (op == "lt_i32")
         {
             writeCode(LT_I32);
@@ -765,7 +847,6 @@ void compile(BlockVersion* version)
         {
             static ICache toIC("to");
             auto dstBB = toIC.getObj(instr);
-
             auto dstVer = getBlockVersion(version->fun, dstBB);
 
             writeCode(JUMP_STUB);
@@ -819,8 +900,11 @@ void compile(BlockVersion* version)
             retAddrMap[retVer] = retEntry;
 
             writeCode(CALL);
-            writeCode(numArgs);
-            writeCode(retVer);
+
+            CallInfo callInfo;
+            callInfo.numArgs = numArgs;
+            callInfo.retVer = retVer;
+            writeCode(callInfo);
 
             continue;
         }
@@ -903,10 +987,10 @@ void checkArgCount(
     size_t numArgs
 )
 {
-    Value srcPos = getSrcPos(instrPtr);
-
     if (numArgs != numParams)
     {
+        Value srcPos = getSrcPos(instrPtr);
+
         std::string srcPosStr = (
             srcPos.isObject()?
             (posToString(srcPos) + " - "):
@@ -924,48 +1008,54 @@ void checkArgCount(
 }
 
 /// Perform a user function call
-__attribute__((always_inline)) void funCall(
+__attribute__((always_inline)) inline void funCall(
     uint8_t* callInstr,
     Object fun,
-    size_t numArgs,
-    BlockVersion* retVer
+    CallInfo& callInfo
 )
 {
-    // TODO: we could inline cache some function
-    // information
-    // start with map of fn objs to structs
-    // TODO: move callFn into its own function
+    size_t numArgs = callInfo.numArgs;
 
-    // Get a version for the function entry block
-    static ICache entryIC("entry");
-    auto entryBB = entryIC.getObj(fun);
-    auto entryVer = getBlockVersion(fun, entryBB);
-
-    if (!entryVer->startPtr)
+    // If the function does not match the inline cache
+    if (callInfo.lastFn != (refptr)fun)
     {
-        //std::cout << "compiling function entry block" << std::endl;
-        compile(entryVer);
+        // Get a version for the function entry block
+        static ICache entryIC("entry");
+        auto entryBB = entryIC.getObj(fun);
+        auto entryVer = getBlockVersion(fun, entryBB);
+
+        if (!entryVer->startPtr)
+        {
+            //std::cout << "compiling function entry block" << std::endl;
+            compile(entryVer);
+        }
+
+        static ICache localsIC("num_locals");
+        auto numLocals = localsIC.getInt32(fun);
+
+        static ICache paramsIC("num_params");
+        auto numParams = paramsIC.getInt32(fun);
+
+        // Check that the argument count matches
+        checkArgCount(callInstr, numParams, numArgs);
+
+        // Note: the hidden function/closure parameter is always present
+        if (numLocals < numParams + 1)
+        {
+            throw RunError(
+                "not enough locals to store function parameters"
+            );
+        }
+
+        // Update the inline cache
+        callInfo.lastFn = (refptr)fun;
+        callInfo.numLocals = numLocals;
+        callInfo.entryVer = entryVer;
     }
 
-    static ICache localsIC("num_locals");
-    auto numLocals = localsIC.getInt32(fun);
-
-    static ICache paramsIC("num_params");
-    auto numParams = paramsIC.getInt32(fun);
-
-    checkArgCount(callInstr, numParams, numArgs);
-
-    if (numLocals < numParams)
-    {
-        throw RunError(
-            "not enough locals to store function parameters"
-        );
-    }
-
-    if (numArgs != numParams)
-    {
-        throw RunError("argument count mismatch");
-    }
+    size_t numLocals = callInfo.numLocals;
+    BlockVersion* entryVer = callInfo.entryVer;
+    BlockVersion* retVer = callInfo.retVer;
 
     // Compute the stack pointer to restore after the call
     auto prevStackPtr = stackPtr + numArgs;
@@ -976,6 +1066,9 @@ __attribute__((always_inline)) void funCall(
     // Point the frame pointer to the first argument
     assert (stackPtr > stackLimit);
     framePtr = stackPtr + numArgs - 1;
+
+    // Store the function/pointer argument
+    framePtr[-numArgs] = fun;
 
     // Pop the arguments, push the callee locals
     stackPtr -= numLocals - numArgs;
@@ -989,7 +1082,7 @@ __attribute__((always_inline)) void funCall(
 }
 
 /// Perform a host function call
-__attribute__((always_inline)) void hostCall(
+__attribute__((always_inline)) inline void hostCall(
     uint8_t* callInstr,
     Value fun,
     size_t numArgs,
@@ -1231,6 +1324,77 @@ Value execCode()
             }
             break;
 
+            case DIV_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 / arg1));
+            }
+            break;
+
+            case MOD_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 % arg1));
+            }
+            break;
+
+            case SHL_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 << arg1));
+            }
+            break;
+
+            case SHR_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 >> arg1));
+            }
+            break;
+			
+            case USHR_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = (uint32_t)popInt32();
+                pushVal(Value::int32((int32_t)(arg0 >> arg1)));
+            }
+            break;
+
+            case AND_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 & arg1));
+            }
+            break;
+
+            case OR_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 | arg1));
+            }
+            break;
+
+            case XOR_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 ^ arg1));
+            }
+            break;
+
+            case NOT_I32:
+            {
+                auto arg0 = popInt32();
+                pushVal(Value::int32(~arg0));
+            }
+            break;
+
             case LT_I32:
             {
                 auto arg1 = popInt32();
@@ -1446,9 +1610,8 @@ Value execCode()
                 }
 
                 auto ch = str[idx];
-
                 // Cache single-character strings
-                if (charStrings[ch] == Value::FALSE)
+                if (charStrings[ch] == Value::UNDEF)
                 {
                     char buf[2] = { (char)str[idx], '\0' };
                     charStrings[ch] = String(buf);
@@ -1653,14 +1816,27 @@ Value execCode()
                 auto dstVer = (BlockVersion*)dstAddr;
 
                 if (!dstVer->startPtr)
+                {
+                    // If the heap allocation pointer is right
+                    // after the jump instruction
+                    if (instrPtr == codeHeapAlloc)
+                    {
+                        // The jump is redundant, so we will write the
+                        // next block over this jump instruction
+                        instrPtr = codeHeapAlloc = (uint8_t*)&op;
+                    }
+
                     compile(dstVer);
+                }
+                else
+                {
+                    // Patch the jump
+                    op = JUMP;
+                    dstAddr = dstVer->startPtr;
 
-                // Patch the jump
-                op = JUMP;
-                dstAddr = dstVer->startPtr;
-
-                // Jump to the target
-                instrPtr = dstVer->startPtr;
+                    // Jump to the target
+                    instrPtr = dstVer->startPtr;
+                }
             }
             break;
 
@@ -1716,12 +1892,11 @@ Value execCode()
             // Regular function call
             case CALL:
             {
-                auto numArgs = readCode<uint16_t>();
-                auto retVer = readCode<BlockVersion*>();
+                auto& callInfo = readCode<CallInfo>();
 
                 auto callee = popVal();
 
-                if (stackSize() < numArgs)
+                if (stackSize() < callInfo.numArgs)
                 {
                     throw RunError(
                         "stack underflow at call"
@@ -1730,11 +1905,20 @@ Value execCode()
 
                 if (callee.isObject())
                 {
-                    funCall((uint8_t*)&op, callee, numArgs, retVer);
+                    funCall(
+                        (uint8_t*)&op,
+                        callee,
+                        callInfo
+                    );
                 }
                 else if (callee.isHostFn())
                 {
-                    hostCall((uint8_t*)&op, callee, numArgs, retVer);
+                    hostCall(
+                        (uint8_t*)&op,
+                        callee,
+                        callInfo.numArgs,
+                        callInfo.retVer
+                    );
                 }
                 else
                 {
@@ -1846,8 +2030,20 @@ Value callFun(Object fun, ValueVec args)
     static ICache numLocalsIC("num_locals");
     auto numParams = numParamsIC.getInt32(fun);
     auto numLocals = numLocalsIC.getInt32(fun);
-    assert (args.size() <= numParams);
-    assert (numParams <= numLocals);
+
+    if (args.size() != numParams)
+    {
+        throw RunError(
+            "argument count mismatch in top-level call"
+        );
+    }
+
+    if (numLocals < numParams + 1)
+    {
+        throw RunError(
+            "not enough locals to store function parameters in top-level call"
+        );
+    }
 
     // Store the stack size before the call
     auto preCallSz = stackSize();
@@ -1878,6 +2074,9 @@ Value callFun(Object fun, ValueVec args)
         //std::cout << "  " << args[i].toString() << std::endl;
         framePtr[-i] = args[i];
     }
+
+    // Store the function/closure parameter
+    framePtr[-numParams] = fun;
 
     // Get the function entry block
     static ICache entryIC("entry");

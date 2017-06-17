@@ -68,7 +68,10 @@ private:
     size_t idNo;
 
     size_t numParams;
-    size_t numLocals;
+
+    // Functions always have at least 1 local
+    // to store the hidden function/closure argument
+    size_t numLocals = 1;
 
     Block* entryBlock;
 
@@ -82,7 +85,6 @@ public:
         Block* entryBlock
     )
     : numParams(numParams),
-      numLocals(0),
       entryBlock(entryBlock)
     {
         idNo = lastIdNo++;
@@ -511,6 +513,14 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             return;
         }
 
+        // Bitwise not; one's-complement, or flipping each bit
+        if (unOp->op == &OP_BIT_NOT)
+        {
+            genExpr(ctx, unOp->expr);
+            runtimeCall(ctx, "bit_not", 1);
+            return;
+        }
+
         assert (false && "unhandled unary op");
     }
 
@@ -643,6 +653,62 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             genExpr(ctx, binOp->lhsExpr);
             genExpr(ctx, binOp->rhsExpr);
             runtimeCall(ctx, "div", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_MOD)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "mod", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_SHL)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "shl", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_SHR)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "shr", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_USHR)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "ushr", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_AND)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "and", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_OR)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "or", 2);
+            return;
+        }
+
+        if (binOp->op == &OP_BIT_XOR)
+        {
+            genExpr(ctx, binOp->lhsExpr);
+            genExpr(ctx, binOp->rhsExpr);
+            runtimeCall(ctx, "xor", 2);
             return;
         }
 
