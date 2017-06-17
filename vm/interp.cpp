@@ -25,6 +25,13 @@ enum Opcode : uint16_t
     MUL_I32,
     DIV_I32,
     MOD_I32,
+    SHL_I32,
+    SHR_I32,
+    USHR_I32,
+    AND_I32,
+    OR_I32,
+    XOR_I32,
+    NOT_I32,
     LT_I32,
     LE_I32,
     GT_I32,
@@ -521,6 +528,48 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "shl_i32")
+        {
+            writeCode(SHL_I32);
+            continue;
+        }
+
+        if (op == "shr_i32")
+        {
+            writeCode(SHR_I32);
+            continue;
+        }
+
+        if (op == "ushr_i32")
+        {
+            writeCode(USHR_I32);
+            continue;
+        }
+
+        if (op == "and_i32")
+        {
+            writeCode(AND_I32);
+            continue;
+        }
+		
+        if (op == "or_i32")
+        {
+            writeCode(OR_I32);
+            continue;
+        }
+		
+        if (op == "xor_i32")
+        {
+            writeCode(XOR_I32);
+            continue;
+        }
+		
+        if (op == "not_i32")
+        {
+            writeCode(NOT_I32);
+            continue;
+        }
+		
         if (op == "lt_i32")
         {
             writeCode(LT_I32);
@@ -1288,6 +1337,61 @@ Value execCode()
                 auto arg1 = popInt32();
                 auto arg0 = popInt32();
                 pushVal(Value::int32(arg0 % arg1));
+            }
+            break;
+
+            case SHL_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 << arg1));
+            }
+            break;
+
+            case SHR_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 >> arg1));
+            }
+            break;
+			
+            case USHR_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = (uint32_t)popInt32();
+                pushVal(Value::int32((int32_t)(arg0 >> arg1)));
+            }
+            break;
+
+            case AND_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 & arg1));
+            }
+            break;
+
+            case OR_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 | arg1));
+            }
+            break;
+
+            case XOR_I32:
+            {
+                auto arg1 = popInt32();
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 ^ arg1));
+            }
+            break;
+
+            case NOT_I32:
+            {
+                auto arg0 = popInt32();
+                pushVal(Value::int32(~arg0));
             }
             break;
 
