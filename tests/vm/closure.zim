@@ -21,10 +21,10 @@ make_entry = {
     { op:'push', val:4 },
     { op:'new_object' },
 
-    # Set num_params = 0
+    # Set params = []
     { op:'dup', idx:0 },
-    { op:'push', val:'num_params' },
-    { op:'push', val:0 },
+    { op:'push', val:'params' },
+    { op:'push', val:[] },
     { op:'set_field' },
 
     # Set num_locals = 1
@@ -51,7 +51,7 @@ make_entry = {
 };
 make_closure = {
   entry:@make_entry,
-  num_params:0,
+  params: [],
   num_locals:1,
 };
 
@@ -90,7 +90,7 @@ main_fail = {
 };
 main = {
   entry:@main_entry,
-  num_params:0,
+  params: [],
   num_locals:1,
 };
 

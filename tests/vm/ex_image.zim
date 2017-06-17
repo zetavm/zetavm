@@ -48,9 +48,9 @@ c = { prec: @b, next: @a };
 # The function, its arguments, local variables and the bytecode
 # that defines its behavior.
 sum = {
-    name: "main",
+    name: "sum",
     # Two arguments
-    num_params: 2,
+    params: ['x', 'y'],
     # Three local variables (two arguments and a hidden closure argument)
     num_locals: 3,
     entry: {
@@ -68,7 +68,7 @@ sum = {
 # This function calls sum(3,7) and returns the result.
 main = {
     name: "main",
-    num_params: 0,
+    params: [],
     num_locals: 1,
     entry: @main_entry
 };

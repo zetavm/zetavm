@@ -4,7 +4,7 @@
     # Trivial function returning an integer constant
     main: {
         name: "main",
-        num_params: 0,
+        params: [],
         num_locals: 1,
         entry: {
             name: "main_entry",

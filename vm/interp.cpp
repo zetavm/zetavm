@@ -1037,8 +1037,9 @@ __attribute__((always_inline)) inline void funCall(
         static ICache localsIC("num_locals");
         auto numLocals = localsIC.getInt32(fun);
 
-        static ICache paramsIC("num_params");
-        auto numParams = paramsIC.getInt32(fun);
+        static ICache paramsIC("params");
+        auto params = paramsIC.getArr(fun);
+        auto numParams = size_t(params.length());
 
         // Check that the argument count matches
         checkArgCount(callInstr, numParams, numArgs);
@@ -2034,9 +2035,10 @@ Value execCode()
 /// Note: this may be indirectly called from within a running interpreter
 Value callFun(Object fun, ValueVec args)
 {
-    static ICache numParamsIC("num_params");
+    static ICache paramsIC("params");
     static ICache numLocalsIC("num_locals");
-    auto numParams = numParamsIC.getInt32(fun);
+    auto params = paramsIC.getArr(fun);
+    auto numParams = size_t(params.length());
     auto numLocals = numLocalsIC.getInt32(fun);
 
     if (args.size() != numParams)

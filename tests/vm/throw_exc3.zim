@@ -12,7 +12,7 @@ throw_entry = {
 };
 throw_fun = {
   entry:@throw_entry,
-  num_params:0,
+  params: [],
   num_locals:1,
 };
 
@@ -30,7 +30,7 @@ call_ret = {
 };
 call_fun = {
   entry:@call_entry,
-  num_params:2,
+  params: ['x', 'y'],
   num_locals:3,
 };
 
@@ -71,7 +71,7 @@ block_240 = {
 };
 fun_1 = {
   entry:@block_0,
-  num_params:0,
+  params: [],
   num_locals:1,
 };
 

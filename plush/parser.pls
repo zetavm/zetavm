@@ -1427,12 +1427,12 @@ Block.addInstr = function (block, instr)
 
 var Function = {};
 
-Function.new = function (numParams, entryBlock)
+Function.new = function (params, entryBlock)
 {
     // Note: functions always have at least 1 local
     // to store the hidden function/closure argument
     return Function::{
-        num_params: numParams,
+        params: params,
         num_locals: 1,
         entry: entryBlock,
 
@@ -1625,7 +1625,7 @@ var genUnit = function (unitAST)
 {
     var entryBlock = Block.new();
 
-    var unitFun = Function.new(0, entryBlock);
+    var unitFun = Function.new([], entryBlock);
 
     // Register variable declarations
     registerDecls(unitFun, unitAST.body, true);
@@ -1670,7 +1670,7 @@ var runtimeCall = function (ctx, fun)
     ctx:addInstr({
         op: "call",
         ret_to: contBlock,
-        num_args: fun.num_params
+        num_args: fun.params.length
     });
 
     ctx:merge(contBlock);
@@ -1913,7 +1913,7 @@ var genExpr = function (ctx, expr)
             runtimeCall(ctx, rt_shl);
             return;
         }
-        
+
         if (expr.op == OP_BIT_SHR)
         {
             genExpr(ctx, expr.lhsExpr);
@@ -1921,7 +1921,7 @@ var genExpr = function (ctx, expr)
             runtimeCall(ctx, rt_shr);
             return;
         }
-        
+
         if (expr.op == OP_BIT_USHR)
         {
             genExpr(ctx, expr.lhsExpr);
@@ -1929,7 +1929,7 @@ var genExpr = function (ctx, expr)
             runtimeCall(ctx, rt_ushr);
             return;
         }
-        
+
         if (expr.op == OP_BIT_AND)
         {
             genExpr(ctx, expr.lhsExpr);
@@ -2034,7 +2034,7 @@ var genExpr = function (ctx, expr)
         var entryBlock = Block.new();
 
         var fun = Function.new(
-            expr.params.length,
+            expr.params,
             entryBlock
         );
 

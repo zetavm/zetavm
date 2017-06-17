@@ -31,7 +31,7 @@ loop_exit = {
 
 main = {
     name: "main",
-    num_params: 0,
+    params: [],
     num_locals: 1,
     entry: @main_entry
 };

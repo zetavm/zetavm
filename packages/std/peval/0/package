@@ -4,23 +4,27 @@ var curry = function (fun, argVal)
 {
     //print('currying');
 
+    var numParams = fun.params.length;
+
     assert (
-        fun.num_params > 0,
+        numParams > 0,
         "cannot curry function with no arguments"
     );
-
-    var argIdx = fun.num_params - 1;
 
     var newEntry = {
         instrs: [
             { op:'push', val:argVal },
-            { op:'set_local', idx:argIdx },
+            { op:'set_local', idx:(numParams - 1) },
             { op:'jump', to:fun.entry }
         ]
     };
 
+    var newParams = [];
+    for (var i = 0; i < numParams - 1; i += 1)
+        newParams:push(fun.params[i]);
+
     var newFun = {
-        num_params: fun.num_params - 1,
+        params: newParams,
         num_locals: fun.num_locals,
         entry: newEntry
     };

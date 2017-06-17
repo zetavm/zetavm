@@ -11,7 +11,7 @@ block_236 = {
 
 fun_237 = {
   entry:@block_236,
-  num_params:2,
+  params: ['x', 'y'],
   num_locals:3,
 };
 
@@ -49,7 +49,7 @@ block_241 = {
 
 fun_1 = {
   entry:@block_0,
-  num_params:0,
+  params: [],
   num_locals:1,
 };
 

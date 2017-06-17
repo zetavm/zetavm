@@ -67,7 +67,8 @@ private:
 
     size_t idNo;
 
-    size_t numParams;
+    // Visible function parameter names
+    std::vector<std::string> params;
 
     // Functions always have at least 1 local
     // to store the hidden function/closure argument
@@ -81,10 +82,10 @@ private:
 public:
 
     Function(
-        size_t numParams,
+        std::vector<std::string> params,
         Block* entryBlock
     )
-    : numParams(numParams),
+    : params(params),
       entryBlock(entryBlock)
     {
         idNo = lastIdNo++;
@@ -120,9 +121,14 @@ public:
     {
         assert (entryBlock != nullptr);
 
+        std::string paramsStr = "[";
+        for (auto param: params)
+            paramsStr += "\'" + param + "\',";
+        paramsStr += "]";
+
         out += getHandle() + " = {\n";
         out += "  entry:@" + entryBlock->getHandle() + ",\n";
-        out += "  num_params:" + std::to_string(numParams) + ",\n";
+        out += "  params:" + paramsStr + ",\n";
         out += "  num_locals:" + std::to_string(numLocals) + ",\n";
         out += "};\n\n";
 
@@ -262,7 +268,7 @@ std::string genProgram(std::unique_ptr<Program> program)
 
     Block* entryBlock = new Block();
 
-    Function* unitFun = new Function(0, entryBlock);
+    Function* unitFun = new Function(std::vector<std::string>(), entryBlock);
 
     // Create the initial context
     CodeGenCtx ctx(

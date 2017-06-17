@@ -1,5 +1,8 @@
 #zeta-image
 
+# 10 million function calls
+# This benchmark tests the performance of calls & returns
+
 fn_entry = {
     instrs: [
         { op: "push", val:0 },
@@ -8,7 +11,7 @@ fn_entry = {
 };
 fn = {
     name: "fn",
-    num_params: 0,
+    params: [],
     num_locals: 1,
     entry: @fn_entry
 };
@@ -54,7 +57,7 @@ loop_exit = {
 };
 main = {
     name: "main",
-    num_params: 0,
+    params: [],
     num_locals: 1,
     entry: @main_entry
 };
