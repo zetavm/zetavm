@@ -586,10 +586,11 @@ public:
     virtual ~FunExpr() {}
 
     std::string name;
+    
+    ASTStmt* body;
 
     std::vector<std::string> params;
 
-    ASTStmt* body;
 };
 
 FunExpr* parseString(std::string str, std::string srcName);

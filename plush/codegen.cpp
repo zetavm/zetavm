@@ -144,6 +144,9 @@ public:
 
     /// Current function being generated
     Function* fun;
+    
+    /// Unit function flag
+    bool unitFun;
 
     /// Current block into which to insert
     Block* curBlock;
@@ -157,8 +160,6 @@ public:
     /// Try catch block
     Block* catchBlock;
 
-    /// Unit function flag
-    bool unitFun;
 
     CodeGenCtx(
         std::string& out,
@@ -284,7 +285,7 @@ void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
         return;
     }
 
-    if (auto exprStmt = dynamic_cast<ExprStmt*>(stmt))
+    if (dynamic_cast<ExprStmt*>(stmt) != nullptr)
     {
         return;
     }
@@ -303,12 +304,12 @@ void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
         return;
     }
 
-    if (auto contStmt = dynamic_cast<ContStmt*>(stmt))
+    if (dynamic_cast<ContStmt*>(stmt) != nullptr)
     {
         return;
     }
 
-    if (auto breakStmt = dynamic_cast<BreakStmt*>(stmt))
+    if (dynamic_cast<BreakStmt*>(stmt) != nullptr)
     {
         return;
     }
@@ -325,17 +326,17 @@ void registerDecls(Function* fun, ASTStmt* stmt, bool unitFun)
         return;
     }
 
-    if (auto returnStmt = dynamic_cast<ReturnStmt*>(stmt))
+    if (dynamic_cast<ReturnStmt*>(stmt) != nullptr)
     {
         return;
     }
 
-    if (auto throwStmt = dynamic_cast<ThrowStmt*>(stmt))
+    if (dynamic_cast<ThrowStmt*>(stmt) != nullptr)
     {
         return;
     }
 
-    if (auto irStmt = dynamic_cast<IRStmt*>(stmt))
+    if (dynamic_cast<IRStmt*>(stmt) != nullptr)
     {
         return;
     }
@@ -1032,7 +1033,7 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
     }
 
     // Loop break statement
-    if (auto contStmt = dynamic_cast<ContStmt*>(stmt))
+    if (dynamic_cast<ContStmt*>(stmt) != nullptr)
     {
         if (!ctx.curBlock->isFinalized())
             ctx.addBranch("jump", "to", ctx.contBlock);
@@ -1040,7 +1041,7 @@ void genStmt(CodeGenCtx& ctx, ASTStmt* stmt)
     }
 
     // Loop break statement
-    if (auto breakStmt = dynamic_cast<BreakStmt*>(stmt))
+    if (dynamic_cast<BreakStmt*>(stmt) != nullptr)
     {
         if (!ctx.curBlock->isFinalized())
             ctx.addBranch("jump", "to", ctx.breakBlock);
