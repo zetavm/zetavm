@@ -601,6 +601,7 @@ std::string ImgRef::getName() const
     return (std::string)strVal;
 }
 
+//Murmurhash, learn more at: https://en.wikipedia.org/wiki/MurmurHash
 int64_t hashFunction(const void* key, size_t len, uint64_t seed)
 {
     const uint64_t m = 0xc6a4a7935bd1e995;
