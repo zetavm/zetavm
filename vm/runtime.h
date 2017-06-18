@@ -4,7 +4,6 @@
 #include <string>
 #include <cstring>
 #include <unordered_map>
-#include  <mutex>
 
 /// Type tag, 8 bits
 typedef uint8_t Tag;
