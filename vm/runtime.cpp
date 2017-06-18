@@ -19,6 +19,8 @@ const Value Value::TWO(Word(int64_t(2)), TAG_INT32);
 
 // Global virtual machine instance
 VM vm;
+// Global string pool
+StringPool stringPool;
 
 Value::Value(Word w, Tag t)
 {
@@ -107,6 +109,10 @@ VM::VM()
 {
 }
 
+StringPool::StringPool()
+{
+}
+
 /**
 Allocates a block of memory
 Note that this function guarantees that the memory is zeroed out
@@ -157,21 +163,8 @@ refptr Wrapper::getObjPtr()
 }
 
 String::String(std::string str)
-{
-    auto len = str.length();
-
-    // Compute the string object size
-    auto numBytes = memSize(len);
-
-    // Allocate memory
-    val = vm.alloc(numBytes, TAG_STRING);
-    auto ptr = (refptr)val;
-
-    // Set the string length
-    *(uint32_t*)(ptr + OF_LEN) = len;
-
-    // Copy the string data
-    strcpy((char*)(ptr + OF_DATA), str.c_str());
+{   
+    this->val = stringPool.getString(str);
 }
 
 String::String(Value value)
@@ -608,6 +601,98 @@ std::string ImgRef::getName() const
     return (std::string)strVal;
 }
 
+int64_t hashFunction(const void* key, size_t len, uint64_t seed)
+{
+    const uint64_t m = 0xc6a4a7935bd1e995;
+    const int r = 47;
+
+    uint64_t h = seed ^ (len * m);
+
+    uint64_t* data = (uint64_t*)key;
+    uint64_t* end = data + (len/8);
+
+    while (data != end)
+    {
+        uint64_t k = *(data++);
+
+        k *= m;
+        k ^= k >> r;
+        k *= m;
+
+        h ^= k;
+        h *= m;
+    }
+
+    uint8_t* tail = (uint8_t*)data;
+
+    switch (len & 7)
+    {
+        case 7: h ^= ((uint64_t)tail[6]) << 48; 
+        case 6: h ^= ((uint64_t)tail[5]) << 40; 
+        case 5: h ^= ((uint64_t)tail[4]) << 32; 
+        case 4: h ^= ((uint64_t)tail[3]) << 24; 
+        case 3: h ^= ((uint64_t)tail[2]) << 16; 
+        case 2: h ^= ((uint64_t)tail[1]) << 8; 
+        case 1: h ^= ((uint64_t)tail[0]);
+                h *= m;  
+        default:;
+    }
+
+    h ^= h >> r;
+    h *= m;
+    h ^= h >> r;
+    return h;
+}
+
+size_t StringHasher::operator()(const std::string str) const 
+{
+    auto len = str.length();
+    auto ptr = str.c_str();
+    return (size_t)hashFunction(ptr, len, 1337);
+}
+
+// bool StringDeepComparison::operator()(const Value str1, const Value str2) const 
+// {
+//     auto ptr1 = (refptr)str1;
+//     assert (ptr1 != nullptr);
+//     auto len1 = *(uint32_t*)(ptr1 + String::OF_LEN);
+//     auto strdata1 = (char*)(ptr1 + String::OF_DATA);
+//     auto ptr2 = (refptr)str2;
+//     assert (ptr2 != nullptr);
+//     auto len2 = *(uint32_t*)(ptr2 + String::OF_LEN); 
+//     auto strdata2 = (char*)(ptr2 + String::OF_DATA);    
+//     return len1 == len2 && strncmp(strdata1, strdata2, len1) == 0;
+// }
+
+Value StringPool::getString(std::string str) 
+{
+    auto iter = pool.find(str);
+    if (iter == pool.end())
+    {
+        return addNewString(str);
+    }
+    return iter->second;
+}
+
+Value StringPool::addNewString(std::string str)
+{
+    auto len = str.length();
+    // Compute the string object size
+    auto numBytes = String::memSize(len);
+
+    // Allocate memory
+    auto val = vm.alloc(numBytes, TAG_STRING);
+    auto ptr = (refptr)val;
+
+    // Set the string length
+    *(uint32_t*)(ptr + String::OF_LEN) = len;
+
+    // Copy the string data
+    strcpy((char*)(ptr + String::OF_DATA), str.c_str());
+    pool.insert({str, val});
+    return val;
+}
+
 bool isValidIdent(std::string identStr)
 {
     if (identStr.length() == 0)
@@ -721,3 +806,5 @@ void testRuntime()
         fieldStr += itr.get();
     assert (fieldStr == "foobar");
 }
+
+
