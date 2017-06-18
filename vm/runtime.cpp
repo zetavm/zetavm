@@ -528,7 +528,6 @@ bool ObjFieldItr::valid()
 std::string ObjFieldItr::get()
 {
     auto ptr = obj.getObjPtr();
-    auto cap = obj.getCap();
     auto values = (Value*)(ptr + Object::OF_FIELDS);
 
     //std::cout << "cap=" << cap << std::endl;
