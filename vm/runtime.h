@@ -410,12 +410,6 @@ public:
     size_t operator()(const std::string str) const;
 };
 
-// class StringDeepComparison
-// {
-// public:
-//     bool operator()(const Value str1, const Value str2) const;
-// };
-
 class StringPool
 {
 private:

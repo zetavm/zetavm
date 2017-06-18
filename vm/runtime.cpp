@@ -651,19 +651,6 @@ size_t StringHasher::operator()(const std::string str) const
     return (size_t)hashFunction(ptr, len, 1337);
 }
 
-// bool StringDeepComparison::operator()(const Value str1, const Value str2) const 
-// {
-//     auto ptr1 = (refptr)str1;
-//     assert (ptr1 != nullptr);
-//     auto len1 = *(uint32_t*)(ptr1 + String::OF_LEN);
-//     auto strdata1 = (char*)(ptr1 + String::OF_DATA);
-//     auto ptr2 = (refptr)str2;
-//     assert (ptr2 != nullptr);
-//     auto len2 = *(uint32_t*)(ptr2 + String::OF_LEN); 
-//     auto strdata2 = (char*)(ptr2 + String::OF_DATA);    
-//     return len1 == len2 && strncmp(strdata1, strdata2, len1) == 0;
-// }
-
 Value StringPool::getString(std::string str) 
 {
     auto iter = pool.find(str);
