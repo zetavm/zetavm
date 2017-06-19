@@ -403,17 +403,23 @@ public:
     std::string getName() const;
 };
 
-class StringHasher
-{
-public:
-    size_t operator()(const std::string str) const;
-};
+int64_t murmurHash2(const void* key, size_t len, uint64_t seed);
 
 class StringPool
 {
 private:
+    class StringHasher
+    {
+    public:
+        size_t operator()(const std::string str) const
+        {
+            auto len = str.length();
+            auto ptr = str.c_str();
+            return (size_t)murmurHash2(ptr, len, 1337);
+        }
+    };
     std::unordered_map<std::string, Value, StringHasher> pool;
-    Value addNewString(std::string str);
+    Value newString(std::string str);
 public: 
     StringPool();
     Value getString(std::string str);

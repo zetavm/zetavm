@@ -602,7 +602,7 @@ std::string ImgRef::getName() const
 }
 
 //Murmurhash, learn more at: https://en.wikipedia.org/wiki/MurmurHash
-int64_t hashFunction(const void* key, size_t len, uint64_t seed)
+int64_t murmurHash2(const void* key, size_t len, uint64_t seed)
 {
     const uint64_t m = 0xc6a4a7935bd1e995;
     const int r = 47;
@@ -645,24 +645,18 @@ int64_t hashFunction(const void* key, size_t len, uint64_t seed)
     return h;
 }
 
-size_t StringHasher::operator()(const std::string str) const 
-{
-    auto len = str.length();
-    auto ptr = str.c_str();
-    return (size_t)hashFunction(ptr, len, 1337);
-}
 
 Value StringPool::getString(std::string str) 
 {
     auto iter = pool.find(str);
     if (iter == pool.end())
     {
-        return addNewString(str);
+        return newString(str);
     }
     return iter->second;
 }
 
-Value StringPool::addNewString(std::string str)
+Value StringPool::newString(std::string str)
 {
     auto len = str.length();
     // Compute the string object size
