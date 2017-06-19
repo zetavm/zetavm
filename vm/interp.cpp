@@ -1035,7 +1035,9 @@ __attribute__((always_inline)) inline void funCall(
         }
 
         static ICache localsIC("num_locals");
-        auto numLocals = localsIC.getInt32(fun);
+        auto nlocals = localsIC.getInt32(fun);
+        assert(nlocals >= 0);
+        auto numLocals = size_t(nlocals);
 
         static ICache paramsIC("params");
         auto params = paramsIC.getArr(fun);
@@ -1614,7 +1616,7 @@ Value execCode()
                     );
                 }
 
-                auto ch = str[idx];
+                uint8_t ch = str[idx];
                 // Cache single-character strings
                 if (charStrings[ch] == Value::UNDEF)
                 {
@@ -2039,7 +2041,9 @@ Value callFun(Object fun, ValueVec args)
     static ICache numLocalsIC("num_locals");
     auto params = paramsIC.getArr(fun);
     auto numParams = size_t(params.length());
-    auto numLocals = numLocalsIC.getInt32(fun);
+    auto nlocals = numLocalsIC.getInt32(fun);
+    assert(nlocals >= 0);
+    auto numLocals = size_t(nlocals);
 
     if (args.size() != numParams)
     {

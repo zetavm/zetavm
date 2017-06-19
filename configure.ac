@@ -7,7 +7,7 @@ AC_INIT
 # Configure the C++ compiler
 AC_PROG_CXX
 
-CXXFLAGS="-std=c++11 -O3 -ftrapv"
+CXXFLAGS="-std=c++11 -O3 -ftrapv -Wall"
 
 # Option to disable assertions and debug information
 AC_ARG_ENABLE(

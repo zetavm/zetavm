@@ -578,8 +578,8 @@ public:
         std::vector<std::string> params
     )
     : name(name),
-      body(body),
-      params(params)
+      params(params),
+      body(body)
     {
     }
 
@@ -588,8 +588,9 @@ public:
     std::string name;
 
     std::vector<std::string> params;
-
+    
     ASTStmt* body;
+
 };
 
 FunExpr* parseString(std::string str, std::string srcName);
