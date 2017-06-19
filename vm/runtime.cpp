@@ -20,12 +20,6 @@ const Value Value::TWO(Word(int64_t(2)), TAG_INT32);
 // Global virtual machine instance
 VM vm;
 
-Value::Value(Word w, Tag t)
-{
-    word = w;
-    tag = t;
-}
-
 /// Produce a string representation of a value
 std::string Value::toString() const
 {
@@ -73,29 +67,6 @@ bool Value::isPointer() const
     }
 }
 
-Value::operator bool () const
-{
-    assert (tag == TAG_BOOL);
-    return word.int64? 1:0;
-}
-
-Value::operator int32_t () const
-{
-    assert (tag == TAG_INT32);
-    return word.int32;
-}
-
-Value::operator float () const
-{
-    assert (tag == TAG_FLOAT32);
-    return word.float32;
-}
-
-Value::operator refptr () const
-{
-    assert (isPointer());
-    return word.ptr;
-}
 
 Value::operator std::string () const
 {
