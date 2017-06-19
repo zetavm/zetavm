@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <cstring>
+#include <unordered_map>
 
 /// Type tag, 8 bits
 typedef uint8_t Tag;
@@ -248,7 +249,6 @@ public:
     {
         return OF_DATA + (len + 1) * sizeof(char);
     }
-
     String(std::string str);
     String(Value value);
 
@@ -267,11 +267,7 @@ public:
 
     // FIXME: temporary until string interning is implemented
     bool operator == (String that) { 
-        auto len1 = length();     
-        auto len2 = that.length();     
-        const char* dataptr1 = getDataPtr(); 
-        const char* dataptr2 = that.getDataPtr(); 
-        return len1 == len2 && strncmp(dataptr1, dataptr2, len1) == 0;
+        return val == that.val;
     }
 
     /// Get the ith character code
@@ -425,6 +421,28 @@ public:
     ImgRef(Value val);
 
     std::string getName() const;
+};
+
+int64_t murmurHash2(const void* key, size_t len, uint64_t seed);
+
+class StringPool
+{
+private:
+    class StringHasher
+    {
+    public:
+        size_t operator()(const std::string str) const
+        {
+            auto len = str.length();
+            auto ptr = str.c_str();
+            return (size_t)murmurHash2(ptr, len, 1337);
+        }
+    };
+    std::unordered_map<std::string, Value, StringHasher> pool;
+    Value newString(std::string str);
+public: 
+    StringPool();
+    Value getString(std::string str);
 };
 
 /// Global virtual machine instance
