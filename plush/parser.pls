@@ -2446,7 +2446,6 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
         }
         else if (lhsExpr.op == OP_INDEX)
         {
-
             // Evaluate the rhs value
             genExpr(ctx, rhsExpr);
 
