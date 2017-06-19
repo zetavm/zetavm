@@ -1245,7 +1245,7 @@ void genAssign(CodeGenCtx& ctx, ASTExpr* lhsExpr, ASTExpr* rhsExpr)
         // Array elements
         else if (binOp->op == &OP_INDEX)
         {
-			// Evaluate the rhs value
+            // Evaluate the rhs value
             genExpr(ctx, rhsExpr);
 
             // Evaluate the array
