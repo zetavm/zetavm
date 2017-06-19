@@ -578,18 +578,18 @@ public:
         std::vector<std::string> params
     )
     : name(name),
-      body(body),
-      params(params)
+      params(params),
+      body(body)
     {
     }
 
     virtual ~FunExpr() {}
 
     std::string name;
-    
-    ASTStmt* body;
 
     std::vector<std::string> params;
+    
+    ASTStmt* body;
 
 };
 

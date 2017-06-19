@@ -145,9 +145,6 @@ public:
     /// Current function being generated
     Function* fun;
     
-    /// Unit function flag
-    bool unitFun;
-
     /// Current block into which to insert
     Block* curBlock;
 
@@ -159,7 +156,9 @@ public:
 
     /// Try catch block
     Block* catchBlock;
-
+    
+    /// Unit function flag
+    bool unitFun;
 
     CodeGenCtx(
         std::string& out,
@@ -172,11 +171,11 @@ public:
     )
     : out(out),
       fun(fun),
-      unitFun(unitFun),
       curBlock(curBlock),
       contBlock(contBlock),
       breakBlock(breakBlock),
-      catchBlock(catchBlock)
+      catchBlock(catchBlock),
+      unitFun(unitFun)
     {
     }
 
