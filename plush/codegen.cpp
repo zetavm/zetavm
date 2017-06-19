@@ -1222,7 +1222,7 @@ void genAssign(CodeGenCtx& ctx, ASTExpr* lhsExpr, ASTExpr* rhsExpr)
     // Assignment to a property or array element
     if (auto binOp = dynamic_cast<BinOpExpr*>(lhsExpr))
     {
-		// Object properties
+        // Object properties
         if (binOp->op == &OP_MEMBER)
         {
             // Get the field name
