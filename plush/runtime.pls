@@ -644,33 +644,22 @@ var rt_setElem = function (base, idx, val)
 {
     if (typeof base == "array")
     {
-        if(typeof idx == "int32")
-        {
-            // TODO: check bounds
-            return $set_elem(base, idx, val);
-        }
-        else
-        {
-            assert (
-                false,
-                "unhandled index type in setElem with array base; should be int32"
-            );
-        }
+        assert (
+            typeof idx == "int32",
+            "unhandled index type in setElem with array base; should be int32"
+        );
+        // TODO: check bounds
+        $set_elem(base, idx, val);
+        return base;
     }
 
     if (typeof base == "object")
     {
-        if(typeof idx == "string")
-        {
-            return $set_field(base, idx, val);
-        }
-        else
-        {
-            assert (
-                false,
-                "unhandled index type in setElem with object base; should be string"
-            );
-        }
+        assert (
+            typeof idx == "string",
+            "unhandled index type in setElem with object base; should be string"
+        );
+        return $set_field(base, idx, val);
     }
     
     assert (

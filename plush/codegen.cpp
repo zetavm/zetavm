@@ -1253,7 +1253,6 @@ void genAssign(CodeGenCtx& ctx, ASTExpr* lhsExpr, ASTExpr* rhsExpr)
             // Evaluate the rhs value
             genExpr(ctx, rhsExpr);
 
-            //ctx.addStr("op:'dup', idx:2");
             //ctx.addOp("set_elem");
             runtimeCall(ctx, "setElem", 3);
             return;

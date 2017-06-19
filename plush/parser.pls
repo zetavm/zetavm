@@ -2455,7 +2455,6 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
             // Evaluate the rhs value
             genExpr(ctx, rhsExpr);
 
-            //ctx:addInstr({ op:'dup', idx:2 });
             //ctx:addOp("set_elem");
             runtimeCall(ctx, rt_setElem);
 
