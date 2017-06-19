@@ -275,8 +275,8 @@ var rt_bit_not = function (x)
     if (typeof x == "int32")
     {
         return $not_i32(x);
-	}
-	assert (
+    }
+    assert (
         false,
         "unhandled type in bitwise not"
     );
@@ -605,12 +605,20 @@ var rt_getElem = function (base, idx)
 {
     if (typeof base == "array")
     {
+        assert (
+            typeof idx == "int32",
+            "unhandled index type in getElem with array base; should be int32"
+        );
         // TODO: check bounds
         return $get_elem(base, idx);
     }
 
     if (typeof base == "string")
     {
+        assert (
+            typeof idx == "int32",
+            "unhandled index type in getElem with string base; should be int32"
+        );
         // TODO: check bounds
         //if (index < $str_len(base))
         return $get_char(base, idx);
@@ -618,12 +626,56 @@ var rt_getElem = function (base, idx)
 
     if (typeof base == "object")
     {
+        assert (
+            typeof idx == "string",
+            "unhandled index type in getElem with object base; should be string"
+        );
         return $get_field(base, idx);
     }
 
     assert (
         false,
-        "unhandled type in getElem"
+        "unhandled base type in getElem; should be array, string, or object"
+    );
+};
+
+/// Assign-to-index operator implementation (ie: base[idx] = val)
+var rt_setElem = function (base, idx, val)
+{
+    if (typeof base == "array")
+    {
+        if(typeof idx == "int32")
+        {
+            // TODO: check bounds
+            return $set_elem(base, idx, val);
+        }
+        else
+        {
+            assert (
+                false,
+                "unhandled index type in setElem with array base; should be int32"
+            );
+        }
+    }
+
+    if (typeof base == "object")
+    {
+        if(typeof idx == "string")
+        {
+            return $set_field(base, idx, val);
+        }
+        else
+        {
+            assert (
+                false,
+                "unhandled index type in setElem with object base; should be string"
+            );
+        }
+    }
+    
+    assert (
+        false,
+        "unhandled base type in setElem; should be array or object"
     );
 };
 

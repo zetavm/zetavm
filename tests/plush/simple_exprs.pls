@@ -99,5 +99,5 @@ arr[1] = 100;
 assert (arr[1] == 100);
 assert (arr[1] == arr[1]);
 assert (arr[1] == arr[0] * 2);
-arr[0] *= 4;
+assert((arr[0] *= 4) == 200);
 assert (arr[0] == arr[1] * 2);

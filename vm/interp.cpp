@@ -1793,6 +1793,8 @@ Value execCode()
                 }
 
                 arr.setElem(idx, val);
+                
+                pushVal(val);
             }
             break;
 
