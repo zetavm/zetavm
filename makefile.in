@@ -66,7 +66,7 @@ test: all
 	./scheme.sh tests/scheme/write.scm
 
 clean:
-	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CJS_BIN) config.status config.log
+	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CJS_BIN) $(CSCHEME_BIN) config.status config.log
 
 # Tells make which targets are not files
 .PHONY: all test clean plush-pkg
@@ -77,8 +77,8 @@ clean:
 
 ZETA_BIN=zeta
 
-ZETA_SRCS=       \
-vm/runtime.cpp  \
+ZETA_SRCS=  	\
+vm/runtime.cpp 	\
 vm/parser.cpp   \
 vm/interp.cpp   \
 vm/core.cpp     \
@@ -93,10 +93,10 @@ zeta: vm/*.cpp vm/*.h
 
 CPLUSH_BIN=cplush
 
-CPLUSH_SRCS=    \
-plush/parser.cpp   \
-plush/codegen.cpp  \
-plush/main.cpp     \
+CPLUSH_SRCS= 		\
+plush/parser.cpp  	\
+plush/codegen.cpp 	\
+plush/main.cpp    	\
 
 cplush: plush/*.cpp plush/*.h
 	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_SRCS)

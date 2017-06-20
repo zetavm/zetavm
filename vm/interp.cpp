@@ -10,6 +10,7 @@
 /// Opcode enumeration
 enum Opcode : uint16_t
 {
+    // Local variable access
     GET_LOCAL,
     SET_LOCAL,
 
@@ -292,7 +293,7 @@ template <typename T> __attribute__((always_inline)) inline T& readCode()
 /// Push a value on the stack
 __attribute__((always_inline)) inline void pushVal(Value val)
 {
-    assert (stackPtr > stackLimit);
+    assert (stackPtr > stackLimit && "stack overflow");
     stackPtr--;
     stackPtr[0] = val;
 }
@@ -305,7 +306,7 @@ __attribute__((always_inline)) inline void pushBool(bool val)
 
 __attribute__((always_inline)) inline Value popVal()
 {
-    assert (stackPtr < stackBase);
+    assert (stackPtr < stackBase && "stack underflow");
     auto val = stackPtr[0];
     stackPtr++;
     return val;

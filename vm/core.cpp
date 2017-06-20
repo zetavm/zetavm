@@ -327,7 +327,7 @@ Value queue_samples(
 
     float samples_buf[samples.length()];
 
-    for (int i = 0; i < samples.length(); i++)
+    for (size_t i = 0; i < samples.length(); i++)
     {
         auto elem = samples.getElem(i);
 
@@ -341,10 +341,12 @@ Value queue_samples(
         samples_buf[i] = sample;
     }
 
-    int error = SDL_QueueAudio(devID, samples_buf, sizeof(samples_buf));
+    if (SDL_QueueAudio(devID, samples_buf, sizeof(samples_buf)) != 0)
+    {
+        return Value::FALSE;
+    }
 
-    return Value::UNDEF;
-
+    return Value::TRUE;
 }
 
 Value get_queue_size(
