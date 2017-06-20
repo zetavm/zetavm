@@ -49,8 +49,11 @@ var obj = { x:1, y:2, z:3, w:1+2 };
 assert (obj.x == 1);
 assert (obj.y == 2);
 assert (obj.z == 3);
+assert (obj.w == 3);
 assert ('z' in obj);
 assert (!('k' in obj));
+obj.w = obj.x + obj.z;
+assert (obj.w == 4);
 
 // Type tests
 assert (typeof 1 == "int32", "int type");
@@ -90,3 +93,11 @@ assert ("c" >= "b");
 var arr = [5,7,2];
 assert (arr[1] == 7);
 assert (arr.length == 3);
+arr[0] = 50;
+assert (arr[0] == 50);
+arr[1] = 100;
+assert (arr[1] == 100);
+assert (arr[1] == arr[1]);
+assert (arr[1] == arr[0] * 2);
+assert((arr[0] *= 4) == 200);
+assert (arr[0] == arr[1] * 2);

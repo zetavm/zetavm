@@ -1225,9 +1225,10 @@ void genAssign(CodeGenCtx& ctx, ASTExpr* lhsExpr, ASTExpr* rhsExpr)
         return;
     }
 
-    // Assignment to a property
+    // Assignment to a property or array element
     if (auto binOp = dynamic_cast<BinOpExpr*>(lhsExpr))
     {
+        // Object properties
         if (binOp->op == &OP_MEMBER)
         {
             // Get the field name
@@ -1244,6 +1245,24 @@ void genAssign(CodeGenCtx& ctx, ASTExpr* lhsExpr, ASTExpr* rhsExpr)
             ctx.addStr("op:'dup', idx:2");
             ctx.addOp("set_field");
 
+            return;
+        }
+        // Array elements
+        else if (binOp->op == &OP_INDEX)
+        {
+            // Evaluate the array
+            genExpr(ctx, binOp->lhsExpr);
+
+            // Evaluate the index
+            genExpr(ctx, binOp->rhsExpr);
+
+            // Evaluate the rhs value
+            genExpr(ctx, rhsExpr);
+
+            //ctx.addStr("op:'dup', idx:2");
+
+            //ctx.addOp("set_elem");
+            runtimeCall(ctx, "setElem", 3);
             return;
         }
 

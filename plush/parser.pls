@@ -1534,7 +1534,7 @@ CodeGenCtx.merge = function (ctx, block)
     ctx.curBlock = block;
 };
 
-/// Add an instructionN
+/// Add an instruction
 CodeGenCtx.addInstr = function (ctx, instr)
 {
     assert (ctx.curBlock != false);
@@ -2441,6 +2441,24 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
             ctx:addInstr({ op:'push', val:identExpr.name });
             ctx:addInstr({ op:'dup', idx:2 });
             ctx:addOp("set_field");
+
+            return;
+        }
+        else if (lhsExpr.op == OP_INDEX)
+        {
+            // Evaluate the array
+            genExpr(ctx, lhsExpr.lhsExpr);
+
+            // Evaluate the index
+            genExpr(ctx, lhsExpr.rhsExpr);
+
+            // Evaluate the rhs value
+            genExpr(ctx, rhsExpr);
+
+            //ctx:addInstr({ op:'dup', idx:2 });
+
+            //ctx:addOp("set_elem");
+            runtimeCall(ctx, rt_setElem);
 
             return;
         }
