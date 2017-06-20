@@ -488,7 +488,8 @@ var rt_ge = function (x, y)
         {
             return $ge_f32(x, y);
         }
-        if (typeof y == "int32") {
+        if (typeof y == "int32")
+        {
             return $ge_f32(x, $i32_to_f32(y));
         }
     }
@@ -609,6 +610,7 @@ var rt_getElem = function (base, idx)
             typeof idx == "int32",
             "unhandled index type in getElem with array base; should be int32"
         );
+        
         // TODO: check bounds
         return $get_elem(base, idx);
     }
@@ -619,6 +621,7 @@ var rt_getElem = function (base, idx)
             typeof idx == "int32",
             "unhandled index type in getElem with string base; should be int32"
         );
+        
         // TODO: check bounds
         //if (index < $str_len(base))
         return $get_char(base, idx);
@@ -630,6 +633,7 @@ var rt_getElem = function (base, idx)
             typeof idx == "string",
             "unhandled index type in getElem with object base; should be string"
         );
+        
         return $get_field(base, idx);
     }
 
@@ -648,6 +652,7 @@ var rt_setElem = function (base, idx, val)
             typeof idx == "int32",
             "unhandled index type in setElem with array base; should be int32"
         );
+        
         // TODO: check bounds
         $set_elem(base, idx, val);
         return val;
@@ -659,6 +664,7 @@ var rt_setElem = function (base, idx, val)
             typeof idx == "string",
             "unhandled index type in setElem with object base; should be string"
         );
+        
         return $set_field(base, idx, val);
     }
     
