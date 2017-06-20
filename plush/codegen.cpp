@@ -1244,14 +1244,16 @@ void genAssign(CodeGenCtx& ctx, ASTExpr* lhsExpr, ASTExpr* rhsExpr)
         // Array elements
         else if (binOp->op == &OP_INDEX)
         {
+            // Evaluate the rhs value
+            genExpr(ctx, rhsExpr);
+
             // Evaluate the array
             genExpr(ctx, binOp->lhsExpr);
 
             // Evaluate the index
             genExpr(ctx, binOp->rhsExpr);
 
-            // Evaluate the rhs value
-            genExpr(ctx, rhsExpr);
+            ctx.addStr("op:'dup', idx:2");
 
             //ctx.addOp("set_elem");
             runtimeCall(ctx, "setElem", 3);

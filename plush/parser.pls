@@ -2446,14 +2446,16 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
         }
         else if (lhsExpr.op == OP_INDEX)
         {
+            // Evaluate the rhs value
+            genExpr(ctx, rhsExpr);
+
             // Evaluate the array
             genExpr(ctx, lhsExpr.lhsExpr);
 
             // Evaluate the index
             genExpr(ctx, lhsExpr.rhsExpr);
 
-            // Evaluate the rhs value
-            genExpr(ctx, rhsExpr);
+            ctx:addInstr({ op:'dup', idx:2 });
 
             //ctx:addOp("set_elem");
             runtimeCall(ctx, rt_setElem);
