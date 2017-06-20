@@ -649,7 +649,8 @@ var rt_setElem = function (base, idx, val)
             "unhandled index type in setElem with array base; should be int32"
         );
         // TODO: check bounds
-        return $set_elem(base, idx, val);
+        $set_elem(base, idx, val);
+        return val;
     }
 
     if (typeof base == "object")
