@@ -1,6 +1,6 @@
 # ZetaVM
 
-[![Build Status](https://travis-ci.org/zetavm/zetavm.svg?branch=master)](https://travis-ci.org/zetavm/zetavm)
+[![Build Status](https://travis-ci.org/zetavm/zetavm.svg?branch=master)](https://travis-ci.org/zetavm/zetavm) [![Build status](https://ci.appveyor.com/api/projects/status/a99mx86i78vjmgln?svg=true)](https://ci.appveyor.com/project/maximecb/zetavm)
 
 **Please note that ZetaVM is currently at the early prototype stage. As such,
 it is incomplete and breaking changes may happen often.**
