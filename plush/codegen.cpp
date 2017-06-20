@@ -122,8 +122,14 @@ public:
         assert (entryBlock != nullptr);
 
         std::string paramsStr = "[";
-        for (auto param: params)
-            paramsStr += "\'" + param + "\',";
+        for (size_t i = 0; i < params.size(); ++i)
+        {
+            auto param = params[i];
+            paramsStr += "\'" + param + "\'";
+            if (i < params.size() - 1)
+                paramsStr += ", ";
+
+        }
         paramsStr += "]";
 
         out += getHandle() + " = {\n";
@@ -144,7 +150,7 @@ public:
 
     /// Current function being generated
     Function* fun;
-    
+
     /// Current block into which to insert
     Block* curBlock;
 
@@ -156,7 +162,7 @@ public:
 
     /// Try catch block
     Block* catchBlock;
-    
+
     /// Unit function flag
     bool unitFun;
 
