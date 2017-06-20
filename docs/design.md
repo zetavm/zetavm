@@ -10,19 +10,19 @@ This section aims to explicitly state the design goals and principles underlying
 
 3. The core features provided by ZetaVM should be minimalistic. It is not possible, nor desirable to try to accomodate every possible use case. A large set of features is more likely to lead to the introduction of corner cases and unpredictable behaviors.
 
-4. The semantics of the features provided by /vm should be simple and straightforward. These should be as few corner cases as possible.
+4. The semantics of the features provided by ZetaVM should be simple and straightforward. These should be as few corner cases as possible.
 
 5. The semantics of the ZetaVM core should be strict and precise, leaving as few undefined behaviors as possible (ideally none). Predictable semantics should be favored over small potential optimization opportunities. This will increase the likelihood that ZetaVM programs behave the same on every platform.
 
 6. Often, it is preferable to be too strict in defining VM behavior and capabilities rather than too lax. Limitations on inputs the VM can take, for instance, can always be removed later, but are difficult to add later without breaking programs. In the same vein, ZetaVM should be strict in rejecting non-conforming inputs and program behaviors, so that programs do not begin to rely on unanticipated corner cases of the implementation.
 
-7. Silent failures and nondeterministic behaviors should be avoided. Type errors and invalid pointer dereferences, for instance, should result in immediate program termination.
+7. Silent failures and nondeterministic behaviors should be avoided. Passing invalid types to primitive operators or accessing non-existing object fields, for instance, should result in immediate program termination.
 
-8. ZetaVM should be designed with some regard for performance. That is, its core semantics should be chosen so that known optimizations may be applies. However, performance is not the ultimate goal, and robustness should be favored over performance.
+8. ZetaVM should be designed with some regard for performance. That is, its core semantics should be chosen so that known optimizations may be applied. However, performance is not the ultimate goal, and robustness is to be favored over performance.
 
 9. Core APIs and libraries provided by ZetaVM should intentionally be kept simple, low-level and minimalistic, again so that there are as few corner cases as possible. However, in order to enable forward-compatibility, core APIs should also be built with as few arbitrary limits as possible.
 
-10. Some consideration needs to be given to extensibility and future-proofing. ZetaVM aims to provide a simple and stable environment, but if it is to last, it is inevitable that additions and extensions will be made.
+10. Some consideration needs to be given to extensibility and future-proofing. ZetaVM aims to provide a simple and stable environment, but if it is to last, it is inevitable that additions and extensions will need to be made.
 
 ## Game Plan
 
@@ -30,27 +30,31 @@ This section roughly outlines medium-term plans for the ZetaVM project.
 
 ### ZetaVM Prototype
 
-A first prototype of ZetaVM will be implemented. For this first prototype, there will only be an interpeter, and no garbage collector. The goal here is to get the system running quickly with a core set of features, so that we can begin prototyping and altering the design as necessary.
+The current implementation of ZetaVM is at the prototype stage. There is currently an interpeter, but no garbage collector and no JIT compiler. The current goal is to get the system running quickly with a core set of features, so that we can  prototype, properly the system, iron out bugs, and alter the design as necessary.
 
 ### Plush
 
-The first language implemented on top of ZetaVM will be a simple JS-clone called Plush. This language will serve both to bootstrap the system, and to demonstrate to beginners how they can build their own language targetting ZetaVM. The Plush language may eventually have optional extensions, but the core language itself should be kept simple so that its implementation remains simple and accessible to beginners.
+The first language implemented on top of ZetaVM is called Plush. This language is inspired by JavaScript and Lua, and serves both to bootstrap the system, and to demonstrate to beginners how they can build their own language targetting ZetaVM. The Plush language may eventually have optional extensions, but the core language itself will intentionally be kept simple so that its implementation remains simple and accessible to beginners.
 
 ### Core Libraries
 
-A set of core libraries will be provided as part of ZetaVM. These will implement a set of simple intput/output APIs to interface with the outside world. The APIs provided will intentionally be kept low-level, simple and minimalistic to minimize the risk of introducing corner cases and undefined behaviors. It is expected that higher-level libraries will be implemented on top of these and provide more user-friendly interfaces.
+A set of core libraries will be provided as part of ZetaVM. These will be written in C++ and implement a set of intput/output APIs to interface with the outside world. The APIs provided will intentionally be kept low-level, simple and minimalistic to minimize the risk of introducing corner cases and undefined behaviors. It is expected that higher-level libraries will be implemented on top of these and provide more user-friendly interfaces.
 
 The core libraries will cover services such as file I/O, console I/O, basic 2D graphics (pixel plotting and blitting), mouse and keyboard input as well as raw PCM audio output. The early prototype version of the VM will implement only the most essential libraries.
 
-### JIT Compiler
+### Language Extensions
 
-Once ZetaVM is past the initial prototyping stage, a JIT compiler will be implemented to improve performance. This JIT will likely be based on basic block versioning.
+The Plush language will eventually make it possible for people to write parser extensions. This will allow the addition of new operators and new expression types to the language. I would like to implement closures as a language extension, but also possibly template strings, regular expressions, and pattern matching.
 
 ### Immutable Package Manager
 
-The VM will eventually ship with a package manager. This package manager will make it trivial to immediately upload code you have written from the command-line and make it available to anyone.
+The VM will eventually ship with a package manager. This package manager will make it trivial to immediately upload code you have written from the command-line and make it available to anyone. The package manager will also be used to upload your own language implementation package, making it instantly accessible to anyone using ZetaVM.
 
-Packages will be versioned and immutable. That is, once a package is uploaded, it will be assigned a version number, e.g. `"john.imagelib.56"`. This package version will then be frozen and unchangeable. What this means is that once code relies on a specific package version, the dependencies can never be changed and broken. Hence, by freezing the core VM semantics, and freezing submitted packages, we make it possible to write software that never breaks.
+Packages will be versioned and immutable. That is, once a package is uploaded, it will be assigned a version number, e.g. `"john/imagelib/56"`. This package version will then be frozen and unchangeable. The aim is to make it so that once code relies on a specific package version, the dependencies can never be changed and broken. Hence, by freezing the core VM semantics, and freezing submitted packages, we will hopefully make it possible to write software that doesn't break.
+
+### JIT Compiler
+
+Once ZetaVM is past the initial prototyping stage, a JIT compiler will be implemented to improve performance. This JIT will likely be based on basic block versioning. The [current plan](https://pointersgonewild.com/2017/06/11/zetas-jitterpreter/) is that the JIT will use the same internal representation as the interpreter, that is, the interpreter will do part of the compilation work.
 
 ## Design Decisions
 
@@ -95,8 +99,8 @@ which kind of value it is.
 The type tags are:
 - undef: special value for uninitialized variables, uninitialized arrays
 - bool: boolean values (`$true` and `$false`)
-- int64: 64-bit integers
-- float64: 64-bit floating-point numbers
+- int32: 32-bit integers
+- float32: 32-bit IEEE floating-point numbers
 - string: immutable UTF-8 strings
 - array: ordered lists of values, as in Python and JS
 - object: dynamically extensible objects (JS-like, no prototypes)
@@ -105,33 +109,33 @@ More complex datatypes, such as functions, variable-length lists and
 objects with prototypal inheritance are to be implemented by composing
 objects, arrays and other simpler types.
 
-Type tags will be internally represented by the VM as 4-bit integer values.
+Type tags will are internally represented by the VM as 8-bit integer values.
 Note that in some cases, a JIT compiler may be able to avoid storing those
 values in memory, that is, the type tags can be implicitly known by the
 compiler at code generation time.
 
-Type tags will be accessible to bytecode as strings, through the
-`has_tag <val>`, `<tag_str>` and `get_tag <val>` instructions. The `has_tag`
-instruction is a dynamic type test which makes it possible to answer questions
-such as "is this value of type `int32`?" at run time.
+Type tags are be accessible to bytecode through the `has_tag <tag_str>`
+instructions. This instruction is a dynamic type test which makes
+it possible to answer questions such as "is this value of type
+`int32`?" at run time. It is not possible, by design, for programs
+running on ZetaVM to get the integer value of a type tag.
 
 ### Type Errors
 
 What should happen when an operation expecting values of a certain type
 (e.g. `add_i32` expects two `int32` values) receives operands of the wrong type?
 In order to avoid corner cases and undefined behaviors, we will guarantee that
-the VM will halt program execution should a type error of this kind occur.
+the VM will halt program execution.
 
 By halt, we mean that the VM will abort execution and report an error to the
 process that instantiated it. Type errors will not produce an exception that
 can be caught by running programs because we do not want code to rely on type
-errors to infer types. Correct programs should insert dynamic type checks where
-appropriate.
+errors to infer types by catching exceptions. Correct programs should
+insert dynamic type checks where appropriate.
 
 My work on Higgs and [basic block versioning](http://2016.ecoop.org/event/ecoop-2016-papers-interprocedural-type-specialization-of-javascript-programs-without-type-analysis) leads me to believe
 that it should be possible for the VM to determine the types of operands in almost
-every case. This is because typed operations such as `add_i32` should be guarded by
-dynamic type tests. Hence, I do not believe that guaranteeing program
+every case. Hence, I do not believe that guaranteeing program
 termination on type errors will cause performance issues. If there is a
 performance cost, it will be small.
 
@@ -140,10 +144,10 @@ performance cost, it will be small.
 If we do not implement closures natively in ZetaVM, language implementers have
 to do it themselves. That means they must do closure conversion and allocate
 mutable cells or store values on functions. This is actually not that hard
-given that people will need to do some kind of scope analysis. Probably
+given that people will need to do some kind of scope analysis. It is probably
 better to keep the VM implementation as simple as possible and not implement
-closures at the VM level, only plain function callls. MiniLISP will exemplify
-a simple implementation of closures.
+closures at the VM level, only plain function calls. The current goal is to
+implement closures as a Plush language extension (not part of the core language).
 
 ### Objects
 
@@ -165,6 +169,13 @@ be done through remapping. This is to facilitate the serialization of ZetaVM obj
 4. Unless a very convincing use case is found, property deletion will not be supported.
 Property deletion seems to be rarely needed in practice and is complex to implement efficiently.
 
+In general, objects are not to be used as hash maps, and will not be optimized
+for this use case. Proper hash maps/dictionaries are left as an exercise for
+language implementers. If one wishes to create a language where all objects can be used
+as hash maps, one possible solution is to reserve a special object field to be a hash map
+pointer, and instantiate a hash map with a level of indirection once there are too
+many fields, or someone tries to index the object with a non-string field name.
+
 ### Arrays
 
 I initially thought that ZetaVM should implement fixed-length arrays only, since these are simpler to implement than dynamically growable arrays. However, since Python, JS and Lua all have dynamically growable arrays, I think the VM should support growable arrays natively. If the VM does not provide growable arrays, then many language implementations running on top of ZetaVM will end up implementing their own incompatible array/list types, which will make language interoperability difficult. Hence, the arrays that ZetaVM implements should be growable, so that they are "good enough" for most language implementations.
@@ -182,13 +193,13 @@ Below is a tentative list of bytecodes to be provided by ZetaVM:
 - floating-point arithmetic: `add_f32`, `sub_f32`, `mul_f32`, `div_f32`, `sqrt_f32`
 - bit manipulation: `lsft_i32`, `ulsft_i32`, `rsft_i32`, `and_i32`, `or_i32`, `xor_i32`, `not_i32`
 - comparisons: `lt_i32`, `gt_i32`, ...
-- type tests: `get_tag <val>`, `has_tag <val> <tag>`
+- type tests: `has_tag <val> <tag_str>`
 - conditional branches: `if_true <bool_val>`
 - direct branches: `jump`
 - function calls: `call`, `return`
 - object and array allocation: `new_obj`, `new_array`
 - object property access: `get_field`, `set_field`, `has_field`
-- array element access: `get_elem`, `set_elem`, `arr_len`
+- array element access: `get_elem`, `set_elem`, `array_len`
 - string character access: `get_char`, `str_len`
 
 ### Integer Arithmetic
