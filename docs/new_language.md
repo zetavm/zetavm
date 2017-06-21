@@ -27,8 +27,8 @@ implement a language package which generates bytecode on the fly. This is how
 the self-hosted Plush implementation works. It generates Zeta bytecode in
 memory directly. The downside of this approach is that Plush is currently the
 only language that runs on ZetaVM, and so you would have to write your
-compiler in this very barebones language.
-s
+compiler in Plush, which is very barebone at this stage.
+
 The major upside to implementing your language by writing
 a language package is that you will eventually be able to upload your
 language package to the Zeta package
@@ -36,7 +36,7 @@ manager, instantly giving every ZetaVM user the ability to write code in
 your language without needing to manually download, compile or configure
 anything.
 
-See the self-hosted plush `parser.pls` parser for an example:
+See the self-hosted Plush `parser.pls` for an example of a language package:
 https://github.com/maximecb/zetavm/blob/master/plush/parser.pls
 
 ## Pull Requests
