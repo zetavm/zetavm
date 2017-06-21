@@ -3,10 +3,10 @@
 ## Two Possile Methods
 
 There are currently two ways to implement a language on top of ZetaVM. The
-first is to write an external compiler which directly outputs bytecode
-in the [textual image format (zim)](../tests/vm/ex_image.zim) native to ZetaVM.
+first is to write an external compiler which outputs bytecode
+in the [textual image file format (zim)](../tests/vm/ex_image.zim) native to ZetaVM.
 The second approach is to write a language package which runs inside Zeta and
-generates bytecode on the fly.
+generates bytecode in memory on the fly.
 
 ### External Compilers
 
