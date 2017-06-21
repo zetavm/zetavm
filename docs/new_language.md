@@ -5,14 +5,24 @@
 There are currently two ways to implement a language on top of ZetaVM. The
 first is to write an external compiler which directly outputs bytecode
 in the [textual image format (zim)](../tests/vm/ex_image.zim) native to ZetaVM.
+The second approach is to write a language package which runs inside Zeta and
+generates bytecode on the fly.
 
-The cplush compiler is written in C++ and is an example of the approach just
-outlined:
-https://github.com/maximecb/zetavm/tree/master/plush
+### External Compilers
 
-The second approach is to write a Zeta bytecode compiler which runs
-inside Zeta. This is how the self-hosted Plush implementation works. It
-generates Zeta IR in memory. The downside of this approach is that Plush is
+The cplush compiler is
+a compiler for the Plush language written in C++. It is an example of an
+external compiler which writes Zeta image files (with the zim extension).
+This compiler was built to bootstrap the Plush language and the Zeta platform.
+
+See the C++ source and header files under the [plush](../plush) directory
+to get an idea of how cplush is implemented.
+
+### Language Packages
+
+The second approach to implementing a language running on ZetaVM is to
+implement a language package which generates bytecode on the fly. This is how
+the self-hosted Plush implementation works. It generates Zeta bytecode in memory. The downside of this approach is that Plush is
 currently the only language that runs on ZetaVM, and so you would have to
 write your compiler in this very barebones language.
 
@@ -35,7 +45,7 @@ the same language.
 ## More Information
 
 The design of ZetaVM is currently in flux, and so there is no rigorous and
-up-to-date documentation out there. I would recommend that you start by
+up-to-date documentation out there. You can start by
 reading the ZetaVM [design and principles](design.md) document for some insight
 into why Zeta works the way it does. For documentation on the bytecode, you
 should look at compiled image examples under [tests](../tests) and directly
