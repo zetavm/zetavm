@@ -13,7 +13,9 @@ generates bytecode on the fly.
 The cplush compiler is
 a compiler for the Plush language written in C++. It is an example of an
 external compiler which writes Zeta image files (with the zim extension).
-This compiler was built to bootstrap the Plush language and the Zeta platform.
+This compiler was built to
+[bootstrap](https://en.wikipedia.org/wiki/Bootstrapping_(compilers)) the Plush
+language and build libraries for the Zeta platform.
 
 See the C++ source and header files under the [plush](../plush) directory
 to get an idea of how cplush is implemented.
@@ -22,9 +24,17 @@ to get an idea of how cplush is implemented.
 
 The second approach to implementing a language running on ZetaVM is to
 implement a language package which generates bytecode on the fly. This is how
-the self-hosted Plush implementation works. It generates Zeta bytecode in memory. The downside of this approach is that Plush is
-currently the only language that runs on ZetaVM, and so you would have to
-write your compiler in this very barebones language.
+the self-hosted Plush implementation works. It generates Zeta bytecode in
+memory directly. The downside of this approach is that Plush is currently the
+only language that runs on ZetaVM, and so you would have to write your
+compiler in this very barebones language.
+s
+The major upside to implementing your language by writing
+a language package is that you will eventually be able to upload your
+language package to the Zeta package
+manager, instantly giving every ZetaVM user the ability to write code in
+your language without needing to manually download, compile or configure
+anything.
 
 See the self-hosted plush `parser.pls` parser for an example:
 https://github.com/maximecb/zetavm/blob/master/plush/parser.pls
