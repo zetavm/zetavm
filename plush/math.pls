@@ -2,6 +2,16 @@ exports.PI = 3.14159265358979323846f;
 exports.E  = 2.71828182845904523536f;
 exports.INF = 1.0f / 0.0f;
 
+exports.isNaN = function (x)
+{
+    if (typeof x == "float32")
+    {
+        return x != x;
+    }
+
+    return false;
+};
+
 exports.max = function (x, y)
 {
     if (x > y)
@@ -44,6 +54,21 @@ exports.floor = function (x)
     );
 };
 
+exports.fmod = function (x, y)
+{
+    if (typeof x == "float32" && typeof y == "float32")
+    {
+        var quot = x / y;
+        var iquot = $f32_to_i32(quot);
+        var fmod = x - iquot * y;
+    }
+
+    assert (
+        false,
+        "unhandled types in fmod function"
+    );
+};
+
 exports.sin = function (x)
 {
     if (typeof x == "int32")
@@ -82,7 +107,6 @@ exports.cos = function (x)
 
 exports.sqrt = function (x)
 {
-
     if (typeof x == "int32")
     {
         return $sqrt_f32($i32_to_f32(x));
