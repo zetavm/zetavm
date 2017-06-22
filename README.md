@@ -63,6 +63,8 @@ executable programs, or libraries/packages.
 
 For more information, see the documentation in the [docs](docs) directory:
 
+- [Overview and Roadmap](docs/roadmap.md)
+
 - [Design and Guiding Principles of ZetaVM](docs/design.md)
 
 - [Creating your own Language with ZetaVM](docs/new_language.md)
