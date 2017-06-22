@@ -164,10 +164,10 @@ var pluck = function (freq)
 var sampleFun = seq(
     0.2f,
     [
-        pluck(300),
-        pluck(400),
-        pluck(500),
-        pluck(400)
+        pluck(600),
+        pluck(800),
+        pluck(1000),
+        pluck(800)
     ]
 );
 
@@ -180,4 +180,4 @@ var sampleFun = seq(
 
 
 
-playSound(sampleFun, 1.0f);
+playSound(sampleFun, 2.0f);
