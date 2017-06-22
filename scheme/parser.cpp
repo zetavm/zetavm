@@ -29,7 +29,7 @@ std::string readFile(std::string fileName)
     char* buf = (char*)malloc(len+1);
 
     // Read into the allocated buffer
-    int read = fread(buf, 1, len, file);
+    auto read = fread(buf, 1, len, file);
 
     if (read != len)
     {

@@ -3,19 +3,19 @@
 // Function expressions
 function () { return 1; };
 
-// Unary expressions
+// Comparison operators
 assert (true == true, "boolean equality");
 assert (!true == false, "boolean negate 1");
 assert (!false == true);
-
-// Binary expressions
 assert (1 < 2);
 assert (1 <= 2);
+assert (undef == undef);
+
+// Integer and bitwise arithmetic
 assert (1 + 2 == 3);
 assert (2 * -1 == -2);
 assert (4 % 2 == 0);
 assert (5 % 2 == 1);
-assert (undef == undef);
 assert (1 + 2 * 3 == 7);
 assert (1 * 2 + 3 == 5);
 assert (13 * 3 + -5 * 7 == 4);
@@ -35,7 +35,7 @@ assert ((9 >> 1 | 1) == 5);
 assert (~0 == -1);
 assert (~-256 == 255);
 assert (-2147483647 + -2147483647 >= 0);
-
+assert (65537 * 65535 == -1);
 
 // Logical expressions
 assert (true && true);

@@ -123,10 +123,8 @@ var repeat = function (interv, f)
 {
     var rf = function (time, f, interv)
     {
-        var quot = time / interv;
-        var tquot = $f32_to_i32(quot);
-        var fmod = time - tquot * interv;
-        return f(fmod);
+        var tmod = math.fmod(time, interv);
+        return f(tmod);        
     };
 
     return curry2(rf, f, interv);
@@ -164,10 +162,10 @@ var pluck = function (freq)
 var sampleFun = seq(
     0.2f,
     [
-        pluck(300),
-        pluck(400),
-        pluck(500),
-        pluck(400)
+        pluck(600),
+        pluck(800),
+        pluck(1000),
+        pluck(800)
     ]
 );
 
@@ -180,4 +178,4 @@ var sampleFun = seq(
 
 
 
-playSound(sampleFun, 1.0f);
+playSound(sampleFun, 2.0f);
