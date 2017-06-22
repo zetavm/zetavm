@@ -18,7 +18,15 @@ The core libraries will cover services such as file I/O, console I/O, basic 2D g
 
 ## Language Extensions
 
-The Plush language will eventually make it possible for people to write parser extensions. This will allow the addition of new operators and new expression types to the language. I would like to implement closures as a language extension, but also possibly template strings, regular expressions, and pattern matching.
+The Plush language will eventually make it possible for people to write parser extensions. This will allow the addition of new operators, new expression types, and new statement types to the language.
+
+Some possible Plush extensions include:
+- Closures
+- Template strings
+- Regular expressions
+- Pattern matching
+- Gradual typing
+- Variable argument count functions, optional arguments
 
 ## Immutable Package Manager
 
