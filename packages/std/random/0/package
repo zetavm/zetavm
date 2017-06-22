@@ -15,47 +15,55 @@ var randomize = function(x)
     return x ^ (x >>> 16);
 };
 
-var initState = function(seed)
+var init = function(seed)
+{
+   return reseed([0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 0], seed);
+};
+
+var reseed = function(states, seed)
 {
     if(typeof seed == "int32")
     {
-        var states = []; 
         var counter = 0;
         var temp = 0;
         var s = seed;
         for (var i = 0; i < 64; i += 1)
         {
             temp = randomize(s -= 1640531527);
-            states:push(temp);
+            states[i] = temp;
             counter += temp;
         }
-        states:push(counter);
+        states[64] = counter;
         return states;
     }
     else if(typeof seed == "array")
     {
-        var states = []; 
         var counter = 0;
         var temp = 0;
 
         if(seed.length == 0)
         {
-            for (var i = 16; i < 80; i += 1)
-            {
-                temp = randomize(i * -1640531527);
-                states:push(temp);
-                counter += temp;
-            }
-            states:push(counter);
-        }
-        else if(seed.length == 64)
-        {
             for (var i = 0; i < 64; i += 1)
             {
-                states:push(seed[i]);
-                counter += seed[i];
+                temp = randomize((i + 16) * -1640531527);
+                states[i] = temp;
+                counter += temp;
             }
-            states:push(counter);
+            states[64] = counter;
+        }
+        else if(seed.length == 65)
+        {
+            for (var i = 0; i < 65; i += 1)
+            {
+                states[i] = seed[i];
+            }
         }
         else
         {
@@ -67,7 +75,7 @@ var initState = function(seed)
             for (var i = 0; i < 64; i += 1)
             {
                 temp = randomize(item += 1640531527);
-                states:push(temp);
+                states[i] = temp;
                 counter += temp;
             }
             for (var s = 1; s < seed.length; s += 1)
@@ -87,7 +95,7 @@ var initState = function(seed)
                     counter += temp;
                 }
             }
-            states:push(counter);
+            states[64] = counter;
         }
         return states;
     }
@@ -100,20 +108,24 @@ var initState = function(seed)
         for (var i = 0; i < 64; i += 1)
         {
             temp = randomize(s -= 1640531527);
-            states:push(temp);
+            states[i] = temp;
             counter += temp;
         }
-        states:push(counter);
+        states[64] = counter;
         return states;
 
     }
 };
 
-exports.newRNG = function(seed)
+newRNG = function(seed)
 {
     return 
     {
-        state: initState(seed),
+        state: init(seed),
+        setState: function(self, seed)
+        {
+            reseed(self.state, seed);
+        },
         fullInt: function(self)
         {
             var choice = (self.state[64] -= 1180531665);
@@ -121,9 +133,9 @@ exports.newRNG = function(seed)
         },
         int: function(self, min, max)
         {
-            var bound = max - min + 1;
+            var bound = 1 + max - min;
             if (bound <= 1) return min;
-            var threshold = (2147483647 - bound + 1) % bound;
+            var threshold = ((2147483647 - bound) + 1) % bound;
             for (;;) {
                 var bits = self:fullInt() & 2147483647;
                 if (bits >= threshold)
@@ -157,4 +169,6 @@ exports.newRNG = function(seed)
     };
 };
 
+exports.globalRNG = newRNG([1337, 42, 99999, 777, 21]);
 exports.randomize = randomize;
+exports.newRNG = newRNG;
