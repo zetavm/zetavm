@@ -38,7 +38,6 @@ test: all
 	./plush.sh tests/plush/obj_ext.pls
 	./plush.sh tests/plush/throw_exc.pls
 	./plush.sh tests/plush/throw_exc2.pls
-	./plush.sh tests/plush/random.pls
 	./plush.sh plush/parser.pls tests/plush/parser.pls
 	# Check that the parser benchmark compiles with cplush
 	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
@@ -58,6 +57,7 @@ test: all
 	./$(ZETA_BIN) tests/plush/import.pls
 	./$(ZETA_BIN) tests/plush/circular3.pls
 	./$(ZETA_BIN) tests/plush/peval.pls
+	./$(ZETA_BIN) tests/plush/random.pls
 	# Check that source position is reported on errors
 	./$(ZETA_BIN) tests/plush/assert.pls | grep --quiet "3:1"
 	./$(ZETA_BIN) tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
