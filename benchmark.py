@@ -43,13 +43,15 @@ def geoMean(numList):
 def runBenchs():
 
     benchList = [
-        'benchmarks/img_fill.pls',
+        'benchmarks/loop_cnt_100m.zim',
         'benchmarks/incr_field_1m.pls',
+        'benchmarks/get_field_1m.pls',
+        'benchmarks/set_field_1m.pls',
         'benchmarks/fcalls_10m.zim',
         'benchmarks/fib29.pls',
-        #'benchmarks/fib36.zim',
-        'benchmarks/loop_cnt_100m.zim',
+        'benchmarks/fib36.zim',
         'benchmarks/plush_parser.zim',
+        'benchmarks/img_fill.pls',
         'benchmarks/saw_wave.pls',
         'benchmarks/sine_wave.pls',
         'benchmarks/func_audio.pls',
