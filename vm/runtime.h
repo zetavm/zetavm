@@ -456,6 +456,9 @@ bool isValidIdent(std::string identStr);
 /// Get the tag enumeration value for a given tag string
 Tag strToTag(std::string str);
 
+/// Get the string representation for a type tag
+std::string tagToStr(Tag tag);
+
 /// Get a string representation of a source position object
 std::string posToString(Value srcPos);
 

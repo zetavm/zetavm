@@ -683,6 +683,25 @@ Tag strToTag(std::string str)
     assert (false);
 }
 
+std::string tagToStr(Tag tag)
+{
+    switch (tag)
+    {
+        case TAG_UNDEF:     return "undef";
+        case TAG_BOOL:      return "bool";
+        case TAG_INT32:     return "int32";
+        case TAG_INT64:     return "int64";
+        case TAG_FLOAT32:   return "float32";
+        case TAG_FLOAT64:   return "float64";
+        case TAG_STRING:    return "string";
+        case TAG_OBJECT:    return "object";
+        case TAG_ARRAY:     return "array";
+        case TAG_HOSTFN:    return "hostfn";
+        default:
+        assert (false);
+    }
+}
+
 std::string posToString(Value srcPos)
 {
     assert (srcPos.isObject());

@@ -726,6 +726,12 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "get_tag")
+        {
+            writeCode(GET_TAG);
+            continue;
+        }
+
         //
         // String operations
         //
@@ -1591,6 +1597,16 @@ Value execCode()
                 auto testTag = readCode<Tag>();
                 auto valTag = popVal().getTag();
                 pushBool(valTag == testTag);
+            }
+            break;
+
+            // Get the type tag associated with a value.
+            // Note: this produces a string
+            case GET_TAG:
+            {
+                auto valTag = popVal().getTag();
+                auto tagStr = tagToStr(valTag);
+                pushVal(String(tagStr));
             }
             break;
 
