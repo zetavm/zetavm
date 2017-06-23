@@ -134,7 +134,7 @@ refptr Wrapper::getObjPtr()
 }
 
 String::String(std::string str)
-{   
+{
     this->val = stringPool.getString(str);
 }
 
@@ -457,7 +457,7 @@ Value Object::getField(String name)
     return values[slotIdx + 1];
 }
 
-bool Object::getField(const char* name, Value& value, size_t& idxCache)
+bool Object::getField(const String& fieldName, Value& value, size_t& idxCache)
 {
     auto ptr = getObjPtr();
     auto cap = getCap();
@@ -473,7 +473,7 @@ bool Object::getField(const char* name, Value& value, size_t& idxCache)
         if (nameSlot.isString())
         {
             auto nameSlotStr = String(nameSlot);
-            if (strcmp(nameSlotStr.getDataPtr(), name) == 0)
+            if (nameSlotStr == fieldName)
             {
                 //std::cout << "  cache hit" << std::endl;
                 value = values[idxCache + 1];
@@ -485,8 +485,7 @@ bool Object::getField(const char* name, Value& value, size_t& idxCache)
     //std::cout << "cache miss" << std::endl;
     //std::cout << "  name=" << name << std::endl;
 
-
-    size_t slotIdx = getSlotIdx(ptr, cap, String(name), false);
+    size_t slotIdx = getSlotIdx(ptr, cap, fieldName, false);
 
     if (slotIdx >= cap)
     {
@@ -600,14 +599,14 @@ int64_t murmurHash2(const void* key, size_t len, uint64_t seed)
 
     switch (len & 7)
     {
-        case 7: h ^= ((uint64_t)tail[6]) << 48; 
-        case 6: h ^= ((uint64_t)tail[5]) << 40; 
-        case 5: h ^= ((uint64_t)tail[4]) << 32; 
-        case 4: h ^= ((uint64_t)tail[3]) << 24; 
-        case 3: h ^= ((uint64_t)tail[2]) << 16; 
-        case 2: h ^= ((uint64_t)tail[1]) << 8; 
+        case 7: h ^= ((uint64_t)tail[6]) << 48;
+        case 6: h ^= ((uint64_t)tail[5]) << 40;
+        case 5: h ^= ((uint64_t)tail[4]) << 32;
+        case 4: h ^= ((uint64_t)tail[3]) << 24;
+        case 3: h ^= ((uint64_t)tail[2]) << 16;
+        case 2: h ^= ((uint64_t)tail[1]) << 8;
         case 1: h ^= ((uint64_t)tail[0]);
-                h *= m;  
+                h *= m;
         default:;
     }
 
@@ -618,7 +617,7 @@ int64_t murmurHash2(const void* key, size_t len, uint64_t seed)
 }
 
 
-Value StringPool::getString(std::string str) 
+Value StringPool::getString(std::string str)
 {
     auto iter = pool.find(str);
     if (iter == pool.end())
@@ -760,5 +759,3 @@ void testRuntime()
         fieldStr += itr.get();
     assert (fieldStr == "foobar");
 }
-
-

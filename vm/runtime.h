@@ -119,7 +119,7 @@ public:
         assert (isPointer());
         return word.ptr;
     }
-    
+
     operator std::string () const;
 
     bool operator == (const Value& that) const
@@ -249,6 +249,7 @@ public:
     {
         return OF_DATA + (len + 1) * sizeof(char);
     }
+
     String(std::string str);
     String(Value value);
 
@@ -266,7 +267,7 @@ public:
     bool operator == (const char* that) const;
 
     // FIXME: temporary until string interning is implemented
-    bool operator == (String that) { 
+    bool operator == (String that) {
         return val == that.val;
     }
 
@@ -375,7 +376,7 @@ public:
     Value getField(String name);
 
     /// Property lookup with a slot index cache
-    bool getField(const char* name, Value& value, size_t& idxCache);
+    bool getField(const String& name, Value& value, size_t& idxCache);
 
     bool hasField(std::string name) { return hasField(String(name)); }
     void setField(std::string name, Value val) { return setField(String(name), val); }
@@ -440,7 +441,8 @@ private:
     };
     std::unordered_map<std::string, Value, StringHasher> pool;
     Value newString(std::string str);
-public: 
+
+public:
     StringPool();
     Value getString(std::string str);
 };

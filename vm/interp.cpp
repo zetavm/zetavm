@@ -108,7 +108,7 @@ private:
     size_t slotIdx = 0;
 
     // Field name to look up
-    std::string fieldName;
+    String fieldName;
 
 public:
 
@@ -121,9 +121,9 @@ public:
     {
         Value val;
 
-        if (!obj.getField(fieldName.c_str(), val, slotIdx))
+        if (!obj.getField(fieldName, val, slotIdx))
         {
-            throw RunError("missing field \"" + fieldName + "\"");
+            throw RunError("missing field \"" + (std::string)fieldName + "\"");
         }
 
         return val;
@@ -1722,7 +1722,7 @@ Value execCode()
 
                 Value val;
 
-                if (!obj.getField(fieldName.getDataPtr(), val, slotIdx))
+                if (!obj.getField(fieldName, val, slotIdx))
                 {
                     throw RunError(
                         "get_field failed, missing field \"" +
