@@ -1,0 +1,5525 @@
+#zeta-image
+
+exports_obj = { init: @fun_1 };
+global_obj = { exports: @exports_obj };
+
+block_2 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'throw' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_3 = {
+  entry:@block_2,
+  params:['e'],
+  num_locals:2,
+};
+
+block_7 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'add_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_6 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_7, else:@block_8 },
+  ]
+};
+
+block_8 = {
+  instrs: [
+    { op:'jump', to:@block_9 },
+  ]
+};
+
+block_10 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'add_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_9 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_10, else:@block_11 },
+  ]
+};
+
+block_11 = {
+  instrs: [
+    { op:'jump', to:@block_12 },
+  ]
+};
+
+block_4 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_6, else:@block_13 },
+  ]
+};
+
+block_12 = {
+  instrs: [
+    { op:'jump', to:@block_14 },
+  ]
+};
+
+block_13 = {
+  instrs: [
+    { op:'jump', to:@block_14 },
+  ]
+};
+
+block_16 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'add_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_15 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_16, else:@block_17 },
+  ]
+};
+
+block_17 = {
+  instrs: [
+    { op:'jump', to:@block_18 },
+  ]
+};
+
+block_19 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'add_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_18 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_19, else:@block_20 },
+  ]
+};
+
+block_20 = {
+  instrs: [
+    { op:'jump', to:@block_21 },
+  ]
+};
+
+block_14 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_15, else:@block_22 },
+  ]
+};
+
+block_21 = {
+  instrs: [
+    { op:'jump', to:@block_23 },
+  ]
+};
+
+block_22 = {
+  instrs: [
+    { op:'jump', to:@block_23 },
+  ]
+};
+
+block_25 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'str_cat' },
+    { op:'ret' },
+  ]
+};
+
+block_24 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_25, else:@block_26 },
+  ]
+};
+
+block_26 = {
+  instrs: [
+    { op:'jump', to:@block_27 },
+  ]
+};
+
+block_23 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_24, else:@block_28 },
+  ]
+};
+
+block_27 = {
+  instrs: [
+    { op:'jump', to:@block_29 },
+  ]
+};
+
+block_28 = {
+  instrs: [
+    { op:'jump', to:@block_29 },
+  ]
+};
+
+block_29 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_30, else:@block_31 },
+  ]
+};
+
+block_30 = {
+  instrs: [
+    { op:'jump', to:@block_32 },
+  ]
+};
+
+block_31 = {
+  instrs: [
+    { op:'push', val:'unhandled type in addition' },
+    { op:'abort' },
+    { op:'jump', to:@block_32 },
+  ]
+};
+
+block_32 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_5 = {
+  entry:@block_4,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_36 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'sub_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_35 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_36, else:@block_37 },
+  ]
+};
+
+block_37 = {
+  instrs: [
+    { op:'jump', to:@block_38 },
+  ]
+};
+
+block_39 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'sub_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_38 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_39, else:@block_40 },
+  ]
+};
+
+block_40 = {
+  instrs: [
+    { op:'jump', to:@block_41 },
+  ]
+};
+
+block_33 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_35, else:@block_42 },
+  ]
+};
+
+block_41 = {
+  instrs: [
+    { op:'jump', to:@block_43 },
+  ]
+};
+
+block_42 = {
+  instrs: [
+    { op:'jump', to:@block_43 },
+  ]
+};
+
+block_45 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'sub_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_44 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_45, else:@block_46 },
+  ]
+};
+
+block_46 = {
+  instrs: [
+    { op:'jump', to:@block_47 },
+  ]
+};
+
+block_48 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'sub_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_47 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_48, else:@block_49 },
+  ]
+};
+
+block_49 = {
+  instrs: [
+    { op:'jump', to:@block_50 },
+  ]
+};
+
+block_43 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_44, else:@block_51 },
+  ]
+};
+
+block_50 = {
+  instrs: [
+    { op:'jump', to:@block_52 },
+  ]
+};
+
+block_51 = {
+  instrs: [
+    { op:'jump', to:@block_52 },
+  ]
+};
+
+block_52 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_53, else:@block_54 },
+  ]
+};
+
+block_53 = {
+  instrs: [
+    { op:'jump', to:@block_55 },
+  ]
+};
+
+block_54 = {
+  instrs: [
+    { op:'push', val:'unhandled type in subtraction' },
+    { op:'abort' },
+    { op:'jump', to:@block_55 },
+  ]
+};
+
+block_55 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_34 = {
+  entry:@block_33,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_59 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'mul_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_58 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_59, else:@block_60 },
+  ]
+};
+
+block_60 = {
+  instrs: [
+    { op:'jump', to:@block_61 },
+  ]
+};
+
+block_62 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'mul_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_61 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_62, else:@block_63 },
+  ]
+};
+
+block_63 = {
+  instrs: [
+    { op:'jump', to:@block_64 },
+  ]
+};
+
+block_56 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_58, else:@block_65 },
+  ]
+};
+
+block_64 = {
+  instrs: [
+    { op:'jump', to:@block_66 },
+  ]
+};
+
+block_65 = {
+  instrs: [
+    { op:'jump', to:@block_66 },
+  ]
+};
+
+block_68 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'mul_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_67 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_68, else:@block_69 },
+  ]
+};
+
+block_69 = {
+  instrs: [
+    { op:'jump', to:@block_70 },
+  ]
+};
+
+block_71 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'mul_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_70 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_71, else:@block_72 },
+  ]
+};
+
+block_72 = {
+  instrs: [
+    { op:'jump', to:@block_73 },
+  ]
+};
+
+block_66 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_67, else:@block_74 },
+  ]
+};
+
+block_73 = {
+  instrs: [
+    { op:'jump', to:@block_75 },
+  ]
+};
+
+block_74 = {
+  instrs: [
+    { op:'jump', to:@block_75 },
+  ]
+};
+
+block_75 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_76, else:@block_77 },
+  ]
+};
+
+block_76 = {
+  instrs: [
+    { op:'jump', to:@block_78 },
+  ]
+};
+
+block_77 = {
+  instrs: [
+    { op:'push', val:'unhandled type in multiplication' },
+    { op:'abort' },
+    { op:'jump', to:@block_78 },
+  ]
+};
+
+block_78 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_57 = {
+  entry:@block_56,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_82 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'div_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_81 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_82, else:@block_83 },
+  ]
+};
+
+block_83 = {
+  instrs: [
+    { op:'jump', to:@block_84 },
+  ]
+};
+
+block_85 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'div_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_84 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_85, else:@block_86 },
+  ]
+};
+
+block_86 = {
+  instrs: [
+    { op:'jump', to:@block_87 },
+  ]
+};
+
+block_79 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_81, else:@block_88 },
+  ]
+};
+
+block_87 = {
+  instrs: [
+    { op:'jump', to:@block_89 },
+  ]
+};
+
+block_88 = {
+  instrs: [
+    { op:'jump', to:@block_89 },
+  ]
+};
+
+block_91 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'div_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_90 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_91, else:@block_92 },
+  ]
+};
+
+block_92 = {
+  instrs: [
+    { op:'jump', to:@block_93 },
+  ]
+};
+
+block_94 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'div_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_93 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_94, else:@block_95 },
+  ]
+};
+
+block_95 = {
+  instrs: [
+    { op:'jump', to:@block_96 },
+  ]
+};
+
+block_89 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_90, else:@block_97 },
+  ]
+};
+
+block_96 = {
+  instrs: [
+    { op:'jump', to:@block_98 },
+  ]
+};
+
+block_97 = {
+  instrs: [
+    { op:'jump', to:@block_98 },
+  ]
+};
+
+block_98 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_99, else:@block_100 },
+  ]
+};
+
+block_99 = {
+  instrs: [
+    { op:'jump', to:@block_101 },
+  ]
+};
+
+block_100 = {
+  instrs: [
+    { op:'push', val:'unhandled type in division' },
+    { op:'abort' },
+    { op:'jump', to:@block_101 },
+  ]
+};
+
+block_101 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_80 = {
+  entry:@block_79,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_105 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'mod_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_104 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_105, else:@block_106 },
+  ]
+};
+
+block_106 = {
+  instrs: [
+    { op:'jump', to:@block_107 },
+  ]
+};
+
+block_102 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_104, else:@block_108 },
+  ]
+};
+
+block_107 = {
+  instrs: [
+    { op:'jump', to:@block_109 },
+  ]
+};
+
+block_108 = {
+  instrs: [
+    { op:'jump', to:@block_109 },
+  ]
+};
+
+block_109 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_110, else:@block_111 },
+  ]
+};
+
+block_110 = {
+  instrs: [
+    { op:'jump', to:@block_112 },
+  ]
+};
+
+block_111 = {
+  instrs: [
+    { op:'push', val:'unhandled type in modulo' },
+    { op:'abort' },
+    { op:'jump', to:@block_112 },
+  ]
+};
+
+block_112 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_103 = {
+  entry:@block_102,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_116 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'shl_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_115 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_116, else:@block_117 },
+  ]
+};
+
+block_117 = {
+  instrs: [
+    { op:'jump', to:@block_118 },
+  ]
+};
+
+block_113 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_115, else:@block_119 },
+  ]
+};
+
+block_118 = {
+  instrs: [
+    { op:'jump', to:@block_120 },
+  ]
+};
+
+block_119 = {
+  instrs: [
+    { op:'jump', to:@block_120 },
+  ]
+};
+
+block_120 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_121, else:@block_122 },
+  ]
+};
+
+block_121 = {
+  instrs: [
+    { op:'jump', to:@block_123 },
+  ]
+};
+
+block_122 = {
+  instrs: [
+    { op:'push', val:'unhandled type in bitwise left shift' },
+    { op:'abort' },
+    { op:'jump', to:@block_123 },
+  ]
+};
+
+block_123 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_114 = {
+  entry:@block_113,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_127 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'shr_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_126 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_127, else:@block_128 },
+  ]
+};
+
+block_128 = {
+  instrs: [
+    { op:'jump', to:@block_129 },
+  ]
+};
+
+block_124 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_126, else:@block_130 },
+  ]
+};
+
+block_129 = {
+  instrs: [
+    { op:'jump', to:@block_131 },
+  ]
+};
+
+block_130 = {
+  instrs: [
+    { op:'jump', to:@block_131 },
+  ]
+};
+
+block_131 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_132, else:@block_133 },
+  ]
+};
+
+block_132 = {
+  instrs: [
+    { op:'jump', to:@block_134 },
+  ]
+};
+
+block_133 = {
+  instrs: [
+    { op:'push', val:'unhandled type in bitwise right shift' },
+    { op:'abort' },
+    { op:'jump', to:@block_134 },
+  ]
+};
+
+block_134 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_125 = {
+  entry:@block_124,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_138 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'ushr_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_137 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_138, else:@block_139 },
+  ]
+};
+
+block_139 = {
+  instrs: [
+    { op:'jump', to:@block_140 },
+  ]
+};
+
+block_135 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_137, else:@block_141 },
+  ]
+};
+
+block_140 = {
+  instrs: [
+    { op:'jump', to:@block_142 },
+  ]
+};
+
+block_141 = {
+  instrs: [
+    { op:'jump', to:@block_142 },
+  ]
+};
+
+block_142 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_143, else:@block_144 },
+  ]
+};
+
+block_143 = {
+  instrs: [
+    { op:'jump', to:@block_145 },
+  ]
+};
+
+block_144 = {
+  instrs: [
+    { op:'push', val:'unhandled type in bitwise unsigned right shift' },
+    { op:'abort' },
+    { op:'jump', to:@block_145 },
+  ]
+};
+
+block_145 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_136 = {
+  entry:@block_135,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_149 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'and_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_148 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_149, else:@block_150 },
+  ]
+};
+
+block_150 = {
+  instrs: [
+    { op:'jump', to:@block_151 },
+  ]
+};
+
+block_146 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_148, else:@block_152 },
+  ]
+};
+
+block_151 = {
+  instrs: [
+    { op:'jump', to:@block_153 },
+  ]
+};
+
+block_152 = {
+  instrs: [
+    { op:'jump', to:@block_153 },
+  ]
+};
+
+block_153 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_154, else:@block_155 },
+  ]
+};
+
+block_154 = {
+  instrs: [
+    { op:'jump', to:@block_156 },
+  ]
+};
+
+block_155 = {
+  instrs: [
+    { op:'push', val:'unhandled type in bitwise and' },
+    { op:'abort' },
+    { op:'jump', to:@block_156 },
+  ]
+};
+
+block_156 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_147 = {
+  entry:@block_146,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_160 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'or_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_159 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_160, else:@block_161 },
+  ]
+};
+
+block_161 = {
+  instrs: [
+    { op:'jump', to:@block_162 },
+  ]
+};
+
+block_157 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_159, else:@block_163 },
+  ]
+};
+
+block_162 = {
+  instrs: [
+    { op:'jump', to:@block_164 },
+  ]
+};
+
+block_163 = {
+  instrs: [
+    { op:'jump', to:@block_164 },
+  ]
+};
+
+block_164 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_165, else:@block_166 },
+  ]
+};
+
+block_165 = {
+  instrs: [
+    { op:'jump', to:@block_167 },
+  ]
+};
+
+block_166 = {
+  instrs: [
+    { op:'push', val:'unhandled type in bitwise or' },
+    { op:'abort' },
+    { op:'jump', to:@block_167 },
+  ]
+};
+
+block_167 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_158 = {
+  entry:@block_157,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_171 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'xor_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_170 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_171, else:@block_172 },
+  ]
+};
+
+block_172 = {
+  instrs: [
+    { op:'jump', to:@block_173 },
+  ]
+};
+
+block_168 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_170, else:@block_174 },
+  ]
+};
+
+block_173 = {
+  instrs: [
+    { op:'jump', to:@block_175 },
+  ]
+};
+
+block_174 = {
+  instrs: [
+    { op:'jump', to:@block_175 },
+  ]
+};
+
+block_175 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_176, else:@block_177 },
+  ]
+};
+
+block_176 = {
+  instrs: [
+    { op:'jump', to:@block_178 },
+  ]
+};
+
+block_177 = {
+  instrs: [
+    { op:'push', val:'unhandled type in xor' },
+    { op:'abort' },
+    { op:'jump', to:@block_178 },
+  ]
+};
+
+block_178 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_169 = {
+  entry:@block_168,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_181 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'not_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_179 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_181, else:@block_182 },
+  ]
+};
+
+block_182 = {
+  instrs: [
+    { op:'jump', to:@block_183 },
+  ]
+};
+
+block_183 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_184, else:@block_185 },
+  ]
+};
+
+block_184 = {
+  instrs: [
+    { op:'jump', to:@block_186 },
+  ]
+};
+
+block_185 = {
+  instrs: [
+    { op:'push', val:'unhandled type in bitwise not' },
+    { op:'abort' },
+    { op:'jump', to:@block_186 },
+  ]
+};
+
+block_186 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_180 = {
+  entry:@block_179,
+  params:['x'],
+  num_locals:2,
+};
+
+block_189 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+block_190 = {
+  instrs: [
+    { op:'push', val:$true },
+    { op:'ret' },
+  ]
+};
+
+block_187 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'if_true', then:@block_189, else:@block_190 },
+  ]
+};
+
+block_191 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_188 = {
+  entry:@block_187,
+  params:['x'],
+  num_locals:2,
+};
+
+block_195 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'eq_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_194 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_195, else:@block_196 },
+  ]
+};
+
+block_196 = {
+  instrs: [
+    { op:'jump', to:@block_197 },
+  ]
+};
+
+block_198 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'eq_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_197 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_198, else:@block_199 },
+  ]
+};
+
+block_199 = {
+  instrs: [
+    { op:'jump', to:@block_200 },
+  ]
+};
+
+block_192 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_194, else:@block_201 },
+  ]
+};
+
+block_200 = {
+  instrs: [
+    { op:'jump', to:@block_202 },
+  ]
+};
+
+block_201 = {
+  instrs: [
+    { op:'jump', to:@block_202 },
+  ]
+};
+
+block_204 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'eq_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_203 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_204, else:@block_205 },
+  ]
+};
+
+block_205 = {
+  instrs: [
+    { op:'jump', to:@block_206 },
+  ]
+};
+
+block_207 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'eq_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_206 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_207, else:@block_208 },
+  ]
+};
+
+block_208 = {
+  instrs: [
+    { op:'jump', to:@block_209 },
+  ]
+};
+
+block_202 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_203, else:@block_210 },
+  ]
+};
+
+block_209 = {
+  instrs: [
+    { op:'jump', to:@block_211 },
+  ]
+};
+
+block_210 = {
+  instrs: [
+    { op:'jump', to:@block_211 },
+  ]
+};
+
+block_213 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'eq_str' },
+    { op:'ret' },
+  ]
+};
+
+block_212 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_213, else:@block_214 },
+  ]
+};
+
+block_214 = {
+  instrs: [
+    { op:'jump', to:@block_215 },
+  ]
+};
+
+block_215 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+block_211 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_212, else:@block_216 },
+  ]
+};
+
+block_216 = {
+  instrs: [
+    { op:'jump', to:@block_217 },
+  ]
+};
+
+block_219 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'eq_obj' },
+    { op:'ret' },
+  ]
+};
+
+block_218 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'object' },
+    { op:'if_true', then:@block_219, else:@block_220 },
+  ]
+};
+
+block_220 = {
+  instrs: [
+    { op:'jump', to:@block_221 },
+  ]
+};
+
+block_221 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+block_217 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'object' },
+    { op:'if_true', then:@block_218, else:@block_222 },
+  ]
+};
+
+block_222 = {
+  instrs: [
+    { op:'jump', to:@block_223 },
+  ]
+};
+
+block_225 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'eq_bool' },
+    { op:'ret' },
+  ]
+};
+
+block_224 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'bool' },
+    { op:'if_true', then:@block_225, else:@block_226 },
+  ]
+};
+
+block_226 = {
+  instrs: [
+    { op:'jump', to:@block_227 },
+  ]
+};
+
+block_227 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+block_223 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'bool' },
+    { op:'if_true', then:@block_224, else:@block_228 },
+  ]
+};
+
+block_228 = {
+  instrs: [
+    { op:'jump', to:@block_229 },
+  ]
+};
+
+block_231 = {
+  instrs: [
+    { op:'push', val:$true },
+    { op:'ret' },
+  ]
+};
+
+block_230 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'undef' },
+    { op:'if_true', then:@block_231, else:@block_232 },
+  ]
+};
+
+block_232 = {
+  instrs: [
+    { op:'jump', to:@block_233 },
+  ]
+};
+
+block_233 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+block_229 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'undef' },
+    { op:'if_true', then:@block_230, else:@block_234 },
+  ]
+};
+
+block_234 = {
+  instrs: [
+    { op:'jump', to:@block_235 },
+  ]
+};
+
+block_235 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_236, else:@block_237 },
+  ]
+};
+
+block_236 = {
+  instrs: [
+    { op:'jump', to:@block_238 },
+  ]
+};
+
+block_237 = {
+  instrs: [
+    { op:'push', val:'unhandled type in equality comparison' },
+    { op:'abort' },
+    { op:'jump', to:@block_238 },
+  ]
+};
+
+block_238 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_193 = {
+  entry:@block_192,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_239 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_eq' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_241, num_args:2 },
+  ]
+};
+
+block_242 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+block_243 = {
+  instrs: [
+    { op:'push', val:$true },
+    { op:'ret' },
+  ]
+};
+
+block_241 = {
+  instrs: [
+    { op:'if_true', then:@block_242, else:@block_243 },
+  ]
+};
+
+block_244 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_240 = {
+  entry:@block_239,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_248 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'lt_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_247 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_248, else:@block_249 },
+  ]
+};
+
+block_249 = {
+  instrs: [
+    { op:'jump', to:@block_250 },
+  ]
+};
+
+block_251 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'lt_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_250 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_251, else:@block_252 },
+  ]
+};
+
+block_252 = {
+  instrs: [
+    { op:'jump', to:@block_253 },
+  ]
+};
+
+block_245 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_247, else:@block_254 },
+  ]
+};
+
+block_253 = {
+  instrs: [
+    { op:'jump', to:@block_255 },
+  ]
+};
+
+block_254 = {
+  instrs: [
+    { op:'jump', to:@block_255 },
+  ]
+};
+
+block_257 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'lt_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_256 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_257, else:@block_258 },
+  ]
+};
+
+block_258 = {
+  instrs: [
+    { op:'jump', to:@block_259 },
+  ]
+};
+
+block_260 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'lt_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_259 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_260, else:@block_261 },
+  ]
+};
+
+block_261 = {
+  instrs: [
+    { op:'jump', to:@block_262 },
+  ]
+};
+
+block_255 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_256, else:@block_263 },
+  ]
+};
+
+block_262 = {
+  instrs: [
+    { op:'jump', to:@block_264 },
+  ]
+};
+
+block_263 = {
+  instrs: [
+    { op:'jump', to:@block_264 },
+  ]
+};
+
+block_264 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_246 = {
+  entry:@block_245,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_268 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'le_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_267 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_268, else:@block_269 },
+  ]
+};
+
+block_269 = {
+  instrs: [
+    { op:'jump', to:@block_270 },
+  ]
+};
+
+block_271 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'le_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_270 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_271, else:@block_272 },
+  ]
+};
+
+block_272 = {
+  instrs: [
+    { op:'jump', to:@block_273 },
+  ]
+};
+
+block_265 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_267, else:@block_274 },
+  ]
+};
+
+block_273 = {
+  instrs: [
+    { op:'jump', to:@block_275 },
+  ]
+};
+
+block_274 = {
+  instrs: [
+    { op:'jump', to:@block_275 },
+  ]
+};
+
+block_277 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'le_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_276 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_277, else:@block_278 },
+  ]
+};
+
+block_278 = {
+  instrs: [
+    { op:'jump', to:@block_279 },
+  ]
+};
+
+block_280 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'le_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_279 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_280, else:@block_281 },
+  ]
+};
+
+block_281 = {
+  instrs: [
+    { op:'jump', to:@block_282 },
+  ]
+};
+
+block_275 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_276, else:@block_283 },
+  ]
+};
+
+block_282 = {
+  instrs: [
+    { op:'jump', to:@block_284 },
+  ]
+};
+
+block_283 = {
+  instrs: [
+    { op:'jump', to:@block_284 },
+  ]
+};
+
+block_286 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'str_len' },
+    { op:'push', val:1 },
+    { op:'eq_i32' },
+    { op:'if_true', then:@block_287, else:@block_288 },
+  ]
+};
+
+block_287 = {
+  instrs: [
+    { op:'jump', to:@block_289 },
+  ]
+};
+
+block_288 = {
+  instrs: [
+    { op:'push', val:'rt_le' },
+    { op:'abort' },
+    { op:'jump', to:@block_289 },
+  ]
+};
+
+block_289 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'str_len' },
+    { op:'push', val:1 },
+    { op:'eq_i32' },
+    { op:'if_true', then:@block_290, else:@block_291 },
+  ]
+};
+
+block_290 = {
+  instrs: [
+    { op:'jump', to:@block_292 },
+  ]
+};
+
+block_291 = {
+  instrs: [
+    { op:'push', val:'rt_le' },
+    { op:'abort' },
+    { op:'jump', to:@block_292 },
+  ]
+};
+
+block_292 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:0 },
+    { op:'get_char_code' },
+    { op:'get_local', idx:1 },
+    { op:'push', val:0 },
+    { op:'get_char_code' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_le' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_293, num_args:2 },
+  ]
+};
+
+block_293 = {
+  instrs: [
+    { op:'ret' },
+  ]
+};
+
+block_285 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_286, else:@block_294 },
+  ]
+};
+
+block_294 = {
+  instrs: [
+    { op:'jump', to:@block_295 },
+  ]
+};
+
+block_284 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_285, else:@block_296 },
+  ]
+};
+
+block_295 = {
+  instrs: [
+    { op:'jump', to:@block_297 },
+  ]
+};
+
+block_296 = {
+  instrs: [
+    { op:'jump', to:@block_297 },
+  ]
+};
+
+block_297 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_298, else:@block_299 },
+  ]
+};
+
+block_298 = {
+  instrs: [
+    { op:'jump', to:@block_300 },
+  ]
+};
+
+block_299 = {
+  instrs: [
+    { op:'push', val:'unhandled type in less-than or equal comparison' },
+    { op:'abort' },
+    { op:'jump', to:@block_300 },
+  ]
+};
+
+block_300 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_266 = {
+  entry:@block_265,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_304 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'gt_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_303 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_304, else:@block_305 },
+  ]
+};
+
+block_305 = {
+  instrs: [
+    { op:'jump', to:@block_306 },
+  ]
+};
+
+block_307 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'gt_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_306 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_307, else:@block_308 },
+  ]
+};
+
+block_308 = {
+  instrs: [
+    { op:'jump', to:@block_309 },
+  ]
+};
+
+block_301 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_303, else:@block_310 },
+  ]
+};
+
+block_309 = {
+  instrs: [
+    { op:'jump', to:@block_311 },
+  ]
+};
+
+block_310 = {
+  instrs: [
+    { op:'jump', to:@block_311 },
+  ]
+};
+
+block_313 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'gt_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_312 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_313, else:@block_314 },
+  ]
+};
+
+block_314 = {
+  instrs: [
+    { op:'jump', to:@block_315 },
+  ]
+};
+
+block_316 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'gt_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_315 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_316, else:@block_317 },
+  ]
+};
+
+block_317 = {
+  instrs: [
+    { op:'jump', to:@block_318 },
+  ]
+};
+
+block_311 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_312, else:@block_319 },
+  ]
+};
+
+block_318 = {
+  instrs: [
+    { op:'jump', to:@block_320 },
+  ]
+};
+
+block_319 = {
+  instrs: [
+    { op:'jump', to:@block_320 },
+  ]
+};
+
+block_320 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_302 = {
+  entry:@block_301,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_324 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'i32_to_f32' },
+    { op:'get_local', idx:1 },
+    { op:'ge_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_323 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_324, else:@block_325 },
+  ]
+};
+
+block_325 = {
+  instrs: [
+    { op:'jump', to:@block_326 },
+  ]
+};
+
+block_327 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'ge_i32' },
+    { op:'ret' },
+  ]
+};
+
+block_326 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_327, else:@block_328 },
+  ]
+};
+
+block_328 = {
+  instrs: [
+    { op:'jump', to:@block_329 },
+  ]
+};
+
+block_321 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_323, else:@block_330 },
+  ]
+};
+
+block_329 = {
+  instrs: [
+    { op:'jump', to:@block_331 },
+  ]
+};
+
+block_330 = {
+  instrs: [
+    { op:'jump', to:@block_331 },
+  ]
+};
+
+block_333 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'ge_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_332 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_333, else:@block_334 },
+  ]
+};
+
+block_334 = {
+  instrs: [
+    { op:'jump', to:@block_335 },
+  ]
+};
+
+block_336 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'i32_to_f32' },
+    { op:'ge_f32' },
+    { op:'ret' },
+  ]
+};
+
+block_335 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_336, else:@block_337 },
+  ]
+};
+
+block_337 = {
+  instrs: [
+    { op:'jump', to:@block_338 },
+  ]
+};
+
+block_331 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_332, else:@block_339 },
+  ]
+};
+
+block_338 = {
+  instrs: [
+    { op:'jump', to:@block_340 },
+  ]
+};
+
+block_339 = {
+  instrs: [
+    { op:'jump', to:@block_340 },
+  ]
+};
+
+block_342 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'str_len' },
+    { op:'push', val:1 },
+    { op:'eq_i32' },
+    { op:'if_true', then:@block_343, else:@block_344 },
+  ]
+};
+
+block_343 = {
+  instrs: [
+    { op:'jump', to:@block_345 },
+  ]
+};
+
+block_344 = {
+  instrs: [
+    { op:'push', val:'rt_ge' },
+    { op:'abort' },
+    { op:'jump', to:@block_345 },
+  ]
+};
+
+block_345 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'str_len' },
+    { op:'push', val:1 },
+    { op:'eq_i32' },
+    { op:'if_true', then:@block_346, else:@block_347 },
+  ]
+};
+
+block_346 = {
+  instrs: [
+    { op:'jump', to:@block_348 },
+  ]
+};
+
+block_347 = {
+  instrs: [
+    { op:'push', val:'rt_ge' },
+    { op:'abort' },
+    { op:'jump', to:@block_348 },
+  ]
+};
+
+block_348 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:0 },
+    { op:'get_char_code' },
+    { op:'get_local', idx:1 },
+    { op:'push', val:0 },
+    { op:'get_char_code' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_ge' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_349, num_args:2 },
+  ]
+};
+
+block_349 = {
+  instrs: [
+    { op:'ret' },
+  ]
+};
+
+block_341 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_342, else:@block_350 },
+  ]
+};
+
+block_350 = {
+  instrs: [
+    { op:'jump', to:@block_351 },
+  ]
+};
+
+block_340 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_341, else:@block_352 },
+  ]
+};
+
+block_351 = {
+  instrs: [
+    { op:'jump', to:@block_353 },
+  ]
+};
+
+block_352 = {
+  instrs: [
+    { op:'jump', to:@block_353 },
+  ]
+};
+
+block_353 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_354, else:@block_355 },
+  ]
+};
+
+block_354 = {
+  instrs: [
+    { op:'jump', to:@block_356 },
+  ]
+};
+
+block_355 = {
+  instrs: [
+    { op:'push', val:'unhandled type in less-than or equal comparison' },
+    { op:'abort' },
+    { op:'jump', to:@block_356 },
+  ]
+};
+
+block_356 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_322 = {
+  entry:@block_321,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_360 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'get_local', idx:0 },
+    { op:'has_field' },
+    { op:'ret' },
+  ]
+};
+
+block_359 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'object' },
+    { op:'if_true', then:@block_360, else:@block_361 },
+  ]
+};
+
+block_361 = {
+  instrs: [
+    { op:'jump', to:@block_362 },
+  ]
+};
+
+block_357 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_359, else:@block_363 },
+  ]
+};
+
+block_362 = {
+  instrs: [
+    { op:'jump', to:@block_364 },
+  ]
+};
+
+block_363 = {
+  instrs: [
+    { op:'jump', to:@block_364 },
+  ]
+};
+
+block_364 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_365, else:@block_366 },
+  ]
+};
+
+block_365 = {
+  instrs: [
+    { op:'jump', to:@block_367 },
+  ]
+};
+
+block_366 = {
+  instrs: [
+    { op:'push', val:'unhandled type in the \'in\' operator' },
+    { op:'abort' },
+    { op:'jump', to:@block_367 },
+  ]
+};
+
+block_367 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_358 = {
+  entry:@block_357,
+  params:['x', 'y'],
+  num_locals:3,
+};
+
+block_368 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'object' },
+    { op:'if_true', then:@block_370, else:@block_371 },
+  ]
+};
+
+block_370 = {
+  instrs: [
+    { op:'jump', to:@block_372 },
+  ]
+};
+
+block_371 = {
+  instrs: [
+    { op:'push', val:'instanceof only applies to objects' },
+    { op:'abort' },
+    { op:'jump', to:@block_372 },
+  ]
+};
+
+block_372 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'object' },
+    { op:'if_true', then:@block_373, else:@block_374 },
+  ]
+};
+
+block_373 = {
+  instrs: [
+    { op:'jump', to:@block_375 },
+  ]
+};
+
+block_374 = {
+  instrs: [
+    { op:'push', val:'prototype in instanceof must be an object' },
+    { op:'abort' },
+    { op:'jump', to:@block_375 },
+  ]
+};
+
+block_377 = {
+  instrs: [
+    { op:'push', val:$true },
+    { op:'ret' },
+  ]
+};
+
+block_376 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:'proto' },
+    { op:'get_field' },
+    { op:'set_local', idx:2 },
+    { op:'get_local', idx:2 },
+    { op:'get_local', idx:1 },
+    { op:'eq_obj' },
+    { op:'if_true', then:@block_377, else:@block_378 },
+  ]
+};
+
+block_378 = {
+  instrs: [
+    { op:'jump', to:@block_379 },
+  ]
+};
+
+block_379 = {
+  instrs: [
+    { op:'get_local', idx:2 },
+    { op:'get_local', idx:1 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_instOf' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_380, num_args:2 },
+  ]
+};
+
+block_380 = {
+  instrs: [
+    { op:'ret' },
+  ]
+};
+
+block_375 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:'proto' },
+    { op:'has_field' },
+    { op:'if_true', then:@block_376, else:@block_381 },
+  ]
+};
+
+block_381 = {
+  instrs: [
+    { op:'jump', to:@block_382 },
+  ]
+};
+
+block_382 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+fun_369 = {
+  entry:@block_368,
+  params:['obj', 'proto'],
+  num_locals:4,
+};
+
+block_386 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'get_field' },
+    { op:'ret' },
+  ]
+};
+
+block_385 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'has_field' },
+    { op:'if_true', then:@block_386, else:@block_387 },
+  ]
+};
+
+block_387 = {
+  instrs: [
+    { op:'jump', to:@block_388 },
+  ]
+};
+
+block_389 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:'proto' },
+    { op:'get_field' },
+    { op:'set_local', idx:2 },
+    { op:'get_local', idx:2 },
+    { op:'get_local', idx:1 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getProp' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_390, num_args:2 },
+  ]
+};
+
+block_390 = {
+  instrs: [
+    { op:'ret' },
+  ]
+};
+
+block_388 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:'proto' },
+    { op:'has_field' },
+    { op:'if_true', then:@block_389, else:@block_391 },
+  ]
+};
+
+block_391 = {
+  instrs: [
+    { op:'jump', to:@block_392 },
+  ]
+};
+
+block_394 = {
+  instrs: [
+    { op:'push', val:'undefined property \"' },
+    { op:'get_local', idx:1 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_add' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_395, num_args:2 },
+  ]
+};
+
+block_395 = {
+  instrs: [
+    { op:'push', val:'\"' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_add' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_396, num_args:2 },
+  ]
+};
+
+block_392 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_393, else:@block_394 },
+  ]
+};
+
+block_393 = {
+  instrs: [
+    { op:'jump', to:@block_397 },
+  ]
+};
+
+block_396 = {
+  instrs: [
+    { op:'abort' },
+    { op:'jump', to:@block_397 },
+  ]
+};
+
+block_383 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'object' },
+    { op:'if_true', then:@block_385, else:@block_398 },
+  ]
+};
+
+block_397 = {
+  instrs: [
+    { op:'jump', to:@block_399 },
+  ]
+};
+
+block_398 = {
+  instrs: [
+    { op:'jump', to:@block_399 },
+  ]
+};
+
+block_400 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'push', val:'length' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_eq' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_401, num_args:2 },
+  ]
+};
+
+block_402 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'array_len' },
+    { op:'ret' },
+  ]
+};
+
+block_401 = {
+  instrs: [
+    { op:'if_true', then:@block_402, else:@block_403 },
+  ]
+};
+
+block_403 = {
+  instrs: [
+    { op:'jump', to:@block_404 },
+  ]
+};
+
+block_404 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'push', val:'push' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_eq' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_405, num_args:2 },
+  ]
+};
+
+block_406 = {
+  instrs: [
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_push' },
+    { op:'get_field' },
+    { op:'ret' },
+  ]
+};
+
+block_405 = {
+  instrs: [
+    { op:'if_true', then:@block_406, else:@block_407 },
+  ]
+};
+
+block_407 = {
+  instrs: [
+    { op:'jump', to:@block_408 },
+  ]
+};
+
+block_399 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'array' },
+    { op:'if_true', then:@block_400, else:@block_409 },
+  ]
+};
+
+block_408 = {
+  instrs: [
+    { op:'jump', to:@block_410 },
+  ]
+};
+
+block_409 = {
+  instrs: [
+    { op:'jump', to:@block_410 },
+  ]
+};
+
+block_411 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'push', val:'length' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_eq' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_412, num_args:2 },
+  ]
+};
+
+block_413 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'str_len' },
+    { op:'ret' },
+  ]
+};
+
+block_412 = {
+  instrs: [
+    { op:'if_true', then:@block_413, else:@block_414 },
+  ]
+};
+
+block_414 = {
+  instrs: [
+    { op:'jump', to:@block_415 },
+  ]
+};
+
+block_410 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_411, else:@block_416 },
+  ]
+};
+
+block_415 = {
+  instrs: [
+    { op:'jump', to:@block_417 },
+  ]
+};
+
+block_416 = {
+  instrs: [
+    { op:'jump', to:@block_417 },
+  ]
+};
+
+block_419 = {
+  instrs: [
+    { op:'push', val:'unhandled base type in read of property \"' },
+    { op:'get_local', idx:1 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_add' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_420, num_args:2 },
+  ]
+};
+
+block_420 = {
+  instrs: [
+    { op:'push', val:'\"' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_add' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_421, num_args:2 },
+  ]
+};
+
+block_417 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_418, else:@block_419 },
+  ]
+};
+
+block_418 = {
+  instrs: [
+    { op:'jump', to:@block_422 },
+  ]
+};
+
+block_421 = {
+  instrs: [
+    { op:'abort' },
+    { op:'jump', to:@block_422 },
+  ]
+};
+
+block_422 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_384 = {
+  entry:@block_383,
+  params:['base', 'name'],
+  num_locals:4,
+};
+
+block_425 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_426, else:@block_427 },
+  ]
+};
+
+block_426 = {
+  instrs: [
+    { op:'jump', to:@block_428 },
+  ]
+};
+
+block_427 = {
+  instrs: [
+    { op:'push', val:'unhandled index type in getElem with array base; should be int32' },
+    { op:'abort' },
+    { op:'jump', to:@block_428 },
+  ]
+};
+
+block_428 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'get_elem' },
+    { op:'ret' },
+  ]
+};
+
+block_423 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'array' },
+    { op:'if_true', then:@block_425, else:@block_429 },
+  ]
+};
+
+block_429 = {
+  instrs: [
+    { op:'jump', to:@block_430 },
+  ]
+};
+
+block_431 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_432, else:@block_433 },
+  ]
+};
+
+block_432 = {
+  instrs: [
+    { op:'jump', to:@block_434 },
+  ]
+};
+
+block_433 = {
+  instrs: [
+    { op:'push', val:'unhandled index type in getElem with string base; should be int32' },
+    { op:'abort' },
+    { op:'jump', to:@block_434 },
+  ]
+};
+
+block_434 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'get_char' },
+    { op:'ret' },
+  ]
+};
+
+block_430 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_431, else:@block_435 },
+  ]
+};
+
+block_435 = {
+  instrs: [
+    { op:'jump', to:@block_436 },
+  ]
+};
+
+block_437 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_438, else:@block_439 },
+  ]
+};
+
+block_438 = {
+  instrs: [
+    { op:'jump', to:@block_440 },
+  ]
+};
+
+block_439 = {
+  instrs: [
+    { op:'push', val:'unhandled index type in getElem with object base; should be string' },
+    { op:'abort' },
+    { op:'jump', to:@block_440 },
+  ]
+};
+
+block_440 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'get_field' },
+    { op:'ret' },
+  ]
+};
+
+block_436 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'object' },
+    { op:'if_true', then:@block_437, else:@block_441 },
+  ]
+};
+
+block_441 = {
+  instrs: [
+    { op:'jump', to:@block_442 },
+  ]
+};
+
+block_442 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_443, else:@block_444 },
+  ]
+};
+
+block_443 = {
+  instrs: [
+    { op:'jump', to:@block_445 },
+  ]
+};
+
+block_444 = {
+  instrs: [
+    { op:'push', val:'unhandled base type in getElem; should be array, string, or object' },
+    { op:'abort' },
+    { op:'jump', to:@block_445 },
+  ]
+};
+
+block_445 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_424 = {
+  entry:@block_423,
+  params:['base', 'idx'],
+  num_locals:3,
+};
+
+block_448 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_449, else:@block_450 },
+  ]
+};
+
+block_449 = {
+  instrs: [
+    { op:'jump', to:@block_451 },
+  ]
+};
+
+block_450 = {
+  instrs: [
+    { op:'push', val:'unhandled index type in setElem with array base; should be int32' },
+    { op:'abort' },
+    { op:'jump', to:@block_451 },
+  ]
+};
+
+block_451 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'get_local', idx:2 },
+    { op:'set_elem' },
+    { op:'get_local', idx:2 },
+    { op:'ret' },
+  ]
+};
+
+block_446 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'array' },
+    { op:'if_true', then:@block_448, else:@block_452 },
+  ]
+};
+
+block_452 = {
+  instrs: [
+    { op:'jump', to:@block_453 },
+  ]
+};
+
+block_454 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_455, else:@block_456 },
+  ]
+};
+
+block_455 = {
+  instrs: [
+    { op:'jump', to:@block_457 },
+  ]
+};
+
+block_456 = {
+  instrs: [
+    { op:'push', val:'unhandled index type in setElem with object base; should be string' },
+    { op:'abort' },
+    { op:'jump', to:@block_457 },
+  ]
+};
+
+block_457 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'get_local', idx:2 },
+    { op:'set_field' },
+    { op:'ret' },
+  ]
+};
+
+block_453 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'object' },
+    { op:'if_true', then:@block_454, else:@block_458 },
+  ]
+};
+
+block_458 = {
+  instrs: [
+    { op:'jump', to:@block_459 },
+  ]
+};
+
+block_459 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_460, else:@block_461 },
+  ]
+};
+
+block_460 = {
+  instrs: [
+    { op:'jump', to:@block_462 },
+  ]
+};
+
+block_461 = {
+  instrs: [
+    { op:'push', val:'unhandled base type in setElem; should be array or object' },
+    { op:'abort' },
+    { op:'jump', to:@block_462 },
+  ]
+};
+
+block_462 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_447 = {
+  entry:@block_446,
+  params:['base', 'idx', 'val'],
+  num_locals:4,
+};
+
+block_463 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'get_local', idx:1 },
+    { op:'array_push' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_464 = {
+  entry:@block_463,
+  params:['arr', 'val'],
+  num_locals:3,
+};
+
+block_467 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'get_field' },
+    { op:'push', val:'print_str' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getProp' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_468, num_args:2 },
+  ]
+};
+
+block_468 = {
+  instrs: [
+    { op:'call', ret_to:@block_469, num_args:1 },
+  ]
+};
+
+block_469 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+block_465 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'string' },
+    { op:'if_true', then:@block_467, else:@block_470 },
+  ]
+};
+
+block_470 = {
+  instrs: [
+    { op:'jump', to:@block_471 },
+  ]
+};
+
+block_472 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'get_field' },
+    { op:'push', val:'print_int32' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getProp' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_473, num_args:2 },
+  ]
+};
+
+block_473 = {
+  instrs: [
+    { op:'call', ret_to:@block_474, num_args:1 },
+  ]
+};
+
+block_474 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+block_471 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'int32' },
+    { op:'if_true', then:@block_472, else:@block_475 },
+  ]
+};
+
+block_475 = {
+  instrs: [
+    { op:'jump', to:@block_476 },
+  ]
+};
+
+block_477 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'get_field' },
+    { op:'push', val:'print_float32' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getProp' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_478, num_args:2 },
+  ]
+};
+
+block_478 = {
+  instrs: [
+    { op:'call', ret_to:@block_479, num_args:1 },
+  ]
+};
+
+block_479 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+block_476 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'float32' },
+    { op:'if_true', then:@block_477, else:@block_480 },
+  ]
+};
+
+block_480 = {
+  instrs: [
+    { op:'jump', to:@block_481 },
+  ]
+};
+
+block_481 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:$true },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_eq' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_482, num_args:2 },
+  ]
+};
+
+block_483 = {
+  instrs: [
+    { op:'push', val:'true' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'output' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_484, num_args:1 },
+  ]
+};
+
+block_484 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+block_482 = {
+  instrs: [
+    { op:'if_true', then:@block_483, else:@block_485 },
+  ]
+};
+
+block_485 = {
+  instrs: [
+    { op:'jump', to:@block_486 },
+  ]
+};
+
+block_486 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:$false },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_eq' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_487, num_args:2 },
+  ]
+};
+
+block_488 = {
+  instrs: [
+    { op:'push', val:'false' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'output' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_489, num_args:1 },
+  ]
+};
+
+block_489 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+block_487 = {
+  instrs: [
+    { op:'if_true', then:@block_488, else:@block_490 },
+  ]
+};
+
+block_490 = {
+  instrs: [
+    { op:'jump', to:@block_491 },
+  ]
+};
+
+block_491 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_492, else:@block_493 },
+  ]
+};
+
+block_492 = {
+  instrs: [
+    { op:'jump', to:@block_494 },
+  ]
+};
+
+block_493 = {
+  instrs: [
+    { op:'push', val:'unhandled type in output function' },
+    { op:'abort' },
+    { op:'jump', to:@block_494 },
+  ]
+};
+
+block_494 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_466 = {
+  entry:@block_465,
+  params:['x'],
+  num_locals:2,
+};
+
+block_495 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'output' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_497, num_args:1 },
+  ]
+};
+
+block_497 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\x0A' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'output' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_498, num_args:1 },
+  ]
+};
+
+block_498 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_496 = {
+  entry:@block_495,
+  params:['x'],
+  num_locals:2,
+};
+
+block_499 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'get_field' },
+    { op:'push', val:'read_file' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getProp' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_501, num_args:2 },
+  ]
+};
+
+block_501 = {
+  instrs: [
+    { op:'call', ret_to:@block_502, num_args:1 },
+  ]
+};
+
+block_502 = {
+  instrs: [
+    { op:'ret' },
+  ]
+};
+
+fun_500 = {
+  entry:@block_499,
+  params:['fileName'],
+  num_locals:2,
+};
+
+block_0 = {
+  instrs: [
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_throw' },
+    { op:'push', val:@fun_3 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_add' },
+    { op:'push', val:@fun_5 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_sub' },
+    { op:'push', val:@fun_34 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_mul' },
+    { op:'push', val:@fun_57 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_div' },
+    { op:'push', val:@fun_80 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_mod' },
+    { op:'push', val:@fun_103 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_shl' },
+    { op:'push', val:@fun_114 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_shr' },
+    { op:'push', val:@fun_125 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_ushr' },
+    { op:'push', val:@fun_136 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_and' },
+    { op:'push', val:@fun_147 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_or' },
+    { op:'push', val:@fun_158 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_xor' },
+    { op:'push', val:@fun_169 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_bit_not' },
+    { op:'push', val:@fun_180 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_not' },
+    { op:'push', val:@fun_188 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_eq' },
+    { op:'push', val:@fun_193 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_ne' },
+    { op:'push', val:@fun_240 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_lt' },
+    { op:'push', val:@fun_246 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_le' },
+    { op:'push', val:@fun_266 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_gt' },
+    { op:'push', val:@fun_302 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_ge' },
+    { op:'push', val:@fun_322 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_in' },
+    { op:'push', val:@fun_358 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_instOf' },
+    { op:'push', val:@fun_369 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getProp' },
+    { op:'push', val:@fun_384 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getElem' },
+    { op:'push', val:@fun_424 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_setElem' },
+    { op:'push', val:@fun_447 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_push' },
+    { op:'push', val:@fun_464 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'push', val:'core/io' },
+    { op:'import' },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'output' },
+    { op:'push', val:@fun_466 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'print' },
+    { op:'push', val:@fun_496 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'readFile' },
+    { op:'push', val:@fun_500 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'parser' },
+    { op:'push', val:'lang/plush/0' },
+    { op:'import' },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'parseString' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'parser' },
+    { op:'get_field' },
+    { op:'push', val:'parseString' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getProp' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_503, num_args:2 },
+  ]
+};
+
+block_504 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'print' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_506, num_args:1 },
+  ]
+};
+
+block_506 = {
+  instrs: [
+    { op:'pop' },
+    { op:'jump', to:@block_507 },
+  ]
+};
+
+block_507 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:'parser_test' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'parseString' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_510, throw_to:@block_508, num_args:2 },
+  ]
+};
+
+block_510 = {
+  instrs: [
+    { op:'ret' },
+  ]
+};
+
+block_512 = {
+  instrs: [
+    { op:'get_local', idx:1 },
+    { op:'push', val:'msg' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_getProp' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_513, num_args:2 },
+  ]
+};
+
+block_508 = {
+  instrs: [
+    { op:'set_local', idx:1 },
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_511, else:@block_512 },
+  ]
+};
+
+block_511 = {
+  instrs: [
+    { op:'jump', to:@block_514 },
+  ]
+};
+
+block_513 = {
+  instrs: [
+    { op:'abort' },
+    { op:'jump', to:@block_514 },
+  ]
+};
+
+block_514 = {
+  instrs: [
+    { op:'jump', to:@block_509 },
+  ]
+};
+
+block_509 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_505 = {
+  entry:@block_504,
+  params:['str'],
+  num_locals:3,
+};
+
+block_515 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'print' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_517, num_args:1 },
+  ]
+};
+
+block_517 = {
+  instrs: [
+    { op:'pop' },
+    { op:'jump', to:@block_518 },
+  ]
+};
+
+block_518 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'push', val:'parser_fail_test' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'parseString' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_521, throw_to:@block_519, num_args:2 },
+  ]
+};
+
+block_521 = {
+  instrs: [
+    { op:'pop' },
+    { op:'jump', to:@block_520 },
+  ]
+};
+
+block_519 = {
+  instrs: [
+    { op:'set_local', idx:1 },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+block_523 = {
+  instrs: [
+    { op:'push', val:'parsing did not fail for:\x0A' },
+    { op:'get_local', idx:0 },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'rt_add' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_524, num_args:2 },
+  ]
+};
+
+block_520 = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'if_true', then:@block_522, else:@block_523 },
+  ]
+};
+
+block_522 = {
+  instrs: [
+    { op:'jump', to:@block_525 },
+  ]
+};
+
+block_524 = {
+  instrs: [
+    { op:'abort' },
+    { op:'jump', to:@block_525 },
+  ]
+};
+
+block_525 = {
+  instrs: [
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_516 = {
+  entry:@block_515,
+  params:['str'],
+  num_locals:3,
+};
+
+block_526 = {
+  instrs: [
+    { op:'push', val:'parser tests' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'print' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_528, num_args:1 },
+  ]
+};
+
+block_528 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'foobar;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_529, num_args:1 },
+  ]
+};
+
+block_529 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'  foo_bar;  ' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_530, num_args:1 },
+  ]
+};
+
+block_530 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'  foo_bar ; ' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_531, num_args:1 },
+  ]
+};
+
+block_531 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'123;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_532, num_args:1 },
+  ]
+};
+
+block_532 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'3.56f;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_533, num_args:1 },
+  ]
+};
+
+block_533 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'3e2f;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_534, num_args:1 },
+  ]
+};
+
+block_534 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'3.56;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_535, num_args:1 },
+  ]
+};
+
+block_535 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'3e2;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_536, num_args:1 },
+  ]
+};
+
+block_536 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\'abc\';' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_537, num_args:1 },
+  ]
+};
+
+block_537 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\"double-quoted string!\";' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_538, num_args:1 },
+  ]
+};
+
+block_538 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\"double-quoted string, \'hi\'!\";' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_539, num_args:1 },
+  ]
+};
+
+block_539 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\'hi\'; // comment' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_540, num_args:1 },
+  ]
+};
+
+block_540 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\'hi\';' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_541, num_args:1 },
+  ]
+};
+
+block_541 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\'new\\nline\';' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_542, num_args:1 },
+  ]
+};
+
+block_542 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'true;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_543, num_args:1 },
+  ]
+};
+
+block_543 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'false;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_544, num_args:1 },
+  ]
+};
+
+block_544 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\'invalid\\iesc\'' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_545, num_args:1 },
+  ]
+};
+
+block_545 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\'str\' []' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_546, num_args:1 },
+  ]
+};
+
+block_546 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'[];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_547, num_args:1 },
+  ]
+};
+
+block_547 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'[1];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_548, num_args:1 },
+  ]
+};
+
+block_548 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'[1,a];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_549, num_args:1 },
+  ]
+};
+
+block_549 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'[1 , a];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_550, num_args:1 },
+  ]
+};
+
+block_550 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'[1,a, ];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_551, num_args:1 },
+  ]
+};
+
+block_551 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'[ 1,\x0Aa ];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_552, num_args:1 },
+  ]
+};
+
+block_552 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'[,];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_553, num_args:1 },
+  ]
+};
+
+block_553 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var x = {x:3};' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_554, num_args:1 },
+  ]
+};
+
+block_554 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var x = {x:3,y:2};' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_555, num_args:1 },
+  ]
+};
+
+block_555 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var x = {x:3,y:2+z};' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_556, num_args:1 },
+  ]
+};
+
+block_556 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var x = {x:3,y:2+z,};' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_557, num_args:1 },
+  ]
+};
+
+block_557 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var x = {,};' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_558, num_args:1 },
+  ]
+};
+
+block_558 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'1; // comment' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_559, num_args:1 },
+  ]
+};
+
+block_559 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'[ 1//comment\x0A,a ];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_560, num_args:1 },
+  ]
+};
+
+block_560 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'1 /* comment */ + x;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_561, num_args:1 },
+  ]
+};
+
+block_561 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'1 /* // comment */ + x;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_562, num_args:1 },
+  ]
+};
+
+block_562 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'1; // comment\x0A#1' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_563, num_args:1 },
+  ]
+};
+
+block_563 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'1; /* */ */' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_564, num_args:1 },
+  ]
+};
+
+block_564 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'-1;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_565, num_args:1 },
+  ]
+};
+
+block_565 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'-x + 2;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_566, num_args:1 },
+  ]
+};
+
+block_566 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x + -1;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_567, num_args:1 },
+  ]
+};
+
+block_567 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a + b;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_568, num_args:1 },
+  ]
+};
+
+block_568 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a + b + c;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_569, num_args:1 },
+  ]
+};
+
+block_569 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a + b - c;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_570, num_args:1 },
+  ]
+};
+
+block_570 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a + b * c + d;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_571, num_args:1 },
+  ]
+};
+
+block_571 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x || y;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_572, num_args:1 },
+  ]
+};
+
+block_572 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a || b || c;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_573, num_args:1 },
+  ]
+};
+
+block_573 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a && b;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_574, num_args:1 },
+  ]
+};
+
+block_574 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'(a);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_575, num_args:1 },
+  ]
+};
+
+block_575 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'(b ) ;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_576, num_args:1 },
+  ]
+};
+
+block_576 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'(a + b);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_577, num_args:1 },
+  ]
+};
+
+block_577 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'(a + (b + c));' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_578, num_args:1 },
+  ]
+};
+
+block_578 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'((a + b) + c);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_579, num_args:1 },
+  ]
+};
+
+block_579 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'(a + b) * (c + d);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_580, num_args:1 },
+  ]
+};
+
+block_580 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'*a;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_581, num_args:1 },
+  ]
+};
+
+block_581 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a*;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_582, num_args:1 },
+  ]
+};
+
+block_582 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a # b;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_583, num_args:1 },
+  ]
+};
+
+block_583 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a +;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_584, num_args:1 },
+  ]
+};
+
+block_584 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a + b # c;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_585, num_args:1 },
+  ]
+};
+
+block_585 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'(a;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_586, num_args:1 },
+  ]
+};
+
+block_586 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'(a + b));' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_587, num_args:1 },
+  ]
+};
+
+block_587 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'((a + b);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_588, num_args:1 },
+  ]
+};
+
+block_588 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a.b;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_589, num_args:1 },
+  ]
+};
+
+block_589 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a.b + c;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_590, num_args:1 },
+  ]
+};
+
+block_590 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a. b;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_591, num_args:1 },
+  ]
+};
+
+block_591 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a.\'b\';' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_592, num_args:1 },
+  ]
+};
+
+block_592 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a[0];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_593, num_args:1 },
+  ]
+};
+
+block_593 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a[b];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_594, num_args:1 },
+  ]
+};
+
+block_594 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a[b+2];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_595, num_args:1 },
+  ]
+};
+
+block_595 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a[2*b+1];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_596, num_args:1 },
+  ]
+};
+
+block_596 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a[];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_597, num_args:1 },
+  ]
+};
+
+block_597 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a[0 1];' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_598, num_args:1 },
+  ]
+};
+
+block_598 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'if (1) 2; ' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_599, num_args:1 },
+  ]
+};
+
+block_599 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'if (1) return 2;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_600, num_args:1 },
+  ]
+};
+
+block_600 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'if (!x) return 1; else return 2;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_601, num_args:1 },
+  ]
+};
+
+block_601 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'if (x <= 2) return 0; ' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_602, num_args:1 },
+  ]
+};
+
+block_602 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'if (x == 1) return 2; ' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_603, num_args:1 },
+  ]
+};
+
+block_603 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'if (typeof x == \'string\') return 2; ' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_604, num_args:1 },
+  ]
+};
+
+block_604 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'if (\'foo\' in obj) return 1;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_605, num_args:1 },
+  ]
+};
+
+block_605 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'for (a; b; c) d;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_606, num_args:1 },
+  ]
+};
+
+block_606 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'for (a; b; c) continue;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_607, num_args:1 },
+  ]
+};
+
+block_607 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'for (a; b; c) break;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_608, num_args:1 },
+  ]
+};
+
+block_608 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'for (;;) d;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_609, num_args:1 },
+  ]
+};
+
+block_609 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'for (i = 0; i < 10; i = i + 1) x;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_610, num_args:1 },
+  ]
+};
+
+block_610 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x = 1;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_611, num_args:1 },
+  ]
+};
+
+block_611 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x = -1;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_612, num_args:1 },
+  ]
+};
+
+block_612 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a.b = x + y;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_613, num_args:1 },
+  ]
+};
+
+block_613 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x = y = 1;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_614, num_args:1 },
+  ]
+};
+
+block_614 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var x = 3;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_615, num_args:1 },
+  ]
+};
+
+block_615 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x += 3;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_616, num_args:1 },
+  ]
+};
+
+block_616 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_617, num_args:1 },
+  ]
+};
+
+block_617 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'let' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_618, num_args:1 },
+  ]
+};
+
+block_618 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'let x' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_619, num_args:1 },
+  ]
+};
+
+block_619 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'let x=' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_620, num_args:1 },
+  ]
+};
+
+block_620 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var +' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_621, num_args:1 },
+  ]
+};
+
+block_621 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var 3' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_622, num_args:1 },
+  ]
+};
+
+block_622 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a();' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_623, num_args:1 },
+  ]
+};
+
+block_623 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a(b);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_624, num_args:1 },
+  ]
+};
+
+block_624 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a(b,c);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_625, num_args:1 },
+  ]
+};
+
+block_625 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a(b,c+1);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_626, num_args:1 },
+  ]
+};
+
+block_626 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a(b,c+1,);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_627, num_args:1 },
+  ]
+};
+
+block_627 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x + a(b,c+1);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_628, num_args:1 },
+  ]
+};
+
+block_628 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x + a(b,c+1) + y;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_629, num_args:1 },
+  ]
+};
+
+block_629 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a(); b();' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_630, num_args:1 },
+  ]
+};
+
+block_630 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'a(b c+1);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_631, num_args:1 },
+  ]
+};
+
+block_631 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'var io = import \'core/io\';' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_632, num_args:1 },
+  ]
+};
+
+block_632 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'$add_i32(1, 2);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_633, num_args:1 },
+  ]
+};
+
+block_633 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'assert(x);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_634, num_args:1 },
+  ]
+};
+
+block_634 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'assert(x, \'foo\');' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_635, num_args:1 },
+  ]
+};
+
+block_635 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'assertFP(x);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_636, num_args:1 },
+  ]
+};
+
+block_636 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'assert(x, \'foo\', z);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_637, num_args:1 },
+  ]
+};
+
+block_637 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function () { return 0; }; ' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_638, num_args:1 },
+  ]
+};
+
+block_638 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function (x) {return x;};' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_639, num_args:1 },
+  ]
+};
+
+block_639 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function foo(x) { return x; };' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_640, num_args:1 },
+  ]
+};
+
+block_640 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function (x,y) { return x; };' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_641, num_args:1 },
+  ]
+};
+
+block_641 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function (x,y,) { return x; };' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_642, num_args:1 },
+  ]
+};
+
+block_642 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function (x,y) { return x+y; };' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_643, num_args:1 },
+  ]
+};
+
+block_643 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'obj.method = function (this, x) { this.x = x; }; ' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_644, num_args:1 },
+  ]
+};
+
+block_644 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function (x,y)' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_645, num_args:1 },
+  ]
+};
+
+block_645 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'{ 1; 2; }' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_646, num_args:1 },
+  ]
+};
+
+block_646 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function (x) { print(x); print(y); };' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_647, num_args:1 },
+  ]
+};
+
+block_647 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function (x) { var y = x + 1; print(y); };' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_648, num_args:1 },
+  ]
+};
+
+block_648 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'{ a, }' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_649, num_args:1 },
+  ]
+};
+
+block_649 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'{ a, b }' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_650, num_args:1 },
+  ]
+};
+
+block_650 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'function foo () { a, };' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_651, num_args:1 },
+  ]
+};
+
+block_651 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'o:foo();' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_652, num_args:1 },
+  ]
+};
+
+block_652 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'o:foo(1,2);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_653, num_args:1 },
+  ]
+};
+
+block_653 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'x + o:foo(1,2);' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_654, num_args:1 },
+  ]
+};
+
+block_654 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'(o:foo)();' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_655, num_args:1 },
+  ]
+};
+
+block_655 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:';' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_656, num_args:1 },
+  ]
+};
+
+block_656 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'returned = 2;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_657, num_args:1 },
+  ]
+};
+
+block_657 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'varxy = 7;' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_658, num_args:1 },
+  ]
+};
+
+block_658 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:'\'a\' <\'' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_659, num_args:1 },
+  ]
+};
+
+block_659 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:$undef },
+    { op:'ret' },
+  ]
+};
+
+fun_527 = {
+  entry:@block_526,
+  params:[],
+  num_locals:1,
+};
+
+block_503 = {
+  instrs: [
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParse' },
+    { op:'push', val:@fun_505 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParseFail' },
+    { op:'push', val:@fun_516 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParser' },
+    { op:'push', val:@fun_527 },
+    { op:'set_field' },
+    { op:'push', val:@global_obj },
+    { op:'push', val:'testParser' },
+    { op:'get_field' },
+    { op:'call', ret_to:@block_660, num_args:0 },
+  ]
+};
+
+block_660 = {
+  instrs: [
+    { op:'pop' },
+    { op:'push', val:$true },
+    { op:'ret' },
+  ]
+};
+
+fun_1 = {
+  entry:@block_0,
+  params:[],
+  num_locals:1,
+};
+
+@exports_obj;

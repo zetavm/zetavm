@@ -38,10 +38,11 @@ test: all
 	./plush.sh tests/plush/obj_ext.pls
 	./plush.sh tests/plush/throw_exc.pls
 	./plush.sh tests/plush/throw_exc2.pls
-	./plush.sh plush/parser.pls tests/plush/parser.pls
 	# Check that the parser benchmark compiles with cplush
 	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
-	# Self-hosted plush parser tests (parser.pls)
+	# Run the Plush language package tests
+	./$(ZETA_BIN) packages/lang/plush/0/tests
+	# Run Plush code using the Plush language package
 	./$(ZETA_BIN) tests/plush/trivial.pls
 	./$(ZETA_BIN) tests/plush/floats.pls
 	./$(ZETA_BIN) tests/plush/simple_exprs.pls
@@ -105,6 +106,7 @@ cplush: plush/*.cpp plush/*.h
 plush-pkg: plush/parser.pls
 	mkdir -p packages/lang/plush/0
 	./$(CPLUSH_BIN) plush/parser.pls > packages/lang/plush/0/package
+	./$(CPLUSH_BIN) tests/plush/parser.pls > packages/lang/plush/0/tests
 
 math-pkg: plush/parser.pls
 	mkdir -p packages/std/math/0

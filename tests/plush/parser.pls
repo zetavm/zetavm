@@ -1,3 +1,6 @@
+var parser = import "lang/plush/0";
+var parseString = parser.parseString;
+
 /// Test that the parsing of a string succeeds
 var testParse = function (str)
 {
@@ -36,13 +39,6 @@ var testParseFail = function (str)
         false,
         "parsing did not fail for:\n" + str
     );
-};
-
-/// Test that the parsing of a file succeeds
-var testParseFile = function (fileName)
-{
-    print("parsing source file \"" + fileName + "\"");
-    return parseFile(fileName);
 };
 
 /// Test the functionality of the parser

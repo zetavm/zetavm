@@ -133,13 +133,48 @@ Value read_file(Value fileName)
     return String(buf);
 }
 
+Value read_line()
+{
+    char* lineBuf = nullptr;
+    size_t bufSize = 0;
+
+    auto numRead = getdelim(&lineBuf, &bufSize, '\n', stdin);
+
+    if (numRead <= 0)
+    {
+        free(lineBuf);
+        return Value::UNDEF;
+    }
+
+    // Clear trailing end of line characters
+    for (ssize_t i = 0; i < numRead; ++i)
+    {
+        size_t idx = numRead - 1 - i;
+
+        if (lineBuf[idx] == '\n' || lineBuf[idx] == '\r')
+        {
+            lineBuf[idx] = '\0';
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    auto str = String(lineBuf);
+    free(lineBuf);
+
+    return str;
+}
+
 Value get_core_io_pkg()
 {
     auto exports = Object::newObject(32);
-    setHostFn(exports, "print_int32", 1, (void*)print_int32);
+    setHostFn(exports, "print_int32"  , 1, (void*)print_int32);
     setHostFn(exports, "print_float32", 1, (void*)print_float32);
-    setHostFn(exports, "print_str"  , 1, (void*)print_str);
-    setHostFn(exports, "read_file"  , 1, (void*)read_file);
+    setHostFn(exports, "print_str"    , 1, (void*)print_str);
+    setHostFn(exports, "read_file"    , 1, (void*)read_file);
+    setHostFn(exports, "read_line"    , 0, (void*)read_line);
     return exports;
 }
 

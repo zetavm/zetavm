@@ -8,7 +8,7 @@ var test = function ()
 
     for (var i = 0; i < 1000000; i += 1)
     {
-        var num = rng:float(0, 1);
+        var num = rng:float(-1.0f, 1.0f);
     }
 };
 

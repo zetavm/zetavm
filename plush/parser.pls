@@ -1621,7 +1621,7 @@ var registerDecls = function (fun, stmt, unitFun)
 /**
 Generate code for a code unit
 */
-var genUnit = function (unitAST)
+var genUnit = function (unitAST, globalObj)
 {
     var entryBlock = Block.new();
 
@@ -1630,14 +1630,8 @@ var genUnit = function (unitAST)
     // Register variable declarations
     registerDecls(unitFun, unitAST.body, true);
 
+    // Definitions exported by this unit/package
     var exportsObj = { init: unitFun };
-
-    // Globally visible definitions
-    var globalObj = {
-        exports: exportsObj,
-        output: output,
-        print: print
-    };
 
     // Create the initial context
     var ctx = CodeGenCtx.new(
@@ -2477,6 +2471,11 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
 //============================================================================
 
 /**
+Function to parse a source string
+*/
+exports.parseString = parseString;
+
+/**
 Exported function to parse from an input object
 Note: this is called by zeta to parse plush files
 */
@@ -2502,8 +2501,78 @@ exports.parse_input = function (input)
     // Parse the unit
     var ast = parseUnit(input);
 
+    // Globally visible definitions
+    var globalObj = {
+        output: output,
+        print: print
+    };
+
     // Generate code for the unit
-    var unitFn = genUnit(ast);
+    var unitFn = genUnit(ast, globalObj);
 
     return unitFn;
+};
+
+/**
+The main function is called when this package is run as a standalone
+program/script. It implements a Read-Eval-Print Loop (REPL).
+*/
+exports.main = function ()
+{
+    var io = import "core/io";
+
+    print('Plush Read-Eval-Print Loop (REPL)');
+    print('To exit, press Ctrl+D or type "exit"');
+    //print('');
+
+    // Global object used by the REPL
+    var globalObj = {
+        output: output,
+        print: print
+    };
+
+    for (;;)
+    {
+        output('\n');
+        output("] ");
+        var line = io.read_line();
+
+        if (line == undef)
+        {
+            output('\n');
+            break;
+        }
+
+        if (line == "exit" || line == "quit")
+        {
+            break;
+        }
+
+        var input = Input::{
+            srcName: "console",
+            srcString: line,
+            strIdx: 0,
+            lineNo: 1,
+            colNo: 1
+        };
+
+        try
+        {
+            // Parse the unit
+            var ast = parseUnit(input);
+
+            // Generate code for the unit
+            var unit = genUnit(ast, globalObj);
+
+            // Run the unit function
+            unit.init();
+        }
+        catch (e)
+        {
+            print("Parse error: " + e.msg);
+            continue;
+        }
+    }
+
+    return 0;
 };
