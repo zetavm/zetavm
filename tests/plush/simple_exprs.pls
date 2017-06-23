@@ -34,6 +34,7 @@ assert (3 << 2 + 3 == 96);
 assert ((9 >> 1 | 1) == 5);
 assert (~0 == -1);
 assert (~-256 == 255);
+assert (-2147483647 + -2147483647 >= 0);
 assert (65537 * 65535 == -1);
 
 // Logical expressions
