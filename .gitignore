@@ -18,6 +18,7 @@ cscheme
 # Generated files
 benchmarks/plush_parser.zim
 packages/lang/plush/0/package
+packages/lang/plush/0/tests
 packages/std/math/0/package
 packages/lang/p/*
 parseOut.txt
