@@ -80,7 +80,7 @@ var OP_LE = addOp(OpInfo::{ str:"<=", prec:9 });
 var OP_GT = addOp(OpInfo::{ str:">", prec:9 });
 var OP_GE = addOp(OpInfo::{ str:">=", prec:9 });
 var OP_IN = addOp(OpInfo::{ str:"in", prec:9 });
-//const OpInfo OP_INSTOF = { "instanceof", "", 2, 9, 'l', false, false };
+var OP_INSTOF = addOp(OpInfo::{ str:"instanceof", prec:9 });
 
 /// Equality comparison
 var OP_EQ = addOp(OpInfo::{ str:"==", prec:8 });
@@ -761,9 +761,9 @@ var parseForStmt = function (input)
         // Parse the init statement
         initStmt = parseStmt(input);
 
-        // FIXME: need sanitization check here once we have instanceof
-        //if (cast(VarStmt)initStmt is null && cast(ExprStmt)initStmt is null)
-        //    throw new parseError("invalid for-loop init statement", initStmt.pos);
+        if (!(initStmt instanceof VarStmt) &&
+            !(initStmt instanceof ExprStmt))
+            parseError(input, "invalid for-loop init statement");
     }
 
     // Parse the test expression
@@ -1990,6 +1990,15 @@ var genExpr = function (ctx, expr)
 
             genObjExpr(ctx, expr.lhsExpr, expr.rhsExpr);
 
+            return;
+        }
+
+        // Instanceof
+        if (expr.op == OP_INSTOF)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_instOf);
             return;
         }
 

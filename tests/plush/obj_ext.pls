@@ -12,7 +12,11 @@ assert (b.y == 3);
 a.foo = function (self) { return self.x; };
 assert (b:foo() == 3);
 
-// test the get_field_list instruction
+// Instanceof operator
+assert (b instanceof a);
+assert (!({} instanceof a));
+
+// Test the get_field_list instruction
 var c = { x:1, y:2, z:3 };
 var field_list = $get_field_list(c);
 assert(field_list.length == 3);
