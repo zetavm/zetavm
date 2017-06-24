@@ -1760,6 +1760,13 @@ var genExpr = function (ctx, expr)
             return;
         }
 
+        if (expr.op == OP_TYPEOF)
+        {
+            genExpr(ctx, expr.expr);
+            ctx:addOp("get_tag");
+            return;
+        }
+
         assert (
             false,
             "unhandled unary op"

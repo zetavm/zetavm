@@ -63,6 +63,8 @@ assert (typeof "str" == "string");
 assert (typeof obj == "object");
 assert (typeof obj.x == "int32", "int property type");
 assert (typeof undef == "undef");
+var t = typeof 2;
+assert (t == "int32");
 
 // Global assignments
 var x = 1;
