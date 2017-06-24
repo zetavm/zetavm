@@ -1,6 +1,7 @@
 #language "lang/plush/0"
 
 var audio = import "core/audio";
+var window = import "core/window";
 var math = import "std/math/0";
 var peval = import "std/peval/0";
 var curry = peval.curry;
@@ -37,6 +38,8 @@ var playSound = function (sampleFun, numSeconds)
 
     audio.queue_samples(dev, samples);
 
+    drawSound(samples);
+
     // Wait until the sound is done playing
     for (;;)
     {
@@ -44,6 +47,57 @@ var playSound = function (sampleFun, numSeconds)
         if (queueSize == 0)
             break;
     }
+};
+
+var drawSound = function(samples)
+{
+    var width = 400;
+    var height = 100;
+
+    window.create_window("Sound Wave", width, height);
+
+    print('drawing sound wave');
+
+    var pixels = [];
+
+    for (var y = 0; y < height; y += 1)
+    {
+        for (var x = 0; x < width; x += 1)
+        {
+            pixels:push(0);
+            pixels:push(0);
+            pixels:push(0);
+        }
+    }
+
+    for (var i = 0; i < samples.length; i += 1)
+    {
+        var s = samples[i];
+        s = math.min(s, 1.0f);
+        s = math.max(s, -1.0f);
+
+        var sy = math.floor((height - 1) * ((s + 1) / 2));
+        var sx = math.floor(width * i / samples.length);
+
+        var bufIdx = (3 * sy * width) + (3 * sx);
+        pixels[bufIdx + 0] = 255;
+        pixels[bufIdx + 1] = 255;
+        pixels[bufIdx + 2] = 255;
+    }
+
+    print('done drawing');
+
+    window.draw_pixels(pixels);
+
+    // Wait until the user closes the window
+    for (;;)
+    {
+        var result = window.process_events();
+        if (result == false)
+            break;
+    }
+
+    window.destroy_window();
 };
 
 var silent = function (t)
@@ -124,7 +178,7 @@ var repeat = function (interv, f)
     var rf = function (time, f, interv)
     {
         var tmod = math.fmod(time, interv);
-        return f(tmod);        
+        return f(tmod);
     };
 
     return curry2(rf, f, interv);
@@ -169,13 +223,4 @@ var sampleFun = seq(
     ]
 );
 
-
-
-
-
-
-
-
-
-
-playSound(sampleFun, 2.0f);
+playSound(sampleFun, 1.0f);
