@@ -12,7 +12,7 @@ it is incomplete and breaking changes may happen often.**
 git clone git@github.com:maximecb/zetavm.git
 
 # Run the configure script and compile zetavm
-# Note: run configure with `--with-sdl2` to build graphics support
+# Note: run configure with `--with-sdl2` to build audio and graphics support
 cd zetavm
 ./configure
 make
@@ -23,8 +23,9 @@ make test
 # To run programs, pass the path to a source file to zeta, for example:
 ./zeta benchmarks/fib29.pls
 
-# To start up the Plush REPL, you can run the Plush language package as a program:
-./zeta packages/lang/plush/0/package
+# To start up the Plush REPL (interactive shell),
+# you can run the Plush language package as a program:
+./zeta lang/plush/0
 ```
 
 ## About ZetaVM

@@ -25,8 +25,14 @@ int main(int argc, char** argv)
 
         if (argc == 2)
         {
-            auto fileName = argv[1];
-            auto pkg = load(fileName);
+            auto pkgPath = findPkgPath(argv[1]);
+
+            if (pkgPath == "")
+            {
+                throw RunError("could not find package \"" + pkgPath + "\"");
+            }
+
+            auto pkg = load(pkgPath);
 
             // Initialize the package
             if (pkg.hasField("init"))

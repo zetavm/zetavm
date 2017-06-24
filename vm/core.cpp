@@ -508,8 +508,11 @@ std::string findPkgPath(std::string pkgName)
     if (fileExists(pkgPath))
     {
         assert (
-            regex_match(pkgName, std::regex("([a-z0-9]+/)*[0-9]+")) &&
-            "package found in package directory without version number"
+            regex_match(
+                pkgName,
+                std::regex("([a-z0-9]+/)*[0-9]+")
+            ) &&
+            "package with non-canonical name found in packages directory"
         );
 
         return pkgPath;
