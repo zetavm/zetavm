@@ -1145,7 +1145,7 @@ var parseExprPrec = function (input, minPrec)
                 baseExpr: lhsExpr,
                 nameStr: identStr,
                 argExprs: argExprs,
-                srcPos:srcPos
+                srcPos: srcPos
             };
         }
 
@@ -1160,6 +1160,36 @@ var parseExprPrec = function (input, minPrec)
                 op: op,
                 lhsExpr: lhsExpr,
                 rhsExpr: IdentExpr::{ name:identStr }
+            };
+        }
+
+        // If this is an object extension expression (a::{})
+        else if (op == OP_OBJ_EXT)
+        {
+            // Recursively parse the rhs
+            var rhsExpr = parseExprPrec(input, nextMinPrec);
+
+            if (!(lhsExpr instanceof IdentExpr))
+            {
+                parseError(
+                    input,
+                    "lhs must be identifier in object extension"
+                );
+            }
+
+            if (!(rhsExpr instanceof ObjectExpr))
+            {
+                parseError(
+                    input,
+                    "rhs must be object literal in object extension expression"
+                );
+            }
+
+            // Create a new parent node for the expressions
+            lhsExpr = BinOpExpr::{
+                op: op,
+                lhsExpr: lhsExpr,
+                rhsExpr: rhsExpr
             };
         }
 
@@ -1190,16 +1220,16 @@ var parseExprPrec = function (input, minPrec)
                 // Recursively parse the rhs
                 var rhsExpr = parseExprPrec(input, nextMinPrec);
 
+                // If specified, match the operator closing string
+                if (op.closeStr.length > 0 && !input:matchWS(op.closeStr))
+                    parseError(input, "expected operator closing");
+
                 // Create a new parent node for the expressions
                 lhsExpr = BinOpExpr::{
                     op: op,
                     lhsExpr: lhsExpr,
                     rhsExpr: rhsExpr
                 };
-
-                // If specified, match the operator closing string
-                if (op.closeStr.length > 0 && !input:matchWS(op.closeStr))
-                    parseError(input, "expected operator closing");
             }
         }
 
@@ -1983,13 +2013,8 @@ var genExpr = function (ctx, expr)
         // Object extension
         if (expr.op == OP_OBJ_EXT)
         {
-            var objExpr = expr.rhsExpr;
-
-            if (!(expr.rhsExpr instanceof ObjectExpr))
-                parseError(input, "invalid rhs in objext extension expression");
-
+            assert (expr.rhsExpr instanceof ObjectExpr);
             genObjExpr(ctx, expr.lhsExpr, expr.rhsExpr);
-
             return;
         }
 
@@ -2454,7 +2479,8 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
 
             return;
         }
-        else if (lhsExpr.op == OP_INDEX)
+
+        if (lhsExpr.op == OP_INDEX)
         {
             // Evaluate the array
             genExpr(ctx, lhsExpr.lhsExpr);
@@ -2465,9 +2491,6 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
             // Evaluate the rhs value
             genExpr(ctx, rhsExpr);
 
-            //ctx:addInstr({ op:'dup', idx:2 });
-
-            //ctx:addOp("set_elem");
             runtimeCall(ctx, rt_setElem);
 
             return;

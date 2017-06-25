@@ -82,7 +82,10 @@ var testParser = function ()
     testParse("var x = {x:3,y:2};");
     testParse("var x = {x:3,y:2+z};");
     testParse("var x = {x:3,y:2+z,};");
+    testParse("var x = obj::{ x:3 };");
     testParseFail("var x = {,};");
+    testParseFail("var x = {}::{ x:3 };");
+    testParseFail("var x = a::b;");
 
     // Comments
     testParse("1; // comment");
