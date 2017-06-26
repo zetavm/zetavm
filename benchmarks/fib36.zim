@@ -62,7 +62,7 @@ fib = {
 main_entry = {
     instrs: [
         # Import the "api/io" package
-        { op: "push", val:"core/io" },
+        { op: "push", val:"core/io/0" },
         { op: "import" },
         { op: "dup", idx:0 },
 

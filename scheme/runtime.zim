@@ -84,10 +84,10 @@ write_ret = {
 # Init sequence.
 block_0 = {
   instrs: [
-    # Setup 'core/io'.
+    # Setup 'core/io/0'.
     { op:'push', val:@global_obj },
     { op:'push', val:'io' },
-    { op:'push', val:'core/io' },
+    { op:'push', val:'core/io/0' },
     { op:'import' },
     { op:'set_field' },
 

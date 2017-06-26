@@ -177,7 +177,7 @@ var testParser = function ()
     testParseFail("a(b c+1);");
 
     // Package import
-    testParse("var io = import 'core/io';");
+    testParse("var io = import 'core/io/0';");
 
     // Inline IR
     testParse("$add_i32(1, 2);");

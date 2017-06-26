@@ -610,7 +610,7 @@ var rt_getElem = function (base, idx)
             typeof idx == "int32",
             "unhandled index type in getElem with array base; should be int32"
         );
-        
+
         // TODO: check bounds
         return $get_elem(base, idx);
     }
@@ -621,7 +621,7 @@ var rt_getElem = function (base, idx)
             typeof idx == "int32",
             "unhandled index type in getElem with string base; should be int32"
         );
-        
+
         // TODO: check bounds
         //if (index < $str_len(base))
         return $get_char(base, idx);
@@ -633,7 +633,7 @@ var rt_getElem = function (base, idx)
             typeof idx == "string",
             "unhandled index type in getElem with object base; should be string"
         );
-        
+
         return $get_field(base, idx);
     }
 
@@ -652,7 +652,7 @@ var rt_setElem = function (base, idx, val)
             typeof idx == "int32",
             "unhandled index type in setElem with array base; should be int32"
         );
-        
+
         // TODO: check bounds
         $set_elem(base, idx, val);
         return val;
@@ -664,10 +664,10 @@ var rt_setElem = function (base, idx, val)
             typeof idx == "string",
             "unhandled index type in setElem with object base; should be string"
         );
-        
+
         return $set_field(base, idx, val);
     }
-    
+
     assert (
         false,
         "unhandled base type in setElem; should be array or object"
@@ -680,7 +680,7 @@ var rt_push = function (arr, val)
     $array_push(arr, val);
 };
 
-var io = import "core/io";
+var io = import "core/io/0";
 
 /// Write to standard output
 var output = function (x)

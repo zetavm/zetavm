@@ -1,7 +1,7 @@
 #language "lang/plush/0"
 
-var audio = import "core/audio";
-var window = import "core/window";
+var audio = import "core/audio/0";
+var window = import "core/window/0";
 var math = import "std/math/0";
 var peval = import "std/peval/0";
 var curry = peval.curry;

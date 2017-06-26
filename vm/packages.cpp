@@ -3,14 +3,12 @@
 #include <regex>
 #include <unordered_map>
 #include "util.h"
-#include "core.h"
+#include "packages.h"
 #include "parser.h"
 #include "interp.h"
 
 #ifdef HAVE_SDL2
-
 #include <SDL.h>
-
 #endif
 
 HostFn::HostFn(std::string name, size_t numParams, void* fptr)
@@ -69,7 +67,7 @@ void setHostFn(
 }
 
 //============================================================================
-// core/io package
+// core/io/0 package
 //============================================================================
 
 Value print_int32(Value val)
@@ -167,7 +165,7 @@ Value read_line()
     return str;
 }
 
-Value get_core_io_pkg()
+Value get_core_io_0_pkg()
 {
     auto exports = Object::newObject(32);
     setHostFn(exports, "print_int32"  , 1, (void*)print_int32);
@@ -179,7 +177,7 @@ Value get_core_io_pkg()
 }
 
 //============================================================================
-// core/window package
+// core/window/0 package
 //============================================================================
 
 #ifdef HAVE_SDL2
@@ -293,7 +291,7 @@ Value draw_pixels(Value pixelsArray)
 
 #endif // HAVE_SDL2
 
-Value get_core_window_pkg()
+Value get_core_window_0_pkg()
 {
 #ifdef HAVE_SDL2
     auto exports = Object::newObject(32);
@@ -308,7 +306,7 @@ Value get_core_window_pkg()
 }
 
 //============================================================================
-// core/audio package
+// core/audio/0 package
 //============================================================================
 
 #ifdef HAVE_SDL2
@@ -412,7 +410,7 @@ Value close_output_device(
 
 #endif // HAVE_SDL2
 
-Value get_core_audio_pkg()
+Value get_core_audio_0_pkg()
 {
 #ifdef HAVE_SDL2
     auto exports = Object::newObject(32);
@@ -525,12 +523,12 @@ std::string findPkgPath(std::string pkgName)
 Value getCorePkg(std::string pkgName)
 {
     // Internal/core packages
-    if (pkgName == "core/io")
-        return get_core_io_pkg();
-    if (pkgName == "core/window")
-        return get_core_window_pkg();
-    if (pkgName == "core/audio")
-        return get_core_audio_pkg();
+    if (pkgName == "core/io/0")
+        return get_core_io_0_pkg();
+    if (pkgName == "core/window/0")
+        return get_core_window_0_pkg();
+    if (pkgName == "core/audio/0")
+        return get_core_audio_0_pkg();
 
     return Value::UNDEF;
 }

@@ -2558,7 +2558,7 @@ program/script. It implements a Read-Eval-Print Loop (REPL).
 */
 exports.main = function ()
 {
-    var io = import "core/io";
+    var io = import "core/io/0";
 
     print('Plush Read-Eval-Print Loop (REPL)');
     print('To exit, press Ctrl+D or type "exit"');

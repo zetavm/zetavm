@@ -83,7 +83,7 @@ ZETA_SRCS=  	\
 vm/runtime.cpp 	\
 vm/parser.cpp   \
 vm/interp.cpp   \
-vm/core.cpp     \
+vm/packages.cpp \
 vm/main.cpp     \
 
 zeta: vm/*.cpp vm/*.h

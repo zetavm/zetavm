@@ -1,6 +1,6 @@
 #language "lang/plush/0"
 
-var audio = import "core/audio";
+var audio = import "core/audio/0";
 var math = import "std/math/0";
 var dev = audio.open_output_device(2);
 

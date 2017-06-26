@@ -4,7 +4,7 @@
 #include "runtime.h"
 #include "parser.h"
 #include "interp.h"
-#include "core.h"
+#include "packages.h"
 #include <math.h>
 
 /// Opcode enumeration

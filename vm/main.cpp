@@ -4,7 +4,7 @@
 #include <exception>
 #include "parser.h"
 #include "interp.h"
-#include "core.h"
+#include "packages.h"
 
 int main(int argc, char** argv)
 {

@@ -2391,7 +2391,7 @@ var testParser = function ()
     testParse("a(); b();");
 
     // Package import
-    testParse("var io = import 'core/io';");
+    testParse("var io = import 'core/io/0';");
 
     // Inline IR
     testParse("$add_i32(1, 2);");
