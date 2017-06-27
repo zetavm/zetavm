@@ -948,10 +948,9 @@ var matchOp = function (input, minPrec, preUnary)
             continue;
         }
 
-        // If it doesn't have enough precedence or doesn't meet
-        // the arity and associativity requirements, skip it
-        if ((op.prec < minPrec) ||
-            (preUnary && op.arity != 1) ||
+        // If the operator doesn't meet the arity and
+        // associativity requirements, skip it
+        if ((preUnary && op.arity != 1) ||
             (!preUnary && op.arity == 1) ||
             (preUnary && op.assoc != 'r'))
         {
@@ -969,6 +968,12 @@ var matchOp = function (input, minPrec, preUnary)
 
     // If no match was found, stop
     if (match == false)
+    {
+        return false;
+    }
+
+    // If the operator has insufficient precedence, no match
+    if (match.prec < minPrec)
     {
         return false;
     }
@@ -1115,7 +1120,7 @@ var parseExprPrec = function (input, minPrec)
             if (op.closeStr.length > 0)
                 nextMinPrec = 0;
             else
-                nextMinPrec = op.prec;
+                nextMinPrec = op.prec + 1;
         }
 
         // If this is a regular function call expression
