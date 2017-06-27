@@ -70,358 +70,363 @@ void setHostFn(
 // core/io/0 package
 //============================================================================
 
-Value print_int32(Value val)
+namespace core_io_0
 {
-    assert (val.isInt32());
-    std::cout << (int32_t)val;
-    return Value::UNDEF;
-}
-
-Value print_float32(Value val)
-{
-    assert (val.isFloat32());
-    std::cout << (float)val;
-    return Value::UNDEF;
-}
-
-Value print_str(Value val)
-{
-    assert (val.isString());
-    std::cout << (std::string)val;
-    return Value::UNDEF;
-}
-
-Value read_file(Value fileName)
-{
-    assert (fileName.isString());
-    auto nameStr = (std::string)fileName;
-
-    std::cout << "reading file: " << nameStr << std::endl;
-
-    FILE* file = fopen(nameStr.c_str(), "r");
-
-    if (!file)
+    Value print_int32(Value val)
     {
-        printf("failed to open file\n");
-        return Value::FALSE;
-    }
-
-    // Get the file size in bytes
-    fseek(file, 0, SEEK_END);
-    size_t len = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    char* buf = (char*)malloc(len+1);
-
-    // Read into the allocated buffer
-    size_t read = fread(buf, 1, len, file);
-
-    if (read != len)
-    {
-        printf("failed to read file");
-        return Value::FALSE;
-    }
-
-    // Add a null terminator to the string
-    buf[len] = '\0';
-
-    // Close the input file
-    fclose(file);
-
-    return String(buf);
-}
-
-Value read_line()
-{
-    char* lineBuf = nullptr;
-    size_t bufSize = 0;
-
-    auto numRead = getdelim(&lineBuf, &bufSize, '\n', stdin);
-
-    if (numRead <= 0)
-    {
-        free(lineBuf);
+        assert (val.isInt32());
+        std::cout << (int32_t)val;
         return Value::UNDEF;
     }
 
-    // Clear trailing end of line characters
-    for (ssize_t i = 0; i < numRead; ++i)
+    Value print_float32(Value val)
     {
-        size_t idx = numRead - 1 - i;
-
-        if (lineBuf[idx] == '\n' || lineBuf[idx] == '\r')
-        {
-            lineBuf[idx] = '\0';
-        }
-        else
-        {
-            break;
-        }
+        assert (val.isFloat32());
+        std::cout << (float)val;
+        return Value::UNDEF;
     }
 
-    auto str = String(lineBuf);
-    free(lineBuf);
+    Value print_str(Value val)
+    {
+        assert (val.isString());
+        std::cout << (std::string)val;
+        return Value::UNDEF;
+    }
 
-    return str;
-}
+    Value read_file(Value fileName)
+    {
+        assert (fileName.isString());
+        auto nameStr = (std::string)fileName;
 
-Value get_core_io_0_pkg()
-{
-    auto exports = Object::newObject(32);
-    setHostFn(exports, "print_int32"  , 1, (void*)print_int32);
-    setHostFn(exports, "print_float32", 1, (void*)print_float32);
-    setHostFn(exports, "print_str"    , 1, (void*)print_str);
-    setHostFn(exports, "read_file"    , 1, (void*)read_file);
-    setHostFn(exports, "read_line"    , 0, (void*)read_line);
-    return exports;
+        std::cout << "reading file: " << nameStr << std::endl;
+
+        FILE* file = fopen(nameStr.c_str(), "r");
+
+        if (!file)
+        {
+            printf("failed to open file\n");
+            return Value::FALSE;
+        }
+
+        // Get the file size in bytes
+        fseek(file, 0, SEEK_END);
+        size_t len = ftell(file);
+        fseek(file, 0, SEEK_SET);
+
+        char* buf = (char*)malloc(len+1);
+
+        // Read into the allocated buffer
+        size_t read = fread(buf, 1, len, file);
+
+        if (read != len)
+        {
+            printf("failed to read file");
+            return Value::FALSE;
+        }
+
+        // Add a null terminator to the string
+        buf[len] = '\0';
+
+        // Close the input file
+        fclose(file);
+
+        return String(buf);
+    }
+
+    Value read_line()
+    {
+        char* lineBuf = nullptr;
+        size_t bufSize = 0;
+
+        auto numRead = getdelim(&lineBuf, &bufSize, '\n', stdin);
+
+        if (numRead <= 0)
+        {
+            free(lineBuf);
+            return Value::UNDEF;
+        }
+
+        // Clear trailing end of line characters
+        for (ssize_t i = 0; i < numRead; ++i)
+        {
+            size_t idx = numRead - 1 - i;
+
+            if (lineBuf[idx] == '\n' || lineBuf[idx] == '\r')
+            {
+                lineBuf[idx] = '\0';
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        auto str = String(lineBuf);
+        free(lineBuf);
+
+        return str;
+    }
+
+    Value get_pkg()
+    {
+        auto exports = Object::newObject(32);
+        setHostFn(exports, "print_int32"  , 1, (void*)print_int32);
+        setHostFn(exports, "print_float32", 1, (void*)print_float32);
+        setHostFn(exports, "print_str"    , 1, (void*)print_str);
+        setHostFn(exports, "read_file"    , 1, (void*)read_file);
+        setHostFn(exports, "read_line"    , 0, (void*)read_line);
+        return exports;
+    }
 }
 
 //============================================================================
 // core/window/0 package
 //============================================================================
 
+namespace core_window_0
+{
 #ifdef HAVE_SDL2
+    size_t width = 0;
+    size_t height = 0;
 
-size_t width = 0;
-size_t height = 0;
+    std::vector<uint8_t> pixelBuffer;
 
-std::vector<uint8_t> pixelBuffer;
+    SDL_Window* window = nullptr;
+    SDL_Renderer* renderer = nullptr;
+    SDL_Texture* texture = nullptr;
 
-SDL_Window* window = nullptr;
-SDL_Renderer* renderer = nullptr;
-SDL_Texture* texture = nullptr;
-
-Value create_window(
-    Value titleVal,
-    Value widthVal,
-    Value heightVal
-)
-{
-    SDL_Init(SDL_INIT_VIDEO);
-
-    auto title = (std::string)titleVal;
-    width = (size_t)(int32_t)widthVal;
-    height = (size_t)(int32_t)heightVal;
-
-    window = SDL_CreateWindow(
-        title.c_str(),
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        width,
-        height,
-        0
-    );
-
-    renderer = SDL_CreateRenderer(window, -1, 0);
-
-    texture = SDL_CreateTexture(
-        renderer,
-        SDL_PIXELFORMAT_RGBA8888,
-        SDL_TEXTUREACCESS_STATIC,
-        width,
-        height
-    );
-
-    pixelBuffer.resize(width * height * 4, 0);
-
-    SDL_ShowWindow(window);
-
-    return Value::UNDEF;
-}
-
-Value destroy_window()
-{
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-
-    pixelBuffer.clear();
-
-    return Value::UNDEF;
-}
-
-Value process_events()
-{
-    // FIXME
-    // How do we know when quit happened? Return false then?
-    // Maybe change go let users do the polling, write our own loop?
-
-    SDL_Event event;
-
-    while (SDL_PollEvent(&event))
+    Value create_window(
+        Value titleVal,
+        Value widthVal,
+        Value heightVal
+    )
     {
-        switch (event.type)
+        SDL_Init(SDL_INIT_VIDEO);
+
+        auto title = (std::string)titleVal;
+        width = (size_t)(int32_t)widthVal;
+        height = (size_t)(int32_t)heightVal;
+
+        window = SDL_CreateWindow(
+            title.c_str(),
+            SDL_WINDOWPOS_UNDEFINED,
+            SDL_WINDOWPOS_UNDEFINED,
+            width,
+            height,
+            0
+        );
+
+        renderer = SDL_CreateRenderer(window, -1, 0);
+
+        texture = SDL_CreateTexture(
+            renderer,
+            SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_STATIC,
+            width,
+            height
+        );
+
+        pixelBuffer.resize(width * height * 4, 0);
+
+        SDL_ShowWindow(window);
+
+        return Value::UNDEF;
+    }
+
+    Value destroy_window()
+    {
+        SDL_DestroyTexture(texture);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+
+        pixelBuffer.clear();
+
+        return Value::UNDEF;
+    }
+
+    Value process_events()
+    {
+        // FIXME
+        // How do we know when quit happened? Return false then?
+        // Maybe change go let users do the polling, write our own loop?
+
+        SDL_Event event;
+
+        while (SDL_PollEvent(&event))
         {
-            case SDL_QUIT:
-            //quit = true;
-            return Value::FALSE;
-            break;
+            switch (event.type)
+            {
+                case SDL_QUIT:
+                //quit = true;
+                return Value::FALSE;
+                break;
 
-            default:
-            break;
+                default:
+                break;
+            }
         }
+
+        return Value::TRUE;
     }
 
-    return Value::TRUE;
-}
-
-Value draw_pixels(Value pixelsArray)
-{
-    auto pixels = (Array)pixelsArray;
-
-    assert (pixels.length() == width * height * 3);
-
-    for (size_t pixIdx = 0; pixIdx < width * height; ++pixIdx)
+    Value draw_pixels(Value pixelsArray)
     {
-        // SDL's RGBA888 is actually ABGR, because of course.
-        pixelBuffer[4*pixIdx+0] = 255;
-        pixelBuffer[4*pixIdx+1] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+2);
-        pixelBuffer[4*pixIdx+2] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+1);
-        pixelBuffer[4*pixIdx+3] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+0);
+        auto pixels = (Array)pixelsArray;
+
+        assert (pixels.length() == width * height * 3);
+
+        for (size_t pixIdx = 0; pixIdx < width * height; ++pixIdx)
+        {
+            // SDL's RGBA888 is actually ABGR, because of course.
+            pixelBuffer[4*pixIdx+0] = 255;
+            pixelBuffer[4*pixIdx+1] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+2);
+            pixelBuffer[4*pixIdx+2] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+1);
+            pixelBuffer[4*pixIdx+3] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+0);
+        }
+
+        SDL_UpdateTexture(texture, NULL, &pixelBuffer[0], width * 4);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderPresent(renderer);
+        return Value::UNDEF;
     }
-
-    SDL_UpdateTexture(texture, NULL, &pixelBuffer[0], width * 4);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
-    SDL_RenderPresent(renderer);
-    return Value::UNDEF;
-}
-
 #endif // HAVE_SDL2
 
-Value get_core_window_0_pkg()
-{
+    Value get_pkg()
+    {
 #ifdef HAVE_SDL2
-    auto exports = Object::newObject(32);
-    setHostFn(exports, "create_window"  , 3, (void*)create_window);
-    setHostFn(exports, "destroy_window" , 0, (void*)destroy_window);
-    setHostFn(exports, "process_events" , 0, (void*)process_events);
-    setHostFn(exports, "draw_pixels"    , 1, (void*)draw_pixels);
-    return exports;
+        auto exports = Object::newObject(32);
+        setHostFn(exports, "create_window"  , 3, (void*)create_window);
+        setHostFn(exports, "destroy_window" , 0, (void*)destroy_window);
+        setHostFn(exports, "process_events" , 0, (void*)process_events);
+        setHostFn(exports, "draw_pixels"    , 1, (void*)draw_pixels);
+        return exports;
 #else
-    return Value::UNDEF;
+        return Value::UNDEF;
 #endif
+    }
 }
 
 //============================================================================
 // core/audio/0 package
 //============================================================================
 
+namespace core_audio_0
+{
 #ifdef HAVE_SDL2
+    bool paused = true;
 
-bool paused = true;
-
-Value open_output_device(
-    Value num_channels
-)
-{
-    assert(num_channels.isInt32());
-
-    SDL_Init(SDL_INIT_AUDIO);
-    SDL_AudioSpec want, have;
-
-    SDL_zero(want);
-    want.freq = 44100;
-    want.format = AUDIO_F32;
-    want.channels = (uint8_t)(int32_t)num_channels;
-    want.samples = 4096;
-    want.callback = NULL;
-
-    auto devId = (int32_t)SDL_OpenAudioDevice(NULL, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE);
-
-    assert (want.format == have.format);
-    assert (want.freq == have.freq);
-    assert (want.channels = have.channels);
-
-    return Value::int32(devId);
-}
-
-Value queue_samples(
-    Value dev,
-    Value samplesArray
-)
-{
-    assert(dev.isInt32());
-    assert(samplesArray.isArray());
-    auto devID = (int32_t)dev;
-
-    if (paused)
+    Value open_output_device(
+        Value num_channels
+    )
     {
-        paused = false;
-        SDL_PauseAudioDevice(devID, 0);
+        assert(num_channels.isInt32());
+
+        SDL_Init(SDL_INIT_AUDIO);
+        SDL_AudioSpec want, have;
+
+        SDL_zero(want);
+        want.freq = 44100;
+        want.format = AUDIO_F32;
+        want.channels = (uint8_t)(int32_t)num_channels;
+        want.samples = 4096;
+        want.callback = NULL;
+
+        auto devId = (int32_t)SDL_OpenAudioDevice(NULL, 0, &want, &have, SDL_AUDIO_ALLOW_ANY_CHANGE);
+
+        assert (want.format == have.format);
+        assert (want.freq == have.freq);
+        assert (want.channels = have.channels);
+
+        return Value::int32(devId);
     }
 
-    auto samples = (Array)samplesArray;
-
-    if (samples.length() == 0)
-        return Value::UNDEF;
-
-    float samples_buf[samples.length()];
-
-    for (size_t i = 0; i < samples.length(); i++)
+    Value queue_samples(
+        Value dev,
+        Value samplesArray
+    )
     {
-        auto elem = samples.getElem(i);
+        assert(dev.isInt32());
+        assert(samplesArray.isArray());
+        auto devID = (int32_t)dev;
 
-        if (!elem.isFloat32())
+        if (paused)
         {
-            throw RunError("audio samples must be float32");
+            paused = false;
+            SDL_PauseAudioDevice(devID, 0);
         }
 
-        float sample = (float)elem > 1.0f ? 1.0f : elem;
-        sample = sample < -1.0f ? -1.0f : sample;
-        samples_buf[i] = sample;
+        auto samples = (Array)samplesArray;
+
+        if (samples.length() == 0)
+            return Value::UNDEF;
+
+        float samples_buf[samples.length()];
+
+        for (size_t i = 0; i < samples.length(); i++)
+        {
+            auto elem = samples.getElem(i);
+
+            if (!elem.isFloat32())
+            {
+                throw RunError("audio samples must be float32");
+            }
+
+            float sample = (float)elem > 1.0f ? 1.0f : elem;
+            sample = sample < -1.0f ? -1.0f : sample;
+            samples_buf[i] = sample;
+        }
+
+        if (SDL_QueueAudio(devID, samples_buf, sizeof(samples_buf)) != 0)
+        {
+            return Value::FALSE;
+        }
+
+        return Value::TRUE;
     }
 
-    if (SDL_QueueAudio(devID, samples_buf, sizeof(samples_buf)) != 0)
+    Value get_queue_size(
+        Value dev
+    )
     {
-        return Value::FALSE;
+        assert(dev.isInt32());
+
+        auto devID = (int32_t)dev;
+
+        auto numBytes = SDL_GetQueuedAudioSize(devID);
+        auto numSamples = numBytes / 4;
+
+        return Value::int32((int32_t)numSamples);
     }
 
-    return Value::TRUE;
-}
+    Value close_output_device(
+        Value dev
+    )
+    {
+        assert(dev.isInt32());
 
-Value get_queue_size(
-    Value dev
-)
-{
-    assert(dev.isInt32());
+        auto devID = (int32_t)dev;
+        SDL_CloseAudioDevice(devID);
 
-    auto devID = (int32_t)dev;
-
-    auto numBytes = SDL_GetQueuedAudioSize(devID);
-    auto numSamples = numBytes / 4;
-
-    return Value::int32((int32_t)numSamples);
-}
-
-Value close_output_device(
-    Value dev
-)
-{
-    assert(dev.isInt32());
-
-    auto devID = (int32_t)dev;
-    SDL_CloseAudioDevice(devID);
-
-    return Value::UNDEF;
-}
-
+        return Value::UNDEF;
+    }
 #endif // HAVE_SDL2
 
-Value get_core_audio_0_pkg()
-{
+    Value get_pkg()
+    {
 #ifdef HAVE_SDL2
-    auto exports = Object::newObject(32);
-    setHostFn(exports, "open_output_device" , 1, (void*)open_output_device);
-    setHostFn(exports, "close_output_device", 1, (void*)close_output_device);
-    setHostFn(exports, "queue_samples"      , 2, (void*)queue_samples);
-    setHostFn(exports, "get_queue_size"     , 1, (void*)get_queue_size);
-    return exports;
+        auto exports = Object::newObject(32);
+        setHostFn(exports, "open_output_device" , 1, (void*)open_output_device);
+        setHostFn(exports, "close_output_device", 1, (void*)close_output_device);
+        setHostFn(exports, "queue_samples"      , 2, (void*)queue_samples);
+        setHostFn(exports, "get_queue_size"     , 1, (void*)get_queue_size);
+        return exports;
 #else
-    return Value::UNDEF;
+        return Value::UNDEF;
 #endif
+    }
 }
 
 //============================================================================
@@ -524,11 +529,11 @@ Value getCorePkg(std::string pkgName)
 {
     // Internal/core packages
     if (pkgName == "core/io/0")
-        return get_core_io_0_pkg();
+        return core_io_0::get_pkg();
     if (pkgName == "core/window/0")
-        return get_core_window_0_pkg();
+        return core_window_0::get_pkg();
     if (pkgName == "core/audio/0")
-        return get_core_audio_0_pkg();
+        return core_audio_0::get_pkg();
 
     return Value::UNDEF;
 }
