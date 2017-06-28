@@ -21,6 +21,9 @@ def bench(benchPath):
     # Verify the return code
     ret = pipe.returncode
     if ret != 0:
+        output = pipe.stdout.read()
+        sys.stdout.write('\n')
+        sys.stdout.write(output)
         raise Exception('invalid return code: ' + str(ret))
 
     # Compute the time in milliseconds
@@ -55,7 +58,8 @@ def runBenchs():
         'benchmarks/saw_wave.pls',
         'benchmarks/sine_wave.pls',
         'benchmarks/func_audio.pls',
-        'benchmarks/rand_floats_1m.pls'
+        'benchmarks/rand_floats_1m.pls',
+        'benchmarks/zsdf.pls',
     ]
 
     timeVals = []
