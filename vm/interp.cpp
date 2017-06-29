@@ -55,6 +55,7 @@ enum Opcode : uint16_t
 
     // Conversion operations
     I32_TO_F32,
+    I32_TO_STR,
     F32_TO_I32,
     F32_TO_STR,
     STR_TO_F32,
@@ -684,6 +685,12 @@ void compile(BlockVersion* version)
         if (op == "i32_to_f32")
         {
             writeCode(I32_TO_F32);
+            continue;
+        }
+
+        if (op == "i32_to_str")
+        {
+            writeCode(I32_TO_STR);
             continue;
         }
 
@@ -1554,6 +1561,14 @@ Value execCode()
             {
                 auto arg0 = popInt32();
                 pushVal(Value::float32(arg0));
+            }
+            break;
+
+            case I32_TO_STR:
+            {
+                auto arg0 = popInt32();
+                String str = std::to_string(arg0);
+                pushVal(str);
             }
             break;
 

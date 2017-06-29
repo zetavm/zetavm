@@ -6,13 +6,14 @@ Note: currently needs to be improved
 */
 
 var window = import "core/window/0";
+var io = import "core/io/0";
 var math = import "std/math/0";
 var max = math.max;
 var min = math.min;
 var abs = math.abs;
 
-var width = 512;
-var height = 512;
+var width = 400;
+var height = 400;
 window.create_window("Zeta Logo", width, height);
 
 var length = function (x, y)
@@ -48,10 +49,15 @@ var subtract = function (d1, d2)
 
 var union = min;
 
+/**
+Signed distance field which defines the image.
+Returns the closest distance to the logo at point (x,y)
+*/
 var dstFn = function (x, y)
 {
-    // TODO: make x,y range from 0 to 1, so that
-    // drawing logic can be resolution-independent
+    // Scale the points, input is in [0,1]
+    x *= 512;
+    y *= 512;
 
     var dRoundBox = roundBox(
         x - 256,
@@ -122,10 +128,31 @@ var dstFn = function (x, y)
 
     var dOutline = subtract(dInnerBox, dRoundBox);
 
-    return union(
+    var dImg = union(
         dOutline,
         dZ
     );
+
+    // Scale the distance
+    return dImg / 512;
+};
+
+/**
+This function write PPM image output to stdout
+*/
+var writePPM = function (fileName, imgData, width, height)
+{
+    print('P3');
+    print($i32_to_str(width) + ' ' + $i32_to_str(height));
+    print('255');
+
+    for (var i = 0; i < imgData.length; i += 1)
+    {
+        output(imgData[i]);
+        output(' ');
+    }
+
+    output('\n');
 };
 
 // Render the function
@@ -134,12 +161,11 @@ for (var y = 0; y < height; y += 1)
 {
     for (var x = 0; x < width; x += 1)
     {
-        var dst = dstFn(x, y);
+        var dst = dstFn(1.0f * x / width, 1.0f * y / height);
 
         dst = math.max(0, -dst);
-        dst = math.min(dst / 3, 1);
+        dst = math.min(dst / 0.006f, 1);
 
-        //var c = 255 - math.floor(255 * dst);
         var c = math.floor(255 * dst);
 
         buf:push(c);
@@ -149,6 +175,8 @@ for (var y = 0; y < height; y += 1)
 }
 
 window.draw_pixels(buf);
+
+//writePPM('zeta_logo.ppm', buf, width, height);
 
 // Wait until the window is closed
 for (var i = 0;; i += 1)
