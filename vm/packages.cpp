@@ -133,6 +133,37 @@ namespace core_io_0
         return String(buf);
     }
 
+    Value write_file(Value fileName, Value data)
+    {
+        assert (fileName.isString());
+        assert (data.isString());
+
+        auto nameStr = (std::string)fileName;
+
+        std::cout << "writing file: " << nameStr << std::endl;
+
+        FILE* file = fopen(nameStr.c_str(), "w");
+
+        if (!file)
+        {
+            printf("failed to open file\n");
+            return Value::FALSE;
+        }
+
+        auto dataStr = String(data);
+
+        fwrite(
+            dataStr.getDataPtr(),
+            dataStr.length(),
+            1,
+            file
+        );
+
+        fclose(file);
+
+        return Value::TRUE;
+    }
+
     Value read_line()
     {
         char* lineBuf = nullptr;
@@ -174,6 +205,7 @@ namespace core_io_0
         setHostFn(exports, "print_float32", 1, (void*)print_float32);
         setHostFn(exports, "print_str"    , 1, (void*)print_str);
         setHostFn(exports, "read_file"    , 1, (void*)read_file);
+        setHostFn(exports, "write_file"   , 2, (void*)write_file);
         setHostFn(exports, "read_line"    , 0, (void*)read_line);
         return exports;
     }
