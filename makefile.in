@@ -1,14 +1,14 @@
 CXXFLAGS=@CXXFLAGS@
 LDFLAGS=@LDFLAGS@
 
-# TODO: change this when doing make install? Move to configure?
+# TODO: change this when doing make install? Move to configure script?
 # Directory in which packages are found
 PKGS_DIR=\"$(CURDIR)/packages/\"
 
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zeta cplush plush-pkg math-pkg cjs cscheme
+all: zeta cplush plush-pkg math-pkg cscheme
 
 test: all
 	# Core zetavm tests
@@ -68,7 +68,7 @@ test: all
 	./scheme.sh tests/scheme/write.scm
 
 clean:
-	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CJS_BIN) $(CSCHEME_BIN) config.status config.log
+	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log
 
 # Tells make which targets are not files
 .PHONY: all test clean plush-pkg
@@ -111,19 +111,6 @@ plush-pkg: plush/parser.pls
 math-pkg: plush/parser.pls
 	mkdir -p packages/std/math/0
 	./$(CPLUSH_BIN) plush/math.pls > packages/std/math/0/package
-
-##############################################################################
-# JavaScript compiler
-##############################################################################
-
-CJS_BIN=cjs
-CJS_SRCS=      \
-js/lexer.cpp   \
-js/parser.cpp  \
-js/main.cpp
-
-cjs: js/*.cpp js/*.h
-	$(CXX) $(CXXFLAGS) -o $(CJS_BIN) $(CJS_SRCS)
 
 ##############################################################################
 # Scheme compiler
