@@ -1,0 +1,43 @@
+import ("core/io/0" as io)
+import("std/peval/0" as peval)
+
+let curry := get(peval, "curry");
+
+let add := fun(x,y)
+{
+    return x + y;
+};
+
+let add1 := curry(add, 1);
+
+let print_elem := fun(idx, xs)
+{
+    let val := get(xs, idx);
+    print(val);
+    print("\n");
+};
+
+let less_then_5 := fun(val)
+{
+    return val < 5;
+};
+
+let x := [1,2,3,4,5];
+let x2 := map(add1, x);
+let x3 := filter(less_then_5, x);
+let x4 := reduce(add, x);
+
+let print_array := fun(xs)
+{
+    let print_elem_partial := curry(print_elem, xs);
+    repeat(len(xs), print_elem_partial);
+};
+
+print_array(x);
+print("----\n");
+print_array(x2);
+print("----\n");
+print_array(x3);
+print("----\n");
+print(x4);
+

@@ -15,34 +15,6 @@ def parse_string_literal(input_handler, end_ch):
             break
         if ch == '\r' or ch == '\n':
             raise ParseError(input_handler, "newline in string literal")
-        if ch == '\\':
-            escaped = input_handler.read_ch()
-            if escaped == 'n':
-                ch = '\n'
-            elif escaped == 'r':
-                ch = '\r'
-            elif escaped == '0':
-                ch = '\0'
-            elif escaped == '\'':
-                ch = '\''
-            elif escaped == '\"':
-                ch = '\"'
-            elif escaped == '\\':
-                ch = '\\'
-            elif escaped == 'x':
-                val = 0
-                for _ in range(2):
-                    ch = input_handler.read_ch()
-                    if ord(ch) >= ord('0') and ord(ch) <= ord('9'):
-                        val = 16 * val + (ord(ch) - ord('0'))
-                    elif ord(ch) >= ord('A') and ord(ch) <= 'F':
-                        val = 16 * val + (ord(ch) - ord('A') + 10)
-                    else:
-                        raise ParseError(input_handler, "invalid hex")
-                assert val >= 0 and val <= 255
-                ch = str(unichr(val))
-            else:
-                raise ParseError(input_handler, "invalid escape sequence")
         string += ch
     return StringExpr(string)
 
@@ -182,8 +154,6 @@ def match_op(input_handler, min_prec, pre_unary):
     op = None
     if ch == '(':
         op = OP_CALL
-    elif ch == '.':
-        op = OP_M_CALL
     elif ch == '+':
         op = OP_ADD
     elif ch == '-':

@@ -92,7 +92,7 @@ class CodeGenCtx(object):
     def add_op(self, string):
         self.block.add(string)
     def add_branch(self, op, name0="", target0=None, name1="", target1=None, extra_args=""):
-        args = ", " if len(extra_args) > 0 else "" + extra_args
+        args = (", " if len(extra_args) > 0 else "") + extra_args
         if target0 is not None and target1 is not None:
             self.add_op("op:'" + op + "', " +
                         name0 + ":@" + target0.get_handle() + ", " +
@@ -120,18 +120,18 @@ def gen_unit(unit_ast):
     result += "@exports_obj;\n"
     return ''.join(result)
 
-def native_call(ctx, fun_name, num_args):
-    ctx.add_op("op:'push', val:@" + fun_name + "_func")
-    cont_block = Block()
-    ctx.add_branch(
-        "call",
-        "ret_to",
-        cont_block,
-        None,
-        None,
-        "num_args:" + str(num_args)
-    )
-    ctx.merge(cont_block)
+# def native_call(ctx, fun_name, num_args):
+#     ctx.add_op("op:'push', val:@" + fun_name + "_func")
+#     cont_block = Block()
+#     ctx.add_branch(
+#         "call",
+#         "ret_to",
+#         cont_block,
+#         None,
+#         None,
+#         "num_args:" + str(num_args)
+#     )
+#     ctx.merge(cont_block)
 
 def runtime_call(ctx, fun_name, num_args):
     ctx.add_op("op:'push', val:@global_obj")
@@ -156,20 +156,7 @@ def gen_expr(ctx, expr):
     elif isinstance(expr, StringExpr):
         esc_str = ""
         for char in expr.val:
-            if ord(char) < 32 or ord(char) > 126:
-                d0 = ord(char) / 16
-                d1 = ord(char) % 16
-                esc_str += "\\x"
-                esc_str += '0' + str(unichr(d0)) if d0 < 10 else 'A' + str(unichr(d0 - 10))
-                esc_str += '0' + str(unichr(d1)) if d1 < 10 else 'A' + str(unichr(d1 - 10))
-            elif char == '\'':
-                esc_str += "\\'"
-            elif char == '\"':
-                esc_str += "\\\""
-            elif char == '\\':
-                esc_str += "\\\\"
-            else:
-                esc_str += char
+            esc_str += char
         ctx.add_op("op:'push', val:'" + esc_str + "'")
     elif isinstance(expr, IdentExpr):
         if expr.name == 'true':
@@ -306,8 +293,8 @@ def gen_expr(ctx, expr):
     elif isinstance(expr, ObjectExpr):
         gen_obj_expr(ctx, expr)
     elif isinstance(expr, ArrayExpr):
-        ctx.add_op("op:'push', val:" + len(expr.exprs))
-        ctx.addOp("new_array")
+        ctx.add_op("op:'push', val:" + str(len(expr.exprs)))
+        ctx.add_op("op:'new_array'")
 
         # For each property
         for element in expr.exprs:

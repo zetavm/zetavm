@@ -70,6 +70,19 @@ let rt_map := fun (f, xs)
     return map_helper(f, xs, 0, result);
 };
 
+let repeat_helper := fun (times, f, idx)
+{
+    if (times = idx)
+        return;
+    f(idx);
+    return repeat_helper(times, f, idx + 1);
+};
+
+let rt_repeat := fun (times, f)
+{
+    return repeat_helper(times, f, 0);
+};
+
 let filter_helper := fun (p, xs, idx, result)
 {
     if (idx = len(xs))
@@ -78,8 +91,10 @@ let filter_helper := fun (p, xs, idx, result)
     }
     let elem := rt_get(xs, idx);
     if (p(elem))
+    {
         rt_push(result, elem);
-    return map_helper(p, xs, idx + 1, result);
+    }
+    return filter_helper(p, xs, idx + 1, result);
 };
 
 let rt_filter := fun (p, xs)
@@ -478,23 +493,24 @@ let rt_has := fun (base, key)
 };
 
 import ("core/io" as io)
+
 let rt_print := fun (x) 
 {
     if (typeof x = "string")
     {
-        io.print_str(x);
+        get(io, "print_str")(x);
         return;
     }
 
     if (typeof x = "int32")
     {
-        io.print_int32(x);
+        get(io, "print_int32")(x);
         return;
     }
 
     if (typeof x = "float32")
     {
-        io.print_float32(x);
+        get(io, "print_float32")(x);
         return;
     }
 
