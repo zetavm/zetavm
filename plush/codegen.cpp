@@ -533,6 +533,13 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
             return;
         }
 
+        if (unOp->op == &OP_TYPEOF)
+        {
+            genExpr(ctx, unOp->expr);
+            ctx.addOp("get_tag");
+            return;
+        }
+
         assert (false && "unhandled unary op");
     }
 

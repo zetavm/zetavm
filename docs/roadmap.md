@@ -37,3 +37,7 @@ Packages will be versioned and immutable. That is, once a package is uploaded, i
 ## JIT Compiler
 
 Once ZetaVM is past the initial prototyping stage, a JIT compiler will be implemented to improve performance. This JIT will likely be based on basic block versioning. The [current plan](https://pointersgonewild.com/2017/06/11/zetas-jitterpreter/) is that the JIT will use the same internal representation as the interpreter, that is, the interpreter will do part of the compilation work.
+
+## SPMD Execution (GPU Support)
+
+Multithreaded programming brings the potential for unpredictability and deadlocks. Zeta will instead offer native support for the Single Program Multiple Data (SPMD) programming model. This is the programming model commonly employed by vertex, pixel and compute shaders running on GPUs. One novel feature, in this respect, is that Zeta will allow the same code to run both on the CPU and GPU, with only minor restrictions. This means that potentially, any language running on Zeta will be able to execute in parallel on GPUs.

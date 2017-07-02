@@ -31,6 +31,9 @@ public:
     size_t getNumParams() const { return numParams; }
 };
 
+/// Find the file path for a package name
+std::string findPkgPath(std::string pkgName);
+
 /// Load a package based on its path
 Object load(std::string pkgPath);
 

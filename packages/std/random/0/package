@@ -1,0 +1,174 @@
+#language "lang/plush/0"
+
+/// Takes an int32, "x", and deterministically gets another int32 that has a pseudorandom relationship to x.
+/// You should change x between calls if you want to get different values each time; a cycle of 2 to the 32 numbers can be
+/// produced by repeatedly calling this with "randomize(x -= 1640531527)", where x can have any starting value. Other odd numbers
+/// can be used in place of 1640531527, and they can be either added or subtracted, but should be similar in significance.
+/// Related to Murmurhash3; notes connect this to "MurmurHash3 fmix32", and normally "GOLDEN_GAMMA" is added (-1640531527).
+/// Credit to Kaito Udagawa for writing a version of this function in C, https://github.com/umireon/my-random-stuff/blob/master/xorshift/splitmix32.c
+/// Original algorithm by: Guy L. Steele, Jr., Doug Lea, and Christine H. Flood. 2014. Fast splittable pseudorandom number generators.
+/// In Proceedings of the 2014 ACM International Conference on Object Oriented Programming Systems Languages & Applications (OOPSLA '14). ACM, New York, NY, USA, 453-472.
+var randomize = function(x)
+{
+    x = (x ^ (x >>> 16)) * -2048144789;
+    x = (x ^ (x >>> 13)) * -1028477387;
+    return x ^ (x >>> 16);
+};
+
+var init = function(seed)
+{
+   return reseed([0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 
+                    0, 0, 0, 0, 0, 0, 0, 0, 0], seed);
+};
+
+var reseed = function(states, seed)
+{
+    if(typeof seed == "int32")
+    {
+        var counter = 0;
+        var temp = 0;
+        var s = seed;
+        for (var i = 0; i < 64; i += 1)
+        {
+            temp = randomize(s -= 1640531527);
+            states[i] = temp;
+            counter += temp;
+        }
+        states[64] = counter;
+        return states;
+    }
+    else if(typeof seed == "array")
+    {
+        var counter = 0;
+        var temp = 0;
+
+        if(seed.length == 0)
+        {
+            for (var i = 0; i < 64; i += 1)
+            {
+                temp = randomize((i + 16) * -1640531527);
+                states[i] = temp;
+                counter += temp;
+            }
+            states[64] = counter;
+        }
+        else if(seed.length == 65)
+        {
+            for (var i = 0; i < 65; i += 1)
+            {
+                states[i] = seed[i];
+            }
+        }
+        else
+        {
+            var item = seed[0];
+            if(!(typeof item == "int32"))
+            {
+                item = 0;
+            }
+            for (var i = 0; i < 64; i += 1)
+            {
+                temp = randomize(item += 1640531527);
+                states[i] = temp;
+                counter += temp;
+            }
+            for (var s = 1; s < seed.length; s += 1)
+            {
+                if(typeof seed[s] == "int32")
+                {
+                    item += (seed[s] + s);
+                }
+                else
+                {
+                    item += s;
+                }
+                for (var i = 0; i < 64; i += 1)
+                {
+                    temp = randomize(item += 1640531527);
+                    states[i] ^= temp;
+                    counter += temp;
+                }
+            }
+            states[64] = counter;
+        }
+        return states;
+    }
+    else
+    {
+        var states = []; 
+        var counter = 0;
+        var temp = 0;
+        var s = 0;
+        for (var i = 0; i < 64; i += 1)
+        {
+            temp = randomize(s -= 1640531527);
+            states[i] = temp;
+            counter += temp;
+        }
+        states[64] = counter;
+        return states;
+
+    }
+};
+
+newRNG = function(seed)
+{
+    return 
+    {
+        state: init(seed),
+        setState: function(self, seed)
+        {
+            reseed(self.state, seed);
+        },
+        fullInt: function(self)
+        {
+            var choice = (self.state[64] -= 1180531665);
+            return (self.state[choice & 63] += (self.state[choice >>> 27] - 1835598265 >>> 1) + choice);
+        },
+        int: function(self, min, max)
+        {
+            var bound = 1 + max - min;
+            if (bound <= 1) return min;
+            var threshold = ((2147483647 - bound) + 1) % bound;
+            for (;;) {
+                var bits = self:fullInt() & 2147483647;
+                if (bits >= threshold)
+                    return min + (bits % bound);
+            }
+        },
+        index: function(self, len)
+        {
+            return self:int(0, len - 1);
+        },
+        smallFloat: function(self)
+        {
+            return (self:fullInt() >>> 8) * 0.000000059604644775390625f;
+        },
+        float: function(self, min, max)
+        {
+            return min + self:smallFloat() * (max - min);
+        },
+        boolean: function(self)
+        {
+            if(self:fullInt() < 0)
+                return true;
+            return false;
+        },
+        select: function(self, arr)
+        {
+            assert((typeof arr == "array") && arr.length > 0,
+                "Cannot select a random element from an empty array or a non-array value");
+            return arr[self:index(arr.length)];
+        }
+    };
+};
+
+exports.globalRNG = newRNG([1337, 42, 99999, 777, 21]);
+exports.randomize = randomize;
+exports.newRNG = newRNG;

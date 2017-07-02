@@ -1,6 +1,6 @@
 #language "lang/plush/0"
 
-var audio = import "core/audio";
+var audio = import "core/audio/0";
 var math = import "std/math/0";
 var dev = audio.open_output_device(2);
 
@@ -33,11 +33,13 @@ for (;;)
 {
     var queueSize = audio.get_queue_size(dev);
 
-    //print(queueSize);
-
-    if (queueSize < 16384)
+    if (queueSize < 8192)
     {
-        print(queueSize);
         audio.queue_samples(dev, samples);
+
+        var newQueueSz = audio.get_queue_size(dev);
+        output(queueSize);
+        output(' => ');
+        print(newQueueSz);
     }
 }

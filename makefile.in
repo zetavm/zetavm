@@ -1,14 +1,14 @@
 CXXFLAGS=@CXXFLAGS@
 LDFLAGS=@LDFLAGS@
 
-# TODO: change this when doing make install? Move to configure?
+# TODO: change this when doing make install? Move to configure script?
 # Directory in which packages are found
 PKGS_DIR=\"$(CURDIR)/packages/\"
 
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zeta cplush plush-pkg math-pkg cjs cscheme
+all: zeta cplush plush-pkg math-pkg cscheme
 
 test: all
 	# Core zetavm tests
@@ -38,10 +38,11 @@ test: all
 	./plush.sh tests/plush/obj_ext.pls
 	./plush.sh tests/plush/throw_exc.pls
 	./plush.sh tests/plush/throw_exc2.pls
-	./plush.sh plush/parser.pls tests/plush/parser.pls
 	# Check that the parser benchmark compiles with cplush
 	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
-	# Self-hosted plush parser tests (parser.pls)
+	# Run the Plush language package tests
+	./$(ZETA_BIN) packages/lang/plush/0/tests
+	# Run Plush code using the Plush language package
 	./$(ZETA_BIN) tests/plush/trivial.pls
 	./$(ZETA_BIN) tests/plush/floats.pls
 	./$(ZETA_BIN) tests/plush/simple_exprs.pls
@@ -57,6 +58,7 @@ test: all
 	./$(ZETA_BIN) tests/plush/import.pls
 	./$(ZETA_BIN) tests/plush/circular3.pls
 	./$(ZETA_BIN) tests/plush/peval.pls
+	./$(ZETA_BIN) tests/plush/random.pls
 	# Check that source position is reported on errors
 	./$(ZETA_BIN) tests/plush/assert.pls | grep --quiet "3:1"
 	./$(ZETA_BIN) tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
@@ -66,7 +68,7 @@ test: all
 	./scheme.sh tests/scheme/write.scm
 
 clean:
-	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CJS_BIN) $(CSCHEME_BIN) config.status config.log
+	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log
 
 # Tells make which targets are not files
 .PHONY: all test clean plush-pkg
@@ -81,7 +83,7 @@ ZETA_SRCS=  	\
 vm/runtime.cpp 	\
 vm/parser.cpp   \
 vm/interp.cpp   \
-vm/core.cpp     \
+vm/packages.cpp \
 vm/main.cpp     \
 
 zeta: vm/*.cpp vm/*.h
@@ -104,23 +106,11 @@ cplush: plush/*.cpp plush/*.h
 plush-pkg: plush/parser.pls
 	mkdir -p packages/lang/plush/0
 	./$(CPLUSH_BIN) plush/parser.pls > packages/lang/plush/0/package
+	./$(CPLUSH_BIN) tests/plush/parser.pls > packages/lang/plush/0/tests
 
 math-pkg: plush/parser.pls
 	mkdir -p packages/std/math/0
 	./$(CPLUSH_BIN) plush/math.pls > packages/std/math/0/package
-
-##############################################################################
-# JavaScript compiler
-##############################################################################
-
-CJS_BIN=cjs
-CJS_SRCS=      \
-js/lexer.cpp   \
-js/parser.cpp  \
-js/main.cpp
-
-cjs: js/*.cpp js/*.h
-	$(CXX) $(CXXFLAGS) -o $(CJS_BIN) $(CJS_SRCS)
 
 ##############################################################################
 # Scheme compiler

@@ -1,6 +1,6 @@
 #language "lang/plush/0"
 
-var window = import "core/window";
+var window = import "core/window/0";
 assert (window != undef, "no window");
 assert (typeof window == "object");
 assert ("create_window" in window);

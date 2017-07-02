@@ -1,4 +1,4 @@
-var io = import "core/io";
+var io = import "core/io/0";
 
 var str = readFile("tests/plush/line_count.pls");
 

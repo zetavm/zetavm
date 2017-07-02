@@ -19,6 +19,7 @@ assert (5 % 2 == 1);
 assert (1 + 2 * 3 == 7);
 assert (1 * 2 + 3 == 5);
 assert (13 * 3 + -5 * 7 == 4);
+assert (256 - 64 - 16 == 176);
 assert ((3 ^ -2) == -3);
 assert ((7 & 3) == 3);
 assert ((5 | 2) == 7);
@@ -34,6 +35,7 @@ assert (3 << 2 + 3 == 96);
 assert ((9 >> 1 | 1) == 5);
 assert (~0 == -1);
 assert (~-256 == 255);
+assert (-2147483647 + -2147483647 >= 0);
 assert (65537 * 65535 == -1);
 
 // Logical expressions
@@ -62,6 +64,8 @@ assert (typeof "str" == "string");
 assert (typeof obj == "object");
 assert (typeof obj.x == "int32", "int property type");
 assert (typeof undef == "undef");
+var t = typeof 2;
+assert (t == "int32");
 
 // Global assignments
 var x = 1;

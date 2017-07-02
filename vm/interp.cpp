@@ -4,7 +4,7 @@
 #include "runtime.h"
 #include "parser.h"
 #include "interp.h"
-#include "core.h"
+#include "packages.h"
 #include <math.h>
 
 /// Opcode enumeration
@@ -55,6 +55,7 @@ enum Opcode : uint16_t
 
     // Conversion operations
     I32_TO_F32,
+    I32_TO_STR,
     F32_TO_I32,
     F32_TO_STR,
     STR_TO_F32,
@@ -108,7 +109,7 @@ private:
     size_t slotIdx = 0;
 
     // Field name to look up
-    std::string fieldName;
+    String fieldName;
 
 public:
 
@@ -121,9 +122,9 @@ public:
     {
         Value val;
 
-        if (!obj.getField(fieldName.c_str(), val, slotIdx))
+        if (!obj.getField(fieldName, val, slotIdx))
         {
-            throw RunError("missing field \"" + fieldName + "\"");
+            throw RunError("missing field \"" + (std::string)fieldName + "\"");
         }
 
         return val;
@@ -687,6 +688,12 @@ void compile(BlockVersion* version)
             continue;
         }
 
+        if (op == "i32_to_str")
+        {
+            writeCode(I32_TO_STR);
+            continue;
+        }
+
         if (op == "f32_to_i32")
         {
             writeCode(F32_TO_I32);
@@ -723,6 +730,12 @@ void compile(BlockVersion* version)
 
             writeCode(HAS_TAG);
             writeCode(tag);
+            continue;
+        }
+
+        if (op == "get_tag")
+        {
+            writeCode(GET_TAG);
             continue;
         }
 
@@ -1551,6 +1564,14 @@ Value execCode()
             }
             break;
 
+            case I32_TO_STR:
+            {
+                auto arg0 = popInt32();
+                String str = std::to_string(arg0);
+                pushVal(str);
+            }
+            break;
+
             case F32_TO_I32:
             {
                 auto arg0 = popFloat32();
@@ -1591,6 +1612,16 @@ Value execCode()
                 auto testTag = readCode<Tag>();
                 auto valTag = popVal().getTag();
                 pushBool(valTag == testTag);
+            }
+            break;
+
+            // Get the type tag associated with a value.
+            // Note: this produces a string
+            case GET_TAG:
+            {
+                auto valTag = popVal().getTag();
+                auto tagStr = tagToStr(valTag);
+                pushVal(String(tagStr));
             }
             break;
 
@@ -1722,7 +1753,7 @@ Value execCode()
 
                 Value val;
 
-                if (!obj.getField(fieldName.getDataPtr(), val, slotIdx))
+                if (!obj.getField(fieldName, val, slotIdx))
                 {
                     throw RunError(
                         "get_field failed, missing field \"" +

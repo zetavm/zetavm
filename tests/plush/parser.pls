@@ -1,3 +1,6 @@
+var parser = import "lang/plush/0";
+var parseString = parser.parseString;
+
 /// Test that the parsing of a string succeeds
 var testParse = function (str)
 {
@@ -36,13 +39,6 @@ var testParseFail = function (str)
         false,
         "parsing did not fail for:\n" + str
     );
-};
-
-/// Test that the parsing of a file succeeds
-var testParseFile = function (fileName)
-{
-    print("parsing source file \"" + fileName + "\"");
-    return parseFile(fileName);
 };
 
 /// Test the functionality of the parser
@@ -86,7 +82,10 @@ var testParser = function ()
     testParse("var x = {x:3,y:2};");
     testParse("var x = {x:3,y:2+z};");
     testParse("var x = {x:3,y:2+z,};");
+    testParse("var x = obj::{ x:3 };");
     testParseFail("var x = {,};");
+    testParseFail("var x = {}::{ x:3 };");
+    testParseFail("var x = a::b;");
 
     // Comments
     testParse("1; // comment");
@@ -178,7 +177,7 @@ var testParser = function ()
     testParseFail("a(b c+1);");
 
     // Package import
-    testParse("var io = import 'core/io';");
+    testParse("var io = import 'core/io/0';");
 
     // Inline IR
     testParse("$add_i32(1, 2);");

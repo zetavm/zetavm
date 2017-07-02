@@ -80,7 +80,7 @@ var OP_LE = addOp(OpInfo::{ str:"<=", prec:9 });
 var OP_GT = addOp(OpInfo::{ str:">", prec:9 });
 var OP_GE = addOp(OpInfo::{ str:">=", prec:9 });
 var OP_IN = addOp(OpInfo::{ str:"in", prec:9 });
-//const OpInfo OP_INSTOF = { "instanceof", "", 2, 9, 'l', false, false };
+var OP_INSTOF = addOp(OpInfo::{ str:"instanceof", prec:9 });
 
 /// Equality comparison
 var OP_EQ = addOp(OpInfo::{ str:"==", prec:8 });
@@ -761,9 +761,9 @@ var parseForStmt = function (input)
         // Parse the init statement
         initStmt = parseStmt(input);
 
-        // FIXME: need sanitization check here once we have instanceof
-        //if (cast(VarStmt)initStmt is null && cast(ExprStmt)initStmt is null)
-        //    throw new parseError("invalid for-loop init statement", initStmt.pos);
+        if (!(initStmt instanceof VarStmt) &&
+            !(initStmt instanceof ExprStmt))
+            parseError(input, "invalid for-loop init statement");
     }
 
     // Parse the test expression
@@ -948,10 +948,9 @@ var matchOp = function (input, minPrec, preUnary)
             continue;
         }
 
-        // If it doesn't have enough precedence or doesn't meet
-        // the arity and associativity requirements, skip it
-        if ((op.prec < minPrec) ||
-            (preUnary && op.arity != 1) ||
+        // If the operator doesn't meet the arity and
+        // associativity requirements, skip it
+        if ((preUnary && op.arity != 1) ||
             (!preUnary && op.arity == 1) ||
             (preUnary && op.assoc != 'r'))
         {
@@ -969,6 +968,12 @@ var matchOp = function (input, minPrec, preUnary)
 
     // If no match was found, stop
     if (match == false)
+    {
+        return false;
+    }
+
+    // If the operator has insufficient precedence, no match
+    if (match.prec < minPrec)
     {
         return false;
     }
@@ -1115,7 +1120,7 @@ var parseExprPrec = function (input, minPrec)
             if (op.closeStr.length > 0)
                 nextMinPrec = 0;
             else
-                nextMinPrec = op.prec;
+                nextMinPrec = op.prec + 1;
         }
 
         // If this is a regular function call expression
@@ -1145,7 +1150,7 @@ var parseExprPrec = function (input, minPrec)
                 baseExpr: lhsExpr,
                 nameStr: identStr,
                 argExprs: argExprs,
-                srcPos:srcPos
+                srcPos: srcPos
             };
         }
 
@@ -1160,6 +1165,36 @@ var parseExprPrec = function (input, minPrec)
                 op: op,
                 lhsExpr: lhsExpr,
                 rhsExpr: IdentExpr::{ name:identStr }
+            };
+        }
+
+        // If this is an object extension expression (a::{})
+        else if (op == OP_OBJ_EXT)
+        {
+            // Recursively parse the rhs
+            var rhsExpr = parseExprPrec(input, nextMinPrec);
+
+            if (!(lhsExpr instanceof IdentExpr))
+            {
+                parseError(
+                    input,
+                    "lhs must be identifier in object extension"
+                );
+            }
+
+            if (!(rhsExpr instanceof ObjectExpr))
+            {
+                parseError(
+                    input,
+                    "rhs must be object literal in object extension expression"
+                );
+            }
+
+            // Create a new parent node for the expressions
+            lhsExpr = BinOpExpr::{
+                op: op,
+                lhsExpr: lhsExpr,
+                rhsExpr: rhsExpr
             };
         }
 
@@ -1190,16 +1225,16 @@ var parseExprPrec = function (input, minPrec)
                 // Recursively parse the rhs
                 var rhsExpr = parseExprPrec(input, nextMinPrec);
 
+                // If specified, match the operator closing string
+                if (op.closeStr.length > 0 && !input:matchWS(op.closeStr))
+                    parseError(input, "expected operator closing");
+
                 // Create a new parent node for the expressions
                 lhsExpr = BinOpExpr::{
                     op: op,
                     lhsExpr: lhsExpr,
                     rhsExpr: rhsExpr
                 };
-
-                // If specified, match the operator closing string
-                if (op.closeStr.length > 0 && !input:matchWS(op.closeStr))
-                    parseError(input, "expected operator closing");
             }
         }
 
@@ -1621,7 +1656,7 @@ var registerDecls = function (fun, stmt, unitFun)
 /**
 Generate code for a code unit
 */
-var genUnit = function (unitAST)
+var genUnit = function (unitAST, globalObj)
 {
     var entryBlock = Block.new();
 
@@ -1630,14 +1665,8 @@ var genUnit = function (unitAST)
     // Register variable declarations
     registerDecls(unitFun, unitAST.body, true);
 
+    // Definitions exported by this unit/package
     var exportsObj = { init: unitFun };
-
-    // Globally visible definitions
-    var globalObj = {
-        exports: exportsObj,
-        output: output,
-        print: print
-    };
 
     // Create the initial context
     var ctx = CodeGenCtx.new(
@@ -1763,6 +1792,13 @@ var genExpr = function (ctx, expr)
         {
             genExpr(ctx, expr.expr);
             runtimeCall(ctx, rt_bit_not);
+            return;
+        }
+
+        if (expr.op == OP_TYPEOF)
+        {
+            genExpr(ctx, expr.expr);
+            ctx:addOp("get_tag");
             return;
         }
 
@@ -1982,13 +2018,17 @@ var genExpr = function (ctx, expr)
         // Object extension
         if (expr.op == OP_OBJ_EXT)
         {
-            var objExpr = expr.rhsExpr;
-
-            if (!(expr.rhsExpr instanceof ObjectExpr))
-                parseError(input, "invalid rhs in objext extension expression");
-
+            assert (expr.rhsExpr instanceof ObjectExpr);
             genObjExpr(ctx, expr.lhsExpr, expr.rhsExpr);
+            return;
+        }
 
+        // Instanceof
+        if (expr.op == OP_INSTOF)
+        {
+            genExpr(ctx, expr.lhsExpr);
+            genExpr(ctx, expr.rhsExpr);
+            runtimeCall(ctx, rt_instOf);
             return;
         }
 
@@ -2444,7 +2484,8 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
 
             return;
         }
-        else if (lhsExpr.op == OP_INDEX)
+
+        if (lhsExpr.op == OP_INDEX)
         {
             // Evaluate the array
             genExpr(ctx, lhsExpr.lhsExpr);
@@ -2455,9 +2496,6 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
             // Evaluate the rhs value
             genExpr(ctx, rhsExpr);
 
-            //ctx:addInstr({ op:'dup', idx:2 });
-
-            //ctx:addOp("set_elem");
             runtimeCall(ctx, rt_setElem);
 
             return;
@@ -2475,6 +2513,11 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
 //============================================================================
 // External interface
 //============================================================================
+
+/**
+Function to parse a source string
+*/
+exports.parseString = parseString;
 
 /**
 Exported function to parse from an input object
@@ -2502,8 +2545,78 @@ exports.parse_input = function (input)
     // Parse the unit
     var ast = parseUnit(input);
 
+    // Globally visible definitions
+    var globalObj = {
+        output: output,
+        print: print
+    };
+
     // Generate code for the unit
-    var unitFn = genUnit(ast);
+    var unitFn = genUnit(ast, globalObj);
 
     return unitFn;
+};
+
+/**
+The main function is called when this package is run as a standalone
+program/script. It implements a Read-Eval-Print Loop (REPL).
+*/
+exports.main = function ()
+{
+    var io = import "core/io/0";
+
+    print('Plush Read-Eval-Print Loop (REPL)');
+    print('To exit, press Ctrl+D or type "exit"');
+    //print('');
+
+    // Global object used by the REPL
+    var globalObj = {
+        output: output,
+        print: print
+    };
+
+    for (;;)
+    {
+        output('\n');
+        output("] ");
+        var line = io.read_line();
+
+        if (line == undef)
+        {
+            output('\n');
+            break;
+        }
+
+        if (line == "exit" || line == "quit")
+        {
+            break;
+        }
+
+        var input = Input::{
+            srcName: "console",
+            srcString: line,
+            strIdx: 0,
+            lineNo: 1,
+            colNo: 1
+        };
+
+        try
+        {
+            // Parse the unit
+            var ast = parseUnit(input);
+
+            // Generate code for the unit
+            var unit = genUnit(ast, globalObj);
+
+            // Run the unit function
+            unit.init();
+        }
+        catch (e)
+        {
+            print("Parse error: " + e.msg);
+            continue;
+        }
+    }
+
+    return 0;
 };
