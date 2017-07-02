@@ -1,5 +1,7 @@
 """Input takes care of reading the input"""
 
+from e_error import ParseError
+
 class Input(object):
     """The Input class is the one responsible for reading the input"""
     str_idx = 0
@@ -10,9 +12,9 @@ class Input(object):
         self.str_in = file_content
     def peek_ch(self):
         """Peek a character from the input"""
-        if self.str_idx > len(self.str_in):
+        if self.str_idx >= len(self.str_in):
             return '\0'
-        return self.src_name[self.str_idx]
+        return self.str_in[self.str_idx]
     def read_ch(self):
         """Read a char from the input"""
         ch = self.peek_ch()
@@ -36,10 +38,10 @@ class Input(object):
         for idx in range(len(string)):
             if string[idx] != self.str_in[self.str_idx + idx]:
                 return False
-            return True
+        return True
     def match(self, string):
         """Check if the string is next in the input. If yes, consume it"""
-        assert not string, "Trying to match empty string"
+        assert len(string) > 0, "Trying to match empty string"
         if self.next(string):
             for _ in string:
                 self.read_ch()
@@ -70,38 +72,33 @@ class Input(object):
         self.eat_ws()
         return self.next(string)
     def match_ws(self, string):
-         """Version of match that consumes preceding whitespace"""
+        """Version of match that consumes preceding whitespace"""
         self.eat_ws()
-        return match(string)
-    def expect_ws(self,string):
+        return self.match(string)
+    def expect_ws(self, string):
+        """Version of expect that consumes preceding whitespace"""
         self.eat_ws()
-        expect(string)
+        self.expect(string)
     def match_kw(self, string):
-    self.eat_ws()
+        """Match a keyword"""
+        self.eat_ws()
+        if not self.next(string):
+            return False
 
-    // If the string is not next in the input, no match
-    if not self.next(string):
-        return false
+        length = len(string)
 
-    length = len(string)
+        # If we're at the end of the string, this is a match
+        if self.str_idx + length >= len(self.str_in):
+            self.match(string)
+            return True
+        post_ch = self.str_in[self.str_idx + length]
 
-    # If we're at the end of the string, this is a match
-    if self.str_idx + length >= len(self.srcString)
-        self.match(str)
-        return true
+        # If the next character is valid in an identifier, then
+        # this is not a real match
+        if post_ch.isalnum() or post_ch == '_':
+            return False
 
-    // Get the character after the keyword
-    postCh = self.src_string[self.str_idx + length]
+        self.match(string)
+        return True
 
-    # If the next character is valid in an identifier, then
-    # this is not a real match
-    if (postCh.isalnum() or postCh == '_')
-    {
-        return false
-    }
-
-    // This is a match, consume the keyword string
-    self:match(str)
-    return true
-    
     

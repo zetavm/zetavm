@@ -14,7 +14,7 @@ cscheme
 *.dSYM
 *.exe
 *.dll
-
+*.pyc
 # Generated files
 benchmarks/plush_parser.zim
 packages/lang/plush/0/package

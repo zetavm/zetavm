@@ -8,6 +8,9 @@ class ParseError(Error):
     """Error that occurs at parsing time"""
     def __init__(self, input_obj, msg):
         new_msg = "A parsing error occured in the file: " + input_obj.src_name \
-        + "at: " + input_obj.row_no + ":" + input_obj.col_no + "\n" + msg
+        + " at: " + str(input_obj.row_no) + ":" + str(input_obj.col_no) + "\n" + msg
         super(ParseError, self).__init__(new_msg)
-        
+
+class EspressoRuntimeError(Error):
+    pass
+    

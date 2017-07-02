@@ -1,0 +1,517 @@
+let rt_push := fun (base, val) 
+{
+    if (typeof base = "array")
+    {
+        $array_push(base, val);
+        return;
+    }
+    assert(false, "unhandled type for push, it only accepts arrays");
+};
+
+let rt_get := fun (base, key) 
+{
+    if (typeof base = "array")
+    {
+        if (typeof key = "int32")
+        {
+            return $get_elem(base, key);
+        }
+        assert(false, "you can access array elements only with integers");
+    }
+    if (typeof base = "string")
+    {
+        if (typeof key = "int32")
+        {
+            return $get_char(base, key);
+        }
+        assert(false, "you can access string characters only with integers");        
+    }
+    if (typeof base = "object")
+    {
+        if (typeof key = "string")
+        {
+            if ($has_field(base, key))
+            {
+                return $get_field(base, key);
+            }
+            assert(false, "undefined property: " + key);
+        }
+        assert(false, "you can only access properties of objects with strings");
+    }
+    assert(false, "unhandled type on get, it should be: array, string or object");
+};
+
+let rt_len := fun (base) 
+{
+    if (typeof base = "array")
+    {
+        return $array_len(base);
+    }
+    if (typeof base = "string")
+    {
+        return $str_len(base);
+    }
+    assert(false, "unhandled type in len, it should be: array or string");
+};
+
+let map_helper := fun (f, xs, idx, result) 
+{
+    if (idx = len(xs))
+    {
+        return result;
+    }
+    rt_push(result, f(rt_get(xs, idx)));
+    return map_helper(f, xs, idx + 1, result);
+};
+
+let rt_map := fun (f, xs) 
+{
+    let result := $new_array(rt_len(xs));
+    return map_helper(f, xs, 0, result);
+};
+
+let filter_helper := fun (p, xs, idx, result)
+{
+    if (idx = len(xs))
+    {
+        return result;
+    }
+    let elem := rt_get(xs, idx);
+    if (p(elem))
+        rt_push(result, elem);
+    return map_helper(p, xs, idx + 1, result);
+};
+
+let rt_filter := fun (p, xs)
+{
+    let result := $new_array(rt_len(xs));
+    return filter_helper(p, xs, 0, result);
+};
+
+let reduce_helper := fun (f, xs, idx, result)
+{
+    if (idx = len(xs))
+    {
+        return result;
+    }
+    let new_result := f(get(xs, idx), result);
+    return reduce_helper(f, xs, idx + 1, new_result);
+};
+
+let rt_reduce := fun (f, xs)
+{
+    if (len(xs) = 0)
+        return null;
+    let result := get(xs, 0);
+    return reduce_helper(f, xs, 1, result);
+};
+
+let rt_set := fun (base, key, value)
+{
+    if (typeof base = "array")
+    {
+        if (typeof key = "int32")
+        {
+            return $set_elem(base, key, value);
+        }
+        assert(false, "you can set array elements only with integers");
+    }
+    if (typeof base = "object")
+    {
+        if (typeof key = "string")
+        {
+            if ($has_field(base, key))
+            {
+                return $set_field(base, key, value);
+            }
+            assert(false, "undefined property: " + key);
+        }
+        assert(false, "you can only set properties of objects with strings");
+    }
+    assert(false, "unhandled type for set, it should be: array or object");    
+};
+
+let rt_not := fun (x)
+{
+    if (x)
+        return false;
+    return true;
+};
+
+let rt_add := fun (x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32") {
+            return $add_f32( $i32_to_f32(x), y);
+        }
+        if (typeof y = "int32")
+        {
+            return $add_i32(x, y);
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32")
+        {
+            return $add_f32(x, y);
+        }
+        if (typeof y = "int32") {
+            return $add_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    if (typeof x = "string")
+    {
+        if (typeof y = "string")
+        {
+            return $str_cat(x, y);
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in addition"
+    );
+};
+
+let rt_sub := fun (x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32") {
+            return $sub_f32( $i32_to_f32(x), y);
+        }
+        if (typeof y = "int32")
+        {
+            return $sub_i32(x, y);
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32")
+        {
+            return $sub_f32(x, y);
+        }
+        if (typeof y = "int32")
+        {
+            return $sub_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in subtraction"
+    );
+};
+
+let rt_mul := fun (x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32")
+        {
+            return $mul_f32($i32_to_f32(x), y);
+        }
+        if (typeof y = "int32")
+        {
+            return $mul_i32(x, y);
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32")
+        {
+            return $mul_f32(x, y);
+        }
+        if (typeof y = "int32") {
+            return $mul_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in multiplication"
+    );
+};
+
+let rt_div := fun (x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32")
+        {
+            return $div_f32($i32_to_f32(x), y);
+        }
+
+        if (typeof y = "int32")
+        {
+            return $div_f32($i32_to_f32(x), $i32_to_f32(y));
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32")
+        {
+            return $div_f32(x, y);
+        }
+
+        if (typeof y = "int32")
+        {
+            return $div_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in division"
+    );
+};
+
+let rt_eq := fun (x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32")
+        {
+            return $eq_f32($i32_to_f32(x), y);
+        }
+        if (typeof y = "int32")
+        {
+            return $eq_i32(x, y);
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32") {
+            return $eq_f32(x, y);
+        }
+        if (typeof y = "int32") {
+            return $eq_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    if (typeof x = "string")
+    {
+        if (typeof y = "string")
+        {
+            return $eq_str(x, y);
+        }
+
+        return false;
+    }
+
+    if (typeof x = "object")
+    {
+        if (typeof y = "object")
+        {
+            return $eq_obj(x, y);
+        }
+
+        return false;
+    }
+
+    if (typeof x = "bool")
+    {
+        if (typeof y = "bool")
+        {
+            return $eq_bool(x, y);
+        }
+
+        return false;
+    }
+
+    if (typeof x = "undef")
+    {
+        if (typeof y = "undef")
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    assert (
+        false,
+        "unhandled type in equality comparison"
+    );
+};
+
+let rt_ne := fun (x, y)
+{
+    if (rt_eq(x, y))
+        return false;
+    else
+        return true;
+};
+
+let rt_lt := fun (x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32")
+        {
+            return $lt_f32($i32_to_f32(x), y);
+        }
+        if (typeof y = "int32")
+        {
+            return $lt_i32(x, y);
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32")
+        {
+            return $lt_f32(x, y);
+        }
+        if (typeof y = "int32")
+        {
+            return $lt_f32(x, $i32_to_f32(y));
+        }
+    }
+};
+
+let rt_le := fun (x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32")
+        {
+            return $le_f32($i32_to_f32(x), y);
+        }
+        if (typeof y = "int32")
+        {
+            return $le_i32(x, y);
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32")
+        {
+            return $le_f32(x, y);
+        }
+        if (typeof y = "int32") {
+            return $le_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in less-than or equal comparison"
+    );
+};
+
+let rt_gt := fun(x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32")
+        {
+            return $gt_f32($i32_to_f32(x), y);
+        }
+        if (typeof y = "int32")
+        {
+            return $gt_i32(x, y);
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32")
+        {
+            return $gt_f32(x, y);
+        }
+        if (typeof y = "int32") {
+            return $gt_f32(x, $i32_to_f32(y));
+        }
+    }
+};
+
+let rt_ge := fun (x, y)
+{
+    if (typeof x = "int32")
+    {
+        if (typeof y = "float32")
+        {
+            return $ge_f32($i32_to_f32(x), y);
+        }
+        if (typeof y = "int32")
+        {
+            return $ge_i32(x, y);
+        }
+    }
+
+    if (typeof x = "float32")
+    {
+        if (typeof y = "float32")
+        {
+            return $ge_f32(x, y);
+        }
+        if (typeof y = "int32")
+        {
+            return $ge_f32(x, $i32_to_f32(y));
+        }
+    }
+
+    assert (
+        false,
+        "unhandled type in less-than or equal comparison"
+    );
+};
+
+let rt_has := fun (base, key)
+{
+    if (typeof base = "object")
+    {
+        if (typeof key = "string")
+        {
+            return $has_field(base, key);
+        }
+    }
+};
+
+import ("core/io" as io)
+let rt_print := fun (x) 
+{
+    if (typeof x = "string")
+    {
+        io.print_str(x);
+        return;
+    }
+
+    if (typeof x = "int32")
+    {
+        io.print_int32(x);
+        return;
+    }
+
+    if (typeof x = "float32")
+    {
+        io.print_float32(x);
+        return;
+    }
+
+    if (x = true)
+    {
+        rt_print("true");
+        return;
+    }
+
+    if (x = false)
+    {
+        rt_print("false");
+        return;
+    }
+
+    assert (
+        false,
+        "unhandled type in output function"
+    );
+};

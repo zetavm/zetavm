@@ -17,7 +17,7 @@ class FloatExpr(ASTExpr):
     """Float expression"""
     def __init__(self, val):
         self.val = val
-class String(ASTExpr):
+class StringExpr(ASTExpr):
     """String expression"""
     def __init__(self, val):
         self.val = val
@@ -45,33 +45,61 @@ class ArrayExpr(ASTExpr):
     def __init__(self, exprs):
         self.exprs = exprs
 class ObjectExpr(ASTExpr):
+    """Object expression"""
     def __init__(self, names, exprs):
         self.names = names
         self.exprs = exprs
 class CallExpr(ASTExpr):
+    """Function calling expression"""
     def __init__(self, fun_expr, arg_exprs):
         self.fun_expr = fun_expr
         self.arg_exprs = arg_exprs
 class IRExpr(ASTExpr):
+    """IR expression"""
     def __init__(self, op_name, arg_exprs):
         self.op_name = op_name
         self.arg_exprs = arg_exprs
-class ImportExpr(ASTExpr):
-    def __init__(self, pkg_name):
-        self.pkg_name = pkg_name
-class ExportExpr(ASTExpr):
-    def __init__(self, expr):
-        self.expr = expr
+class ImportStmt(ASTStmt):
+    """Import statement"""
+    def __init__(self, paths):
+        self.paths = paths
+class ExportStmt(ASTStmt):
+    """Export statement"""
+    def __init__(self, names):
+        self.names = names
 class BlockStmt(ASTStmt):
+    """A group of statements"""
     def __init__(self, stmts):
         self.stmts = stmts
-class VarStmt(ASTStmt):
+class DeclStmt(ASTStmt):
+    """Declaration statement"""
     def __init__(self, name, init_expr):
         self.name = name
         self.init_expr = init_expr
 class IfStmt(ASTStmt):
+    """If statement"""
     def __init__(self, test_expr, then_stmt, else_stmt):
         self.test_expr = test_expr
         self.then_stmt = then_stmt
         self.else_stmt = else_stmt
+class ReturnStmt(ASTStmt):
+    """Return statement"""
+    def __init__(self, expr):
+        self.expr = expr
+class ExprStmt(ASTStmt):
+    """Expression statement. Evaluating an expression with no output"""
+    def __init__(self, expr):
+        self.expr = expr
+class IRStmt(ASTStmt):
+    """IR statement. Evaluating an IR with no output"""
+    def __init__(self, op_name, arg_exprs):
+        self.op_name = op_name
+        self.arg_exprs = arg_exprs
+class FunExpr(ASTExpr):
+    """Function expression"""
+    def __init__(self, name, body, params):
+        self.name = name
+        self.body = body
+        self.params = params
+
 
