@@ -443,7 +443,7 @@ void compile(BlockVersion* version)
         static ICache opIC("op");
         auto op = (std::string)opIC.getStr(instr);
 
-        //std::cout << "op: " << op << std::endl;
+        // std::cout << "op: " << op << std::endl;
 
         // Store a pointer to the current instruction
         auto instrPtr = codeHeapAlloc;
