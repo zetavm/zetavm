@@ -14,7 +14,7 @@ def no_runtime(args):
         src_data = input_file.read()
         src_unit = parse_string(src_data, args.input)
         result = gen_unit(src_unit)
-        # print(result)
+        print(result)
 
 def compiling(args):
     with open(args.input) as input_file:
