@@ -165,6 +165,22 @@ public:
     std::string val;
 };
 
+class Boolean : public Value
+{
+public:
+
+    Boolean(bool val): val(val) {}
+
+    virtual ~Boolean() {}
+
+    virtual std::string toString() const
+    {
+        return val ? "#t" : "#f";
+    }
+
+    bool val;
+};
+
 class Pair : public Value
 {
 public:

@@ -16,13 +16,53 @@ write = {
   params: ['v'],
   num_locals: 2,
   entry: {
-    name: 'write_entry',
+    name: 'write_dispatch_0',
     instrs: [
       { op:'get_local', idx:0 },
       { op:'has_tag', tag:'int32' },
-      { op:'if_true', then:@write_int32, else:@write_str },
+      { op:'if_true', then:@write_int32, else:@write_dispatch_1 },
     ]
   }
+};
+
+write_dispatch_1 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'bool' },
+    { op:'if_true', then:@write_bool, else:@write_str },
+  ]
+};
+
+write_bool = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'if_true', then:@write_bool_true, else:@write_bool_false },
+  ]
+};
+
+write_bool_true = {
+  instrs: [
+    { op:'push', val: "#t" },
+    { op:'jump', to: @write_bool_common},
+  ]
+};
+
+write_bool_false = {
+  instrs: [
+    { op:'push', val: "#f" },
+    { op:'jump', to: @write_bool_common},
+  ]
+};
+
+write_bool_common = {
+  instrs: [
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'get_field' },
+    { op:'push', val:'print_str' },
+    { op:'get_field' },
+    { op:'call', ret_to:@write_ret, num_args:1 },
+  ]
 };
 
 write_str = {
