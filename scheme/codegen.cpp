@@ -379,6 +379,12 @@ static void genValue(CodeGenCtx& ctx, Value* value)
         ctx.addStr("op:'push', val:" + str->toString());
     }
 
+    // Push a boolean
+    else if (auto boolean = dynamic_cast<Boolean*>(value))
+    {
+        ctx.addStr("op:'push', val:" + std::string(boolean->val ? "$true" : "$false"));
+    }
+
     // Recursively generate code on the pair
     else if (auto pair = dynamic_cast<Pair*>(value))
     {
