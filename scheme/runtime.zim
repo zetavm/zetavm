@@ -4,10 +4,66 @@
 
 exports_obj = {
   init: @fun_1,
+  __scm_is_boolean: @is_boolean,
   __scm_write: @write,
-  __scm_newline: @newline
+  __scm_newline: @newline,
+  __scm_not: @not
 };
 global_obj = { exports: @exports_obj };
+
+
+### (boolean? obj)
+
+is_boolean = {
+  name: 'is_boolean',
+  params: ['v'],
+  num_locals: 2,
+  entry: {
+    name: 'boolean_entry',
+    instrs: [
+      { op:'get_local', idx:0 },
+      { op:'has_tag', tag:'bool' },
+      { op:'ret' }
+    ]
+  }
+};
+
+### (not obj)
+
+not = {
+  name: 'not',
+  params: ['v'],
+  num_locals: 2,
+  entry: {
+    name: 'not_entry',
+    instrs: [
+      { op:'get_local', idx:0 },
+      { op:'has_tag', tag:'bool' },
+      { op:'if_true', then:@not_check_bool, else:@not_return_false },
+    ]
+  }
+};
+
+not_check_bool = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'if_true', then:@not_return_false, else:@not_return_true },
+  ]
+};
+
+not_return_false = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+not_return_true = {
+  instrs: [
+    { op:'push', val:$true },
+    { op:'ret' },
+  ]
+};
 
 ### (write obj)
 

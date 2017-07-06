@@ -175,7 +175,9 @@ public:
       contBlock(contBlock),
       breakBlock(breakBlock)
     {
+        builtins["boolean?"] = "__scm_is_boolean";
         builtins["newline"] = "__scm_newline";
+        builtins["not"] = "__scm_not";
         builtins["write"] = "__scm_write";
     }
 
