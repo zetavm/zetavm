@@ -65,6 +65,7 @@ test: all
 	./$(ZETA_BIN) tests/plush/parse_error.pls | grep --quiet "parse_error.pls@5:6"
 	# cscheme tests
 	./$(CSCHEME_BIN) --test
+	./scheme.sh tests/scheme/boolean.scm
 	./scheme.sh tests/scheme/write.scm
 	# espresso tests
 	$(ESPRESSO_BIN) test

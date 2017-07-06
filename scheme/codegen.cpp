@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <map>
 #include "codegen.h"
 
 // Last assigned id number
@@ -157,6 +158,9 @@ public:
     /// Unit function flag
     bool unitFun;
 
+    /// Map from builtin to mangled name.
+    std::map<std::string, std::string> builtins;
+
     CodeGenCtx(
         std::string& out,
         Function* fun,
@@ -171,6 +175,10 @@ public:
       contBlock(contBlock),
       breakBlock(breakBlock)
     {
+        builtins["boolean?"] = "__scm_is_boolean";
+        builtins["newline"] = "__scm_newline";
+        builtins["not"] = "__scm_not";
+        builtins["write"] = "__scm_write";
     }
 
     /// Create a sub-context of this context
@@ -254,6 +262,21 @@ public:
         /// Serialize the basic block
         curBlock->finalize(this->out);
     }
+
+    bool isBuiltin(const std::string& name) const
+    {
+        return builtins.find(name) != builtins.end();
+    }
+
+    std::string mangle(const std::string& name) const
+    {
+        auto it = builtins.find(name);
+
+        if (it == builtins.end())
+            return name;
+
+        return it->second;
+    }
 };
 
 // Forward declarations
@@ -284,10 +307,24 @@ std::string genProgram(std::unique_ptr<Program> program)
 
     // Import the base runtime.
     ctx.addStr("op:'push', val:@global_obj");
-    ctx.addStr("op:'push', val:'rt'");
     ctx.addStr("op:'push', val:'scheme/runtime.zim'");
     ctx.addStr("op:'import'");
-    ctx.addStr("op:'set_field'");
+
+    // Directly import the base runtime functions into the
+    // global namespace.
+    for (const auto& kv : ctx.builtins)
+    {
+        ctx.addStr("op:'dup', idx:0");
+        ctx.addStr("op:'push', val:'" + kv.second + "'");
+        ctx.addStr("op:'get_field'");
+        ctx.addStr("op:'push', val:@global_obj");
+        ctx.addStr("op:'push', val:'" + kv.second + "'");
+        ctx.addStr("op:'dup', idx:2");
+        ctx.addStr("op:'set_field'");
+        ctx.addStr("op:'pop'");
+    }
+    ctx.addStr("op:'pop'");
+    ctx.addStr("op:'pop'");
 
     // Generate code for each value
     for (auto &value : program->values)
@@ -316,23 +353,9 @@ std::string genProgram(std::unique_ptr<Program> program)
 Generate code for calling a function
 */
 static void
-genCall(CodeGenCtx& ctx, std::string funName, size_t numArgs, bool isRuntimeCall)
+genCall(CodeGenCtx& ctx, size_t numArgs)
+
 {
-    // Setup the global object to find the call field
-    ctx.addStr("op:'push', val:@global_obj");
-
-    // If this is a runtime call, the get the 'rt' field first.
-    if (isRuntimeCall)
-    {
-        ctx.addStr("op:'push', val:'rt'");
-        ctx.addStr("op:'get_field'");
-    }
-
-    // Get the method being called.
-    ctx.addStr("op:'push', val:'" + funName + "'");
-    ctx.addOp("get_field");
-
-    // Call it.
     auto contBlock = new Block();
     ctx.addBranch(
         "call",
@@ -346,14 +369,31 @@ genCall(CodeGenCtx& ctx, std::string funName, size_t numArgs, bool isRuntimeCall
 /**
 Check if the given pair is a tagged list
 */
-static bool isTaggedList(Pair* pair, const std::string &name)
+static bool isTaggedList(Pair* pair)
 {
-    if (auto identifier = dynamic_cast<Identifier*>(pair->car.get()))
+    return dynamic_cast<Identifier*>(pair->car.get()) != nullptr;
+}
+
+static Pair* cdr(Pair* pair)
+{
+    return dynamic_cast<Pair*>(pair->cdr.get());
+}
+
+static unsigned length(Pair* pair)
+{
+    if (!pair)
+        return 0;
+
+    unsigned length = 0;
+    Pair* next = cdr(pair);
+
+    while (next != nullptr)
     {
-        return identifier->val == name;
+        next = cdr(next);
+        length += 1;
     }
 
-    return false;
+    return length;
 }
 
 /**
@@ -385,25 +425,24 @@ static void genValue(CodeGenCtx& ctx, Value* value)
         ctx.addStr("op:'push', val:" + std::string(boolean->val ? "$true" : "$false"));
     }
 
+    // Push an identifier
+    else if (auto identifier = dynamic_cast<Identifier*>(value))
+    {
+        std::string identifierStr = identifier->val;
+
+        ctx.addStr("op:'push', val:@global_obj");
+        if (ctx.isBuiltin(identifierStr))
+            identifierStr = ctx.mangle(identifierStr);
+        ctx.addStr("op:'push', val:'" + identifierStr + "'");
+        ctx.addStr("op:'get_field'");
+    }
+
     // Recursively generate code on the pair
     else if (auto pair = dynamic_cast<Pair*>(value))
     {
-        if (isTaggedList(pair, "write"))
-        {
-            genValue(ctx, pair->cdr.get());
-            genCall(ctx, "write", 1, true);
-        }
-
-        else if (isTaggedList(pair, "newline"))
-        {
-            genValue(ctx, pair->cdr.get());
-            genCall(ctx, "newline", 0, true);
-        }
-
-        else
-        {
-            genValue(ctx, pair->car.get());
-            genValue(ctx, pair->cdr.get());
-        }
+        genValue(ctx, pair->cdr.get());
+        genValue(ctx, pair->car.get());
+        if (isTaggedList(pair))
+            genCall(ctx, length(cdr(pair)));
     }
 }
