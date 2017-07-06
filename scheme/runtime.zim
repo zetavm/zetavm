@@ -4,8 +4,8 @@
 
 exports_obj = {
   init: @fun_1,
-  write: @write,
-  newline: @newline
+  __scm_write: @write,
+  __scm_newline: @newline
 };
 global_obj = { exports: @exports_obj };
 
