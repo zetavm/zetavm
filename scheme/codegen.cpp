@@ -367,16 +367,43 @@ genCall(CodeGenCtx& ctx, size_t numArgs)
 }
 
 /**
-Check if the given pair is a tagged list
+Generate code for looking up an identifier
 */
-static bool isTaggedList(Pair* pair)
+static void
+genIdentLookup(CodeGenCtx& ctx, const std::string& name)
 {
-    return dynamic_cast<Identifier*>(pair->car.get()) != nullptr;
+    std::string identStr = ctx.isBuiltin(name) ? ctx.mangle(name) : name;
+    ctx.addStr("op:'push', val:@global_obj");
+    ctx.addStr("op:'push', val:'" + identStr + "'");
+    ctx.addStr("op:'get_field'");
+}
+
+/**
+Pair helper functions
+*/
+static Value* car(Pair* pair)
+{
+    return pair->car.get();
 }
 
 static Pair* cdr(Pair* pair)
 {
     return dynamic_cast<Pair*>(pair->cdr.get());
+}
+
+static Value* cadr(Pair* pair)
+{
+    return car(cdr(pair));
+}
+
+static Value* caddr(Pair* pair)
+{
+    return car(cdr(cdr(pair)));
+}
+
+static Value* cadddr(Pair* pair)
+{
+    return car(cdr(cdr(cdr(pair))));
 }
 
 static unsigned length(Pair* pair)
@@ -394,6 +421,14 @@ static unsigned length(Pair* pair)
     }
 
     return length;
+}
+
+/**
+Check if the given pair is a tagged list
+*/
+static bool isTaggedList(Pair* pair)
+{
+    return dynamic_cast<Identifier*>(car(pair)) != nullptr;
 }
 
 /**
@@ -428,21 +463,57 @@ static void genValue(CodeGenCtx& ctx, Value* value)
     // Push an identifier
     else if (auto identifier = dynamic_cast<Identifier*>(value))
     {
-        std::string identifierStr = identifier->val;
-
-        ctx.addStr("op:'push', val:@global_obj");
-        if (ctx.isBuiltin(identifierStr))
-            identifierStr = ctx.mangle(identifierStr);
-        ctx.addStr("op:'push', val:'" + identifierStr + "'");
-        ctx.addStr("op:'get_field'");
+        genIdentLookup(ctx, identifier->val);
     }
 
     // Recursively generate code on the pair
     else if (auto pair = dynamic_cast<Pair*>(value))
     {
-        genValue(ctx, pair->cdr.get());
-        genValue(ctx, pair->car.get());
         if (isTaggedList(pair))
-            genCall(ctx, length(cdr(pair)));
+        {
+            std::string name = dynamic_cast<Identifier*>(car(pair))->val;
+            if (name == "if")
+            {
+                if (length(cdr(pair)) != 3)
+                    throw ParseError("error: an 'if' expression must have a condition, then, and else.");
+
+                // Generate code for the condition first.  Note that the
+                // "not" builtin is used to ensure that Scheme concept of
+                // "true" and "false" is met (only #f is false).
+                genValue(ctx, cadr(pair));
+                genIdentLookup(ctx, "not");
+                genCall(ctx, 1);
+
+                // Then the "then"
+                auto thenBlock = new Block();
+                auto thenCtx = ctx.subCtx(thenBlock);
+                genValue(thenCtx, caddr(pair));
+
+                // Then the "else"
+                auto elseBlock = new Block();
+                auto elseCtx = ctx.subCtx(elseBlock);
+                genValue(elseCtx, cadddr(pair));
+
+                // Join them up.  Note that the arms are swapped because "not"
+                // is used on the condition.
+                ctx.addBranch("if_true", "then", elseBlock, "else", thenBlock);
+
+                auto joinBlock = new Block();
+                ctx.merge(joinBlock);
+                thenCtx.addBranch("jump", "to", joinBlock);
+                elseCtx.addBranch("jump", "to", joinBlock);
+            }
+            else
+            {
+                genValue(ctx, cdr(pair));
+                genValue(ctx, car(pair));
+                genCall(ctx, length(cdr(pair)));
+            }
+        }
+        else
+        {
+                genValue(ctx, cdr(pair));
+                genValue(ctx, car(pair));
+        }
     }
 }

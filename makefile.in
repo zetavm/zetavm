@@ -66,6 +66,7 @@ test: all
 	# cscheme tests
 	./$(CSCHEME_BIN) --test
 	./scheme.sh tests/scheme/boolean.scm
+	./scheme.sh tests/scheme/if.scm
 	./scheme.sh tests/scheme/write.scm
 	# espresso tests
 	$(ESPRESSO_BIN) test
