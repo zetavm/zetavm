@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <map>
 #include "codegen.h"
 
 // Last assigned id number
@@ -157,6 +158,9 @@ public:
     /// Unit function flag
     bool unitFun;
 
+    /// Map from builtin to mangled name.
+    std::map<std::string, std::string> builtins;
+
     CodeGenCtx(
         std::string& out,
         Function* fun,
@@ -171,6 +175,10 @@ public:
       contBlock(contBlock),
       breakBlock(breakBlock)
     {
+        builtins["boolean?"] = "__scm_is_boolean";
+        builtins["newline"] = "__scm_newline";
+        builtins["not"] = "__scm_not";
+        builtins["write"] = "__scm_write";
     }
 
     /// Create a sub-context of this context
@@ -254,6 +262,21 @@ public:
         /// Serialize the basic block
         curBlock->finalize(this->out);
     }
+
+    bool isBuiltin(const std::string& name) const
+    {
+        return builtins.find(name) != builtins.end();
+    }
+
+    std::string mangle(const std::string& name) const
+    {
+        auto it = builtins.find(name);
+
+        if (it == builtins.end())
+            return name;
+
+        return it->second;
+    }
 };
 
 // Forward declarations
@@ -284,10 +307,24 @@ std::string genProgram(std::unique_ptr<Program> program)
 
     // Import the base runtime.
     ctx.addStr("op:'push', val:@global_obj");
-    ctx.addStr("op:'push', val:'rt'");
     ctx.addStr("op:'push', val:'scheme/runtime.zim'");
     ctx.addStr("op:'import'");
-    ctx.addStr("op:'set_field'");
+
+    // Directly import the base runtime functions into the
+    // global namespace.
+    for (const auto& kv : ctx.builtins)
+    {
+        ctx.addStr("op:'dup', idx:0");
+        ctx.addStr("op:'push', val:'" + kv.second + "'");
+        ctx.addStr("op:'get_field'");
+        ctx.addStr("op:'push', val:@global_obj");
+        ctx.addStr("op:'push', val:'" + kv.second + "'");
+        ctx.addStr("op:'dup', idx:2");
+        ctx.addStr("op:'set_field'");
+        ctx.addStr("op:'pop'");
+    }
+    ctx.addStr("op:'pop'");
+    ctx.addStr("op:'pop'");
 
     // Generate code for each value
     for (auto &value : program->values)
@@ -316,23 +353,9 @@ std::string genProgram(std::unique_ptr<Program> program)
 Generate code for calling a function
 */
 static void
-genCall(CodeGenCtx& ctx, std::string funName, size_t numArgs, bool isRuntimeCall)
+genCall(CodeGenCtx& ctx, size_t numArgs)
+
 {
-    // Setup the global object to find the call field
-    ctx.addStr("op:'push', val:@global_obj");
-
-    // If this is a runtime call, the get the 'rt' field first.
-    if (isRuntimeCall)
-    {
-        ctx.addStr("op:'push', val:'rt'");
-        ctx.addStr("op:'get_field'");
-    }
-
-    // Get the method being called.
-    ctx.addStr("op:'push', val:'" + funName + "'");
-    ctx.addOp("get_field");
-
-    // Call it.
     auto contBlock = new Block();
     ctx.addBranch(
         "call",
@@ -344,16 +367,68 @@ genCall(CodeGenCtx& ctx, std::string funName, size_t numArgs, bool isRuntimeCall
 }
 
 /**
-Check if the given pair is a tagged list
+Generate code for looking up an identifier
 */
-static bool isTaggedList(Pair* pair, const std::string &name)
+static void
+genIdentLookup(CodeGenCtx& ctx, const std::string& name)
 {
-    if (auto identifier = dynamic_cast<Identifier*>(pair->car.get()))
+    std::string identStr = ctx.isBuiltin(name) ? ctx.mangle(name) : name;
+    ctx.addStr("op:'push', val:@global_obj");
+    ctx.addStr("op:'push', val:'" + identStr + "'");
+    ctx.addStr("op:'get_field'");
+}
+
+/**
+Pair helper functions
+*/
+static Value* car(Pair* pair)
+{
+    return pair->car.get();
+}
+
+static Pair* cdr(Pair* pair)
+{
+    return dynamic_cast<Pair*>(pair->cdr.get());
+}
+
+static Value* cadr(Pair* pair)
+{
+    return car(cdr(pair));
+}
+
+static Value* caddr(Pair* pair)
+{
+    return car(cdr(cdr(pair)));
+}
+
+static Value* cadddr(Pair* pair)
+{
+    return car(cdr(cdr(cdr(pair))));
+}
+
+static unsigned length(Pair* pair)
+{
+    if (!pair)
+        return 0;
+
+    unsigned length = 0;
+    Pair* next = cdr(pair);
+
+    while (next != nullptr)
     {
-        return identifier->val == name;
+        next = cdr(next);
+        length += 1;
     }
 
-    return false;
+    return length;
+}
+
+/**
+Check if the given pair is a tagged list
+*/
+static bool isTaggedList(Pair* pair)
+{
+    return dynamic_cast<Identifier*>(car(pair)) != nullptr;
 }
 
 /**
@@ -379,25 +454,66 @@ static void genValue(CodeGenCtx& ctx, Value* value)
         ctx.addStr("op:'push', val:" + str->toString());
     }
 
+    // Push a boolean
+    else if (auto boolean = dynamic_cast<Boolean*>(value))
+    {
+        ctx.addStr("op:'push', val:" + std::string(boolean->val ? "$true" : "$false"));
+    }
+
+    // Push an identifier
+    else if (auto identifier = dynamic_cast<Identifier*>(value))
+    {
+        genIdentLookup(ctx, identifier->val);
+    }
+
     // Recursively generate code on the pair
     else if (auto pair = dynamic_cast<Pair*>(value))
     {
-        if (isTaggedList(pair, "write"))
+        if (isTaggedList(pair))
         {
-            genValue(ctx, pair->cdr.get());
-            genCall(ctx, "write", 1, true);
-        }
+            std::string name = dynamic_cast<Identifier*>(car(pair))->val;
+            if (name == "if")
+            {
+                if (length(cdr(pair)) != 3)
+                    throw ParseError("error: an 'if' expression must have a condition, then, and else.");
 
-        else if (isTaggedList(pair, "newline"))
-        {
-            genValue(ctx, pair->cdr.get());
-            genCall(ctx, "newline", 0, true);
-        }
+                // Generate code for the condition first.  Note that the
+                // "not" builtin is used to ensure that Scheme concept of
+                // "true" and "false" is met (only #f is false).
+                genValue(ctx, cadr(pair));
+                genIdentLookup(ctx, "not");
+                genCall(ctx, 1);
 
+                // Then the "then"
+                auto thenBlock = new Block();
+                auto thenCtx = ctx.subCtx(thenBlock);
+                genValue(thenCtx, caddr(pair));
+
+                // Then the "else"
+                auto elseBlock = new Block();
+                auto elseCtx = ctx.subCtx(elseBlock);
+                genValue(elseCtx, cadddr(pair));
+
+                // Join them up.  Note that the arms are swapped because "not"
+                // is used on the condition.
+                ctx.addBranch("if_true", "then", elseBlock, "else", thenBlock);
+
+                auto joinBlock = new Block();
+                ctx.merge(joinBlock);
+                thenCtx.addBranch("jump", "to", joinBlock);
+                elseCtx.addBranch("jump", "to", joinBlock);
+            }
+            else
+            {
+                genValue(ctx, cdr(pair));
+                genValue(ctx, car(pair));
+                genCall(ctx, length(cdr(pair)));
+            }
+        }
         else
         {
-            genValue(ctx, pair->car.get());
-            genValue(ctx, pair->cdr.get());
+                genValue(ctx, cdr(pair));
+                genValue(ctx, car(pair));
         }
     }
 }

@@ -538,11 +538,6 @@ std::unique_ptr<Integer> parseNumber(Input& input)
         intVal *= -1;
     }
 
-    if (!input.eof() && !isDelimiter(input.peekCh()))
-    {
-	throw ParseError(input, "expected delimiter");
-    }
-
     return std::unique_ptr<Integer>(new Integer(intVal));
 }
 
@@ -586,36 +581,86 @@ static bool isInitialNum(char ch)
     return isSign(ch) || isdigit(ch);
 }
 
+/// Parse a boolean
+///
+///   <boolean>  ::= #t | #f | #true | #false
+///
+std::unique_ptr<Boolean> parseBoolean(Input& input)
+{
+    if (input.match("true") || input.match("t"))
+    {
+        return std::unique_ptr<Boolean>(new Boolean(true));
+    }
+
+    if (input.match("false") || input.match("f"))
+    {
+         return std::unique_ptr<Boolean>(new Boolean(false));
+    }
+
+    return nullptr;
+}
+
 /// Parse an atom
 std::unique_ptr<Value> parseAtom(Input& input)
 {
     char ch = input.peekCh();
+    std::unique_ptr<Value> value;
+
+    auto ensureDelimiter = [&input]()
+    {
+        if (!input.eof() && !isDelimiter(input.peekCh()))
+        {
+            throw ParseError(input, "expected delimiter");
+        }
+    };
 
     // Plain identifier
     if (isInitial(ch))
     {
-        return parseIdentifier(input);
+        value = parseIdentifier(input);
+        ensureDelimiter();
     }
 
     // Peculiar identifier
     else if (isPeculiar(ch) && !isdigit(input.peekCh(1)))
     {
-        return parsePeculiarIdentifier(input);
+        value = parsePeculiarIdentifier(input);
+        ensureDelimiter();
     }
 
     // Number
     else if (isInitialNum(ch))
     {
-        return parseNumber(input);
+        value = parseNumber(input);
+        ensureDelimiter();
     }
 
     // String
     else if (input.peekCh() == '"')
     {
-        return parseString(input);
+        value = parseString(input);
     }
 
-    throw ParseError(input, "unexpected atom");
+    // Tokens that start with #
+    else if (ch == '#')
+    {
+        input.readCh();
+        ch = input.peekCh();
+        switch (ch) {
+        case 't':
+        case 'f':
+            // Boolean
+            value = parseBoolean(input);
+        }
+        ensureDelimiter();
+    }
+
+    else
+    {
+        throw ParseError(input, "unexpected atom");
+    }
+
+    return value;
 }
 
 /// Forward declaration
@@ -847,12 +892,22 @@ void testParser()
     testParse("7", "7");
     testParse("123", "123");
     testParse("-187", "-187");
+    testParseFail("12yz");
 
     // Strings
     testParse("\"Hello, World!\"", "\"Hello, World!\"");
     testParse("\"187\"", "\"187\"");
     testParse("\"foo, bar, baz\"", "\"foo, bar, baz\"");
+    testParse("\"foo\"12", "\"foo\"12");
     testParseFail("\"a");
+
+    // Booleans
+    testParse("#t", "#t");
+    testParse("#true", "#t");
+    testParse("#f", "#f");
+    testParse("#false", "#f");
+    testParseFail("#ft");
+    testParseFail("#tru");
 
     // Lists
     testParse("()", "()");
@@ -869,6 +924,8 @@ void testParser()
     testParse("'(1 (2 (3)) (4))", "(quote (1 (2 (3)) (4)))");
     testParse("(* 1 (* 2 3))", "(* 1 (* 2 3))");
     testParse("(+ 4 (- 1 (* 3 5)))", "(+ 4 (- 1 (* 3 5)))");
+    testParse("(12\"ab\")", "(12 \"ab\")");
+    testParse("(\"ab\"13)", "(\"ab\" 13)");
     testParseFail("(x y");
     testParseFail("((a b)(c (d)");
     testParseFail("(r s))");

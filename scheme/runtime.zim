@@ -4,10 +4,66 @@
 
 exports_obj = {
   init: @fun_1,
-  write: @write,
-  newline: @newline
+  __scm_is_boolean: @is_boolean,
+  __scm_write: @write,
+  __scm_newline: @newline,
+  __scm_not: @not
 };
 global_obj = { exports: @exports_obj };
+
+
+### (boolean? obj)
+
+is_boolean = {
+  name: 'is_boolean',
+  params: ['v'],
+  num_locals: 2,
+  entry: {
+    name: 'boolean_entry',
+    instrs: [
+      { op:'get_local', idx:0 },
+      { op:'has_tag', tag:'bool' },
+      { op:'ret' }
+    ]
+  }
+};
+
+### (not obj)
+
+not = {
+  name: 'not',
+  params: ['v'],
+  num_locals: 2,
+  entry: {
+    name: 'not_entry',
+    instrs: [
+      { op:'get_local', idx:0 },
+      { op:'has_tag', tag:'bool' },
+      { op:'if_true', then:@not_check_bool, else:@not_return_false },
+    ]
+  }
+};
+
+not_check_bool = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'if_true', then:@not_return_false, else:@not_return_true },
+  ]
+};
+
+not_return_false = {
+  instrs: [
+    { op:'push', val:$false },
+    { op:'ret' },
+  ]
+};
+
+not_return_true = {
+  instrs: [
+    { op:'push', val:$true },
+    { op:'ret' },
+  ]
+};
 
 ### (write obj)
 
@@ -16,13 +72,53 @@ write = {
   params: ['v'],
   num_locals: 2,
   entry: {
-    name: 'write_entry',
+    name: 'write_dispatch_0',
     instrs: [
       { op:'get_local', idx:0 },
       { op:'has_tag', tag:'int32' },
-      { op:'if_true', then:@write_int32, else:@write_str },
+      { op:'if_true', then:@write_int32, else:@write_dispatch_1 },
     ]
   }
+};
+
+write_dispatch_1 = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'has_tag', tag:'bool' },
+    { op:'if_true', then:@write_bool, else:@write_str },
+  ]
+};
+
+write_bool = {
+  instrs: [
+    { op:'get_local', idx:0 },
+    { op:'if_true', then:@write_bool_true, else:@write_bool_false },
+  ]
+};
+
+write_bool_true = {
+  instrs: [
+    { op:'push', val: "#t" },
+    { op:'jump', to: @write_bool_common},
+  ]
+};
+
+write_bool_false = {
+  instrs: [
+    { op:'push', val: "#f" },
+    { op:'jump', to: @write_bool_common},
+  ]
+};
+
+write_bool_common = {
+  instrs: [
+    { op:'push', val:@global_obj },
+    { op:'push', val:'io' },
+    { op:'get_field' },
+    { op:'push', val:'print_str' },
+    { op:'get_field' },
+    { op:'call', ret_to:@write_ret, num_args:1 },
+  ]
 };
 
 write_str = {

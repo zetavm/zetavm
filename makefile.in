@@ -66,7 +66,12 @@ test: all
 	./$(ZETA_BIN) tests/plush/parse_error.pls | grep --quiet "parse_error.pls@5:6"
 	# cscheme tests
 	./$(CSCHEME_BIN) --test
+	./scheme.sh tests/scheme/boolean.scm
+	./scheme.sh tests/scheme/if.scm
 	./scheme.sh tests/scheme/write.scm
+	# espresso tests
+	$(ESPRESSO_BIN) test
+	./espresso.sh tests/espresso/test.espr
 
 clean:
 	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log
@@ -126,3 +131,9 @@ scheme/main.cpp     \
 
 cscheme: scheme/*.cpp scheme/*.h
 	$(CXX) $(CXXFLAGS) -o $(CSCHEME_BIN) $(CSCHEME_SRCS)
+
+##############################################################################
+# Espresso compiler
+##############################################################################
+
+ESPRESSO_BIN = python espresso/main.py
