@@ -8,70 +8,10 @@ PKGS_DIR=\"$(CURDIR)/packages/\"
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zeta cplush plush-pkg math-pkg cscheme
+all: zeta cplush plush-pkg plush-bench math-pkg cscheme
 
 test: all
-	# Core zetavm tests
-	./$(ZETA_BIN) --test
-	./$(ZETA_BIN) tests/vm/ex_loop_cnt.zim
-	./$(ZETA_BIN) tests/vm/sub_fun.zim
-	./$(ZETA_BIN) tests/vm/fun_no_args.zim
-	./$(ZETA_BIN) tests/vm/throw_exc.zim
-	./$(ZETA_BIN) tests/vm/throw_exc2.zim
-	./$(ZETA_BIN) tests/vm/throw_exc3.zim
-	./$(ZETA_BIN) tests/vm/closure.zim
-	# cplush tests (C++ plush compiler implementation)
-	./$(CPLUSH_BIN) --test
-	./plush.sh tests/plush/trivial.pls
-	./plush.sh tests/plush/floats.pls
-	./plush.sh tests/plush/simple_exprs.pls
-	./plush.sh tests/plush/identfn.pls
-	./plush.sh tests/plush/fib.pls
-	./plush.sh tests/plush/for_loop.pls
-	./plush.sh tests/plush/for_loop_sum.pls
-	./plush.sh tests/plush/for_loop_cont.pls
-	./plush.sh tests/plush/for_loop_break.pls
-	./plush.sh tests/plush/line_count.pls
-	./plush.sh tests/plush/array_push.pls
-	./plush.sh tests/plush/fun_locals.pls
-	./plush.sh tests/plush/method_calls.pls
-	./plush.sh tests/plush/obj_ext.pls
-	./plush.sh tests/plush/throw_exc.pls
-	./plush.sh tests/plush/throw_exc2.pls
-	# Check that the parser benchmark compiles with cplush
-	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
-	# Run the Plush language package tests
-	./$(ZETA_BIN) packages/lang/plush/0/tests
-	# Run Plush code using the Plush language package
-	./$(ZETA_BIN) tests/plush/trivial.pls
-	./$(ZETA_BIN) tests/plush/floats.pls
-	./$(ZETA_BIN) tests/plush/simple_exprs.pls
-	./$(ZETA_BIN) tests/plush/identfn.pls
-	./$(ZETA_BIN) tests/plush/fib.pls
-	./$(ZETA_BIN) tests/plush/for_loop.pls
-	./$(ZETA_BIN) tests/plush/for_loop_sum.pls
-	./$(ZETA_BIN) tests/plush/for_loop_cont.pls
-	./$(ZETA_BIN) tests/plush/for_loop_break.pls
-	./$(ZETA_BIN) tests/plush/line_count.pls
-	./$(ZETA_BIN) tests/plush/array_push.pls
-	./$(ZETA_BIN) tests/plush/method_calls.pls
-	./$(ZETA_BIN) tests/plush/obj_ext.pls
-	./$(ZETA_BIN) tests/plush/import.pls
-	./$(ZETA_BIN) tests/plush/circular3.pls
-	./$(ZETA_BIN) tests/plush/peval.pls
-	./$(ZETA_BIN) tests/plush/random.pls
-	# Check that source position is reported on errors
-	./$(ZETA_BIN) tests/plush/assert.pls | grep --quiet "3:1"
-	./$(ZETA_BIN) tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
-	./$(ZETA_BIN) tests/plush/parse_error.pls | grep --quiet "parse_error.pls@5:6"
-	# cscheme tests
-	./$(CSCHEME_BIN) --test
-	./scheme.sh tests/scheme/boolean.scm
-	./scheme.sh tests/scheme/if.scm
-	./scheme.sh tests/scheme/write.scm
-	# espresso tests
-	$(ESPRESSO_BIN) test
-	./espresso.sh tests/espresso/test.espr
+	./run_tests.sh
 
 clean:
 	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log
@@ -114,6 +54,10 @@ plush-pkg: plush/parser.pls
 	./$(CPLUSH_BIN) plush/parser.pls > packages/lang/plush/0/package
 	./$(CPLUSH_BIN) tests/plush/parser.pls > packages/lang/plush/0/tests
 
+# Plush parser benchmark
+plush-bench:
+	./$(CPLUSH_BIN)  benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
+
 math-pkg: plush/parser.pls
 	mkdir -p packages/std/math/0
 	./$(CPLUSH_BIN) plush/math.pls > packages/std/math/0/package
@@ -131,9 +75,3 @@ scheme/main.cpp     \
 
 cscheme: scheme/*.cpp scheme/*.h
 	$(CXX) $(CXXFLAGS) -o $(CSCHEME_BIN) $(CSCHEME_SRCS)
-
-##############################################################################
-# Espresso compiler
-##############################################################################
-
-ESPRESSO_BIN = python espresso/main.py
