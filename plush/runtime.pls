@@ -727,9 +727,3 @@ var print = function (x)
     output(x);
     output('\n');
 };
-
-/// Read an entire text file into a string
-var readFile = function (fileName)
-{
-    return io.read_file(fileName);
-};

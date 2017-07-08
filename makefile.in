@@ -52,6 +52,7 @@ test: all
 	./$(ZETA_BIN) tests/plush/for_loop_sum.pls
 	./$(ZETA_BIN) tests/plush/for_loop_cont.pls
 	./$(ZETA_BIN) tests/plush/for_loop_break.pls
+	./$(ZETA_BIN) tests/plush/line_count.pls
 	./$(ZETA_BIN) tests/plush/array_push.pls
 	./$(ZETA_BIN) tests/plush/method_calls.pls
 	./$(ZETA_BIN) tests/plush/obj_ext.pls

@@ -1,6 +1,8 @@
+#language "lang/plush/0"
+
 var io = import "core/io/0";
 
-var str = readFile("tests/plush/line_count.pls");
+var str = io.read_file("tests/plush/line_count.pls");
 
 print(str.length);
 
@@ -18,4 +20,4 @@ for (var i = 0; i < str.length; i += 1)
 }
 
 print(numLines);
-assert (numLines == 22);
+assert (numLines == 24);
