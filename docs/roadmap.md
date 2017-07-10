@@ -16,6 +16,18 @@ A set of core libraries will be provided as part of ZetaVM. These will be writte
 
 The core libraries will cover services such as file I/O, console I/O, basic 2D graphics (pixel plotting and blitting), mouse and keyboard input as well as raw PCM audio output. The early prototype version of the VM will implement only the most essential libraries.
 
+## Image Serialization
+
+ZetaVM uses a text-based file format (ZIM files) to store code and data. This file format resembles JSON, with the important difference that it can represent arbitrary graphs of objects. Zeta will soon acquire the capability not only to read graphs of objects from ZIM files, but also to reverse this process, and serialize graphs of objects into strings or new ZIM files.
+
+The ability to serialize objects into ZIM files will make it easy for languages which run on ZetaVM and generate bytecode in memory to save the generated code into a compiled file. It may also make it possible for programs to suspend their own state to disk and resume execution later on (with some limitations). Lastly, being able to read and write ZIM files opens up the possibility of using this format to easily save data, and to use it to transmit data over the internet.
+
+## Complete Plush Bootstrap
+
+There currently exist two Plush parsers. The first is written in C++, and produces ZIM files (cplush). The second is the Plush language package, which is itself written in Plush. The cplush parser is used to compile the Plush language package into a ZIM file. Having two implementations of Plush is problematic, because it becomes difficult to keep both implementations tested and up to date, and because it can be confusing to newcomers.
+
+The cplush parser will eventually deprecated, and completely superseded by the Plush language package. In order to do this, the Plush language package will need to be able to compile itself. Image serialization will be used to write the resulting compiled code into a ZIM file which the VM can load directly in future runs.
+
 ## Language Extensions
 
 The Plush language will eventually make it possible for people to write parser extensions. This will allow the addition of new operators, new expression types, and new statement types to the language.
