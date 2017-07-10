@@ -1591,7 +1591,20 @@ Value execCode()
             case STR_TO_F32:
             {
                 auto arg0 = popStr();
-                pushVal(Value::float32(std::stof(arg0)));
+
+                float val;
+
+                // If the float fails to parse, produce NaN
+                try
+                {
+                    val = std::stof(arg0);
+                }
+                catch (...)
+                {
+                    val = 0.0f / 0.0f;
+                }
+
+                pushVal(Value::float32(val));
             }
             break;
 

@@ -74,7 +74,5 @@ assert(1.0f == 1.0f);
 // float-string conversion
 x = $str_to_f32("1.0");
 fp_assert(x, 1.0f, "string to float doesn't work");
-print(x);
-y = $f32_to_str(1.0f);
-print(y);
-assert(y == "1.000000");
+assert($f32_to_str(1.0f) == "1.000000");
+assert (math.isNaN($str_to_f32("10e777f")));
