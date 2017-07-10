@@ -1,0 +1,6 @@
+#language "lang/plush/0"
+
+// This is a test to verify that uncaught exceptions that
+// aren't objects are handled properly
+
+throw "foobar";

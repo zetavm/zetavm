@@ -1211,7 +1211,7 @@ void throwExc(
             }
             else
             {
-                std::string errMsg = excVal.toString();
+                errMsg = excVal.toString();
             }
 
             throw RunError(errMsg);

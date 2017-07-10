@@ -71,6 +71,9 @@ set -e
 ./zeta tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
 ./zeta tests/plush/parse_error.pls | grep --quiet "parse_error.pls@5:6"
 
+# Check that uncaught exceptions are handled properly
+./zeta tests/plush/throw_str_uncaught.pls | grep --quiet "foobar"
+
 # Check that the Plush language package is
 # able to parse its own source code
 ./zeta tests/plush/self_parse.pls
