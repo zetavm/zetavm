@@ -2615,12 +2615,15 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
 
 /**
 Function to parse a source string
+Note: this is used for parser tests.
+The output is a Plush AST
 */
 exports.parseString = parseString;
 
 /**
 Exported function to parse from an input object
-Note: this is called by zeta to parse plush files
+Note: this is called by zeta to parse Plush files.
+The output is a Zeta package object.
 */
 exports.parse_input = function (input)
 {

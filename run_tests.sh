@@ -71,6 +71,10 @@ set -e
 ./zeta tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
 ./zeta tests/plush/parse_error.pls | grep --quiet "parse_error.pls@5:6"
 
+# Check that the Plush language package is
+# able to parse its own source code
+./zeta tests/plush/self_parse.pls
+
 ##############################################################################
 # cscheme tests
 ##############################################################################
