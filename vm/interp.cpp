@@ -1185,6 +1185,8 @@ void throwExc(
         // If we are at the top level
         if (retVer == nullptr)
         {
+            //std::cout << "Uncaught exception" << std::endl;
+
             std::string errMsg;
 
             if (excVal.isObject())
@@ -1229,8 +1231,7 @@ void throwExc(
         // If there is an exception handler
         if (retEntry.excVer)
         {
-            // TODO: pop call arguments?
-            // Shouldn't be necessary, since we restored SP
+            //std::cout << "Found exception handler" << std::endl;
 
             // Push the exception value on the stack
             pushVal(excVal);

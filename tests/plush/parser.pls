@@ -188,9 +188,10 @@ var testParser = function ()
     testParse("assertFP(x);");
     testParseFail("assert(x, 'foo', z);");
 
-    // Throw statement
-    //testParse("throw 'foo';");
-    //testParseFail("throw2;");
+    // Try, catch and throw
+    testParse("throw x;");
+    testParse("throw 'foo';");
+    testParse("try {} catch (e) {}");
 
     // Function expression
     testParse("function () { return 0; }; ");

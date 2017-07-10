@@ -156,12 +156,20 @@ var IfStmt = {
 var ForStmt = {
 };
 
+/// Prototype for or loop statements
+var TryStmt = {
+};
+
 /// Prototype for expression statements
 var ExprStmt = {
 };
 
 /// Prototype for return statements
 var ReturnStmt = {
+};
+
+/// Prototype for throw statements
+var ThrowStmt = {
 };
 
 /// Prototype for break statements
@@ -802,6 +810,27 @@ var parseForStmt = function (input)
 };
 
 /**
+Parse a try-catch statement
+*/
+var parseTryStmt = function (input)
+{
+    var bodyStmt = parseStmt(input);
+
+    input:expectWS("catch");
+    input:expectWS("(");
+    var catchVar = parseIdentStr(input);
+    input:expectWS(")");
+
+    var catchStmt = parseStmt(input);
+
+    return TryStmt::{
+        bodyStmt: bodyStmt,
+        catchStmt: catchStmt,
+        catchVar: catchVar
+    };
+};
+
+/**
 Parse a list of expressions
 */
 var parseExprList = function (input, endStr)
@@ -1336,6 +1365,12 @@ var parseStmt = function (input)
         return ContStmt::{};
     }
 
+    // Try/catch statement
+    if (input:matchKW("try"))
+    {
+        return parseTryStmt(input);
+    }
+
     // Return statement
     if (input:matchKW("return"))
     {
@@ -1350,6 +1385,14 @@ var parseStmt = function (input)
         input:expectWS(";");
 
         return ReturnStmt::{ expr: expr };
+    }
+
+    // Throw statement
+    if (input:matchKW("throw"))
+    {
+        var expr = parseExpr(input);
+        input:expectWS(";");
+        return ThrowStmt::{ expr: expr };
     }
 
     // Get the current position in the input
@@ -1523,7 +1566,8 @@ CodeGenCtx.new = function (
         unitFun: unitFun,
         curBlock: curBlock,
         contBlock: false,
-        breakBlock: false
+        breakBlock: false,
+        catchBlock: false
     };
 };
 
@@ -1540,26 +1584,8 @@ CodeGenCtx.subCtx = function (
         unitFun: ctx.unitFun,
         curBlock: startBlock,
         contBlock: ctx.contBlock,
-        breakBlock: ctx.breakBlock
-    };
-};
-
-/// Context extension function for loop contexts
-CodeGenCtx.subCtxLoop = function (
-    ctx,
-    startBlock,
-    contBlock,
-    breakBlock
-)
-{
-    return CodeGenCtx::{
-        exportsObj: ctx.exportsObj,
-        globalObj: ctx.globalObj,
-        fun: ctx.fun,
-        unitFun: ctx.unitFun,
-        curBlock: startBlock,
-        contBlock: contBlock,
-        breakBlock: breakBlock
+        breakBlock: ctx.breakBlock,
+        catchBlock: ctx.catchBlock
     };
 };
 
@@ -1627,6 +1653,18 @@ var registerDecls = function (fun, stmt, unitFun)
         return;
     }
 
+    if (stmt instanceof TryStmt)
+    {
+        registerDecls(fun, stmt.bodyStmt, unitFun);
+        registerDecls(fun, stmt.catchStmt, unitFun);
+
+        // If this is not a unit function, create a new local
+        if (!unitFun)
+            fun:registerDecl(stmt.catchVar);
+
+        return;
+    }
+
     if (stmt instanceof ContStmt)
     {
         return;
@@ -1638,6 +1676,11 @@ var registerDecls = function (fun, stmt, unitFun)
     }
 
     if (stmt instanceof ReturnStmt)
+    {
+        return;
+    }
+
+    if (stmt instanceof ThrowStmt)
     {
         return;
     }
@@ -1696,11 +1739,16 @@ var runtimeCall = function (ctx, fun)
 
     ctx:addPush(fun);
 
-    ctx:addInstr({
+    var callInstr = {
         op: "call",
-        ret_to: contBlock,
-        num_args: fun.params.length
-    });
+        num_args: fun.params.length,
+        ret_to: contBlock
+    };
+
+    if (ctx.catchBlock != false)
+        callInstr.throw_to = ctx.catchBlock;
+
+    ctx:addInstr(callInstr);
 
     ctx:merge(contBlock);
 };
@@ -2122,12 +2170,17 @@ var genExpr = function (ctx, expr)
 
         var contBlock = Block.new();
 
-        ctx:addInstr({
+        var callInstr = {
             op: "call",
-            ret_to: contBlock,
             num_args: args.length,
-            src_pos: expr.srcPos
-        });
+            src_pos: expr.srcPos,
+            ret_to: contBlock
+        };
+
+        if (ctx.catchBlock != false)
+            callInstr.throw_to = ctx.catchBlock;
+
+        ctx:addInstr(callInstr);
 
         ctx:merge(contBlock);
 
@@ -2234,9 +2287,15 @@ var genStmt = function (ctx, stmt)
 
     if (stmt instanceof ReturnStmt)
     {
-        //print('*** ReturnStmt');
         genExpr(ctx, stmt.expr);
         ctx:addOp("ret");
+        return;
+    }
+
+    if (stmt instanceof ThrowStmt)
+    {
+        genExpr(ctx, stmt.expr);
+        runtimeCall(ctx, rt_throw);
         return;
     }
 
@@ -2296,11 +2355,9 @@ var genStmt = function (ctx, stmt)
         testCtx:addInstr({ op:"if_true", then:bodyBlock, else:exitBlock });
 
         // Generate the loop body statement
-        var bodyCtx = ctx:subCtxLoop(
-            bodyBlock,
-            incrBlock,
-            exitBlock
-        );
+        var bodyCtx = ctx:subCtx(bodyBlock);
+        bodyCtx.contBlock = incrBlock;
+        bodyCtx.breakBlock = exitBlock;
         genStmt(bodyCtx, stmt.bodyStmt);
         if (!bodyCtx.curBlock:hasBranch())
             bodyCtx:addInstr({ op:"jump", to:incrBlock });
@@ -2312,6 +2369,48 @@ var genStmt = function (ctx, stmt)
         incrCtx:addInstr({ op:"jump", to:testBlock });
 
         ctx:merge(exitBlock);
+
+        return;
+    }
+
+    // Try/catch statement
+    if (stmt instanceof TryStmt)
+    {
+        var bodyBlock = Block.new();
+        var catchBlock = Block.new();
+        var joinBlock = Block.new();
+
+        ctx:addInstr({ op:"jump", to:bodyBlock });
+
+        // Generate the try body block
+        var bodyCtx = ctx:subCtx(bodyBlock);
+        bodyCtx.catchBlock = catchBlock;
+        genStmt(bodyCtx, stmt.bodyStmt);
+        if (!bodyCtx.curBlock:hasBranch())
+            bodyCtx:addInstr({ op:"jump", to:joinBlock });
+        var catchCtx = ctx:subCtx(catchBlock);
+
+        // Assign the exception value to the catch variable
+        if (catchCtx.unitFun)
+        {
+            catchCtx:addInstr({ op:'push', val:ctx.globalObj });
+            catchCtx:addInstr({ op:'push', val:stmt.catchVar });
+            catchCtx:addInstr({ op:'dup', idx:2 });
+            catchCtx:addInstr({ op: "set_field" });
+            catchCtx:addInstr({ op: "pop" });
+        }
+        else
+        {
+            var localIdx = ctx.fun:getLocalIdx(stmt.catchVar);
+            catchCtx:addInstr({ op:'set_local', idx:localIdx });
+        }
+
+        // Generate the catch statement
+        genStmt(catchCtx, stmt.catchStmt);
+        if (!catchCtx.curBlock:hasBranch())
+            catchCtx:addInstr({ op:"jump", to:joinBlock });
+
+        ctx:merge(joinBlock);
 
         return;
     }

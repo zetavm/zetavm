@@ -63,6 +63,8 @@ set -e
 ./zeta tests/plush/circular3.pls
 ./zeta tests/plush/peval.pls
 ./zeta tests/plush/random.pls
+./zeta tests/plush/throw_exc.pls
+./zeta tests/plush/throw_exc2.pls
 
 # Check that source position is reported on errors
 ./zeta tests/plush/assert.pls | grep --quiet "3:1"
