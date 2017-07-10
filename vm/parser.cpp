@@ -285,7 +285,7 @@ Value parseFloatingPart(Input& input, bool neg, char literal[64])
 /**
 Parse a string literal
 */
-Value parseStringLit(Input& input, char endCh)
+std::string parseStringLit(Input& input, char endCh)
 {
     //std::cout << "parseStringLit" << std::endl;
 
@@ -375,7 +375,7 @@ Value parseStringLit(Input& input, char endCh)
         str += ch;
     }
 
-    return String(str);
+    return str;
 }
 
 /**
@@ -489,8 +489,23 @@ Value parseObject(Input& input)
             break;
         }
 
-        // Parse the property name
-        auto ident = parseIdentStr(input);
+        // Parse the field name
+        std::string fieldName;
+
+        if (input.peek('"'))
+        {
+            input.readCh();
+            fieldName = parseStringLit(input, '"');
+        }
+        else if (input.peek('\''))
+        {
+            input.readCh();
+            fieldName = parseStringLit(input, '\'');
+        }
+        else
+        {
+            fieldName = parseIdentStr(input);
+        }
 
         input.eatWS();
         input.expect(":");
@@ -499,9 +514,9 @@ Value parseObject(Input& input)
         auto expr = parseExpr(input);
 
         // Set the property on the object
-        obj.setField(ident, expr);
+        obj.setField(fieldName, expr);
 
-        assert (obj.hasField(ident));
+        assert (obj.hasField(fieldName));
 
         // If this is the end of the list
         input.eatWS();
@@ -545,11 +560,11 @@ Value parseExpr(Input& input)
     // String literal
     if (input.match('\''))
     {
-        return parseStringLit(input, '\'');
+        return String(parseStringLit(input, '\''));
     }
     if (input.match('\"'))
     {
-        return parseStringLit(input, '\"');
+        return String(parseStringLit(input, '\"'));
     }
 
     // Array expression

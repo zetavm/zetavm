@@ -665,7 +665,8 @@ var rt_setElem = function (base, idx, val)
             "unhandled index type in setElem with object base; should be string"
         );
 
-        return $set_field(base, idx, val);
+        $set_field(base, idx, val);
+        return val;
     }
 
     assert (

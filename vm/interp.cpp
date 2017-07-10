@@ -1740,15 +1740,6 @@ Value execCode()
                 auto val = popVal();
                 auto fieldName = popStr();
                 auto obj = popObj();
-
-                if (!isValidIdent(fieldName))
-                {
-                    throw RunError(
-                        "invalid identifier in set_field \"" +
-                        (std::string)fieldName + "\""
-                    );
-                }
-
                 obj.setField(fieldName, val);
             }
             break;
