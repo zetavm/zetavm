@@ -38,6 +38,8 @@ enum Opcode : uint16_t
     GT_I32,
     GE_I32,
     EQ_I32,
+    INC_I32,
+    DEC_I32,
 
     // Floating-point operations
     ADD_F32,
@@ -64,6 +66,7 @@ enum Opcode : uint16_t
     EQ_BOOL,
     HAS_TAG,
     GET_TAG,
+    LOCAL_HAS_TAG,
 
     // String operations
     STR_LEN,
@@ -78,6 +81,8 @@ enum Opcode : uint16_t
     HAS_FIELD,
     SET_FIELD,
     GET_FIELD,
+    GET_FIELD_IMM,
+
     GET_FIELD_LIST,
     EQ_OBJ,
 
@@ -488,6 +493,18 @@ void genCall(
     writeCode(callInfo);
 }
 
+std::string getOp(Array& instrs, size_t i)
+{
+    if (i >= instrs.length())
+    {
+        //We reached the end of the bb
+        return "nop";
+    }
+    auto instr = (Object)instrs.getElem(i);
+    static ICache opIC("op");
+    return (std::string)opIC.getStr(instr);
+};
+
 void compile(BlockVersion* version)
 {
     //std::cout << "compiling version" << std::endl;
@@ -524,9 +541,30 @@ void compile(BlockVersion* version)
 
         if (op == "push")
         {
-            numTmps += 1;
             static ICache valIC("val");
             auto val = valIC.getField(instr);
+            std::string nextOp = getOp(instrs, i + 1);
+            if (nextOp == "add_i32" && val == Value::ONE)
+            {
+                i += 1;
+                writeCode(INC_I32);
+                continue;
+            }
+            if (nextOp == "sub_i32" && val == Value::ONE)
+            {
+                i += 1;
+                writeCode(DEC_I32);
+                continue;
+            }
+            if (nextOp == "get_field")
+            {
+                i += 1;
+                writeCode(GET_FIELD_IMM);
+                writeCode((String)val);
+                writeCode(size_t(0));
+                continue;
+            }
+            numTmps += 1;
             writeCode(PUSH);
             writeCode(val);
             continue;
@@ -557,9 +595,23 @@ void compile(BlockVersion* version)
 
         if (op == "get_local")
         {
-            numTmps += 1;
             static ICache idxIC("idx");
             auto idx = (uint16_t)idxIC.getInt32(instr);
+            if (getOp(instrs, i + 1) == "has_tag")
+            {
+                numTmps += 1;
+                auto nextInstr = (Object) instrs.getElem(i + 1);
+                static ICache tagIC("tag");
+                auto tagStr = (std::string)tagIC.getStr(nextInstr);
+                auto tag = strToTag(tagStr);
+                writeCode(LOCAL_HAS_TAG);
+                writeCode(idx);
+                writeCode(tag);
+                i += 1;
+                continue;
+            }
+
+            numTmps += 1;
             writeCode(GET_LOCAL);
             writeCode(idx);
             continue;
@@ -1499,9 +1551,35 @@ Value execCode()
             }
             break;
 
+            case LOCAL_HAS_TAG:
+            {
+                // Read the index of the local value
+                auto localIdx = readCode<uint16_t>();
+                auto testTag = readCode<Tag>();
+
+                assert (stackPtr > stackLimit);
+                auto val = framePtr[-localIdx];
+
+                auto valTag = val.getTag();
+                pushBool(valTag == testTag);
+            }
+            break;
+
             //
             // Integer operations
             //
+            case INC_I32:
+            {
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 + 1));
+            }
+            break;
+            case DEC_I32:
+            {
+                auto arg0 = popInt32();
+                pushVal(Value::int32(arg0 - 1));
+            }
+            break;
 
             case ADD_I32:
             {
@@ -1932,6 +2010,27 @@ Value execCode()
             case GET_FIELD:
             {
                 auto fieldName = popStr();
+                auto obj = popObj();
+
+                // Get the cached slot index
+                auto& slotIdx = readCode<size_t>();
+
+                Value val;
+
+                if (!obj.getField(fieldName, val, slotIdx))
+                {
+                    throw RunError(
+                        "get_field failed, missing field \"" +
+                        (std::string)fieldName + "\""
+                    );
+                }
+
+                pushVal(val);
+            }
+            break;
+            case GET_FIELD_IMM:
+            {
+                auto& fieldName = readCode<String>();
                 auto obj = popObj();
 
                 // Get the cached slot index
