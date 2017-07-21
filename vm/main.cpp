@@ -6,6 +6,24 @@
 #include "interp.h"
 #include "packages.h"
 
+int runPkgMain(Object pkg)
+{
+    // If the package has no main function, do nothing
+    if (!pkg.hasField("main"))
+        return 0;
+
+    auto retVal = callExportFn(pkg, "main");
+
+    if (!retVal.isInt32())
+    {
+        throw RunError(
+            "main function should return an int64 value"
+        );
+    }
+
+    return (int32_t)retVal;
+}
+
 int main(int argc, char** argv)
 {
     try
@@ -25,37 +43,30 @@ int main(int argc, char** argv)
 
         if (argc == 2)
         {
-            auto pkgPath = findPkgPath(argv[1]);
+            auto pkgName = argv[1];
 
-            if (pkgPath == "")
+            // Try importing and running the package
+            try
             {
-                throw RunError("could not find package \"" + pkgPath + "\"");
+                auto pkg = import(pkgName);
+
+                return runPkgMain(pkg);
             }
 
-            auto pkg = load(pkgPath);
-
-            // Initialize the package
-            if (pkg.hasField("init"))
+            // If the package failed to import
+            catch (ImportError e)
             {
-                callExportFn(pkg, "init");
-            }
+                // Try loading the package as a local file
+                auto pkg = load(pkgName);
 
-            // Call the main function, if present
-            if (pkg.hasField("main"))
-            {
-                auto retVal = callExportFn(pkg, "main");
-
-                if (!retVal.isInt32())
+                // Initialize the package
+                if (pkg.hasField("init"))
                 {
-                    throw RunError(
-                        "main function should return an int64 value"
-                    );
+                    callExportFn(pkg, "init");
                 }
 
-                return (int32_t)retVal;
+                return runPkgMain(pkg);
             }
-
-            return 0;
         }
 
         std::cout << "Invalid command-line arguments" << std::endl;

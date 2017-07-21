@@ -1,6 +1,9 @@
 # Abort on first error
 set -e
 
+# Echo test commands
+set -x
+
 ##############################################################################
 # Core zetavm tests
 ##############################################################################
@@ -13,6 +16,10 @@ set -e
 ./zeta tests/vm/throw_exc2.zim
 ./zeta tests/vm/throw_exc3.zim
 ./zeta tests/vm/closure.zim
+
+# Check that loading a non-existent file produces a sensible error
+./zeta non_existent_file | grep --quiet "non_existent_file"
+./zeta tests/vm/import_missing.zim | grep --quiet "missing_package"
 
 ##############################################################################
 # cplush tests (C++ plush compiler implementation)

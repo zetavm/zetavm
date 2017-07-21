@@ -2,7 +2,7 @@
 
 print("init circular2");
 
-var circular1 = import "tests/plush/circular1.pls";
+var circular1 = import "./tests/plush/circular1.pls";
 assert (typeof circular1 == "object");
 
 exports.f2 = function ()

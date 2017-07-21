@@ -1,4 +1,4 @@
-let rt_push := fun (base, val) 
+let rt_push := fun (base, val)
 {
     if (typeof base = "array")
     {
@@ -8,7 +8,7 @@ let rt_push := fun (base, val)
     assert(false, "unhandled type for push, it only accepts arrays");
 };
 
-let rt_get := fun (base, key) 
+let rt_get := fun (base, key)
 {
     if (typeof base = "array")
     {
@@ -24,7 +24,7 @@ let rt_get := fun (base, key)
         {
             return $get_char(base, key);
         }
-        assert(false, "you can access string characters only with integers");        
+        assert(false, "you can access string characters only with integers");
     }
     if (typeof base = "object")
     {
@@ -41,7 +41,7 @@ let rt_get := fun (base, key)
     assert(false, "unhandled type on get, it should be: array, string or object");
 };
 
-let rt_len := fun (base) 
+let rt_len := fun (base)
 {
     if (typeof base = "array")
     {
@@ -54,7 +54,7 @@ let rt_len := fun (base)
     assert(false, "unhandled type in len, it should be: array or string");
 };
 
-let map_helper := fun (f, xs, idx, result) 
+let map_helper := fun (f, xs, idx, result)
 {
     if (idx = len(xs))
     {
@@ -64,7 +64,7 @@ let map_helper := fun (f, xs, idx, result)
     return map_helper(f, xs, idx + 1, result);
 };
 
-let rt_map := fun (f, xs) 
+let rt_map := fun (f, xs)
 {
     let result := $new_array(rt_len(xs));
     return map_helper(f, xs, 0, result);
@@ -143,7 +143,7 @@ let rt_set := fun (base, key, value)
         }
         assert(false, "you can only set properties of objects with strings");
     }
-    assert(false, "unhandled type for set, it should be: array or object");    
+    assert(false, "unhandled type for set, it should be: array or object");
 };
 
 let rt_not := fun (x)
@@ -492,9 +492,9 @@ let rt_has := fun (base, key)
     }
 };
 
-import ("core/io" as io)
+import ("core/io/0" as io)
 
-let rt_print := fun (x) 
+let rt_print := fun (x)
 {
     if (typeof x = "string")
     {

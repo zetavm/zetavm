@@ -481,14 +481,7 @@ Object load(std::string pkgPath)
     {
         //std::cout << "Loading language package" << std::endl;
 
-        auto langPkgVal = import(langPkgName);
-
-        if (!langPkgVal.isObject())
-        {
-            throw RunError("failed to load parser package");
-        }
-
-        auto langPkg = Object(langPkgVal);
+        auto langPkg = import(langPkgName);
 
         if (!langPkg.hasField("parse_input"))
         {
@@ -530,33 +523,6 @@ Object load(std::string pkgPath)
     return pkg;
 }
 
-std::string findPkgPath(std::string pkgName)
-{
-    // If the package name directly maps to a relative path
-    if (fileExists(pkgName))
-    {
-        return pkgName;
-    }
-
-    // Look in the package directory
-    auto pkgPath = PKGS_DIR + pkgName + "/package";
-    if (fileExists(pkgPath))
-    {
-        assert (
-            regex_match(
-                pkgName,
-                std::regex("([a-z0-9]+/)*[0-9]+")
-            ) &&
-            "package with non-canonical name found in packages directory"
-        );
-
-        return pkgPath;
-    }
-
-    // Not found
-    return "";
-}
-
 Value getCorePkg(std::string pkgName)
 {
     // Internal/core packages
@@ -571,26 +537,46 @@ Value getCorePkg(std::string pkgName)
 }
 
 /// Import a package based on its name, and perform caching
-Value import(std::string pkgName)
+Object import(std::string pkgName)
 {
-    // Package names may only contain lowercase identifiers
-    // separated by single forward slashes. A file extension may be present.
-    std::regex ex("([a-z0-9]+/)*[a-z0-9]+.?[a-z0-9]+");
-    if(!regex_match(pkgName, ex))
-    {
-        std::cout << "invalid package name: \"" << pkgName << "\"" << std::endl;
-        return Value::FALSE;
-    }
-
     // If the package is already loaded
     auto itr = pkgCache.find(pkgName);
     if (itr != pkgCache.end())
     {
-        return itr->second;
+        return Object(itr->second);
     }
 
-    // If we can find a package file for this name
-    auto pkgPath = findPkgPath(pkgName);
+    std::string pkgPath = "";
+
+    // If this is a local import
+    if (pkgName.substr(0, 2) == "./")
+    {
+        if (!fileExists(pkgName))
+        {
+            throw ImportError("local package not found \"" + pkgName + "\"");
+        }
+
+        pkgPath = pkgName;
+    }
+
+    // Otherwise, this is a global import
+    else
+    {
+        if (!regex_match(pkgName, std::regex("([a-z0-9]+/)*[0-9]+")))
+        {
+            throw ImportError("invalid global package name \"" + pkgName + "\"");
+        }
+
+        // Look in the package directory
+        auto pkgDirPath = PKGS_DIR + pkgName + "/package";
+
+        if (fileExists(pkgDirPath))
+        {
+            pkgPath = pkgDirPath;
+        }
+    }
+
+    // If a package file was found for the given package name
     if (pkgPath != "")
     {
         // Load the package file
@@ -613,9 +599,9 @@ Value import(std::string pkgName)
     if (corePkg != Value::UNDEF)
     {
         pkgCache[pkgName] = corePkg;
-        return corePkg;
+        return Object(corePkg);
     }
 
     // Package not found
-    return Value::UNDEF;
+    throw ImportError("global package not found \"" + pkgName + "\"");
 }

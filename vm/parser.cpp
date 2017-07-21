@@ -17,8 +17,9 @@ std::string readFile(std::string fileName)
 
     if (!file)
     {
-        fprintf(stderr, "failed to open file \"%s\"\n", fileName.c_str());
-        exit(-1);
+        throw ParseError(
+            "failed to open file \"" + fileName + "\""
+        );
     }
 
     // Get the file size in bytes

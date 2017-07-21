@@ -31,11 +31,16 @@ public:
     size_t getNumParams() const { return numParams; }
 };
 
-/// Find the file path for a package name
-std::string findPkgPath(std::string pkgName);
+class ImportError : public RunError
+{
+public:
+
+    ImportError(std::string msg) : RunError(msg) {}
+    ~ImportError() {}
+};
 
 /// Load a package based on its path
 Object load(std::string pkgPath);
 
 /// Import a package based on its name, and perform caching
-Value import(std::string pkgName);
+Object import(std::string pkgName);
