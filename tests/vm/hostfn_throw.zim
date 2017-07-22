@@ -1,0 +1,38 @@
+#zeta-image
+
+# In this test, we use read_file to open a file we know doesn't exist
+# The read_file host function throws an exception, which causes the
+# interpreter to have to unwind the stack.
+
+main_entry = {
+    instrs: [
+        { op: "push", val: "core/io/0" },
+        { op: "import" },
+        { op: "jump", to: @main_read_file },
+    ]
+};
+
+main_read_file = {
+    instrs: [
+        { op: "push", val: "read_file" },
+        { op: "get_field" },
+        { op: "push", val: "_missing_file_" },
+        { op: "swap" },
+        { op: "call", num_args: 1, ret_to: @main_ret },
+    ]
+};
+
+main_ret = {
+    instrs: [
+        { op: "ret" },
+    ]
+};
+
+main = {
+    name: "main",
+    params: [],
+    num_locals: 1,
+    entry: @main_entry
+};
+
+{ main: @main };

@@ -999,6 +999,102 @@ Value getSrcPos(uint8_t* instrPtr)
     return Value::UNDEF;
 }
 
+/// Implementation of the throw instruction
+void throwExc(
+    uint8_t* throwInstr,
+    Value excVal
+)
+{
+    // Get the current function
+    auto itr = instrMap.find(throwInstr);
+    assert (itr != instrMap.end());
+    auto curFun = itr->second->fun;
+
+    // Until we are done unwinding the stack
+    for (;;)
+    {
+        //std::cout << "Unwinding frame" << std::endl;
+
+        // Get the number of locals in the function
+        static ICache numLocalsIC("num_locals");
+        auto numLocals = numLocalsIC.getInt32(curFun);
+
+        //std::cout << "numLocals=" << numLocals << std::endl;
+
+        // Get the saved stack ptr, frame ptr and return address
+        auto prevStackPtr = framePtr[-(numLocals + 0)];
+        auto prevFramePtr = framePtr[-(numLocals + 1)];
+        auto retAddr      = framePtr[-(numLocals + 2)];
+
+        assert (retAddr.getTag() == TAG_RAWPTR);
+        auto retVer = (BlockVersion*)retAddr.getWord().ptr;
+
+        // If we are at the top level
+        if (retVer == nullptr)
+        {
+            //std::cout << "Uncaught exception" << std::endl;
+
+            std::string errMsg;
+
+            if (excVal.isObject())
+            {
+                auto excObj = Object(excVal);
+
+                if (excObj.hasField("src_pos"))
+                {
+                    auto srcPosVal = excObj.getField("src_pos");
+                    errMsg += posToString(srcPosVal) + " - ";
+                }
+
+                if (excObj.hasField("msg"))
+                {
+                    auto errMsgVal = excObj.getField("msg");
+                    errMsg += errMsgVal.toString();
+                }
+                else
+                {
+                    errMsg += "uncaught user exception object";
+                }
+            }
+            else
+            {
+                errMsg = excVal.toString();
+            }
+
+            throw RunError(errMsg);
+        }
+
+        // Find the info associated with the return address
+        assert (retAddrMap.find(retVer) != retAddrMap.end());
+        auto retEntry = retAddrMap[retVer];
+
+        // Get the function associated with the return address
+        curFun = retEntry.retVer->fun;
+
+        // Update the stack and frame pointer
+        stackPtr = (Value*)prevStackPtr.getWord().ptr;
+        framePtr = (Value*)prevFramePtr.getWord().ptr;
+
+        // If there is an exception handler
+        if (retEntry.excVer)
+        {
+            //std::cout << "Found exception handler" << std::endl;
+
+            // Push the exception value on the stack
+            pushVal(excVal);
+
+            // Compile exception handler if needed
+            if (!retEntry.excVer->startPtr)
+                compile(retEntry.excVer);
+
+            instrPtr = retEntry.excVer->startPtr;
+
+            // Done unwinding the stack
+            break;
+        }
+    }
+}
+
 void checkArgCount(
     uint8_t* instrPtr,
     size_t numParams,
@@ -1115,30 +1211,54 @@ __attribute__((always_inline)) inline void hostCall(
     // Pointer to the first argument
     auto args = stackPtr + numArgs - 1;
 
+    // Compute the stack pointer to restore after the call
+    auto prevStackPtr = stackPtr + numArgs;
+
+    // Save the current frame pointer
+    auto prevFramePtr = framePtr;
+
+    pushVal(Value((refptr)prevStackPtr, TAG_RAWPTR));
+    pushVal(Value((refptr)prevFramePtr, TAG_RAWPTR));
+    pushVal(Value((refptr)retVer, TAG_RAWPTR));
+
     Value retVal;
 
-    // Call the host function
-    switch (numArgs)
+    try
     {
-        case 0:
-        retVal = hostFn->call0();
-        break;
+        // Call the host function
+        switch (numArgs)
+        {
+            case 0:
+            retVal = hostFn->call0();
+            break;
 
-        case 1:
-        retVal = hostFn->call1(args[0]);
-        break;
+            case 1:
+            retVal = hostFn->call1(args[0]);
+            break;
 
-        case 2:
-        retVal = hostFn->call2(args[0], args[-1]);
-        break;
+            case 2:
+            retVal = hostFn->call2(args[0], args[-1]);
+            break;
 
-        case 3:
-        retVal = hostFn->call3(args[0], args[-1], args[-2]);
-        break;
+            case 3:
+            retVal = hostFn->call3(args[0], args[-1], args[-2]);
+            break;
 
-        default:
-        assert (false);
+            default:
+            assert (false);
+        }
     }
+
+    catch (RunError err)
+    {
+        auto excVal = Object::newObject();
+        auto errStr = String(err.toString());
+        excVal.setField("msg", errStr);
+        throwExc(callInstr, excVal);
+    }
+
+    // Pop the return address, stack and frame pointers
+    stackPtr += 3;
 
     // Pop the arguments from the stack
     stackPtr += numArgs;
@@ -1150,102 +1270,6 @@ __attribute__((always_inline)) inline void hostCall(
         compile(retVer);
 
     instrPtr = retVer->startPtr;
-}
-
-/// Implementation of the throw instruction
-void throwExc(
-    uint8_t* throwInstr,
-    Value excVal
-)
-{
-    // Get the current function
-    auto itr = instrMap.find(throwInstr);
-    assert (itr != instrMap.end());
-    auto curFun = itr->second->fun;
-
-    // Until we are done unwinding the stack
-    for (;;)
-    {
-        //std::cout << "Unwinding frame" << std::endl;
-
-        // Get the number of locals in the function
-        static ICache numLocalsIC("num_locals");
-        auto numLocals = numLocalsIC.getInt32(curFun);
-
-        //std::cout << "numLocals=" << numLocals << std::endl;
-
-        // Get the saved stack ptr, frame ptr and return address
-        auto prevStackPtr = framePtr[-(numLocals + 0)];
-        auto prevFramePtr = framePtr[-(numLocals + 1)];
-        auto retAddr      = framePtr[-(numLocals + 2)];
-
-        assert (retAddr.getTag() == TAG_RAWPTR);
-        auto retVer = (BlockVersion*)retAddr.getWord().ptr;
-
-        // If we are at the top level
-        if (retVer == nullptr)
-        {
-            //std::cout << "Uncaught exception" << std::endl;
-
-            std::string errMsg;
-
-            if (excVal.isObject())
-            {
-                auto excObj = Object(excVal);
-
-                if (excObj.hasField("src_pos"))
-                {
-                    auto srcPosVal = excObj.getField("src_pos");
-                    errMsg += posToString(srcPosVal) + " - ";
-                }
-
-                if (excObj.hasField("msg"))
-                {
-                    auto errMsgVal = excObj.getField("msg");
-                    errMsg += errMsgVal.toString();
-                }
-                else
-                {
-                    errMsg += "uncaught user exception object";
-                }
-            }
-            else
-            {
-                errMsg = excVal.toString();
-            }
-
-            throw RunError(errMsg);
-        }
-
-        // Find the info associated with the return address
-        assert (retAddrMap.find(retVer) != retAddrMap.end());
-        auto retEntry = retAddrMap[retVer];
-
-        // Get the function associated with the return address
-        curFun = retEntry.retVer->fun;
-
-        // Update the stack and frame pointer
-        stackPtr = (Value*)prevStackPtr.getWord().ptr;
-        framePtr = (Value*)prevFramePtr.getWord().ptr;
-
-        // If there is an exception handler
-        if (retEntry.excVer)
-        {
-            //std::cout << "Found exception handler" << std::endl;
-
-            // Push the exception value on the stack
-            pushVal(excVal);
-
-            // Compile exception handler if needed
-            if (!retEntry.excVer->startPtr)
-                compile(retEntry.excVer);
-
-            instrPtr = retEntry.excVer->startPtr;
-
-            // Done unwinding the stack
-            break;
-        }
-    }
 }
 
 /// Start/continue execution beginning at a current instruction

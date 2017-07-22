@@ -21,6 +21,9 @@ set -x
 ./zeta non_existent_file | grep --quiet "non_existent_file"
 ./zeta tests/vm/import_missing.zim | grep --quiet "missing_package"
 
+# Check that exceptions work properly with host functions
+./zeta tests/vm/hostfn_throw.zim | grep --quiet "missing_file"
+
 ##############################################################################
 # cplush tests (C++ plush compiler implementation)
 ##############################################################################

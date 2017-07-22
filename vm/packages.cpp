@@ -104,8 +104,7 @@ namespace core_io_0
 
         if (!file)
         {
-            printf("failed to open file\n");
-            return Value::FALSE;
+            throw RunError("failed to open file \"" + nameStr + "\"");
         }
 
         // Get the file size in bytes
