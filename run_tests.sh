@@ -23,6 +23,7 @@ set -x
 
 # Check that exceptions work properly with host functions
 ./zeta tests/vm/hostfn_throw.zim | grep --quiet "missing_file"
+./zeta tests/vm/hostfn_catch_exc.zim | grep --quiet "caught hostfn exc"
 
 ##############################################################################
 # cplush tests (C++ plush compiler implementation)

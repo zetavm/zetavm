@@ -1211,16 +1211,6 @@ __attribute__((always_inline)) inline void hostCall(
     // Pointer to the first argument
     auto args = stackPtr + numArgs - 1;
 
-    // Compute the stack pointer to restore after the call
-    auto prevStackPtr = stackPtr + numArgs;
-
-    // Save the current frame pointer
-    auto prevFramePtr = framePtr;
-
-    pushVal(Value((refptr)prevStackPtr, TAG_RAWPTR));
-    pushVal(Value((refptr)prevFramePtr, TAG_RAWPTR));
-    pushVal(Value((refptr)retVer, TAG_RAWPTR));
-
     Value retVal;
 
     try
@@ -1251,14 +1241,36 @@ __attribute__((always_inline)) inline void hostCall(
 
     catch (RunError err)
     {
+        // Pop the arguments from the stack
+        stackPtr += numArgs;
+
+        // Create an exception object
         auto excVal = Object::newObject();
         auto errStr = String(err.toString());
         excVal.setField("msg", errStr);
-        throwExc(callInstr, excVal);
-    }
 
-    // Pop the return address, stack and frame pointers
-    stackPtr += 3;
+        auto retEntry = retAddrMap[retVer];
+
+        // If there is an exception handler (throw_to field)
+        if (retEntry.excVer)
+        {
+            // Push the exception value on the stack
+            pushVal(excVal);
+
+            // Compile exception handler if needed
+            if (!retEntry.excVer->startPtr)
+                compile(retEntry.excVer);
+
+            instrPtr = retEntry.excVer->startPtr;
+        }
+        else
+        {
+            // Unwind the interpreter stack
+            throwExc(callInstr, excVal);
+        }
+
+        return;
+    }
 
     // Pop the arguments from the stack
     stackPtr += numArgs;

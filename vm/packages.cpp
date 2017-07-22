@@ -145,8 +145,7 @@ namespace core_io_0
 
         if (!file)
         {
-            printf("failed to open file\n");
-            return Value::FALSE;
+            throw RunError("failed to open file \"" + nameStr + "\"");
         }
 
         auto dataStr = String(data);
