@@ -1,0 +1,20 @@
+#zeta-image
+
+# Regression test, returning with values leftover on the stack.
+# This used to cause a segmentation fault
+
+block_0 = {
+  instrs: [
+    { op:'push', val:1 },
+    { op:'push', val:0 },
+    { op:'ret' },
+  ]
+};
+
+fun_1 = {
+  entry:@block_0,
+  params: [],
+  num_locals:1,
+};
+
+{ main:@fun_1 };
