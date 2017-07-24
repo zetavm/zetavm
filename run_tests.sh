@@ -25,6 +25,10 @@ set -x
 ./zeta tests/vm/hostfn_throw.zim | grep --quiet "missing_file"
 ./zeta tests/vm/hostfn_catch_exc.zim | grep --quiet "caught hostfn exc"
 
+# Check that a sensible error message is produced if
+# temporaries are left on the stack when returning
+./zeta tests/vm/regress_ret_stack.zim | grep --quiet "stack"
+
 ##############################################################################
 # cplush tests (C++ plush compiler implementation)
 ##############################################################################
