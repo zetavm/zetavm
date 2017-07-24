@@ -413,7 +413,17 @@ BlockVersion* getBlockVersion(
         for (auto version : versions)
         {
             if (version->fun != fun)
+            {
                 continue;
+            }
+
+            if (version->numTmps != numTmps)
+            {
+                throw RunError(
+                    "a basic block must always receive the same number of "
+                    "values on the temporary stack at its entry"
+                );
+            }
 
             return version;
         }
