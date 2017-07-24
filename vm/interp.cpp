@@ -188,12 +188,16 @@ public:
     /// Associated block
     Object block;
 
+    /// Size of the temp stack at the beginning of this version
+    uint16_t numTmps;
+
     /// Code generation context at block entry
     //CodeGenCtx ctx;
 
-    BlockVersion(Object fun, Object block)
+    BlockVersion(Object fun, Object block, uint16_t numTmps)
     : fun(fun),
-      block(block)
+      block(block),
+      numTmps(numTmps)
     {
     }
 };
@@ -388,12 +392,14 @@ void initInterp()
 /// until compiled
 BlockVersion* getBlockVersion(
     Object fun,
-    Object block
+    Object block,
+    uint16_t numTmps
 )
 {
     auto blockPtr = (refptr)block;
     auto versionItr = versionMap.find((refptr)block);
 
+    // If there are no existing versions of this block
     if (versionItr == versionMap.end())
     {
         versionMap[blockPtr] = VersionList();
@@ -402,16 +408,22 @@ BlockVersion* getBlockVersion(
     {
         auto versions = versionItr->second;
         assert (versions.size() > 0);
+
+        // For each version of this block
         for (auto version : versions)
         {
-            if (version->fun == fun)
-                return version;
+            if (version->fun != fun)
+                continue;
+
+            return version;
         }
     }
 
+    // Create a new version and add it to the list
     auto& versionList = versionMap[blockPtr];
-    auto newVersion = new BlockVersion(fun, block);
+    auto newVersion = new BlockVersion(fun, block, numTmps);
     versionList.push_back(newVersion);
+
     return newVersion;
 }
 
@@ -433,6 +445,9 @@ void compile(BlockVersion* version)
     // Mark the block start
     version->startPtr = codeHeapAlloc;
 
+    // Get the size of the temp stack at the beginning of this version
+    uint16_t numTmps = version->numTmps;
+
     // For each instruction
     for (size_t i = 0; i < instrs.length(); ++i)
     {
@@ -443,13 +458,15 @@ void compile(BlockVersion* version)
         static ICache opIC("op");
         auto op = (std::string)opIC.getStr(instr);
 
-        // std::cout << "op: " << op << std::endl;
+        //std::cout << "op: " << op << std::endl;
+        //std::cout << "  numTmps=" << numTmps << std::endl;
 
         // Store a pointer to the current instruction
         auto instrPtr = codeHeapAlloc;
 
         if (op == "push")
         {
+            numTmps += 1;
             static ICache valIC("val");
             auto val = valIC.getField(instr);
             writeCode(PUSH);
@@ -459,12 +476,14 @@ void compile(BlockVersion* version)
 
         if (op == "pop")
         {
+            numTmps -= 1;
             writeCode(POP);
             continue;
         }
 
         if (op == "dup")
         {
+            numTmps += 1;
             static ICache idxIC("idx");
             auto idx = (uint16_t)idxIC.getInt32(instr);
             writeCode(DUP);
@@ -480,6 +499,7 @@ void compile(BlockVersion* version)
 
         if (op == "get_local")
         {
+            numTmps += 1;
             static ICache idxIC("idx");
             auto idx = (uint16_t)idxIC.getInt32(instr);
             writeCode(GET_LOCAL);
@@ -489,6 +509,7 @@ void compile(BlockVersion* version)
 
         if (op == "set_local")
         {
+            numTmps -= 1;
             static ICache idxIC("idx");
             auto idx = (uint16_t)idxIC.getInt32(instr);
             writeCode(SET_LOCAL);
@@ -502,66 +523,77 @@ void compile(BlockVersion* version)
 
         if (op == "add_i32")
         {
+            numTmps -= 1;
             writeCode(ADD_I32);
             continue;
         }
 
         if (op == "sub_i32")
         {
+            numTmps -= 1;
             writeCode(SUB_I32);
             continue;
         }
 
         if (op == "mul_i32")
         {
+            numTmps -= 1;
             writeCode(MUL_I32);
             continue;
         }
 
         if (op == "div_i32")
         {
+            numTmps -= 1;
             writeCode(DIV_I32);
             continue;
         }
 
         if (op == "mod_i32")
         {
+            numTmps -= 1;
             writeCode(MOD_I32);
             continue;
         }
 
         if (op == "shl_i32")
         {
+            numTmps -= 1;
             writeCode(SHL_I32);
             continue;
         }
 
         if (op == "shr_i32")
         {
+            numTmps -= 1;
             writeCode(SHR_I32);
             continue;
         }
 
         if (op == "ushr_i32")
         {
+            numTmps -= 1;
             writeCode(USHR_I32);
             continue;
         }
 
         if (op == "and_i32")
         {
+            numTmps -= 1;
             writeCode(AND_I32);
             continue;
         }
 
         if (op == "or_i32")
         {
+            numTmps -= 1;
             writeCode(OR_I32);
             continue;
         }
 
         if (op == "xor_i32")
         {
+            numTmps -= 1;
             writeCode(XOR_I32);
             continue;
         }
@@ -574,30 +606,35 @@ void compile(BlockVersion* version)
 
         if (op == "lt_i32")
         {
+            numTmps -= 1;
             writeCode(LT_I32);
             continue;
         }
 
         if (op == "le_i32")
         {
+            numTmps -= 1;
             writeCode(LE_I32);
             continue;
         }
 
         if (op == "gt_i32")
         {
+            numTmps -= 1;
             writeCode(GT_I32);
             continue;
         }
 
         if (op == "ge_i32")
         {
+            numTmps -= 1;
             writeCode(GE_I32);
             continue;
         }
 
         if (op == "eq_i32")
         {
+            numTmps -= 1;
             writeCode(EQ_I32);
             continue;
         }
@@ -608,72 +645,84 @@ void compile(BlockVersion* version)
 
         if (op == "add_f32")
         {
+            numTmps -= 1;
             writeCode(ADD_F32);
             continue;
         }
 
         if (op == "sub_f32")
         {
+            numTmps -= 1;
             writeCode(SUB_F32);
             continue;
         }
 
         if (op == "mul_f32")
         {
+            numTmps -= 1;
             writeCode(MUL_F32);
             continue;
         }
 
         if (op == "div_f32")
         {
+            numTmps -= 1;
             writeCode(DIV_F32);
             continue;
         }
 
         if (op == "lt_f32")
         {
+            numTmps -= 1;
             writeCode(LT_F32);
             continue;
         }
 
         if (op == "le_f32")
         {
+            numTmps -= 1;
             writeCode(LE_F32);
             continue;
         }
 
         if (op == "gt_f32")
         {
+            numTmps -= 1;
             writeCode(GT_F32);
             continue;
         }
 
         if (op == "ge_f32")
         {
+            numTmps -= 1;
             writeCode(GE_F32);
             continue;
         }
 
         if (op == "eq_f32")
         {
+            numTmps -= 1;
             writeCode(EQ_F32);
             continue;
         }
 
         if (op == "sin_f32")
         {
+            numTmps += 0;
             writeCode(SIN_F32);
             continue;
         }
 
         if (op == "cos_f32")
         {
+            numTmps += 0;
             writeCode(COS_F32);
             continue;
         }
 
         if (op == "sqrt_f32")
         {
+            numTmps += 0;
             writeCode(SQRT_F32);
             continue;
         }
@@ -718,12 +767,14 @@ void compile(BlockVersion* version)
 
         if (op == "eq_bool")
         {
+            numTmps -= 1;
             writeCode(EQ_BOOL);
             continue;
         }
 
         if (op == "has_tag")
         {
+            numTmps += 0;
             static ICache tagIC("tag");
             auto tagStr = (std::string)tagIC.getStr(instr);
             auto tag = strToTag(tagStr);
@@ -735,6 +786,7 @@ void compile(BlockVersion* version)
 
         if (op == "get_tag")
         {
+            numTmps += 0;
             writeCode(GET_TAG);
             continue;
         }
@@ -745,36 +797,42 @@ void compile(BlockVersion* version)
 
         if (op == "str_len")
         {
+            numTmps += 0;
             writeCode(STR_LEN);
             continue;
         }
 
         if (op == "get_char")
         {
+            numTmps -= 1;
             writeCode(GET_CHAR);
             continue;
         }
 
         if (op == "get_char_code")
         {
+            numTmps -= 1;
             writeCode(GET_CHAR_CODE);
             continue;
         }
 
         if (op == "char_to_str")
         {
+            numTmps += 0;
             writeCode(CHAR_TO_STR);
             continue;
         }
 
         if (op == "str_cat")
         {
+            numTmps -= 1;
             writeCode(STR_CAT);
             continue;
         }
 
         if (op == "eq_str")
         {
+            numTmps -= 1;
             writeCode(EQ_STR);
             continue;
         }
@@ -785,24 +843,29 @@ void compile(BlockVersion* version)
 
         if (op == "new_object")
         {
+            numTmps += 0;
             writeCode(NEW_OBJECT);
             continue;
         }
 
         if (op == "has_field")
         {
+            numTmps -= 1;
             writeCode(HAS_FIELD);
             continue;
         }
 
         if (op == "set_field")
         {
+            numTmps -= 3;
             writeCode(SET_FIELD);
             continue;
         }
 
         if (op == "get_field")
         {
+            numTmps -= 1;
+
             writeCode(GET_FIELD);
 
             // Cached property slot index
@@ -813,7 +876,16 @@ void compile(BlockVersion* version)
 
         if (op == "get_field_list")
         {
+            numTmps += 0;
+
             writeCode(GET_FIELD_LIST);
+            continue;
+        }
+
+        if (op == "eq_obj")
+        {
+            numTmps -= 1;
+            writeCode(EQ_OBJ);
             continue;
         }
 
@@ -823,37 +895,36 @@ void compile(BlockVersion* version)
 
         if (op == "new_array")
         {
+            numTmps += 0;
             writeCode(NEW_ARRAY);
             continue;
         }
 
         if (op == "array_len")
         {
+            numTmps += 0;
             writeCode(ARRAY_LEN);
             continue;
         }
 
         if (op == "array_push")
         {
+            numTmps -= 2;
             writeCode(ARRAY_PUSH);
             continue;
         }
 
         if (op == "set_elem")
         {
+            numTmps -= 3;
             writeCode(SET_ELEM);
             continue;
         }
 
         if (op == "get_elem")
         {
+            numTmps -= 1;
             writeCode(GET_ELEM);
-            continue;
-        }
-
-        if (op == "eq_obj")
-        {
-            writeCode(EQ_OBJ);
             continue;
         }
 
@@ -863,9 +934,11 @@ void compile(BlockVersion* version)
 
         if (op == "jump")
         {
+            numTmps += 0;
+
             static ICache toIC("to");
             auto dstBB = toIC.getObj(instr);
-            auto dstVer = getBlockVersion(version->fun, dstBB);
+            auto dstVer = getBlockVersion(version->fun, dstBB, numTmps);
 
             writeCode(JUMP_STUB);
             writeCode(dstVer);
@@ -874,13 +947,14 @@ void compile(BlockVersion* version)
 
         if (op == "if_true")
         {
+            numTmps -= 1;
+
             static ICache thenIC("then");
             static ICache elseIC("else");
             auto thenBB = thenIC.getObj(instr);
             auto elseBB = elseIC.getObj(instr);
-
-            auto thenVer = getBlockVersion(version->fun, thenBB);
-            auto elseVer = getBlockVersion(version->fun, elseBB);
+            auto thenVer = getBlockVersion(version->fun, thenBB, numTmps);
+            auto elseVer = getBlockVersion(version->fun, elseBB, numTmps);
 
             writeCode(IF_TRUE);
             writeCode(thenVer);
@@ -897,10 +971,14 @@ void compile(BlockVersion* version)
             static ICache numArgsCache("num_args");
             auto numArgs = (int16_t)numArgsCache.getInt32(instr);
 
+            // Arguments and the function object are popped off the stack,
+            // a return value or exception is pushed on the stack
+            numTmps -= numArgs;
+
             // Get a version for the call continuation block
             static ICache retToCache("ret_to");
             auto retToBB = retToCache.getObj(instr);
-            auto retVer = getBlockVersion(version->fun, retToBB);
+            auto retVer = getBlockVersion(version->fun, retToBB, numTmps);
 
             RetEntry retEntry;
             retEntry.retVer = retVer;
@@ -910,7 +988,7 @@ void compile(BlockVersion* version)
                 // Get a version for the exception catch block
                 static ICache throwIC("throw_to");
                 auto throwBB = throwIC.getObj(instr);
-                auto throwVer = getBlockVersion(version->fun, throwBB);
+                auto throwVer = getBlockVersion(version->fun, throwBB, numTmps);
                 retEntry.excVer = throwVer;
             }
 
@@ -929,12 +1007,26 @@ void compile(BlockVersion* version)
 
         if (op == "ret")
         {
+            numTmps -= 1;
+
+            // TODO: should report source position (src_pos)
+            // of function if this check fails
+            if (numTmps != 0)
+            {
+                throw RunError(
+                    "there must be no values left on the temporary stack "
+                    "when returning from a function"
+                );
+            }
+
             writeCode(RET);
             continue;
         }
 
         if (op == "throw")
         {
+            numTmps -= 1;
+
             // Store a mapping of this instruction to the block version
             // Needed to retrieve the identity of the current function
             instrMap[instrPtr] = version;
@@ -945,12 +1037,16 @@ void compile(BlockVersion* version)
 
         if (op == "import")
         {
+            numTmps += 0;
+
             writeCode(IMPORT);
             continue;
         }
 
         if (op == "abort")
         {
+            numTmps -= 1;
+
             // Store a mapping of this instruction to the block version
             // Needed to retrieve the source code position
             instrMap[instrPtr] = version;
@@ -1136,7 +1232,7 @@ __attribute__((always_inline)) inline void funCall(
         // Get a version for the function entry block
         static ICache entryIC("entry");
         auto entryBB = entryIC.getObj(fun);
-        auto entryVer = getBlockVersion(fun, entryBB);
+        auto entryVer = getBlockVersion(fun, entryBB, 0);
 
         if (!entryVer->startPtr)
         {
@@ -2168,7 +2264,7 @@ Value callFun(Object fun, ValueVec args)
     // Get the function entry block
     static ICache entryIC("entry");
     auto entryBlock = entryIC.getObj(fun);
-    auto entryVer = getBlockVersion(fun, entryBlock);
+    auto entryVer = getBlockVersion(fun, entryBlock, 0);
 
     // Generate code for the entry block version
     compile(entryVer);
