@@ -39,6 +39,9 @@ public:
     ~ImportError() {}
 };
 
+/// User-facing import function, used to implement the import instruction
+extern HostFn importFn;
+
 /// Load a package based on its path
 Object load(std::string pkgPath);
 

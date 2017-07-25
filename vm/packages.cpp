@@ -460,6 +460,21 @@ namespace core_audio_0
 }
 
 //============================================================================
+// core/vm/0 package
+//============================================================================
+
+namespace core_vm_0
+{
+    Value import(Value pkgName)
+    {
+        assert (pkgName.isString());
+        return ::import(std::string(pkgName));
+    }
+};
+
+HostFn importFn("import", 1, (void*)core_vm_0::import);
+
+//============================================================================
 
 // Cache of loaded packages
 std::unordered_map<std::string, Value> pkgCache;
