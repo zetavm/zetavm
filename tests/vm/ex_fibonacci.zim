@@ -63,7 +63,12 @@ main_entry = {
     instrs: [
         # Import the "api/io" package
         { op: "push", val:"core/io/0" },
-        { op: "import" },
+        { op: "import", ret_to: @main_call_fib },
+    ]
+};
+main_call_fib = {
+    instrs: [
+        # Duplicate the core/io package
         { op: "dup", idx:0 },
 
         # Get the print_int32 function and store it in local variable 0

@@ -308,7 +308,13 @@ std::string genProgram(std::unique_ptr<Program> program)
     // Import the base runtime.
     ctx.addStr("op:'push', val:@global_obj");
     ctx.addStr("op:'push', val:'./scheme/runtime.zim'");
-    ctx.addStr("op:'import'");
+    auto contBlock = new Block();
+    ctx.addBranch(
+        "import",
+        "ret_to", contBlock,
+        "", nullptr
+    );
+    ctx.merge(contBlock);
 
     // Directly import the base runtime functions into the
     // global namespace.

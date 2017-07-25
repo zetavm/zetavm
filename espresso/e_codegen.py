@@ -447,12 +447,32 @@ def gen_stmt(ctx, stmt):
                 ctx.function.register_global_decl(alias)
                 ctx.add_op("op:'push', val:@global_obj")
                 ctx.add_op("op:'push', val:'" + alias + "'")
+
                 ctx.add_op("op:'push', val:'" + actual_path + "'")
-                ctx.add_op("op:'import'")
+                cont_block = Block()
+                ctx.add_branch(
+                    "import",
+                    "ret_to",
+                    cont_block,
+                    None,
+                    None
+                )
+                ctx.merge(cont_block)
+
                 ctx.add_op("op:'set_field'")
                 return
+
             ctx.add_op("op:'push', val:'" + actual_path + "'")
-            ctx.add_op("op:'import'")
+            cont_block = Block()
+            ctx.add_branch(
+                "import",
+                "ret_to",
+                cont_block,
+                None,
+                None
+            )
+            ctx.merge(cont_block)
+
             local_no = ctx.function.register_local_decl(alias)
             ctx.add_op("op:'set_local', idx:" + local_no)
     elif isinstance(stmt, ExportStmt):
@@ -467,7 +487,5 @@ def gen_stmt(ctx, stmt):
             ctx.add_op("op:'push', val:'" + name + "'")
             gen_expr(ctx, name)
             ctx.add_op("op:'set_field'")
-    else: 
+    else:
         raise EspressoRuntimeError("wat stmt")
-
-

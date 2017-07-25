@@ -1072,6 +1072,9 @@ var parseAtom = function (input)
     // Identifier
     if (isAlnum(input:peekCh()))
     {
+        input:eatWS();
+        var srcPos = input:getPos();
+
         // Function expression
         if (input:match("function"))
         {
@@ -1085,7 +1088,10 @@ var parseAtom = function (input)
             if (!('val' in nameExpr))
                 parseError(input, "invalid package name expression");
 
-            return ImportExpr::{ pkgName:nameExpr.val };
+            return ImportExpr::{
+                pkgName: nameExpr.val,
+                srcPos: srcPos
+            };
         }
 
         // Identifier, variable reference
@@ -2238,7 +2244,22 @@ var genExpr = function (ctx, expr)
     if (expr instanceof ImportExpr)
     {
         ctx:addPush(expr.pkgName);
-        ctx:addOp("import");
+
+        var contBlock = Block.new();
+
+        var instr = {
+            op: "import",
+            src_pos: expr.srcPos,
+            ret_to: contBlock
+        };
+
+        if (ctx.catchBlock != false)
+            instr.throw_to = ctx.catchBlock;
+
+        ctx:addInstr(instr);
+
+        ctx:merge(contBlock);
+
         return;
     }
 

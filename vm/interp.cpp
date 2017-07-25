@@ -96,7 +96,7 @@ enum Opcode : uint16_t
     RET,
     THROW,
 
-    IMPORT,
+    // Abort instruction
     ABORT
 };
 
@@ -437,6 +437,48 @@ BlockVersion* getBlockVersion(
     return newVersion;
 }
 
+void genCall(
+    BlockVersion* version,
+    Object callInstr,
+    size_t numArgs,
+    uint16_t& numTmps
+)
+{
+    // Store a mapping of this instruction to the block version
+    instrMap[codeHeapAlloc] = version;
+
+    // Arguments and the function object are popped off the stack,
+    // a return value or exception is pushed on the stack
+    numTmps -= numArgs;
+
+    // Get a version for the call continuation block
+    static ICache retToCache("ret_to");
+    auto retToBB = retToCache.getObj(callInstr);
+    auto retVer = getBlockVersion(version->fun, retToBB, numTmps);
+
+    RetEntry retEntry;
+    retEntry.retVer = retVer;
+
+    if (callInstr.hasField("throw_to"))
+    {
+        // Get a version for the exception catch block
+        static ICache throwIC("throw_to");
+        auto throwBB = throwIC.getObj(callInstr);
+        auto throwVer = getBlockVersion(version->fun, throwBB, numTmps);
+        retEntry.excVer = throwVer;
+    }
+
+    // Create an entry for the return address
+    retAddrMap[retVer] = retEntry;
+
+    writeCode(CALL);
+
+    CallInfo callInfo;
+    callInfo.numArgs = numArgs;
+    callInfo.retVer = retVer;
+    writeCode(callInfo);
+}
+
 void compile(BlockVersion* version)
 {
     //std::cout << "compiling version" << std::endl;
@@ -470,9 +512,6 @@ void compile(BlockVersion* version)
 
         //std::cout << "op: " << op << std::endl;
         //std::cout << "  numTmps=" << numTmps << std::endl;
-
-        // Store a pointer to the current instruction
-        auto instrPtr = codeHeapAlloc;
 
         if (op == "push")
         {
@@ -975,42 +1014,15 @@ void compile(BlockVersion* version)
 
         if (op == "call")
         {
-            // Store a mapping of this instruction to the block version
-            instrMap[instrPtr] = version;
-
             static ICache numArgsCache("num_args");
             auto numArgs = (int16_t)numArgsCache.getInt32(instr);
 
-            // Arguments and the function object are popped off the stack,
-            // a return value or exception is pushed on the stack
-            numTmps -= numArgs;
-
-            // Get a version for the call continuation block
-            static ICache retToCache("ret_to");
-            auto retToBB = retToCache.getObj(instr);
-            auto retVer = getBlockVersion(version->fun, retToBB, numTmps);
-
-            RetEntry retEntry;
-            retEntry.retVer = retVer;
-
-            if (instr.hasField("throw_to"))
-            {
-                // Get a version for the exception catch block
-                static ICache throwIC("throw_to");
-                auto throwBB = throwIC.getObj(instr);
-                auto throwVer = getBlockVersion(version->fun, throwBB, numTmps);
-                retEntry.excVer = throwVer;
-            }
-
-            // Create an entry for the return address
-            retAddrMap[retVer] = retEntry;
-
-            writeCode(CALL);
-
-            CallInfo callInfo;
-            callInfo.numArgs = numArgs;
-            callInfo.retVer = retVer;
-            writeCode(callInfo);
+            genCall(
+                version,
+                instr,
+                numArgs,
+                numTmps
+            );
 
             continue;
         }
@@ -1039,7 +1051,7 @@ void compile(BlockVersion* version)
 
             // Store a mapping of this instruction to the block version
             // Needed to retrieve the identity of the current function
-            instrMap[instrPtr] = version;
+            instrMap[codeHeapAlloc] = version;
 
             writeCode(THROW);
             continue;
@@ -1047,9 +1059,19 @@ void compile(BlockVersion* version)
 
         if (op == "import")
         {
-            numTmps += 0;
+            // Push the import function on the stack
+            numTmps += 1;
+            writeCode(PUSH);
+            writeCode(Value((refptr)&importFn, TAG_HOSTFN));
 
-            writeCode(IMPORT);
+            // Call the import function
+            genCall(
+                version,
+                instr,
+                1,
+                numTmps
+            );
+
             continue;
         }
 
@@ -1059,7 +1081,7 @@ void compile(BlockVersion* version)
 
             // Store a mapping of this instruction to the block version
             // Needed to retrieve the source code position
-            instrMap[instrPtr] = version;
+            instrMap[codeHeapAlloc] = version;
 
             writeCode(ABORT);
             continue;
@@ -2170,14 +2192,6 @@ Value execCode()
                 // Pop the exception value
                 auto excVal = popVal();
                 throwExc((uint8_t*)&op, excVal);
-            }
-            break;
-
-            case IMPORT:
-            {
-                auto pkgName = (std::string)popVal();
-                auto pkg = import(pkgName);
-                pushVal(pkg);
             }
             break;
 

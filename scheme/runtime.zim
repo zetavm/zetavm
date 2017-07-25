@@ -184,7 +184,11 @@ block_0 = {
     { op:'push', val:@global_obj },
     { op:'push', val:'io' },
     { op:'push', val:'core/io/0' },
-    { op:'import' },
+    { op:'import', ret_to: @block_1 },
+  ]
+};
+block_1 = {
+  instrs: [
     { op:'set_field' },
 
     # Export 'write'.

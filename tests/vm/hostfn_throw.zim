@@ -7,8 +7,7 @@
 main_entry = {
     instrs: [
         { op: "push", val: "core/io/0" },
-        { op: "import" },
-        { op: "jump", to: @main_read_file },
+        { op: "import", ret_to: @main_read_file },
     ]
 };
 

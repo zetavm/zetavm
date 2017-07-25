@@ -913,7 +913,17 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
     if (auto importExpr = dynamic_cast<ImportExpr*>(expr))
     {
         ctx.addStr("op:'push', val:'" + importExpr->pkgName + "'");
-        ctx.addOp("import");
+
+        auto contBlock = new Block();
+        ctx.addBranch(
+            "import",
+            "ret_to",
+            contBlock,
+            ctx.catchBlock? "throw_to":"",
+            ctx.catchBlock
+        );
+        ctx.merge(contBlock);
+
         return;
     }
 

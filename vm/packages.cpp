@@ -67,6 +67,40 @@ void setHostFn(
 }
 
 //============================================================================
+// core/vm/0 package
+//============================================================================
+
+namespace core_vm_0
+{
+    Value import(Value pkgName)
+    {
+        assert (pkgName.isString());
+        return ::import(std::string(pkgName));
+    }
+
+    // TODO: parse a string
+    Value parse(Value str)
+    {
+        assert (false);
+    }
+
+    // TODO: serialize data into string form
+    Value serialize(Value val)
+    {
+        assert (false);
+    }
+
+    Value get_pkg()
+    {
+        auto exports = Object::newObject(32);
+        setHostFn(exports, "import"       , 1, (void*)import);
+        return exports;
+    }
+};
+
+HostFn importFn("import", 1, (void*)core_vm_0::import);
+
+//============================================================================
 // core/io/0 package
 //============================================================================
 
@@ -460,21 +494,6 @@ namespace core_audio_0
 }
 
 //============================================================================
-// core/vm/0 package
-//============================================================================
-
-namespace core_vm_0
-{
-    Value import(Value pkgName)
-    {
-        assert (pkgName.isString());
-        return ::import(std::string(pkgName));
-    }
-};
-
-HostFn importFn("import", 1, (void*)core_vm_0::import);
-
-//============================================================================
 
 // Cache of loaded packages
 std::unordered_map<std::string, Value> pkgCache;
@@ -539,6 +558,8 @@ Object load(std::string pkgPath)
 Value getCorePkg(std::string pkgName)
 {
     // Internal/core packages
+    if (pkgName == "core/vm/0")
+        return core_vm_0::get_pkg();
     if (pkgName == "core/io/0")
         return core_io_0::get_pkg();
     if (pkgName == "core/window/0")

@@ -7,14 +7,14 @@
 main_entry = {
     instrs: [
         { op: "push", val: "core/io/0" },
-        { op: "import" },
-        { op: "set_local", idx:1 },
-        { op: "jump", to: @main_read_file },
+        { op: "import", ret_to: @main_read_file },
     ]
 };
 
 main_read_file = {
     instrs: [
+        { op: "set_local", idx:1 },
+
         { op: "push", val: "_missing_file_" },
 
         { op: "get_local", idx: 1 },
