@@ -5,6 +5,7 @@
 #include "util.h"
 #include "packages.h"
 #include "parser.h"
+#include "serialize.h"
 #include "interp.h"
 
 #ifdef HAVE_SDL2

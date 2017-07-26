@@ -25,12 +25,13 @@ clean:
 
 ZETA_BIN=zeta
 
-ZETA_SRCS=  	\
-vm/runtime.cpp 	\
-vm/parser.cpp   \
-vm/interp.cpp   \
-vm/packages.cpp \
-vm/main.cpp     \
+ZETA_SRCS=  		\
+vm/runtime.cpp 		\
+vm/parser.cpp   	\
+vm/serialize.cpp	\
+vm/interp.cpp   	\
+vm/packages.cpp 	\
+vm/main.cpp     	\
 
 zeta: vm/*.cpp vm/*.h
 	$(CXX) $(CXXFLAGS) -o $(ZETA_BIN) $(ZETA_SRCS) $(LDFLAGS)
