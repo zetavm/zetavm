@@ -33,6 +33,9 @@ const size_t HEADER_SIZE = sizeof(intptr_t);
 const size_t HEADER_IDX_NEXT = 15;
 const size_t HEADER_MSK_NEXT = 1 << HEADER_IDX_NEXT;
 
+const size_t HEADER_IDX_MARK = 31;
+const size_t HEADER_MSK_MARK = 1 << HEADER_IDX_MARK;
+
 /// Offset of the next pointer
 const size_t OBJ_OF_NEXT = HEADER_SIZE;
 
@@ -64,7 +67,6 @@ private:
     Tag tag;
 
 public:
-
     static const Value ZERO;
     static const Value ONE;
     static const Value TWO;
@@ -77,7 +79,6 @@ public:
     Value(refptr p, Tag t) : Value(Word(p), t) {}
     Value(Word w, Tag t) : word(w), tag(t) {};
     ~Value() {}
-
     // Static constructors. These are needed because of type ambiguity.
     static Value int32(int32_t v) { return Value(Word((int64_t)v), TAG_INT32); }
     static Value float32(float v) { return Value(Word(v), TAG_FLOAT32); }
@@ -92,6 +93,10 @@ public:
 
     Word getWord() const { return word; }
     Tag getTag() const { return tag; }
+    bool isMarked() const;
+    void setMark();
+    void unsetMark();
+
 
     bool isPointer() const;
 
@@ -142,7 +147,9 @@ class VM
 private:
 
     // TODO: total memory size allocated
-
+    size_t allocated;
+    size_t limit = 30000;
+    Value* head;
     // TODO: dynamically grow pools?
 
     // TODO: pools for sizes up to 32 (words)
@@ -152,11 +159,11 @@ private:
 public:
 
     VM();
-
+    size_t length; // TODO: get rid of this;
     /// Allocate a block of memory on the heap
     Value alloc(uint32_t size, Tag tag);
-
-    size_t allocated() const;
+    void setHead(Value* value) { head = value; }
+    Value* getHead() const { return head; }
 };
 
 /**

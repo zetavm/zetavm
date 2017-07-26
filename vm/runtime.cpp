@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include "runtime.h"
+#include "interp.h"
 
 /// Undefined value constant
 /// Note: zeroed memory is automatically undefined
@@ -70,6 +71,28 @@ bool Value::isPointer() const
     }
 }
 
+bool Value::isMarked() const 
+{ 
+    assert (isPointer());
+    refptr obj = this->word.ptr;
+    auto header = *(uint64_t*)obj;
+    return (header & HEADER_MSK_MARK) == HEADER_MSK_MARK;
+}
+void Value::setMark() 
+{ 
+    assert (isPointer());
+    refptr obj = this->word.ptr;
+    auto header = *(uint64_t*)obj;
+    *(uint64_t*)(obj) = header | HEADER_MSK_MARK;
+}
+void Value::unsetMark()
+{
+    assert (isPointer());
+    refptr obj = this->word.ptr;
+    auto header = *(uint64_t*)obj;
+    *(uint64_t*)(obj) = header & (~HEADER_MSK_MARK);
+}
+
 Value::operator std::string () const
 {
     assert (isString());
@@ -88,10 +111,15 @@ Value VM::alloc(uint32_t size, Tag tag)
 {
     // FIXME: use an alloc pool of some kind
     auto ptr = (refptr)calloc(1, size);
-
-    // Set the tag in the object header
+    // if (allocated >= limit)
+    // {   
+    //     // std::cout << "allocated: " << allocated << std::endl;
+    //     mark();
+    //     limit = allocated * 2;   
+    // } 
+    //Set the tag in the object header
     *(Tag*)ptr = tag;
-
+    allocated += (size_t)size;
     // Wrap the pointer in a tagged value
     return Value(ptr, tag);
 }

@@ -6,6 +6,7 @@
 #include "interp.h"
 #include "packages.h"
 #include <math.h>
+#include <unordered_set>
 
 /// Opcode enumeration
 enum Opcode : uint16_t
@@ -225,6 +226,62 @@ uint8_t* instrPtr = nullptr;
 
 /// Cache of all possible one-character string values
 Value charStrings[256];
+
+void markValues(Value* root)
+{
+    // size_t i = 0;
+    std::vector<refptr> toMark = { (refptr)root };
+    while (!toMark.empty())
+    {
+        // i++;
+        refptr ptr = toMark.back();
+        Tag tag = *(Tag*)ptr;
+        Value root = Value(ptr, tag);
+        toMark.pop_back();
+        if (root.isPointer())
+        {
+            // If this node was previously visited, skip it
+            if (root.isMarked())
+                continue;
+            // Mark the node as visited
+            root.setMark();
+        }
+        if (root.getTag() == TAG_OBJECT)
+        {
+            Object objRoot = (Object)(root);
+            for (auto itr = ObjFieldItr(objRoot); itr.valid(); itr.next())
+            {
+                auto fieldName = itr.get();
+                Value field = objRoot.getField(fieldName);
+                Tag tag = field.getTag();
+                if (tag == TAG_ARRAY || tag == TAG_OBJECT || tag == TAG_STRING)
+                    toMark.push_back((refptr)field);
+            }
+        }
+        else if (root.getTag() == TAG_ARRAY) 
+        {   
+            Array arrRoot = (Array)(root);
+            auto len = arrRoot.length();
+            for(size_t i = 0; i < len; i++)
+            {
+                Value field = arrRoot.getElem(i);
+                Tag tag = field.getTag();
+                if (tag == TAG_ARRAY || tag == TAG_OBJECT || tag == TAG_STRING) 
+                    toMark.push_back((refptr)field);
+            }
+        }
+    }
+    // std::cout << i << std::endl;
+}
+
+void mark() {
+    for(auto ptr = stackPtr; ptr < stackBase; ptr++)
+    {
+        Tag tag = ptr->getTag();
+        if (tag == TAG_ARRAY || tag == TAG_OBJECT || tag == TAG_STRING)
+            markValues(ptr);
+    }
+}
 
 /// Write a value to the code heap
 template <typename T> void writeCode(T val)
