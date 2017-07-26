@@ -81,6 +81,7 @@ set -x
 ./zeta tests/plush/random.pls
 ./zeta tests/plush/throw_exc.pls
 ./zeta tests/plush/throw_exc2.pls
+./zeta tests/plush/catch_import_missing.pls
 
 # Check that source position is reported on errors
 ./zeta tests/plush/assert.pls | grep --quiet "3:1"
