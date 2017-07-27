@@ -79,15 +79,17 @@ namespace core_vm_0
         return ::import(std::string(pkgName));
     }
 
-    // TODO: parse a string
+    /// Parse a string in Zeta image format (ZIM)
     Value parse(Value str)
     {
+        // TODO
         assert (false);
     }
 
-    // TODO: serialize data into string form
+    /// Serialize data into Zeta image format (ZIM), returns a string
     Value serialize(Value val)
     {
+        // TODO
         assert (false);
     }
 
@@ -95,6 +97,8 @@ namespace core_vm_0
     {
         auto exports = Object::newObject(32);
         setHostFn(exports, "import"       , 1, (void*)import);
+        setHostFn(exports, "parse"        , 1, (void*)parse);
+        setHostFn(exports, "serialize"    , 1, (void*)serialize);
         return exports;
     }
 };

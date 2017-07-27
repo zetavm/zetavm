@@ -91,6 +91,12 @@ set -x
 # Check that uncaught exceptions are handled properly
 ./zeta tests/plush/throw_str_uncaught.pls | grep --quiet "foobar"
 
+# Regression: throw during an array indexing expression
+./zeta tests/plush/regress_exc_idx.pls
+
+# Regression: catching host function exceptions
+./zeta tests/plush/regress_exc_var.pls
+
 # Check that the Plush language package is
 # able to parse its own source code
 ./zeta tests/plush/self_parse.pls

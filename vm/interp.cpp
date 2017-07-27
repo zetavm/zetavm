@@ -210,6 +210,9 @@ struct RetEntry
 
     /// Exception/catch block version (may be null)
     BlockVersion* excVer = nullptr;
+
+    /// Temporary stack size before the call instruction
+    uint16_t numTmps;
 };
 
 /// Information stored by call instructions
@@ -451,20 +454,26 @@ void genCall(
     // a return value or exception is pushed on the stack
     numTmps -= numArgs;
 
+    RetEntry retEntry;
+
+    // Store the number of temporaries when the call is performed
+    // Note: this excludes the arguments and the function object
+    assert (numTmps >= 1);
+    retEntry.numTmps = numTmps - 1;
+
     // Get a version for the call continuation block
     static ICache retToCache("ret_to");
     auto retToBB = retToCache.getObj(callInstr);
     auto retVer = getBlockVersion(version->fun, retToBB, numTmps);
-
-    RetEntry retEntry;
     retEntry.retVer = retVer;
 
     if (callInstr.hasField("throw_to"))
     {
         // Get a version for the exception catch block
+        // Note: the catch block expects only one temporary as input
         static ICache throwIC("throw_to");
         auto throwBB = throwIC.getObj(callInstr);
-        auto throwVer = getBlockVersion(version->fun, throwBB, numTmps);
+        auto throwVer = getBlockVersion(version->fun, throwBB, 1);
         retEntry.excVer = throwVer;
     }
 
@@ -1207,6 +1216,11 @@ void throwExc(
         if (retEntry.excVer)
         {
             //std::cout << "Found exception handler" << std::endl;
+            //std::cout << "numTmps=" << retEntry.numTmps << std::endl;
+            //std::cout << "frameSize()=" << frameSize() << std::endl;
+
+            // Clear the temporary stack
+            stackPtr += retEntry.numTmps;
 
             // Push the exception value on the stack
             pushVal(excVal);
@@ -1382,6 +1396,9 @@ __attribute__((always_inline)) inline void hostCall(
         // If there is an exception handler (throw_to field)
         if (retEntry.excVer)
         {
+            // Clear the temporary stack
+            stackPtr += retEntry.numTmps;
+
             // Push the exception value on the stack
             pushVal(excVal);
 
