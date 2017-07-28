@@ -107,12 +107,13 @@ public:
 // Parse the optional language directive at the beginning of a file
 std::string parseLang(Input& input);
 
-// Parse the contents of plain image file
+// Parse the contents of some input object (ZIM format)
 Value parseInput(Input& input);
 
-// Parse a plain image file
+// Parse a plain image file (ZIM format)
 Value parseFile(std::string fileName);
 
+// Parse a string (ZIM format)
 Value parseString(std::string str, std::string srcName);
 
 void testParser();

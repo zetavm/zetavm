@@ -80,17 +80,21 @@ namespace core_vm_0
     }
 
     /// Parse a string in Zeta image format (ZIM)
-    Value parse(Value str)
+    Value parse(Value strVal)
     {
-        // TODO
-        assert (false);
+        if (!strVal.isString())
+            throw RunError("parse function expects string input");
+
+        std::string str = (std::string)strVal;
+        return parseString(str, "string");
     }
 
     /// Serialize data into Zeta image format (ZIM), returns a string
-    Value serialize(Value val)
+    Value serialize(Value val, Value indent)
     {
-        // TODO
-        assert (false);
+        bool indentBool = (indent == Value::TRUE);
+        std::string str = ::serialize(val, indentBool);
+        return String(str);
     }
 
     Value get_pkg()
@@ -98,7 +102,7 @@ namespace core_vm_0
         auto exports = Object::newObject(32);
         setHostFn(exports, "import"       , 1, (void*)import);
         setHostFn(exports, "parse"        , 1, (void*)parse);
-        setHostFn(exports, "serialize"    , 1, (void*)serialize);
+        setHostFn(exports, "serialize"    , 2, (void*)serialize);
         return exports;
     }
 };

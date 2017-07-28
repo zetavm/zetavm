@@ -101,6 +101,9 @@ set -x
 # able to parse its own source code
 ./zeta tests/plush/self_parse.pls
 
+# Image parsing and serialization tests
+./zeta tests/plush/serialize.pls
+
 ##############################################################################
 # cscheme tests
 ##############################################################################
