@@ -63,7 +63,11 @@ main_entry = {
     instrs: [
         # Import the "api/io" package
         { op: "push", val:"core/io/0" },
-        { op: "import" },
+        { op: "import", ret_to: @main_body },
+    ]
+};
+main_body = {
+    instrs: [
         { op: "dup", idx:0 },
 
         { op: "push", val: "print_int32" },
