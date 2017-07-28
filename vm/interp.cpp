@@ -544,18 +544,21 @@ void compile(BlockVersion* version)
             static ICache valIC("val");
             auto val = valIC.getField(instr);
             std::string nextOp = getOp(instrs, i + 1);
+            
             if (nextOp == "add_i32" && val == Value::ONE)
             {
                 i += 1;
                 writeCode(INC_I32);
                 continue;
             }
+            
             if (nextOp == "sub_i32" && val == Value::ONE)
             {
                 i += 1;
                 writeCode(DEC_I32);
                 continue;
             }
+            
             if (nextOp == "get_field")
             {
                 i += 1;
@@ -564,6 +567,7 @@ void compile(BlockVersion* version)
                 writeCode(size_t(0));
                 continue;
             }
+            
             numTmps += 1;
             writeCode(PUSH);
             writeCode(val);
@@ -2028,6 +2032,7 @@ Value execCode()
                 pushVal(val);
             }
             break;
+
             case GET_FIELD_IMM:
             {
                 auto& fieldName = readCode<String>();
