@@ -14,7 +14,7 @@ test: all
 	./run_tests.sh
 
 clean:
-	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log
+	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log plush/*.o zeta/*.o
 
 # Tells make which targets are not files
 .PHONY: all test clean plush-pkg
@@ -33,8 +33,13 @@ vm/interp.cpp   	\
 vm/packages.cpp 	\
 vm/main.cpp     	\
 
-zeta: vm/*.cpp vm/*.h
-	$(CXX) $(CXXFLAGS) -o $(ZETA_BIN) $(ZETA_SRCS) $(LDFLAGS)
+ZETA_OBJECTS= $(ZETA_SRCS:vm/%.cpp=vm/%.o)
+
+vm/%.o: vm/%.cpp vm/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(ZETA_BIN): $(ZETA_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(ZETA_BIN) $(ZETA_OBJECTS) $(LDFLAGS)
 
 ##############################################################################
 # Plush compiler
@@ -47,19 +52,25 @@ plush/parser.cpp  	\
 plush/codegen.cpp 	\
 plush/main.cpp    	\
 
-cplush: plush/*.cpp plush/*.h
-	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_SRCS)
+CPLUSH_OBJECTS= $(CPLUSH_SRCS:plush/%.cpp=plush/%.o)
 
-plush-pkg: plush/parser.pls
+plush/%.o: plush/%.cpp plush/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(CPLUSH_BIN): $(CPLUSH_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_OBJECTS)
+
+# Plush language package
+plush-pkg: $(CPLUSH_BIN) plush/parser.pls
 	mkdir -p packages/lang/plush/0
 	./$(CPLUSH_BIN) plush/parser.pls > packages/lang/plush/0/package
 	./$(CPLUSH_BIN) tests/plush/parser.pls > packages/lang/plush/0/tests
 
 # Plush parser benchmark
-plush-bench:
+plush-bench: $(CPLUSH_BIN)
 	./$(CPLUSH_BIN)  benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
 
-math-pkg: plush/parser.pls
+math-pkg: $(CPLUSH_BIN) plush/parser.pls
 	mkdir -p packages/std/math/0
 	./$(CPLUSH_BIN) plush/math.pls > packages/std/math/0/package
 
@@ -74,5 +85,5 @@ scheme/parser.cpp   \
 scheme/codegen.cpp  \
 scheme/main.cpp     \
 
-cscheme: scheme/*.cpp scheme/*.h
+$(CSCHEME_BIN): scheme/*.cpp scheme/*.h
 	$(CXX) $(CXXFLAGS) -o $(CSCHEME_BIN) $(CSCHEME_SRCS)
