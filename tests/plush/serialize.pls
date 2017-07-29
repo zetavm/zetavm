@@ -4,22 +4,33 @@ var vm = import "core/vm/0";
 
 var roundTrip = function (val)
 {
-    var s1 = vm.serialize(val, false);
-    print(s1);
+    var s1 = vm.serialize(val, true);
+    //print(s1);
     var v1 = vm.parse(s1);
-    var s2 = vm.serialize(v1, false);
-    print(s2);
+    var s2 = vm.serialize(v1, true);
+    //print(s2);
 
     assert (
         s1 == s2,
         "serializing twice does not produce the same string"
     );
+
+    var s1 = vm.serialize(val, false);
+    //print(s1);
+    var v1 = vm.parse(s1);
+    var s2 = vm.serialize(v1, false);
+    //print(s2);
+
+    assert (
+        s1 == s2,
+        "serializing twice does not produce the same string with minification disabled"
+    );
 };
 
 assert (vm.parse("3;") == 3);
-assert (vm.serialize(3, false) == "3;");
-assert (vm.serialize(true, false) == "$true;");
-assert (vm.serialize([1,2,3], false) == "[1,2,3];");
+assert (vm.serialize(3, true) == "3;");
+assert (vm.serialize(true, true) == "$true;");
+assert (vm.serialize([1,2,3], true) == "[1,2,3];");
 
 roundTrip(true);
 roundTrip(false);

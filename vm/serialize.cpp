@@ -1,6 +1,5 @@
 #include <unordered_set>
 #include <unordered_map>
-#include <cctype>
 #include <vector>
 #include <iostream>
 #include "serialize.h"
@@ -9,7 +8,8 @@
 std::string nameOrRepr(
     Value val,
     std::unordered_map<refptr, std::string>& valNames,
-    bool indent
+    bool minify,
+    std::string indent
 );
 
 std::string escapeStr(std::string str)
@@ -56,7 +56,8 @@ std::string escapeStr(std::string str)
 std::string genString(
     Value val,
     std::unordered_map<refptr, std::string>& valNames,
-    bool indent
+    bool minify,
+    std::string indent
 )
 {
     switch (val.getTag())
@@ -72,12 +73,12 @@ std::string genString(
             for (size_t i = 0; i < len; ++i)
             {
                 auto elemVal = arr.getElem(i);
-                out += nameOrRepr(elemVal, valNames, indent);
+                out += nameOrRepr(elemVal, valNames, minify, indent);
 
                 if (i < len - 1)
                 {
                     out += ",";
-                    if (indent)
+                    if (!minify)
                         out += " ";
                 }
             }
@@ -92,6 +93,7 @@ std::string genString(
 
             std::string out = "{";
 
+            // First field being printed
             bool first = true;
 
             // For each object field
@@ -105,6 +107,13 @@ std::string genString(
                 else
                     out += ",";
 
+                // Indent this field
+                if (!minify)
+                {
+                    out += "\n";
+                    out += indent + "  ";
+                }
+
                 if (isValidIdent(fieldName))
                     out += fieldName;
                 else
@@ -112,10 +121,24 @@ std::string genString(
 
                 out += ":";
 
-                out += nameOrRepr(fieldVal, valNames, indent);
+                out += nameOrRepr(
+                    fieldVal,
+                    valNames,
+                    minify,
+                    indent + "  "
+                );
             }
 
-            return out + "}";
+            // Indent the closing brace
+            if (!minify)
+            {
+                out += "\n";
+                out += indent;
+            }
+
+            out += "}";
+
+            return out;
         }
         break;
 
@@ -140,7 +163,8 @@ std::string genString(
         return std::to_string(float(val)) + "f";
 
         default:
-        assert (false);
+        auto tagStr = tagToStr(val.getTag());
+        throw RunError("cannot serialize values with tag \"" + tagStr + "\"");
     }
 };
 
@@ -148,21 +172,22 @@ std::string genString(
 std::string nameOrRepr(
     Value val,
     std::unordered_map<refptr, std::string>& valNames,
-    bool indent
+    bool minify,
+    std::string indent
 )
 {
     if (!val.isPointer())
-        return genString(val, valNames, indent);
+        return genString(val, valNames, minify, indent);
 
     auto ptr = (refptr)val;
     if (valNames.find(ptr) != valNames.end())
         return "@" + valNames[ptr];
 
-    return genString(val, valNames, indent);
+    return genString(val, valNames, minify, indent);
 };
 
 /// Serialize the graph indirectly referenced by a root value
-std::string serialize(Value rootVal, bool indent)
+std::string serialize(Value rootVal, bool minify)
 {
     // Visited set for the naming traversal
     std::unordered_set<refptr> visited;
@@ -263,14 +288,14 @@ std::string serialize(Value rootVal, bool indent)
         auto ptr = (refptr)val;
         auto name = valNames[ptr];
 
-        out += name + " = " + genString(val, valNames, indent) + ";";
+        out += name + " = " + genString(val, valNames, minify, "") + ";";
 
-        if (indent)
+        if (!minify)
             out += "\n\n";
     }
 
     // Write the root/exported value
-    out += nameOrRepr(rootVal, valNames, indent) + ";";
+    out += nameOrRepr(rootVal, valNames, minify, "") + ";";
 
     return out;
 }
