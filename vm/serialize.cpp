@@ -1,6 +1,6 @@
 #include <unordered_set>
 #include <unordered_map>
-#include <functional>
+#include <cctype>
 #include <vector>
 #include <iostream>
 #include "serialize.h"
@@ -11,6 +11,46 @@ std::string nameOrRepr(
     std::unordered_map<refptr, std::string>& valNames,
     bool indent
 );
+
+std::string escapeStr(std::string str)
+{
+    std::string out = "\"";
+
+    for (size_t i = 0; i < str.size(); ++i)
+    {
+        auto ch = str[i];
+
+        if (ch >= 32 && ch <= 126)
+        {
+            out += ch;
+            continue;
+        }
+
+        if (ch == '\n')
+        {
+            out += "\\n";
+            continue;
+        }
+
+        if (ch == '\r')
+        {
+            out += "\\r";
+            continue;
+        }
+
+        if (ch == '\t')
+        {
+            out += "\\t";
+            continue;
+        }
+
+        char hexStr[8];
+        sprintf(hexStr, "\\x%02X", (int)ch);
+        out += hexStr;
+    }
+
+    return out + "\"";
+}
 
 /// Generate the output string for a value
 std::string genString(
@@ -52,23 +92,38 @@ std::string genString(
 
             std::string out = "{";
 
+            bool first = true;
+
             // For each object field
             for (auto itr = ObjFieldItr(obj); itr.valid(); itr.next())
             {
                 auto fieldName = itr.get();
                 auto fieldVal = obj.getField(fieldName);
 
-                // TODO: escape field names
-                out += fieldName;
+                if (first)
+                    first = false;
+                else
+                    out += ",";
+
+                if (isValidIdent(fieldName))
+                    out += fieldName;
+                else
+                    out += escapeStr(fieldName);
 
                 out += ":";
 
                 out += nameOrRepr(fieldVal, valNames, indent);
-
-                out += ",";
             }
 
             return out + "}";
+        }
+        break;
+
+        // TODO: naming of long strings
+        case TAG_STRING:
+        {
+            auto str = (std::string)val;
+            return escapeStr(str);
         }
         break;
 
@@ -83,10 +138,6 @@ std::string genString(
 
         case TAG_FLOAT32:
         return std::to_string(float(val)) + "f";
-
-        // TODO: string escaping
-        case TAG_STRING:
-        assert (false);
 
         default:
         assert (false);
@@ -110,6 +161,7 @@ std::string nameOrRepr(
     return genString(val, valNames, indent);
 };
 
+/// Serialize the graph indirectly referenced by a root value
 std::string serialize(Value rootVal, bool indent)
 {
     // Visited set for the naming traversal

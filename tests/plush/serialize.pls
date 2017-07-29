@@ -5,10 +5,9 @@ var vm = import "core/vm/0";
 var roundTrip = function (val)
 {
     var s1 = vm.serialize(val, false);
+    print(s1);
     var v1 = vm.parse(s1);
     var s2 = vm.serialize(v1, false);
-
-    print(s1);
     print(s2);
 
     assert (
@@ -31,6 +30,14 @@ roundTrip(777);
 roundTrip([1,2,3]);
 roundTrip([1,2,[3,4]]);
 roundTrip({ a:1, b:2 });
+roundTrip({ a:1, b:2, c:[3,4] });
+roundTrip("foobar");
+roundTrip("foo\nbar");
+
+// Object with non-identifier field name
+obj = {};
+obj["a b"] = true;
+roundTrip(obj);
 
 // Referencing a value twice
 a1 = [1,2];
