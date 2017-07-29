@@ -52,19 +52,24 @@ plush/parser.cpp  	\
 plush/codegen.cpp 	\
 plush/main.cpp    	\
 
-cplush: plush/*.cpp plush/*.h
-	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_SRCS)
+CPLUSH_OBJECTS= $(CPLUSH_SRCS:plush/%.cpp=%.o)
 
-plush-pkg: cplush plush/parser.pls
+%.o: plush/%.cpp plush/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(CPLUSH_BIN): $(CPLUSH_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_OBJECTS)
+
+plush-pkg: $(CPLUSH_BIN) plush/parser.pls
 	mkdir -p packages/lang/plush/0
 	./$(CPLUSH_BIN) plush/parser.pls > packages/lang/plush/0/package
 	./$(CPLUSH_BIN) tests/plush/parser.pls > packages/lang/plush/0/tests
 
 # Plush parser benchmark
-plush-bench: cplush
+plush-bench: $(CPLUSH_BIN)
 	./$(CPLUSH_BIN)  benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
 
-math-pkg: cplush plush/parser.pls
+math-pkg: $(CPLUSH_BIN) plush/parser.pls
 	mkdir -p packages/std/math/0
 	./$(CPLUSH_BIN) plush/math.pls > packages/std/math/0/package
 
@@ -79,5 +84,5 @@ scheme/parser.cpp   \
 scheme/codegen.cpp  \
 scheme/main.cpp     \
 
-cscheme: scheme/*.cpp scheme/*.h
+$(CSCHEME_BIN): scheme/*.cpp scheme/*.h
 	$(CXX) $(CXXFLAGS) -o $(CSCHEME_BIN) $(CSCHEME_SRCS)
