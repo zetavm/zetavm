@@ -224,12 +224,18 @@ std::string serialize(Value rootVal, bool minify)
 
         auto ptr = (refptr)node;
 
+        // If this value has been previously visited
         if (visited.find(ptr) != visited.end())
         {
             // This value has multiple reference, and
             // should get an assigned name
-            valNames[ptr] = genName(node);
-            namedObjs.push_back(node);
+            if (valNames.find(ptr) == valNames.end())
+            {
+                valNames[ptr] = genName(node);
+                namedObjs.push_back(node);
+            }
+
+            // Don't visit this value's children
             continue;
         }
 

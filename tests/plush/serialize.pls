@@ -4,6 +4,7 @@ var vm = import "core/vm/0";
 
 var roundTrip = function (val)
 {
+    // Test with minification enabled
     var s1 = vm.serialize(val, true);
     //print(s1);
     var v1 = vm.parse(s1);
@@ -15,6 +16,7 @@ var roundTrip = function (val)
         "serializing twice does not produce the same string"
     );
 
+    // Test again with minification disabled
     var s1 = vm.serialize(val, false);
     //print(s1);
     var v1 = vm.parse(s1);
@@ -62,7 +64,7 @@ a1:push(a2);
 a2:push(a1);
 roundTrip(a2);
 
-// Cycle
+// Reference to cycle
 a1 = [];
 a2 = [];
 a1:push(a2);
@@ -71,5 +73,9 @@ roundTrip([a2]);
 
 // Serializing, parsing and then calling a function
 var fibPkg = import "./tests/vm/ex_fibonacci.zim";
-var str = vm.serialize(fibPkg.fib, false);
+var fib = fibPkg.fib;
+var str = vm.serialize(fib, false);
 //print(str);
+var fib2 = vm.parse(str);
+assert (fib(10) == fib2(10));
+roundTrip(fib);

@@ -79,7 +79,8 @@ def runBenchs():
     sys.stdout.write('geometric mean'.ljust(35))
     sys.stdout.write('%6d ms\n' % meanTime)
 
-# TODO: trigger make, NDEBUG?
+# TODO: trigger make clean, make -j4 to make sure we have a fresh build
+# Note: could ./configure with NDEBUG to disable assertions
 
 # Run the benchmarks
 runBenchs()
