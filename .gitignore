@@ -16,6 +16,10 @@ cscheme
 *.dll
 *.pyc
 
+# Object files
+vm/*.o
+plush/*.o
+
 # Generated files
 benchmarks/plush_parser.zim
 packages/lang/plush/0/package
