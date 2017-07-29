@@ -60,6 +60,7 @@ plush/%.o: plush/%.cpp plush/*.h
 $(CPLUSH_BIN): $(CPLUSH_OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_OBJECTS)
 
+# Plush language package
 plush-pkg: $(CPLUSH_BIN) plush/parser.pls
 	mkdir -p packages/lang/plush/0
 	./$(CPLUSH_BIN) plush/parser.pls > packages/lang/plush/0/package
