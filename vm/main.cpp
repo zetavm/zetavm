@@ -5,6 +5,7 @@
 #include "parser.h"
 #include "interp.h"
 #include "packages.h"
+#include "opt_parser.h"
 
 int runPkgMain(Object pkg)
 {
@@ -24,52 +25,59 @@ int runPkgMain(Object pkg)
     return (int32_t)retVal;
 }
 
+
 int main(int argc, char** argv)
 {
+    BoolOpt test('t', "test", false, "run unit tests");
+    OptParser parser;
+    parser = parser.add(test);
     try
     {
         //initRuntime();
         //initParser();
+        parser.parse(argc, argv);
         initInterp();
 
         // If we are in test mode
-        if (argc == 2 && strcmp(argv[1], "--test") == 0)
+        if (test())
         {
             testRuntime();
             testParser();
             testInterp();
+            testOptParser();
             return 0;
         }
 
-        if (argc == 2)
+        auto pkgName = parser.getProgramName();
+
+        // Try importing and running the package
+        try
         {
-            auto pkgName = argv[1];
+            auto pkg = import(pkgName);
 
-            // Try importing and running the package
-            try
-            {
-                auto pkg = import(pkgName);
-
-                return runPkgMain(pkg);
-            }
-
-            // If the package failed to import
-            catch (ImportError e)
-            {
-                // Try loading the package as a local file
-                auto pkg = load(pkgName);
-
-                // Initialize the package
-                if (pkg.hasField("init"))
-                {
-                    callExportFn(pkg, "init");
-                }
-
-                return runPkgMain(pkg);
-            }
+            return runPkgMain(pkg);
         }
 
-        std::cout << "Invalid command-line arguments" << std::endl;
+        // If the package failed to import
+        catch (ImportError e)
+        {
+            // Try loading the package as a local file
+            auto pkg = load(pkgName);
+
+            // Initialize the package
+            if (pkg.hasField("init"))
+            {
+                callExportFn(pkg, "init");
+            }
+
+            return runPkgMain(pkg);
+        }
+    }
+
+    catch (ParseException& e)
+    {
+        std::cout << e.what() << std::endl;
+        return -1;
     }
 
     catch (RunError& e)
