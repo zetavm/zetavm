@@ -127,6 +127,6 @@ main = {
 
 # Export both fib, and the main function
 {
-    fib: @fib
+    fib: @fib,
     main: @main
 };
