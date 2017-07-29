@@ -50,13 +50,13 @@ Features of the VM will include:
 
 - Immutable UTF-8 strings
 
-- Text-based [image files](/tests/vm/ex_image.zim) (JSON-like)
+- Text-based [code and data storage format](/tests/vm/ex_image.zim) (JSON-like)
 
-- First-class stack-based bytecode
-
-- Ability to suspend and resume programs
+- First-class stack-based bytecode (code is data)
 
 - Built-in graphical and audio libraries
+
+- Built-in package manager
 
 Zeta image files (.zim) are JSON-like, human-readable text files containing
 objects, data and bytecodes to be executed by ZetaVM.
@@ -64,6 +64,8 @@ They are intended to serve as a compilation target, and may contain
 executable programs, or libraries/packages.
 
 ## More Information
+
+A recording of [talk about ZetaVM](https://eventil.com/presentations/5dszyA) given at PolyConf in July 2017 is available.
 
 For more information, see the documentation in the [docs](docs) directory:
 
