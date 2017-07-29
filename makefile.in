@@ -14,7 +14,7 @@ test: all
 	./run_tests.sh
 
 clean:
-	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log
+	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log plush/*.o zeta/*.o
 
 # Tells make which targets are not files
 .PHONY: all test clean plush-pkg
@@ -33,9 +33,9 @@ vm/interp.cpp   	\
 vm/packages.cpp 	\
 vm/main.cpp     	\
 
-ZETA_OBJECTS= $(ZETA_SRCS:vm/%.cpp=%.o)
+ZETA_OBJECTS= $(ZETA_SRCS:vm/%.cpp=vm/%.o)
 
-%.o: vm/%.cpp vm/*.h
+vm/%.o: vm/%.cpp vm/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(ZETA_BIN): $(ZETA_OBJECTS)
@@ -52,9 +52,9 @@ plush/parser.cpp  	\
 plush/codegen.cpp 	\
 plush/main.cpp    	\
 
-CPLUSH_OBJECTS= $(CPLUSH_SRCS:plush/%.cpp=%.o)
+CPLUSH_OBJECTS= $(CPLUSH_SRCS:plush/%.cpp=plush/%.o)
 
-%.o: plush/%.cpp plush/*.h
+plush/%.o: plush/%.cpp plush/*.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(CPLUSH_BIN): $(CPLUSH_OBJECTS)
