@@ -5,6 +5,14 @@
 **Please note that ZetaVM is currently at the early prototype stage. As such,
 it is incomplete and breaking changes may happen often.**
 
+## Requirements:
+
+- GNU Make
+- GCC 5.4+ (linux) or clang (OSX), or cygwin (Windows)
+- Optional: autoconf, if needing to edit the configure file
+- Optional: sdl2, if wanting to use audio and graphics capabilities
+- Optional: Python 2 is needed to run the benchmark.py script
+
 ## Installation and Basic Usage
 
 ```
@@ -15,7 +23,7 @@ git clone git@github.com:maximecb/zetavm.git
 # Note: run configure with `--with-sdl2` to build audio and graphics support
 cd zetavm
 ./configure
-make
+make -j4
 
 # Optionally run tests to check that everything works properly
 make test
