@@ -1,12 +1,12 @@
 sudo: required
 
-dist: trusty 
+dist: trusty
 
 os:
     - osx
 
 services:
-    - docker 
+    - docker
 
 language: bash
 
@@ -29,7 +29,6 @@ install:
 
 script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm ./configure ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm make ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm make -j4 ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm make test ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./configure && make && make test ; fi 
-
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./configure && make -j4 && make test ; fi

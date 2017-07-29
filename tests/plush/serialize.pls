@@ -68,3 +68,9 @@ a2 = [];
 a1:push(a2);
 a2:push(a1);
 roundTrip([a2]);
+
+
+var fib = import "./tests/vm/ex_fibonacci.zim";
+
+var str = vm.serialize(fib.fib, false);
+print(str);

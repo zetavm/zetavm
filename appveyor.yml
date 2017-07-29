@@ -1,3 +1,3 @@
-test_script: 
-    - C:\cygwin64\bin\sh -lc "cd /cygdrive/c/projects/zetavm  && ./configure && make && make test"
+test_script:
+    - C:\cygwin64\bin\sh -lc "cd /cygdrive/c/projects/zetavm  && ./configure && make -j4 && make test"
 build: off

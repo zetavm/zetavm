@@ -125,5 +125,8 @@ main = {
     entry: @main_entry
 };
 
-# Export the main function
-{ main: @main };
+# Export both fib, and the main function
+{
+    fib: @fib
+    main: @main
+};
