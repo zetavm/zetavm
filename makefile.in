@@ -33,8 +33,13 @@ vm/interp.cpp   	\
 vm/packages.cpp 	\
 vm/main.cpp     	\
 
-zeta: vm/*.cpp vm/*.h
-	$(CXX) $(CXXFLAGS) -o $(ZETA_BIN) $(ZETA_SRCS) $(LDFLAGS)
+ZETA_OBJECTS= $(ZETA_SRCS:vm/%.cpp=%.o)
+
+%.o: vm/%.cpp vm/*.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(ZETA_BIN): $(ZETA_OBJECTS)
+	$(CXX) $(CXXFLAGS) -o $(ZETA_BIN) $(ZETA_OBJECTS) $(LDFLAGS)
 
 ##############################################################################
 # Plush compiler
@@ -50,16 +55,16 @@ plush/main.cpp    	\
 cplush: plush/*.cpp plush/*.h
 	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_SRCS)
 
-plush-pkg: plush/parser.pls
+plush-pkg: cplush plush/parser.pls
 	mkdir -p packages/lang/plush/0
 	./$(CPLUSH_BIN) plush/parser.pls > packages/lang/plush/0/package
 	./$(CPLUSH_BIN) tests/plush/parser.pls > packages/lang/plush/0/tests
 
 # Plush parser benchmark
-plush-bench:
+plush-bench: cplush
 	./$(CPLUSH_BIN)  benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
 
-math-pkg: plush/parser.pls
+math-pkg: cplush plush/parser.pls
 	mkdir -p packages/std/math/0
 	./$(CPLUSH_BIN) plush/math.pls > packages/std/math/0/package
 
