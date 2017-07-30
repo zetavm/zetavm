@@ -227,6 +227,12 @@ std::string serialize(Value rootVal, bool minify)
         // If this value has been previously visited
         if (visited.find(ptr) != visited.end())
         {
+            // If minification is disabled and this is a short string
+            if (!minify && node.isString() && String(node).length() <= 16)
+            {
+                continue;
+            }
+
             // This value has multiple reference, and
             // should get an assigned name
             if (valNames.find(ptr) == valNames.end())
