@@ -501,6 +501,45 @@ bool Object::getField(const String& fieldName, Value& value, size_t& idxCache)
     return true;
 }
 
+int32_t Object::getFieldInt32(std::string name)
+{
+    if (!hasField(name))
+        throw RunError("missing field \"" + name + "\"");
+
+    auto val = getField(name);
+
+    if (!val.isInt32())
+        throw RunError("expected field \"" + name + "\" to have type int32");
+
+    return int32_t(val);
+}
+
+Object Object::getFieldObj(std::string name)
+{
+    if (!hasField(name))
+        throw RunError("missing field \"" + name + "\"");
+
+    auto val = getField(name);
+
+    if (!val.isObject())
+        throw RunError("expected field \"" + name + "\" to have object type");
+
+    return Object(val);
+}
+
+Array Object::getFieldArr(std::string name)
+{
+    if (!hasField(name))
+        throw RunError("missing field \"" + name + "\"");
+
+    auto val = getField(name);
+
+    if (!val.isArray())
+        throw RunError("expected field \"" + name + "\" to have array type");
+
+    return Array(val);
+}
+
 ObjFieldItr::ObjFieldItr(Object obj)
 : obj(obj)
 {

@@ -91,6 +91,9 @@ set -x
 # Check that uncaught exceptions are handled properly
 ./zeta tests/plush/throw_str_uncaught.pls | grep --quiet "foobar"
 
+# Command-line program arguments
+./zeta tests/plush/cmdline_args.pls -- foo bar | grep --quiet "foobar"
+
 # Regression: throw during an array indexing expression
 ./zeta tests/plush/regress_exc_idx.pls
 

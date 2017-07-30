@@ -105,65 +105,6 @@ enum Opcode : uint16_t
     ABORT
 };
 
-/// Inline cache to speed up property lookups
-class ICache
-{
-private:
-
-    // Cached slot index
-    size_t slotIdx = 0;
-
-    // Field name to look up
-    String fieldName;
-
-public:
-
-    ICache(std::string fieldName)
-    : fieldName(fieldName)
-    {
-    }
-
-    Value getField(Object obj)
-    {
-        Value val;
-
-        if (!obj.getField(fieldName, val, slotIdx))
-        {
-            throw RunError("missing field \"" + (std::string)fieldName + "\"");
-        }
-
-        return val;
-    }
-
-    int32_t getInt32(Object obj)
-    {
-        auto val = getField(obj);
-        assert (val.isInt32());
-        return (int32_t)val;
-    }
-
-    String getStr(Object obj)
-    {
-        auto val = getField(obj);
-        assert (val.isString());
-        return String(val);
-    }
-
-    Object getObj(Object obj)
-    {
-        auto val = getField(obj);
-        assert (val.isObject());
-        return Object(val);
-    }
-
-    Array getArr(Object obj)
-    {
-        auto val = getField(obj);
-        assert (val.isArray());
-        return Array(val);
-    }
-};
-
 class CodeFragment
 {
 public:
@@ -2354,11 +2295,9 @@ Value execCode()
 /// Note: this may be indirectly called from within a running interpreter
 Value callFun(Object fun, ValueVec args)
 {
-    static ICache paramsIC("params");
-    static ICache numLocalsIC("num_locals");
-    auto params = paramsIC.getArr(fun);
+    auto params = fun.getFieldArr("params");
     auto numParams = size_t(params.length());
-    auto nlocals = numLocalsIC.getInt32(fun);
+    auto nlocals = fun.getFieldInt32("num_locals");
     assert(nlocals >= 0);
     auto numLocals = size_t(nlocals);
 

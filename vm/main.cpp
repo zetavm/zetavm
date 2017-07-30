@@ -7,13 +7,45 @@
 #include "packages.h"
 #include "opt_parser.h"
 
-int runPkgMain(Object pkg)
+int runPkgMain(Object pkg, std::vector<std::string> progArgs)
 {
     // If the package has no main function, do nothing
     if (!pkg.hasField("main"))
         return 0;
 
-    auto retVal = callExportFn(pkg, "main");
+    auto mainFn = pkg.getFieldObj("main");
+    auto params = mainFn.getFieldArr("params");
+
+    Value retVal;
+
+    // If the main function expects an arguments array
+    if (params.length() == 1)
+    {
+        // Create an array to store the program arguments
+        auto argVals = Array(progArgs.size());
+        for (size_t i = 0; i < progArgs.size(); ++i)
+            argVals.push(String(progArgs[i]));
+
+        // Call main with an array of string arguments
+        retVal = callExportFn(pkg, "main", { argVals });
+    }
+    else if (params.length() == 0)
+    {
+        if (progArgs.size() > 0)
+        {
+            throw RunError(
+                "main function expects zero arguments, "
+                "but some were provided"
+            );
+        }
+
+        // Call main with no arguments
+        retVal = callExportFn(pkg, "main");
+    }
+    else
+    {
+        throw RunError("main function should either accept 0 or 1 parameter");
+    }
 
     if (!retVal.isInt32())
     {
@@ -25,12 +57,12 @@ int runPkgMain(Object pkg)
     return (int32_t)retVal;
 }
 
-
 int main(int argc, char** argv)
 {
     BoolOpt test('t', "test", false, "run unit tests");
     OptParser parser;
     parser = parser.add(test);
+
     try
     {
         //initRuntime();
@@ -54,8 +86,7 @@ int main(int argc, char** argv)
         try
         {
             auto pkg = import(pkgName);
-
-            return runPkgMain(pkg);
+            return runPkgMain(pkg, parser.getProgramArgs());
         }
 
         // If the package failed to import
@@ -66,11 +97,9 @@ int main(int argc, char** argv)
 
             // Initialize the package
             if (pkg.hasField("init"))
-            {
                 callExportFn(pkg, "init");
-            }
 
-            return runPkgMain(pkg);
+            return runPkgMain(pkg, parser.getProgramArgs());
         }
     }
 

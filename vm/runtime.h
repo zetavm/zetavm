@@ -382,6 +382,72 @@ public:
     bool hasField(std::string name) { return hasField(String(name)); }
     void setField(std::string name, Value val) { return setField(String(name), val); }
     Value getField(std::string name) { return getField(String(name)); }
+
+    // Property lookups with type checking
+    int32_t getFieldInt32(std::string name);
+    Object getFieldObj(std::string name);
+    Array getFieldArr(std::string name);
+};
+
+/**
+Inline cache to speed up property lookups
+*/
+class ICache
+{
+private:
+
+    // Cached slot index
+    size_t slotIdx = 0;
+
+    // Field name to look up
+    String fieldName;
+
+public:
+
+    ICache(std::string fieldName)
+    : fieldName(fieldName)
+    {
+    }
+
+    Value getField(Object obj)
+    {
+        Value val;
+
+        if (!obj.getField(fieldName, val, slotIdx))
+        {
+            throw RunError("missing field \"" + (std::string)fieldName + "\"");
+        }
+
+        return val;
+    }
+
+    int32_t getInt32(Object obj)
+    {
+        auto val = getField(obj);
+        assert (val.isInt32());
+        return (int32_t)val;
+    }
+
+    String getStr(Object obj)
+    {
+        auto val = getField(obj);
+        assert (val.isString());
+        return String(val);
+    }
+
+    Object getObj(Object obj)
+    {
+        auto val = getField(obj);
+        assert (val.isObject());
+        return Object(val);
+    }
+
+    Array getArr(Object obj)
+    {
+        auto val = getField(obj);
+        assert (val.isArray());
+        return Array(val);
+    }
 };
 
 /**
