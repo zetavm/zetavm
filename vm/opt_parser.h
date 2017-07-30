@@ -1,5 +1,4 @@
-#ifndef ARG_PARSER_H
-#define ARG_PARSER_H
+#pragma once
 
 #include <algorithm>
 #include <cassert>
@@ -9,7 +8,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
 
 class ParseException : public std::exception
 {
@@ -23,7 +21,8 @@ public:
     }
 };
 
-bool isUint(const std::string &s) {
+bool isUint(const std::string &s)
+{
     return std::all_of(s.begin(), s.end(), ::isdigit);
 }
 
@@ -147,7 +146,6 @@ public:
 
     int64_t get() { return pValue; }
 
-
     void defaultHandler(bool isPresent, std::string value)
     {
         if (!isPresent)
@@ -264,7 +262,6 @@ public:
         }
     }
 };
-
 
 class OptParser
 {
@@ -425,7 +422,6 @@ void OptParser::parseProgramName(const char *name)
     this->programName = str;
 }
 
-
 /**
  * Parses the provided arguments against the argument options. Arguments
  * to this function should be provided as received by main function.
@@ -516,8 +512,8 @@ static char* testStrdup(std::string s) {
     return temp;
 }
 
-
-static void testOptParser0() {
+static void testOptParser0()
+{
     // check if custom handler works fine
     std::function<void(int64_t)> customChecker = [](int64_t x) {
         if (x > 1000) {
@@ -535,7 +531,8 @@ static void testOptParser0() {
     }
 }
 
-static void testOptParser1() {
+static void testOptParser1()
+{
     // check if int handler works fine
     IntOpt js('j', "js", 1100, "the value of some field js");
     try {
@@ -549,7 +546,8 @@ static void testOptParser1() {
     assert(js.get() == 4100);
 }
 
-static void testOptParser2() {
+static void testOptParser2()
+{
     // check if uint handler works fine
     UintOpt ks('k', "ks", 2200LL, "the value of some field ks");
     try {
@@ -562,7 +560,8 @@ static void testOptParser2() {
     assert(ks.get() == 9223372036854775808ULL);
 }
 
-static void testOptParser3() {
+static void testOptParser3()
+{
     // check if parser works fine
     BoolOpt is('i', "is", false, "the value of some field is");
     IntOpt js('j', "js", 1100, "the value of some field js");
@@ -593,7 +592,8 @@ static void testOptParser3() {
 
 }
 
-static void testOptParser4() {
+static void testOptParser4()
+{
     // check if parser handles error
     BoolOpt is('i', "is", false, "the value of some field is");
     IntOpt js('j', "js", 1100, "the value of some field js");
@@ -617,7 +617,8 @@ static void testOptParser4() {
     delete []arg2;
 }
 
-static void testOptParser5() {
+static void testOptParser5()
+{
     BoolOpt is('i', "is", false, "the value of some field is");
     IntOpt js('j', "js", 1100, "the value of some field js");
     UintOpt ks("ks", 2200, "the value of some field ks");
@@ -640,7 +641,8 @@ static void testOptParser5() {
     delete []arg1;
 }
 
-static void testOptParser() {
+static void testOptParser()
+{
     testOptParser0();
     testOptParser1();
     testOptParser2();
@@ -649,5 +651,3 @@ static void testOptParser() {
     testOptParser5();
     std::cout << "Argparser: All test Passed\n";
 }
-
-#endif
