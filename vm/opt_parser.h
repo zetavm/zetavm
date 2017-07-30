@@ -268,8 +268,7 @@ class OptParser
 private:
     std::vector<std::reference_wrapper<Opt>> argOptions;
     std::string programName;
-    int programArgc;
-    char **programArgv;
+    std::vector<std::string> programArgs;
     std::vector<std::reference_wrapper<Opt>>::iterator findArgByShortName(char c);
     std::vector<std::reference_wrapper<Opt>>::iterator findArgByLongName(std::string &name);
     void parse(std::string key, bool isValPresent, std::string value);
@@ -284,15 +283,10 @@ public:
     OptParser add(Opt& opt);
     void parse(int argc, char *argv[]);
     std::string getProgramName();
-    int getProgramArgc();
-    char** getProgramArgv();
+    std::vector<std::string> getProgramArgs();
 };
 
-OptParser::OptParser()
-{
-    this->programArgc = 0;
-    this->programArgv = nullptr;
-}
+OptParser::OptParser(){}
 
 OptParser OptParser::add(Opt &opt)
 {
@@ -303,8 +297,6 @@ OptParser::OptParser(std::vector<std::reference_wrapper<Opt>> argOptions)
 {
     // TODO: check for duplicates
     this->argOptions = argOptions;
-    this->programArgc = 0;
-    this->programArgv = nullptr;
 }
 
 std::vector<std::reference_wrapper<Opt>>::iterator OptParser::findArgByShortName(char c)
@@ -450,9 +442,11 @@ void OptParser::parse(int argc, char *argv[])
                 {
                     throw ParseException{"Program filename must be specified before arguments"};
                 }
-                ++index;
-                programArgc = argc - index;
-                programArgv = &argv[index];
+                // store Program args and return
+                for (int i = index + 1; i < argc; ++i)
+                {
+                    programArgs.push_back(std::string(argv[i]));
+                }
                 return;
             }
             else if (current[0] == '-')
@@ -487,23 +481,13 @@ std::string OptParser::getProgramName()
 }
 
 /**
- * Returns argument count of Program. This function should only be called if
- * call to void parse(int argc, char *argv[]) was finished normally
- * (without exception).
-*/
-int OptParser::getProgramArgc()
-{
-    return programArgc;
-}
-
-/**
  * Returns argument vector of Program. This function should only be called if
  * call to void parse(int argc, char *argv[]) was finished normally
  * (without exception).
 */
-char** OptParser::getProgramArgv()
+std::vector<std::string> OptParser::getProgramArgs()
 {
-    return programArgv;
+    return programArgs;
 }
 
 static char* testStrdup(std::string s) {
@@ -641,6 +625,43 @@ static void testOptParser5()
     delete []arg1;
 }
 
+static void testOptParser6()
+{
+    // Test program arguments
+    BoolOpt is('i', "is", false, "the value of some field is");
+    IntOpt js('j', "js", 1100, "the value of some field js");
+    UintOpt ks("ks", 2200, "the value of some field ks");
+    StrOpt ls('l', "ls", "Blah", "the value of some field ls");
+    OptParser parser;
+    parser = parser.add(is)
+                   .add(js)
+                   .add(ks)
+                   .add(ls);
+    char *arg1 = testStrdup("-ij=100");
+    char *arg2 = testStrdup("hello.pls");
+    char *arg3 = testStrdup("--");
+    char *arg4 = testStrdup("1");
+    char *arg5 = testStrdup("2");
+    char *args[]{arg1, arg1, arg2, arg3, arg4, arg5}; // First arg does not matter
+    parser.parse(6, args);
+    assert(is());
+    assert(is.get());
+    assert(js());
+    assert(js.get() == 100);
+    assert(!ks());
+    assert(!ls());
+    assert(parser.getProgramName() == "hello.pls");
+    assert(parser.getProgramArgs().size() == 2);
+    assert(parser.getProgramArgs()[0] == "1");
+    assert(parser.getProgramArgs()[1] == "2");
+
+    delete []arg1;
+    delete []arg2;
+    delete []arg3;
+    delete []arg4;
+    delete []arg5;
+}
+
 static void testOptParser()
 {
     testOptParser0();
@@ -649,5 +670,6 @@ static void testOptParser()
     testOptParser3();
     testOptParser4();
     testOptParser5();
+    testOptParser6();
     std::cout << "Argparser: All test Passed\n";
 }
