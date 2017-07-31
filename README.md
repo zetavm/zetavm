@@ -1,6 +1,6 @@
 # ZetaVM
 
-[![Build Status](https://travis-ci.org/zetavm/zetavm.svg?branch=master)](https://travis-ci.org/zetavm/zetavm) [![Build status](https://ci.appveyor.com/api/projects/status/a99mx86i78vjmgln?svg=true)](https://ci.appveyor.com/project/maximecb/zetavm)
+[![Build Status](https://travis-ci.org/zetavm/zetavm.svg?branch=master)](https://travis-ci.org/zetavm/zetavm) [![Build status](https://ci.appveyor.com/api/projects/status/a99mx86i78vjmgln?svg=true)](https://ci.appveyor.com/project/maximecb/zetavm) [![Gitter chat](https://badges.gitter.im/zeta-vm-org/gitter.png)](https://gitter.im/zeta-vm-org/Lobby)
 
 **Please note that ZetaVM is currently at the early prototype stage. As such,
 it is incomplete and breaking changes may happen often.**
@@ -85,4 +85,4 @@ For more information, see the documentation in the [docs](docs) directory:
 
 There are also a few blog post about [Zeta](https://pointersgonewild.com/category/zeta/) and its design.
 
-For additional questions and clarifications, [open a GitHub issue](https://github.com/maximecb/zetavm/issues) and tag it as a question.
+For additional questions and clarifications, [open a GitHub issue](https://github.com/maximecb/zetavm/issues) and tag it as a question, or join the [ZetaVM Gitter chat](https://gitter.im/zeta-vm-org/Lobby).
