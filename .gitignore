@@ -24,6 +24,7 @@ plush/*.o
 benchmarks/plush_parser.zim
 packages/lang/plush/0/package
 packages/lang/plush/0/tests
+packages/std/parsing/0/package
 packages/std/math/0/package
 packages/lang/p/*
 parseOut.txt

@@ -1,5 +1,12 @@
 #language "lang/plush/0"
 
+// Parsing utilities library
+var parsing = import "std/parsing/0";
+var parseError = parsing.parseError;
+var isDigit = parsing.isDigit;
+var isAlnum = parsing.isAlnum;
+var Input = parsing.Input;
+
 //============================================================================
 // Abstract Syntax Tree (AST)
 //============================================================================
@@ -192,299 +199,8 @@ var FunExpr = {
 // Parser
 //============================================================================
 
-/// Report a parsing error and abort parsing
-var parseError = function (input, errorStr)
-{
-    var srcPos = false;
-
-    if (input != false)
-    {
-        srcPos = {
-            src_name: input.srcName,
-            line_no: input.lineNo,
-            col_no: input.colNo
-        };
-    }
-
-    throw {
-        msg: errorStr,
-        src_pos: srcPos
-    };
-};
-
-/// Check if a character is whitespace
-var isSpace = function (ch)
-{
-    // Note: we don't allow other whitespace characters
-    return (ch == ' ' || ch == '\t' || ch == '\n');
-};
-
-/// Check if a character is a digit
-var isDigit = function (ch)
-{
-    return (ch >= '0' && ch <= '9');
-};
-
-/// Check if a character is a letter
-var isAlpha = function (ch)
-{
-    return (
-        (ch >= 'a' && ch <= 'z') ||
-        (ch >= 'A' && ch <= 'Z')
-    );
-};
-
-/// Check if a character is alphanumerical
-var isAlnum = function (ch)
-{
-    return (
-        (ch >= 'a' && ch <= 'z') ||
-        (ch >= 'A' && ch <= 'Z') ||
-        (ch >= '0' && ch <= '9')
-    );
-};
-
-/// Prototype for all input objects
-var Input = {
-    srcName: "input prototype object",
-    srcString: "",
-    strIdx: 0,
-    lineNo: 1,
-    colNo: 1
-};
-
-/// Get a source position object for the current position
-Input.getPos = function (self)
-{
-    return {
-        line_no: self.lineNo,
-        col_no: self.colNo,
-        src_name: self.srcName
-    };
-};
-
-/// Peek at a character from the input
-Input.peekCh = function (self)
-{
-    if (self.strIdx >= self.srcString.length)
-        return '\0';
-
-    return self.srcString[self.strIdx];
-};
-
-/// Read a character from the input
-Input.readCh = function (self)
-{
-    var ch = self:peekCh();
-
-    assert (
-        !self:eof(),
-        "tried to read past end of input"
-    );
-
-    // Strictly reject invalid input characters
-    if ((ch <= '\x1F' || ch >= '\x7F') &&
-        (ch != '\n' && ch != '\t' && ch != '\r'))
-    {
-        //var hexStr[64];
-        //sprintf(hexStr, "0x%02X", (int)ch);
-        parseError(
-            self,
-            //"invalid character in input, " + std::string(hexStr)
-            "invalid character in input"
-        );
-    }
-
-    self.strIdx += 1;
-
-    if (ch == '\n')
-    {
-        self.lineNo += 1;
-        self.colNo = 1;
-    }
-    else
-    {
-        self.colNo += 1;
-    }
-
-    return ch;
-};
-
-/// Test if the end of file has been reached
-Input.eof = function (self)
-{
-    return self:peekCh() == '\0';
-};
-
-/// Peek to check if a string is next in the input
-Input.next = function (self, str)
-{
-    var idx = 0;
-
-    for (; idx < str.length; idx += 1)
-    {
-        if (self.strIdx + idx >= self.srcString.length)
-            return false;
-
-        if (str[idx] != self.srcString[self.strIdx + idx])
-            return false;
-    }
-
-    return true;
-};
-
-/// Try and match a given string in the input
-/// The string is consumed if matched
-Input.match = function (self, str)
-{
-    assert (
-        str.length > 0,
-        "match with empty string"
-    );
-
-    if (self:next(str))
-    {
-        for (var i = 0; i < str.length; i += 1)
-        {
-            self:readCh();
-        }
-        return true;
-    }
-
-    return false;
-};
-
-/// Fail if the input doesn't match a given string
-Input.expect = function (self, str)
-{
-    if (!self:match(str))
-    {
-        parseError(self, "expected to find '" + str + "'");
-    }
-};
-
-/// Consume whitespace and comments
-Input.eatWS = function (self)
-{
-    // Until the end of the whitespace
-    for (;;)
-    {
-        // If we are at the end of the input, stop
-        if (self:eof())
-        {
-            return;
-        }
-
-        // Consume whitespace characters
-        if (isSpace(self:peekCh()))
-        {
-            self:readCh();
-            continue;
-        }
-
-        // If this is a single-line comment
-        if (self:match("//"))
-        {
-            // Read until and end of line is reached
-            for (;;)
-            {
-                if (self:eof())
-                    return;
-
-                if (self:readCh() == '\n')
-                    break;
-            }
-
-            continue;
-        }
-
-        // If this is a multi-line comment
-        if (self:match("/*"))
-        {
-            // Read until the end of the comment
-            for (;;)
-            {
-                if (self:eof())
-                {
-                    parseError(
-                        self,
-                        "end of input in multiline comment"
-                    );
-                }
-
-                if (self:readCh() == '*' && self:match("/"))
-                {
-                    break;
-                }
-            }
-
-            continue;
-        }
-
-        // This isn't whitespace, stop
-        break;
-    }
-};
-
-/// Version of next which also eats preceding whitespace
-Input.nextWS = function (self, str)
-{
-    self:eatWS();
-    return self:next(str);
-};
-
-/// Version of match which also eats preceding whitespace
-Input.matchWS = function (self, str)
-{
-    self:eatWS();
-    return self:match(str);
-};
-
-/// Version of expect which eats preceding whitespace
-Input.expectWS = function (self, str)
-{
-    self:eatWS();
-    self:expect(str);
-};
-
-/// Match a keyword string
-/// Note: this expects a non-keyword character after the keyword
-/// That is, matchKW("assert") will not match "assertFun"
-Input.matchKW = function (self, str)
-{
-    // Whitespace before keywords doesn't matter
-    self:eatWS();
-
-    // If the string is not next in the input, no match
-    if (!self:next(str))
-        return false;
-
-    var len = str.length;
-
-    // If we're at the end of the string, this is a match
-    if (self.strIdx + len >= self.srcString.length)
-    {
-        self:match(str);
-        return true;
-    }
-
-    // Get the character after the keyword
-    var postCh = self.srcString[self.strIdx + len];
-
-    // If the next character is valid in an identifier, then
-    // this is not a real match
-    if (isAlnum(postCh) || postCh == '_')
-    {
-        return false;
-    }
-
-    // This is a match, consume the keyword string
-    self:match(str);
-    return true;
-};
-
 /**
-Parse a number
+Parse a number (decimal or floating-op
 */
 var parseNum = function (input, neg)
 {
@@ -579,148 +295,6 @@ var parseInt = function (literal, neg)
 };
 
 /**
-Parse a string escape sequence.
-*/
-var parseEscSeq = function (input)
-{
-    var esc = input:readCh();
-
-    if (esc == 'n')
-        return '\n';
-    if (esc == 'r')
-        return '\r';
-    if (esc == 't')
-        return '\t';
-    if (esc == '0')
-        return '\0';
-    if (esc == '\'')
-        return '\'';
-    if (esc == '\"')
-        return '\"';
-    if (esc == '\\')
-        return '\\';
-
-    // Hexadecimal escape
-    if (esc == 'x')
-    {
-        var escVal = 0;
-        for (var i = 0; i < 2; i += 1)
-        {
-            var ch = input:readCh();
-            var charCode = $get_char_code(ch, 0);
-
-            if (ch >= '0' && ch <= '9')
-            {
-                // ch - '0'
-                escVal = 16 * escVal + (charCode - 48);
-            }
-            else if (ch >= 'A' && ch <= 'F')
-            {
-                // ch - 'A'
-                escVal = 16 * escVal + (charCode - 65 + 10);
-            }
-            else
-            {
-                parseError(
-                    input,
-                    "invalid hexadecimal character escape code"
-                );
-            }
-        }
-
-        assert (
-            escVal >= 0 && escVal <= 255,
-            "invalid hexadecimal escape sequence"
-        );
-
-        return $char_to_str(escVal);
-    }
-
-    parseError(
-        input,
-        "invalid character escape sequence"
-    );
-};
-
-/**
-Parse a string literal
-*/
-var parseStringLit = function (input, endCh)
-{
-    var str = '';
-
-    for (;;)
-    {
-        // If this is the end of the input
-        if (input:eof())
-        {
-            parseError(
-                input,
-                "end of input inside string literal"
-            );
-        }
-
-        // Consume this character
-        var ch = input:readCh();
-
-        // If this is the end of the string
-        if (ch == endCh)
-        {
-            break;
-        }
-
-        // Disallow newlines inside strings
-        if (ch == '\r' || ch == '\n')
-        {
-            parseError(
-                input,
-                "newline character in string literal"
-            );
-        }
-
-        // If this is an escape sequence
-        if (ch == '\\')
-        {
-            ch = parseEscSeq(input);
-        }
-
-        str += ch;
-    }
-
-    return StringExpr::{ val: str };
-};
-
-/**
-Parse an identifier string. Returns a character string.
-*/
-var parseIdentStr = function (input)
-{
-    var ident = '';
-
-    var firstCh = input:peekCh();
-
-    if (firstCh != '_' && !isAlpha(firstCh))
-        parseError(input, "invalid identifier start");
-
-    for (;;)
-    {
-        // Peek at the next character
-        var ch = input:peekCh();
-
-        if (!isAlnum(ch) && ch != '_')
-            break;
-
-        // Consume this character
-        ident += input:readCh();
-    }
-
-    if (ident.length == 0)
-        parseError(input, "invalid identifier");
-
-    return ident;
-};
-
-/**
 Parse an if statement
 if (<test_expr>) <then_stmt> else <else_stmt>
 */
@@ -733,7 +307,7 @@ var parseIfStmt = function (input)
     var thenStmt = parseStmt(input);
 
     // Parse the else clause, if there is one
-    if (input:matchKW("else"))
+    if (input:keyword("else"))
     {
         var elseStmt = parseStmt(input);
     }
@@ -818,7 +392,7 @@ var parseTryStmt = function (input)
 
     input:expectWS("catch");
     input:expectWS("(");
-    var catchVar = parseIdentStr(input);
+    var catchVar = input:parseIdent();
     input:expectWS(")");
 
     var catchStmt = parseStmt(input);
@@ -881,7 +455,7 @@ var parseObjExpr = function (input)
         }
 
         // Parse the property name
-        var ident = parseIdentStr(input);
+        var ident = input:parseIdent();
 
         input:expectWS(":");
 
@@ -917,7 +491,7 @@ var parseFunExpr = function (input)
     var name = '';
     if (!input:nextWS("("))
     {
-        name = parseIdentStr(input);
+        name = input:parseIdent();
     }
 
     input:expectWS("(");
@@ -932,7 +506,7 @@ var parseFunExpr = function (input)
             break;
 
         // Parse a parameter name
-        var identStr = parseIdentStr(input);
+        var identStr = input:parseIdent();
         params:push(identStr);
 
         // If this is the end of the list
@@ -1028,13 +602,9 @@ var parseAtom = function (input)
     }
 
     // String literal
-    if (input:match("\'"))
+    if (input:peekCh() == "\'" || input:peekCh() == "\"")
     {
-        return parseStringLit(input, '\'');
-    }
-    if (input:match("\""))
-    {
-        return parseStringLit(input, '\"');
+        return StringExpr::{ val: input:parseStringLit(input:peekCh()) };
     }
 
     // Array literal
@@ -1095,13 +665,13 @@ var parseAtom = function (input)
         }
 
         // Identifier, variable reference
-        return IdentExpr::{ name:parseIdentStr(input) };
+        return IdentExpr::{ name: input:parseIdent() };
     }
 
     // Inline IR
     if (input:match("$"))
     {
-        var opName = parseIdentStr(input);
+        var opName = input:parseIdent();
         input:expect("(");
         var argExprs = parseExprList(input, ")");
         return IRExpr::{ opName:opName, argExprs:argExprs };
@@ -1175,7 +745,7 @@ var parseExprPrec = function (input, minPrec)
         else if (op == OP_M_CALL)
         {
             // Parse the identifier string
-            var identStr = parseIdentStr(input);
+            var identStr = input:parseIdent();
 
             // Parse the argument list and create the call expression
             input:expectWS("(");
@@ -1193,7 +763,7 @@ var parseExprPrec = function (input, minPrec)
         else if (op == OP_MEMBER)
         {
             // Parse the identifier string
-            var identStr = parseIdentStr(input);
+            var identStr = input:parseIdent();
 
             // Produce an indexing expression
             lhsExpr = BinOpExpr::{
@@ -1331,10 +901,10 @@ var parseStmt = function (input)
     }
 
     // Variable declaration
-    if (input:matchKW("var"))
+    if (input:keyword("var"))
     {
         input:eatWS();
-        var ident = parseIdentStr(input);
+        var ident = input:parseIdent();
 
         input:expectWS("=");
 
@@ -1346,39 +916,39 @@ var parseStmt = function (input)
     }
 
     // If-else statement
-    if (input:matchKW("if"))
+    if (input:keyword("if"))
     {
         return parseIfStmt(input);
     }
 
     // For loop statement
-    if (input:matchKW("for"))
+    if (input:keyword("for"))
     {
         return parseForStmt(input);
     }
 
     // Break statement
-    if (input:matchKW("break"))
+    if (input:keyword("break"))
     {
         input:expectWS(";");
         return BreakStmt::{};
     }
 
     // Continue statement
-    if (input:matchKW("continue"))
+    if (input:keyword("continue"))
     {
         input:expectWS(";");
         return ContStmt::{};
     }
 
     // Try/catch statement
-    if (input:matchKW("try"))
+    if (input:keyword("try"))
     {
         return parseTryStmt(input);
     }
 
     // Return statement
-    if (input:matchKW("return"))
+    if (input:keyword("return"))
     {
         if (input:matchWS(";"))
         {
@@ -1394,7 +964,7 @@ var parseStmt = function (input)
     }
 
     // Throw statement
-    if (input:matchKW("throw"))
+    if (input:keyword("throw"))
     {
         var expr = parseExpr(input);
         input:expectWS(";");
@@ -1406,7 +976,7 @@ var parseStmt = function (input)
     var srcPos = input:getPos();
 
     // Assert statement
-    if (input:matchKW("assert"))
+    if (input:keyword("assert"))
     {
         input:expectWS("(");
 
