@@ -8,7 +8,7 @@ PKGS_DIR=\"$(CURDIR)/packages/\"
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zeta cplush math-pkg parsing-pkg plush-pkg plush-bench cscheme
+all: zeta cplush math-pkg string-pkg parsing-pkg plush-pkg plush-bench cscheme
 
 test: all
 	./run_tests.sh
@@ -79,6 +79,10 @@ plush-pkg: $(CPLUSH_BIN) plush/plush_pkg.pls parsing-pkg
 # Plush parser benchmark
 plush-bench: $(CPLUSH_BIN)
 	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
+
+string-pkg: $(CPLUSH_BIN) plush-pkg
+	mkdir -p packages/std/string/0
+	./$(CPLUSH_BIN) plush/string.pls > packages/std/string/0/package
 
 ##############################################################################
 # Scheme compiler
