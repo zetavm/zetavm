@@ -54,7 +54,7 @@ set -x
 ./plush.sh tests/plush/throw_exc2.pls
 
 ##############################################################################
-# Plush language package tests (plush/parser.pls)
+# Plush language package tests (plush/plush_pkg.pls)
 ##############################################################################
 
 # Run the Plush language package self-tests

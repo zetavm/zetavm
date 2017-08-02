@@ -36,8 +36,8 @@ manager, instantly giving every ZetaVM user the ability to write code in
 your language without needing to manually download, compile or configure
 anything.
 
-See the self-hosted Plush `parser.pls` for an example of a language package:
-https://github.com/maximecb/zetavm/blob/master/plush/parser.pls
+See the self-hosted Plush `plush_pkg.pls` for an example of a language package:
+https://github.com/maximecb/zetavm/blob/master/plush/plush_pkg.pls
 
 ## Pull Requests
 

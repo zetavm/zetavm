@@ -14,10 +14,10 @@ test: all
 	./run_tests.sh
 
 clean:
-	rm -rf *.o *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log plush/*.o zeta/*.o
+	rm -rf *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log *.0 plush/*.o vm/*.o
 
 # Tells make which targets are not files
-.PHONY: all test clean plush-pkg
+.PHONY: all test clean plush-pkg plush-bench math-pkg
 
 ##############################################################################
 # ZetaVM
@@ -61,16 +61,16 @@ $(CPLUSH_BIN): $(CPLUSH_OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_OBJECTS)
 
 # Plush language package
-plush-pkg: $(CPLUSH_BIN) plush/parser.pls
+plush-pkg: $(CPLUSH_BIN) plush/*.pls
 	mkdir -p packages/lang/plush/0
-	./$(CPLUSH_BIN) plush/parser.pls > packages/lang/plush/0/package
-	./$(CPLUSH_BIN) tests/plush/parser.pls > packages/lang/plush/0/tests
+	./$(CPLUSH_BIN) plush/plush_pkg.pls > packages/lang/plush/0/package
+	./$(CPLUSH_BIN) tests/plush/plush_pkg.pls > packages/lang/plush/0/tests
 
 # Plush parser benchmark
 plush-bench: $(CPLUSH_BIN)
 	./$(CPLUSH_BIN)  benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
 
-math-pkg: $(CPLUSH_BIN) plush/parser.pls
+math-pkg: $(CPLUSH_BIN) plush-pkg
 	mkdir -p packages/std/math/0
 	./$(CPLUSH_BIN) plush/math.pls > packages/std/math/0/package
 
