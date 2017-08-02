@@ -141,8 +141,6 @@ namespace core_io_0
         assert (fileName.isString());
         auto nameStr = (std::string)fileName;
 
-        std::cout << "reading file: " << nameStr << std::endl;
-
         FILE* file = fopen(nameStr.c_str(), "r");
 
         if (!file)
@@ -162,8 +160,7 @@ namespace core_io_0
 
         if (read != len)
         {
-            printf("failed to read file");
-            return Value::FALSE;
+            throw RunError("failed to read file \"" + nameStr + "\"");
         }
 
         // Add a null terminator to the string
@@ -181,8 +178,6 @@ namespace core_io_0
         assert (data.isString());
 
         auto nameStr = (std::string)fileName;
-
-        std::cout << "writing file: " << nameStr << std::endl;
 
         FILE* file = fopen(nameStr.c_str(), "w");
 

@@ -7,7 +7,11 @@
 #include "packages.h"
 #include "opt_parser.h"
 
-int runPkgMain(Object pkg, std::vector<std::string> progArgs)
+int runPkgMain(
+    Object pkg,
+    std::string pkgName,
+    std::vector<std::string> progArgs
+)
 {
     // If the package has no main function, do nothing
     if (!pkg.hasField("main"))
@@ -22,7 +26,8 @@ int runPkgMain(Object pkg, std::vector<std::string> progArgs)
     if (params.length() == 1)
     {
         // Create an array to store the program arguments
-        auto argVals = Array(progArgs.size());
+        auto argVals = Array(1 + progArgs.size());
+        argVals.push(String(pkgName));
         for (size_t i = 0; i < progArgs.size(); ++i)
             argVals.push(String(progArgs[i]));
 
@@ -86,7 +91,7 @@ int main(int argc, char** argv)
         try
         {
             auto pkg = import(pkgName);
-            return runPkgMain(pkg, parser.getProgramArgs());
+            return runPkgMain(pkg, pkgName, parser.getProgramArgs());
         }
 
         // If the package failed to import
@@ -99,7 +104,7 @@ int main(int argc, char** argv)
             if (pkg.hasField("init"))
                 callExportFn(pkg, "init");
 
-            return runPkgMain(pkg, parser.getProgramArgs());
+            return runPkgMain(pkg, pkgName, parser.getProgramArgs());
         }
     }
 

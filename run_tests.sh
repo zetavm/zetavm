@@ -5,7 +5,7 @@ set -e
 set -x
 
 ##############################################################################
-# Core zetavm tests
+# Core ZetaVM tests
 ##############################################################################
 
 ./zeta --test
@@ -82,23 +82,17 @@ set -x
 ./zeta tests/plush/throw_exc.pls
 ./zeta tests/plush/throw_exc2.pls
 ./zeta tests/plush/catch_import_missing.pls
+./zeta tests/plush/cmdline_args.pls -- foo bar
+
+# Regression tests
+./zeta tests/plush/regress_exc_var.pls
+./zeta tests/plush/regress_exc_idx.pls
+./zeta tests/plush/regress_throw_str.pls | grep --quiet "foobar"
 
 # Check that source position is reported on errors
 ./zeta tests/plush/assert.pls | grep --quiet "3:1"
 ./zeta tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
 ./zeta tests/plush/parse_error.pls | grep --quiet "parse_error.pls@5:6"
-
-# Check that uncaught exceptions are handled properly
-./zeta tests/plush/throw_str_uncaught.pls | grep --quiet "foobar"
-
-# Command-line program arguments
-./zeta tests/plush/cmdline_args.pls -- foo bar | grep --quiet "foobar"
-
-# Regression: throw during an array indexing expression
-./zeta tests/plush/regress_exc_idx.pls
-
-# Regression: catching host function exceptions
-./zeta tests/plush/regress_exc_var.pls
 
 # Check that the Plush language package is
 # able to parse its own source code
@@ -122,3 +116,9 @@ set -x
 
 python espresso/main.py test
 ./espresso.sh tests/espresso/test.espr
+
+##############################################################################
+# Example programs
+##############################################################################
+
+./zeta examples/line_count.pls -- examples/line_count.pls | grep --quiet "54"

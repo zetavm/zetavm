@@ -2,7 +2,8 @@
 
 exports.main = function (args)
 {
-    print(args[0] + args[1]);
-
+    assert (args.length == 3);
+    assert (args[1] == 'foo');
+    assert (args[2] == 'bar');
     return 0;
 };
