@@ -14,9 +14,12 @@ Standard Library
 Language Packages
 -----------------
 
-| Name  | Description |
-| --- | --- |
-| `lang/plush/0` | Plush programming language |
+Language packages are implementations of languages for ZetaVM. They implement parsing of source code and compilation
+to Zeta bytecode. You can write code in one of these languages by starting your source file with `#language "language_package_name"`, eg: `#language "lang/plush/0"`.
+
+| Name  | Description | Example Code |
+| --- | --- | -- |
+| [`lang/plush/0`](/plush/plush_pkg.pls) | Plush programming language | [Plush tests](/tests/plush) |
 
 
 Core VM Packages
