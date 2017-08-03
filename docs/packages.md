@@ -6,10 +6,11 @@ Standard Library
 
 | Name  | Description | Example Usage |
 | --- | --- | --- |
-| [`std/math/0`](/plush/math.pls)       | Collection of useful constants and math functions  | [Float tests](/tests/plush/floats.pls), [audio test](/examples/audio_test.pls) |
-| [`std/parsing/0`](/plush/parsing.pls)  | String parsing utilities                           | [Plush package](/plush/plush_pkg.pls) |
-| [`std/peval/0`](/packages/std/peval/0/package)      | Functional-style partial evaluation                | [Package tests](/tests/plush/peval.pls), [audio render](/examples/audio_render.pls) |
-| [`std/random/0`]()     | Random number generation and utilities             | [Package tests](/tests/plush/random.pls) |
+| [`std/csv/0`](/packages/std/csv/0/package)        | CSV spreadsheet parsing                            | N/A |
+| [`std/math/0`](/plush/math.pls)                   | Collection of useful constants and math functions  | [Float tests](/tests/plush/floats.pls), [audio test](/examples/audio_test.pls) |
+| [`std/parsing/0`](/plush/parsing.pls)             | String parsing utilities                           | [Plush package](/plush/plush_pkg.pls) |
+| [`std/peval/0`](/packages/std/peval/0/package)    | Functional-style partial evaluation                | [Package tests](/tests/plush/peval.pls), [audio render](/examples/audio_render.pls) |
+| [`std/random/0`]()                                | Random number generation and utilities             | [Package tests](/tests/plush/random.pls) |
 
 Language Packages
 -----------------
