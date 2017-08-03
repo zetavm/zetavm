@@ -26,4 +26,8 @@ The core VM packages provide I/O functionality that is implemented directly in t
 through wrappers (host functions) written in C++. Note that references to host functions are not serializable.
 As a general rule, you should avoid directly using core VM libraries if a higher-level wrapper is available.
 
-**TODO**
+| Name  | Description | Example Usage |
+| --- | --- | --- |
+| `std/audio/0`       | Audio output                           | [Audio test](/examples/audio_test.pls) |
+| `core/vm/0`         | Zeta image parsing and serialization   | [Serialization tests](/tests/plush/serialize.pls) |
+| `std/window/0`      | 2D graphics, pixel plotting            | [Graphics example](/examples/graphics.pls) |
