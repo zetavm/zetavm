@@ -276,6 +276,7 @@ var rt_bit_not = function (x)
     {
         return $not_i32(x);
     }
+
     assert (
         false,
         "unhandled type in bitwise not"
@@ -300,20 +301,28 @@ var rt_eq = function (x, y)
         {
             return $eq_f32($i32_to_f32(x), y);
         }
+
         if (typeof y == "int32")
         {
             return $eq_i32(x, y);
         }
+
+        return false;
     }
 
     if (typeof x == "float32")
     {
-        if (typeof y == "float32") {
+        if (typeof y == "float32")
+        {
             return $eq_f32(x, y);
         }
-        if (typeof y == "int32") {
+
+        if (typeof y == "int32")
+        {
             return $eq_f32(x, $i32_to_f32(y));
         }
+
+        return false;
     }
 
     if (typeof x == "string")
@@ -358,7 +367,7 @@ var rt_eq = function (x, y)
 
     assert (
         false,
-        "unhandled type in equality comparison"
+        "unhandled type in equality comparison: " + typeof x
     );
 };
 
@@ -379,10 +388,13 @@ var rt_lt = function(x, y)
         {
             return $lt_f32($i32_to_f32(x), y);
         }
+
         if (typeof y == "int32")
         {
             return $lt_i32(x, y);
         }
+
+        throw "incompatible types in less-than comparison";
     }
 
     if (typeof x == "float32")
@@ -391,10 +403,13 @@ var rt_lt = function(x, y)
         {
             return $lt_f32(x, y);
         }
+
         if (typeof y == "int32")
         {
             return $lt_f32(x, $i32_to_f32(y));
         }
+
+        throw "incompatible types in less-than comparison";
     }
 };
 
@@ -407,6 +422,7 @@ var rt_le = function (x, y)
         {
             return $le_f32($i32_to_f32(x), y);
         }
+
         if (typeof y == "int32")
         {
             return $le_i32(x, y);
@@ -419,7 +435,9 @@ var rt_le = function (x, y)
         {
             return $le_f32(x, y);
         }
-        if (typeof y == "int32") {
+
+        if (typeof y == "int32")
+        {
             return $le_f32(x, $i32_to_f32(y));
         }
     }

@@ -410,36 +410,9 @@ Input.parseEscSeq = function (input)
     // Hexadecimal escape
     if (esc == 'x')
     {
-        var escVal = 0;
-        for (var i = 0; i < 2; i += 1)
-        {
-            var ch = input:readCh();
-            var charCode = $get_char_code(ch, 0);
-
-            if (ch >= '0' && ch <= '9')
-            {
-                // ch - '0'
-                escVal = 16 * escVal + (charCode - 48);
-            }
-            else if (ch >= 'A' && ch <= 'F')
-            {
-                // ch - 'A'
-                escVal = 16 * escVal + (charCode - 65 + 10);
-            }
-            else
-            {
-                parseError(
-                    input,
-                    "invalid hexadecimal character escape code"
-                );
-            }
-        }
-
-        assert (
-            escVal >= 0 && escVal <= 255,
-            "invalid hexadecimal escape sequence"
-        );
-
+        var escVal = input:parseInt(16);
+        if (escVal < 0 || escVal > 255)
+            parseError(input, "invalid hexadecimal escape sequence");
         return $char_to_str(escVal);
     }
 
@@ -452,8 +425,12 @@ Input.parseEscSeq = function (input)
 /**
 Parse a non-negative decimal integer
 */
-var parseInt = function (input)
+Input.parseInt = function (input, radix)
 {
+    assert (radix <= 16);
+
+    var digitChars = '0123456789ABCDEF';
+
     var intVal = 0;
 
     for (;;)
@@ -461,13 +438,8 @@ var parseInt = function (input)
         // Peek at the next character
         var ch = input:readCh();
 
-        if (!isDigit(ch))
-            parseError(input, "expected digit");
-
         // Find the value of the digit
-        var digitVal = -1;
-        var digitChars = '0123456789';
-
+        var digitVal = false;
         for (var i = 0; i < digitChars.length; i += 1)
         {
             if (ch == digitChars[i])
@@ -477,12 +449,12 @@ var parseInt = function (input)
             }
         }
 
-        assert (
-            digitVal != -1,
-            "digit not found"
-        );
+        if (digitVal == false)
+        {
+            parseError(input, "expected digit");
+        }
 
-        var newIntVal = 10 * intVal + digitVal;
+        var newIntVal = radix * intVal + digitVal;
 
         if (newIntVal < intVal)
         {
@@ -493,7 +465,9 @@ var parseInt = function (input)
 
         // If the next character is not a digit, stop
         if (!isDigit(input:peekCh()))
+        {
             break;
+        }
     }
 
     /*
@@ -504,7 +478,7 @@ var parseInt = function (input)
     }
     */
 
-    return val;
+    return intVal;
 };
 
 // Exported definitions
