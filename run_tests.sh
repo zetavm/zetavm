@@ -18,16 +18,16 @@ set -x
 ./zeta tests/vm/closure.zim
 
 # Check that loading a non-existent file produces a sensible error
-./zeta non_existent_file | grep --quiet "non_existent_file"
-./zeta tests/vm/import_missing.zim | grep --quiet "missing_package"
+./zeta non_existent_file | grep -q "non_existent_file"
+./zeta tests/vm/import_missing.zim | grep -q "missing_package"
 
 # Check that exceptions work properly with host functions
-./zeta tests/vm/hostfn_throw.zim | grep --quiet "missing_file"
-./zeta tests/vm/hostfn_catch_exc.zim | grep --quiet "caught hostfn exc"
+./zeta tests/vm/hostfn_throw.zim | grep -q "missing_file"
+./zeta tests/vm/hostfn_catch_exc.zim | grep -q "caught hostfn exc"
 
 # Check that a sensible error message is produced if
 # temporaries are left on the stack when returning
-./zeta tests/vm/regress_ret_stack.zim | grep --quiet "stack"
+./zeta tests/vm/regress_ret_stack.zim | grep -q "stack"
 
 ##############################################################################
 # cplush tests (C++ plush compiler implementation)
@@ -87,12 +87,12 @@ set -x
 # Regression tests
 ./zeta tests/plush/regress_exc_var.pls
 ./zeta tests/plush/regress_exc_idx.pls
-./zeta tests/plush/regress_throw_str.pls | grep --quiet "foobar"
+./zeta tests/plush/regress_throw_str.pls | grep -q "foobar"
 
 # Check that source position is reported on errors
-./zeta tests/plush/assert.pls | grep --quiet "3:1"
-./zeta tests/plush/call_site_pos.pls | grep --quiet "call_site_pos.pls@8:"
-./zeta tests/plush/parse_error.pls | grep --quiet "parse_error.pls@5:6"
+./zeta tests/plush/assert.pls | grep -q "3:1"
+./zeta tests/plush/call_site_pos.pls | grep -q "call_site_pos.pls@8:"
+./zeta tests/plush/parse_error.pls | grep -q "parse_error.pls@5:6"
 
 # Check that the Plush language package is
 # able to parse its own source code
@@ -121,4 +121,5 @@ python espresso/main.py test
 # Example programs
 ##############################################################################
 
-./zeta examples/line_count.pls -- examples/line_count.pls | grep --quiet "54"
+./zeta examples/line_count.pls -- examples/line_count.pls | grep -q "54"
+./zeta examples/csv_parsing.pls -- examples/GOOG.csv | grep -q "rows: 23"
