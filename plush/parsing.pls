@@ -449,6 +449,64 @@ Input.parseEscSeq = function (input)
     );
 };
 
+/**
+Parse a non-negative decimal integer
+*/
+var parseInt = function (input)
+{
+    var intVal = 0;
+
+    for (;;)
+    {
+        // Peek at the next character
+        var ch = input:readCh();
+
+        if (!isDigit(ch))
+            parseError(input, "expected digit");
+
+        // Find the value of the digit
+        var digitVal = -1;
+        var digitChars = '0123456789';
+
+        for (var i = 0; i < digitChars.length; i += 1)
+        {
+            if (ch == digitChars[i])
+            {
+                digitVal = i;
+                break;
+            }
+        }
+
+        assert (
+            digitVal != -1,
+            "digit not found"
+        );
+
+        var newIntVal = 10 * intVal + digitVal;
+
+        if (newIntVal < intVal)
+        {
+            parseError("integer value too large to be represented as int32");
+        }
+
+        intVal = newIntVal;
+
+        // If the next character is not a digit, stop
+        if (!isDigit(input:peekCh()))
+            break;
+    }
+
+    /*
+    // If the value is negative
+    if (neg)
+    {
+        intVal *= -1;
+    }
+    */
+
+    return val;
+};
+
 // Exported definitions
 exports.isSpace = isSpace;
 exports.isDigit = isDigit;

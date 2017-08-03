@@ -1,6 +1,11 @@
+/// Floating-point constants
 exports.PI = 3.14159265358979323846f;
 exports.E  = 2.71828182845904523536f;
 exports.INF = 1.0f / 0.0f;
+
+/// Maximum and mininum representable int32 values
+exports.INT32_MAX = 2147483647;
+exports.INT32_MIN = -2147483648;
 
 exports.isNaN = function (x)
 {
