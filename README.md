@@ -81,6 +81,8 @@ For more information, see the documentation in the [docs](docs) directory:
 
 - [Design and Guiding Principles of ZetaVM](docs/design.md)
 
+- [Packages included with ZetaVM](docs/packages.md)
+
 - [Creating your own Language with ZetaVM](docs/new_language.md)
 
 There are also a few blog post about [Zeta](https://pointersgonewild.com/category/zeta/) and its design.
