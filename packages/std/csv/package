@@ -1,0 +1,81 @@
+#language "lang/plush/0"
+
+var parsing = import "std/parsing/0";
+
+var parseCell = function (input)
+{
+    // Eat preceding whitespace
+    input:eatWS();
+
+    if (input:next('"'))
+    {
+        var str = input:parseStringLit('"');
+        input:eatWS();
+        return str;
+    }
+
+    var str = '';
+
+    for (;;)
+    {
+        var ch = input:peekCh();
+
+        if (ch == '\r')
+            continue;
+
+        if (ch == ',')
+            break;
+
+        if (ch == '\n')
+            break;
+
+        input:readCh();
+        str += ch;
+    }
+
+    // TODO: need to strip trailing whitespace in str
+    // use string.strip when available
+
+    return str;
+};
+
+var parseRow = function (input)
+{
+    var row = [];
+
+    var curLineNo = input.lineNo;
+
+    for (;;)
+    {
+        input:eatWS();
+
+        if (input:eof())
+            break;
+
+        row:push(parseCell(input));
+
+        if (input:match('\n'))
+            break;
+
+        input:expect(',');
+    }
+
+    return row;
+};
+
+/**
+Read a CSV file (comma separated values)
+*/
+var readCSV = function (fileName)
+{
+    var input = parsing.fileInput(fileName);
+
+    var rows = [];
+
+    for (; !input:eof();)
+        rows:push(parseRow(input));
+
+    return rows;
+};
+
+exports.readCSV = readCSV;

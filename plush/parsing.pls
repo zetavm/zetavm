@@ -481,6 +481,22 @@ Input.parseInt = function (input, radix)
     return intVal;
 };
 
+/**
+Create an input object mapping to a file
+*/
+var fileInput = function (fileName)
+{
+    var io = import "core/io/0";
+    var fileData = io.read_file(fileName);
+
+    var input = Input::{
+        srcName: fileName,
+        srcString: fileData
+    };
+
+    return input;
+};
+
 // Exported definitions
 exports.isSpace = isSpace;
 exports.isDigit = isDigit;
@@ -488,3 +504,4 @@ exports.isAlpha = isAlpha;
 exports.isAlnum = isAlnum;
 exports.parseError = parseError;
 exports.Input = Input;
+exports.fileInput = fileInput;

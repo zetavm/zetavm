@@ -394,7 +394,7 @@ var rt_lt = function(x, y)
             return $lt_i32(x, y);
         }
 
-        throw "incompatible types in less-than comparison";
+        throw "incompatible types in comparison";
     }
 
     if (typeof x == "float32")
@@ -409,8 +409,10 @@ var rt_lt = function(x, y)
             return $lt_f32(x, $i32_to_f32(y));
         }
 
-        throw "incompatible types in less-than comparison";
+        throw "incompatible types in comparison";
     }
+
+    throw "invalid types in comparison";
 };
 
 /// Less than or equal comparison
@@ -427,6 +429,8 @@ var rt_le = function (x, y)
         {
             return $le_i32(x, y);
         }
+
+        throw "incompatible types in comparison";
     }
 
     if (typeof x == "float32")
@@ -440,6 +444,8 @@ var rt_le = function (x, y)
         {
             return $le_f32(x, $i32_to_f32(y));
         }
+
+        throw "incompatible types in comparison";
     }
 
     if (typeof x == "string")
@@ -453,10 +459,7 @@ var rt_le = function (x, y)
         }
     }
 
-    assert (
-        false,
-        "unhandled type in less-than or equal comparison"
-    );
+    throw "invalid types in comparison";
 };
 
 var rt_gt = function(x, y)
@@ -467,10 +470,13 @@ var rt_gt = function(x, y)
         {
             return $gt_f32($i32_to_f32(x), y);
         }
+
         if (typeof y == "int32")
         {
             return $gt_i32(x, y);
         }
+
+        throw "incompatible types in comparison";
     }
 
     if (typeof x == "float32")
@@ -479,10 +485,16 @@ var rt_gt = function(x, y)
         {
             return $gt_f32(x, y);
         }
-        if (typeof y == "int32") {
+
+        if (typeof y == "int32")
+        {
             return $gt_f32(x, $i32_to_f32(y));
         }
+
+        throw "incompatible types in comparison";
     }
+
+    throw "invalid types in comparison";
 };
 
 /// Greater than or equal comparison
@@ -494,10 +506,13 @@ var rt_ge = function (x, y)
         {
             return $ge_f32($i32_to_f32(x), y);
         }
+
         if (typeof y == "int32")
         {
             return $ge_i32(x, y);
         }
+
+        throw "incompatible types in comparison";
     }
 
     if (typeof x == "float32")
@@ -506,10 +521,13 @@ var rt_ge = function (x, y)
         {
             return $ge_f32(x, y);
         }
+
         if (typeof y == "int32")
         {
             return $ge_f32(x, $i32_to_f32(y));
         }
+
+        throw "incompatible types in comparison";
     }
 
     if (typeof x == "string")
@@ -523,10 +541,7 @@ var rt_ge = function (x, y)
         }
     }
 
-    assert (
-        false,
-        "unhandled type in less-than or equal comparison"
-    );
+    throw "invalid types in comparison";
 };
 
 /// Property existence check operator

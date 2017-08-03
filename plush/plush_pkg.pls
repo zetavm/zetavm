@@ -1036,13 +1036,7 @@ Parse a source file as a unit
 */
 var parseFile = function (fileName)
 {
-    var fileData = readFile(fileName);
-
-    var input = Input::{
-        srcName: fileName,
-        srcString: fileData
-    };
-
+    var input = parsing.fileInput(fileName);
     return parseUnit(input);
 };
 
