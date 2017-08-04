@@ -61,6 +61,7 @@ into why Zeta works the way it does. For documentation on the bytecode, you
 should look at compiled image examples under [tests](../tests) and directly
 refer to the implementation of [the interpreter](../vm/interp.cpp).
 
-If you have any questions or would like clarifications, do not hesitate
-to open a new [issue](https://github.com/maximecb/zetavm/issues) and tag
-it as a question.
+If you have any questions, would like clarifications, or if you run
+into any bugs/flaws in ZetaVM, do not hesitate to open a new
+[issue](https://github.com/maximecb/zetavm/issues). You can also pop by the
+[Gitter chatroom](https://gitter.im/zeta-vm-org/Lobby) and introduce yourself. 
