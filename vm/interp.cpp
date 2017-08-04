@@ -1893,7 +1893,8 @@ Value execCode()
                     );
                 }
 
-                pushVal(Value::int32(str[idx]));
+                unsigned char ch = (unsigned char)str[idx];
+                pushVal(Value::int32(ch));
             }
             break;
 

@@ -409,6 +409,7 @@ ASTExpr* parseStringLit(Input& input, char endCh)
                     for (size_t i = 0; i < 2; ++i)
                     {
                         auto ch = input.readCh();
+
                         if (ch >= '0' && ch <= '9')
                         {
                             escVal = 16 * escVal + (ch - '0');

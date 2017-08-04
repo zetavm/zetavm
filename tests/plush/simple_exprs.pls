@@ -89,6 +89,7 @@ assert ("foo"[0] == "f");
 assert ("foo"[1] == "o");
 assert ("foo" + "bar" == "foobar");
 assert ('\x41' == 'A');
+assert ($get_char_code('\xF0', 0) == 240);
 assert ("f" <= "f");
 assert ("f" <= "g");
 assert ("c" >= "c");
