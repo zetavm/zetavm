@@ -423,7 +423,7 @@ Input.parseEscSeq = function (input)
 };
 
 /**
-Parse a non-negative decimal integer
+Parse a non-negative integer of a given radix
 */
 Input.parseInt = function (input, radix)
 {

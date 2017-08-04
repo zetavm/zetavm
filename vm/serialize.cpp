@@ -18,7 +18,7 @@ std::string escapeStr(std::string str)
 
     for (size_t i = 0; i < str.size(); ++i)
     {
-        auto ch = str[i];
+        unsigned char ch = str[i];
 
         if (ch >= 32 && ch <= 126)
         {

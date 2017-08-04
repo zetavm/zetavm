@@ -46,6 +46,7 @@ roundTrip({ a:1, b:2 });
 roundTrip({ a:1, b:2, c:[3,4] });
 roundTrip("foobar");
 roundTrip("foo\nbar");
+roundTrip("\xF0");
 
 // Object with non-identifier field name
 obj = {};

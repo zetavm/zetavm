@@ -438,7 +438,7 @@ void genExpr(CodeGenCtx& ctx, ASTExpr* expr)
     {
         // Escape the string conservatively
         std::string escStr;
-        for (auto ch : strExpr->val)
+        for (unsigned char ch : strExpr->val)
         {
             if (ch < 32 || ch > 126)
             {
