@@ -1,6 +1,6 @@
 # Implementing a New Language with ZetaVM
 
-## Two Possile Methods
+## Two Possible Methods
 
 There are currently two ways to implement a language on top of ZetaVM. The
 first is to write an external compiler which outputs bytecode
