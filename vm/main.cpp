@@ -64,15 +64,19 @@ int runPkgMain(
 
 int main(int argc, char** argv)
 {
-    BoolOpt test('t', "test", false, "run unit tests");
+    BoolOpt test('t', "test", false, "runs unit tests");
+    BoolOpt help('h', "help", false, "prints this help message.");
     OptParser parser;
-    parser = parser.add(test);
-
+    parser = parser.add(test).add(help);
     try
     {
         //initRuntime();
         //initParser();
         parser.parse(argc, argv);
+        if (help()) {
+            std::cout << parser.helpString();
+            return 0;
+        }
         initInterp();
 
         // If we are in test mode
@@ -110,7 +114,7 @@ int main(int argc, char** argv)
 
     catch (ParseException& e)
     {
-        std::cout << e.what() << std::endl;
+        std::cerr << e.what() << std::endl;
         return -1;
     }
 

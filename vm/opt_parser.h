@@ -7,6 +7,7 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 
 class ParseException : public std::exception
@@ -14,8 +15,9 @@ class ParseException : public std::exception
 private:
     std::string msg;
 public:
-    ParseException(std::string msg) : msg(msg) {}
-    const char *what () const throw ()
+    explicit ParseException(std::string msg) : msg(msg) {}
+
+    const char *what () const throw () override
     {
         return msg.c_str();
     }
@@ -26,6 +28,9 @@ bool isUint(const std::string &s)
     return std::all_of(s.begin(), s.end(), ::isdigit);
 }
 
+template<class T>
+T id (T val) { return val; }
+
 class Opt
 {
 protected:
@@ -35,16 +40,18 @@ protected:
     // Internal; For state tracking
     bool present;
 public:
-    Opt(const char shortName,
+    Opt(char shortName,
         const std::string &longName,
         const std::string &description);
 
     virtual void defaultHandler(bool isPresent, std::string value) {}
+    virtual ~Opt() = default;
     bool operator()();
     void setPresent();
     char getShortName();
     std::string getLongName();
     bool isPresent();
+    std::string getDescription();
 };
 
 Opt::Opt(const char shortName,
@@ -82,17 +89,21 @@ bool Opt::operator()()
     return present;
 }
 
+std::string Opt::getDescription() {
+    return description;
+}
+
 class BoolOpt : public Opt
 {
 private:
     bool pValue; // Stands for provided value
-    std::function<void(bool)> *userHandler;
+    std::function<bool(bool)> userHandler;
 public:
     BoolOpt (const char shortName,
              const std::string& longName,
              const bool defaultValue,
              const std::string &description,
-             std::function<void(bool)> *userHandler = nullptr)
+             std::function<bool(bool)> userHandler = id<bool>)
         : Opt(shortName, longName, description)
     {
         this->pValue = defaultValue;
@@ -102,22 +113,19 @@ public:
     BoolOpt (const std::string& longName,
              const bool defaultValue,
              const std::string &description,
-             std::function<void(bool)> *userHandler = nullptr)
+             std::function<bool(bool)> userHandler = id<bool>)
         : BoolOpt('-', longName, defaultValue, description, userHandler){}
 
     bool get() { return pValue; }
 
-    void defaultHandler(bool isPresent, std::string value)
+    void defaultHandler(bool isPresent, std::string value) override
     {
         if (isPresent)
         {
             throw ParseException("Argument does not expect a value");
         }
         pValue = true;
-        if (userHandler != nullptr)
-        {
-            (*userHandler)(pValue);
-        }
+        pValue = userHandler(pValue);
     }
 };
 
@@ -125,13 +133,13 @@ class IntOpt : public Opt
 {
 private:
     int64_t pValue;
-    std::function<void(int64_t)> *userHandler = nullptr;
+    std::function<int64_t(int64_t)> userHandler;
 public:
     IntOpt (const char shortName,
             const std::string& longName,
             const int64_t defaultValue,
             const std::string &description,
-            std::function<void(int64_t)> *userHandler = nullptr)
+            std::function<int64_t(int64_t)> userHandler = id<int64_t>)
         : Opt(shortName, longName, description)
     {
         this->pValue = defaultValue;
@@ -141,12 +149,12 @@ public:
     IntOpt (const std::string& longName,
             const int64_t defaultValue,
             const std::string &description,
-            std::function<void(int64_t)> *userHandler = nullptr)
+            std::function<int64_t(int64_t)> userHandler = id<int64_t>)
         : IntOpt('-', longName, defaultValue, description, userHandler){}
 
     int64_t get() { return pValue; }
 
-    void defaultHandler(bool isPresent, std::string value)
+    void defaultHandler(bool isPresent, std::string value) override
     {
         if (!isPresent)
         {
@@ -155,16 +163,13 @@ public:
         try
         {
             pValue = stoll(value);
-            if (userHandler != nullptr)
-            {
-                (*userHandler)(pValue);
-            }
+            pValue = userHandler(pValue);
         }
-        catch (const std::out_of_range exp)
+        catch (const std::out_of_range& exp)
         {
             throw ParseException("Value is not in range of a 64 bit int");
         }
-        catch (const std::invalid_argument exp)
+        catch (const std::invalid_argument& exp)
         {
             throw ParseException("Argument expects an integer value");
 
@@ -176,13 +181,13 @@ class UintOpt : public Opt
 {
 private:
     uint64_t pValue;
-    std::function<void(uint64_t)> *userHandler = nullptr;
+    std::function<uint64_t(uint64_t)> userHandler;
 public:
     UintOpt (const char shortName,
              const std::string& longName,
              const uint64_t defaultValue,
              const std::string &description,
-             std::function<void(uint64_t)> *userHandler = nullptr)
+             std::function<uint64_t(uint64_t)> userHandler = id<uint64_t>)
         : Opt(shortName, longName, description)
     {
         this->pValue = defaultValue;
@@ -192,13 +197,13 @@ public:
     UintOpt (const std::string& longName,
              const uint64_t defaultValue,
              const std::string &description,
-             std::function<void(uint64_t)> *userHandler = nullptr)
+             std::function<uint64_t(uint64_t)> userHandler = id<uint64_t>)
         : UintOpt('-', longName, defaultValue, description, userHandler){}
 
 
     uint64_t get() { return pValue; }
 
-    void defaultHandler(bool isPresent, std::string value)
+    void defaultHandler(bool isPresent, std::string value) override
     {
         if (!isPresent || !isUint(value))
         {
@@ -207,16 +212,13 @@ public:
         try
         {
             pValue = stoull(value);
-            if (userHandler != nullptr)
-            {
-                (*userHandler)(pValue);
-            }
+            pValue = userHandler(pValue);
         }
-        catch (const std::out_of_range exp)
+        catch (const std::out_of_range& exp)
         {
             throw ParseException("Value is not in range of a 64 bit unsigned integer");
         }
-        catch (const std::invalid_argument exp)
+        catch (const std::invalid_argument& exp)
         {
             throw ParseException("Argument expects an non negative int value");
         }
@@ -228,13 +230,13 @@ class StrOpt : public Opt
 {
 private:
     std::string pValue;
-    std::function<void(std::string)> *userHandler = nullptr;
+    std::function<std::string(std::string)> userHandler;
 public:
     StrOpt (const char shortName,
             const std::string& longName,
             const std::string &defaultValue,
             const std::string &description,
-            std::function<void(std::string)> *userHandler = nullptr)
+            std::function<std::string(std::string)> userHandler = id<std::string>)
         : Opt(shortName, longName, description)
     {
         this->pValue = defaultValue;
@@ -244,22 +246,19 @@ public:
     StrOpt (const std::string& longName,
             const std::string &defaultValue,
             const std::string &description,
-            std::function<void(std::string)> *userHandler = nullptr)
+            std::function<std::string(std::string)> userHandler = id<std::string>)
         : StrOpt('-', longName, defaultValue, description, userHandler){}
 
     std::string get() { return pValue; }
 
-    void defaultHandler(bool isPresent, std::string value)
+    void defaultHandler(bool isPresent, std::string value) override
     {
         if (!isPresent)
         {
             throw ParseException("Argument expects a value");
         }
         pValue = value;
-        if (userHandler != nullptr)
-        {
-            (*userHandler)(pValue);
-        }
+        pValue = userHandler(pValue);
     }
 };
 
@@ -273,7 +272,6 @@ private:
     std::vector<std::reference_wrapper<Opt>>::iterator findArgByLongName(std::string &name);
     void parse(std::string key, bool isValPresent, std::string value);
     void parse(char key, bool isValPresent, std::string value);
-    void parse(Opt &arg, std::string name, bool isValPresent, std::string value);
     void parseShortName(const char *token);
     void parseLongName(const char *token);
     void parseProgramName(const char *name);
@@ -284,9 +282,10 @@ public:
     void parse(int argc, char *argv[]);
     std::string getProgramName();
     std::vector<std::string> getProgramArgs();
+    std::string helpString();
 };
 
-OptParser::OptParser(){}
+OptParser::OptParser() = default;
 
 OptParser OptParser::add(Opt &opt)
 {
@@ -296,7 +295,7 @@ OptParser OptParser::add(Opt &opt)
 OptParser::OptParser(std::vector<std::reference_wrapper<Opt>> argOptions)
 {
     // TODO: check for duplicates
-    this->argOptions = argOptions;
+    this->argOptions = move(argOptions);
 }
 
 std::vector<std::reference_wrapper<Opt>>::iterator OptParser::findArgByShortName(char c)
@@ -323,9 +322,9 @@ void OptParser::parse(std::string key, bool isValPresent = false, std::string va
         try
         {
             it -> get().setPresent();
-            it -> get().defaultHandler(isValPresent, value);
+            it -> get().defaultHandler(isValPresent, move(value));
         }
-        catch (ParseException exp)
+        catch (ParseException& exp)
         {
             throw ParseException("Parsing of " + key + " failed: " + exp.what());
         }
@@ -344,9 +343,9 @@ void OptParser::parse(char key, bool isValPresent = false, std::string value = "
         try
         {
             it -> get().setPresent();
-            it -> get().defaultHandler(isValPresent, value);
+            it -> get().defaultHandler(isValPresent, move(value));
         }
-        catch (ParseException exp)
+        catch (ParseException& exp)
         {
             throw ParseException("Parsing of " + std::string(1,key) + " failed: " + exp.what());
         }
@@ -357,7 +356,7 @@ void OptParser::parse(char key, bool isValPresent = false, std::string value = "
 void OptParser::parseShortName(const char *token)
 {
     std::string str{token};
-    size_t idx = str.find("=");
+    size_t idx = str.find('=');
     if (idx == std::string::npos)
     {
         // '=' Not Found, Means All should be boolean
@@ -389,7 +388,7 @@ void OptParser::parseLongName(const char *token)
 {
     // Len is guaranteed to be at least 1
     std::string str{token};
-    size_t idx = str.find("=");
+    size_t idx = str.find('=');
     if (idx == std::string::npos)
     {
         // '=' Not Found, Means should be boolean
@@ -407,7 +406,7 @@ void OptParser::parseLongName(const char *token)
 void OptParser::parseProgramName(const char *name)
 {
     std::string str{name};
-    if (programName != "")
+    if (!programName.empty())
     {
         throw ParseException{"Bad option - " + str};
     }
@@ -438,7 +437,7 @@ void OptParser::parse(int argc, char *argv[])
         {
             if (strcmp(current, "--") == 0)
             {
-                if (programName == "")
+                if (programName.empty())
                 {
                     throw ParseException{"Program filename must be specified before arguments"};
                 }
@@ -449,7 +448,7 @@ void OptParser::parse(int argc, char *argv[])
                 }
                 return;
             }
-            else if (current[0] == '-')
+            if (current[0] == '-')
             {
                 if (current[1] == '-')
                 {
@@ -490,8 +489,61 @@ std::vector<std::string> OptParser::getProgramArgs()
     return programArgs;
 }
 
-static char* testStrdup(std::string s) {
-    char *temp = new char[s.length()];
+std::vector<std::string> wrap(const std::string &desc, uint8_t width)
+{
+    std::vector<std::string> lines;
+    uint64_t start = 0, end = 0;
+    while (start + width < desc.size())
+    {
+        end = desc.rfind(' ', start + width);
+        if (end < start || end == std::string::npos)
+        {
+           lines.push_back(desc.substr(start, width));
+           start += width;
+        }
+        else
+        {
+           lines.push_back(desc.substr(start, end - start));
+           start = end + 1;
+        }
+    }
+    lines.push_back(desc.substr(start, width));
+    return lines;
+}
+
+
+std::string OptParser::helpString()
+{
+    std::stringstream ss;
+    ss << "\n";
+    ss << "Usage:   zeta [options] [program file] -- [program args]";
+    ss << "\n" << "\n";
+    for(auto opt: argOptions)
+    {
+        ss << "  ";
+        if (opt.get().getShortName() != '-')
+        {
+            ss << "-" << opt.get().getShortName();
+            ss << ", ";
+        }
+        else
+        {
+            ss << "    ";
+        }
+        ss << "--" << opt.get().getLongName();
+        ss << "\n";
+        for (auto &line: wrap(opt.get().getDescription(), 70))
+        {
+            ss << "         " << line << "\n";
+        }
+        ss << "\n";
+    }
+    return ss.str();
+}
+
+static char* testStrdup(const std::string &s)
+{
+    auto *temp = new char[s.length()];
     strcpy(temp, s.c_str());
     return temp;
 }
@@ -499,19 +551,25 @@ static char* testStrdup(std::string s) {
 static void testOptParser0()
 {
     // check if custom handler works fine
-    std::function<void(int64_t)> customChecker = [](int64_t x) {
-        if (x > 1000) {
+    std::function<int64_t(int64_t)> customChecker = [](int64_t x)
+    {
+        if (x > 1000)
+        {
             throw ParseException("Value is more that 1000");
         }
+        return 42;
     };
 
-    IntOpt js('j', "js", 1100, "the value of some field js", &customChecker);
+    IntOpt js('j', "js", 1100, "the value of some field js", customChecker);
     js.defaultHandler(true, "45");
-    assert(js.get() == 45);
-    try {
+    assert(js.get() == 42);
+    try
+    {
         js.defaultHandler(true, "2000");
         assert(false);
-    } catch (ParseException exp) {
+    }
+    catch (ParseException& exp)
+    {
     }
 }
 
@@ -519,10 +577,13 @@ static void testOptParser1()
 {
     // check if int handler works fine
     IntOpt js('j', "js", 1100, "the value of some field js");
-    try {
+    try
+    {
         js.defaultHandler(true, "9223372036854775808");
         assert(false);
-    } catch (ParseException exp) {
+    }
+    catch (ParseException& exp)
+    {
         assert(js.get() == 1100);
     }
 
@@ -534,10 +595,13 @@ static void testOptParser2()
 {
     // check if uint handler works fine
     UintOpt ks('k', "ks", 2200LL, "the value of some field ks");
-    try {
+    try
+    {
         ks.defaultHandler(true, "-22");
         assert(false);
-    } catch (ParseException exp) {
+    }
+    catch (ParseException& exp)
+    {
         assert(ks.get() == 2200);
     }
     ks.defaultHandler(true, "9223372036854775808");
@@ -591,10 +655,13 @@ static void testOptParser4()
     char *arg1 = testStrdup("--is");
     char *arg2 = testStrdup("-x=4");
     char *args[]{arg1, arg1, arg2}; // First args does not matter
-    try {
+    try
+    {
         parser.parse(3, args);
         assert(false);
-    } catch (ParseException exp) {
+    }
+    catch (ParseException& exp)
+    {
     }
 
     delete []arg1;
@@ -671,5 +738,5 @@ static void testOptParser()
     testOptParser4();
     testOptParser5();
     testOptParser6();
-    std::cout << "Argparser: All test Passed\n";
+    std::cout << "Opt Parser: All test Passed\n";
 }
