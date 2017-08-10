@@ -68,6 +68,7 @@ int main(int argc, char** argv)
     BoolOpt help('h', "help", false, "prints this help message.");
     OptParser parser;
     parser = parser.add(test).add(help);
+
     try
     {
         //initRuntime();
