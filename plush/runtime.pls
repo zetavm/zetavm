@@ -714,11 +714,14 @@ var rt_push = function (arr, val)
     $array_push(arr, val);
 };
 
-var io = import "core/io/0";
-
 /// Write to standard output
 var output = function (x)
 {
+    // Note: we lazily import core packages because references to
+    // host functions can't be serialized, and so should not be stored
+    // in the global object.
+    var io = import "core/io/0";
+
     if (typeof x == "string")
     {
         io.print_str(x);

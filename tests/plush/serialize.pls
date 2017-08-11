@@ -46,6 +46,11 @@ roundTrip({ a:1, b:2 });
 roundTrip({ a:1, b:2, c:[3,4] });
 roundTrip("foobar");
 roundTrip("foo\nbar");
+roundTrip("foo\"bar");
+roundTrip("\"");
+roundTrip("\'");
+roundTrip("\n");
+roundTrip("\\");
 roundTrip("\xF0");
 
 // Object with non-identifier field name
@@ -80,3 +85,16 @@ var str = vm.serialize(fib, false);
 var fib2 = vm.parse(str);
 assert (fib(10) == fib2(10));
 roundTrip(fib);
+
+// Object with a method (parsed by the Plush package)
+var obj = {
+    count: 0,
+    incr: function (self) { self.count += 1; }
+};
+obj:incr();
+var str = vm.serialize(obj, false);
+//print(str);
+//print(str.length);
+var obj2 = vm.parse(str);
+obj2:incr();
+assert (obj2.count == 2);

@@ -20,12 +20,6 @@ std::string escapeStr(std::string str)
     {
         unsigned char ch = str[i];
 
-        if (ch >= 32 && ch <= 126)
-        {
-            out += ch;
-            continue;
-        }
-
         if (ch == '\n')
         {
             out += "\\n";
@@ -41,6 +35,30 @@ std::string escapeStr(std::string str)
         if (ch == '\t')
         {
             out += "\\t";
+            continue;
+        }
+
+        if (ch == '\\')
+        {
+            out += "\\\\";
+            continue;
+        }
+
+        if (ch == '\"')
+        {
+            out += "\\\"";
+            continue;
+        }
+
+        if (ch == '\'')
+        {
+            out += "\\\'";
+            continue;
+        }
+
+        if (ch >= 32 && ch <= 126)
+        {
+            out += ch;
             continue;
         }
 
