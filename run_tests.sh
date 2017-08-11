@@ -29,6 +29,9 @@ set -x
 # temporaries are left on the stack when returning
 ./zeta tests/vm/regress_ret_stack.zim | grep -q "stack"
 
+# Test that the help option is recognized
+./zeta --help | grep -q "Usage"
+
 ##############################################################################
 # cplush tests (C++ plush compiler implementation)
 ##############################################################################
@@ -37,7 +40,7 @@ set -x
 ./cplush --test
 
 ./plush.sh tests/plush/trivial.pls
-./plush.sh tests/plush/floats.pls
+./plush.sh tests/plush/math.pls
 ./plush.sh tests/plush/simple_exprs.pls
 ./plush.sh tests/plush/identfn.pls
 ./plush.sh tests/plush/fib.pls
@@ -62,7 +65,7 @@ set -x
 
 # Run Plush code using the Plush language package
 ./zeta tests/plush/trivial.pls
-./zeta tests/plush/floats.pls
+./zeta tests/plush/math.pls
 ./zeta tests/plush/simple_exprs.pls
 ./zeta tests/plush/identfn.pls
 ./zeta tests/plush/fib.pls

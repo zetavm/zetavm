@@ -38,42 +38,6 @@ exports.abs = function (x)
     return x;
 };
 
-exports.floor = function (x)
-{
-    if (typeof x == "int32")
-    {
-        return x;
-    }
-
-    if (typeof x == "float32")
-    {
-        var xi = $f32_to_i32(x);
-        if (x < xi)
-            return xi - 1;
-        return xi;
-    }
-
-    assert(
-        false,
-        "unhandled type in floor function"
-    );
-};
-
-exports.fmod = function (x, y)
-{
-    if (typeof x == "float32" && typeof y == "float32")
-    {
-        var quot = x / y;
-        var iquot = $f32_to_i32(quot);
-        var fmod = x - iquot * y;
-    }
-
-    assert (
-        false,
-        "unhandled types in fmod function"
-    );
-};
-
 exports.sin = function (x)
 {
     if (typeof x == "int32")
@@ -125,5 +89,51 @@ exports.sqrt = function (x)
     assert(
         false,
         "unhandled type in sqrt function"
+    );
+};
+
+exports.fmod = function (x, y)
+{
+    if (typeof x == "float32" && typeof y == "float32")
+    {
+        var quot = x / y;
+        var iquot = $f32_to_i32(quot);
+        var fmod = x - iquot * y;
+    }
+
+    assert (
+        false,
+        "unhandled types in fmod function"
+    );
+};
+
+exports.idiv = function (x, y)
+{
+    if (typeof x == "int32" && typeof y == "int32")
+    {
+        return $div_i32(x, y);
+    }
+
+    throw "unhandled type in idiv";
+};
+
+exports.floor = function (x)
+{
+    if (typeof x == "int32")
+    {
+        return x;
+    }
+
+    if (typeof x == "float32")
+    {
+        var xi = $f32_to_i32(x);
+        if (x < xi)
+            return xi - 1;
+        return xi;
+    }
+
+    assert(
+        false,
+        "unhandled type in floor function"
     );
 };
