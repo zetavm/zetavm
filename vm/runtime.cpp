@@ -798,6 +798,7 @@ void testRuntime()
     assert (arr2.getElem(0) == Value::ONE);
     assert (arr2.getElem(1) == Value::TWO);
 
+    // Regression test: changing element tag
     auto arr3 = Array(2);
     arr3.push(Value::ZERO);
     arr3.push(Value::ONE);
