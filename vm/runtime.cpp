@@ -243,7 +243,7 @@ uint32_t Array::length()
 void Array::setElem(size_t i, Value v)
 {
     auto ptr = getObjPtr();
-    auto cap = length();
+    auto cap = getCap();
 
     auto words = (Word*)(ptr + OF_DATA);
     auto tags  = (Tag*) (ptr + OF_DATA + cap * sizeof(Word));
@@ -797,6 +797,16 @@ void testRuntime()
     assert (arr2.length() == 2);
     assert (arr2.getElem(0) == Value::ONE);
     assert (arr2.getElem(1) == Value::TWO);
+
+    auto arr3 = Array(2);
+    arr3.push(Value::ZERO);
+    arr3.push(Value::ONE);
+    arr3.push(Value::TWO);
+    arr3.setElem(0, Value::TRUE);
+    assert(arr3.length() == 3);
+    assert(arr3.getElem(0) == Value::TRUE);
+    assert(arr3.getElem(1) == Value::ONE);
+    assert(arr3.getElem(2) == Value::TWO);
 
     // Objects
     auto obj = Object::newObject();
