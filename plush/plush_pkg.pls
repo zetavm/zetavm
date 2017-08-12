@@ -1,5 +1,14 @@
 #language "lang/plush/0"
 
+// This is the Plush language package. It implements parsing of Plush
+// source code (.pls files) into Zeta bytecode. The resulting bytecode
+// is not written to a file, but instead generated directly in memory.
+//
+// ZetaVM loads this package and executes it when it the `language` directive
+// at the beginning of a source file refers to it. Parsing is then deferred
+// to this package by calling the `exports.parse_input` function defined
+// later in this file.
+
 // Parsing utilities library
 var parsing = import "std/parsing/0";
 var parseError = parsing.parseError;
@@ -2201,7 +2210,7 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
 /**
 Function to parse a source string
 Note: this is used for parser tests.
-The output is a Plush AST
+The output is a Plush AST.
 */
 exports.parseString = parseString;
 
