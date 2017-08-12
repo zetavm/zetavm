@@ -49,7 +49,9 @@ int runPkgMain(
     }
     else
     {
-        throw RunError("main function should either accept 0 or 1 parameter");
+        throw RunError(
+            "main function should either accept 0 or 1 parameter"
+        );
     }
 
     if (!retVal.isInt32())
@@ -67,17 +69,20 @@ int main(int argc, char** argv)
     BoolOpt test('t', "test", false, "runs unit tests");
     BoolOpt help('h', "help", false, "prints this help message.");
     OptParser parser;
-    parser = parser.add(test).add(help);
+    parser.add(test);
+    parser.add(help);
 
     try
     {
-        //initRuntime();
-        //initParser();
+        // Parse the command-line arguments
         parser.parse(argc, argv);
-        if (help()) {
+
+        if (help())
+        {
             std::cout << parser.helpString();
             return 0;
         }
+
         initInterp();
 
         // If we are in test mode

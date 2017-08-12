@@ -278,7 +278,7 @@ private:
 public:
     OptParser();
     explicit OptParser(std::vector<std::reference_wrapper<Opt>> argOptions);
-    OptParser add(Opt& opt);
+    OptParser& add(Opt& opt);
     void parse(int argc, char *argv[]);
     std::string getProgramName();
     std::vector<std::string> getProgramArgs();
@@ -287,11 +287,12 @@ public:
 
 OptParser::OptParser() = default;
 
-OptParser OptParser::add(Opt &opt)
+OptParser& OptParser::add(Opt &opt)
 {
     argOptions.push_back(std::ref(opt));
     return *this;
 }
+
 OptParser::OptParser(std::vector<std::reference_wrapper<Opt>> argOptions)
 {
     // TODO: check for duplicates
