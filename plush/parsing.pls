@@ -470,15 +470,21 @@ Input.parseInt = function (input, radix)
         }
     }
 
-    /*
-    // If the value is negative
-    if (neg)
-    {
-        intVal *= -1;
-    }
-    */
-
     return intVal;
+};
+
+/**
+Function to parse a decimal floating-point or integer number
+*/
+Input.parseNum = function (input)
+{
+    // TODO:
+    // to make this efficient, we probably want to store the starting
+    // index for the first digit, do the matching, and then use substr
+    // to extract the numeric string and do the parsing with
+    // str_to_int32 and str_to_float32 instructions.
+
+    assert (false, "unimplemented");
 };
 
 /**
