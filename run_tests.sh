@@ -50,6 +50,7 @@ set -x
 ./plush.sh tests/plush/for_loop_break.pls
 ./plush.sh tests/plush/line_count.pls
 ./plush.sh tests/plush/array_push.pls
+./plush.sh tests/plush/array.pls
 ./plush.sh tests/plush/fun_locals.pls
 ./plush.sh tests/plush/method_calls.pls
 ./plush.sh tests/plush/obj_ext.pls
