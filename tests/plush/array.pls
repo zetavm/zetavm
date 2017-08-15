@@ -15,7 +15,7 @@ var computeSum = function(arr)
     return total;
 };
 
-var getArray =  function()
+var getArray = function()
 {
     var arr = [];
     for (var i = 0; i < 10; i += 1)
@@ -32,7 +32,7 @@ var testIndexOf = function(arr)
     assert(array.indexOf(arr, 43) == -1);
 };
 
-var testMap =  function(arr)
+var testMap = function(arr)
 {
     var incr = function(elem)
     {
