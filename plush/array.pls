@@ -28,7 +28,6 @@ exports.map = function(arr, mapper)
     return newArr;
 };
 
-
 /// Returns an array with elements of arr which
 /// satisfy predicate. i.e. predicate(arr[i]) returns true.
 exports.filter = function(arr, predicate)
