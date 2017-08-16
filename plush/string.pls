@@ -246,7 +246,6 @@ exports.substring = function(string, start, end)
     return result;
 };
 
-
 exports.slice = exports.substring;
 
 /**
@@ -482,7 +481,6 @@ var indexOfString = function(string, needle, start)
     return -1;
 };
 
-
 /**
  * Is needle[p:end] a prefix of needle?
  */
@@ -575,8 +573,6 @@ var bmMakeOffsettable = function(needle)
     }
     return table;
 };
-
-
 
 var indexOfInternal = function(string, needle, start)
 {
