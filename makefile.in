@@ -8,7 +8,7 @@ PKGS_DIR=\"$(CURDIR)/packages/\"
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zeta cplush math-pkg array-pkg parsing-pkg plush-pkg plush-bench cscheme
+all: zeta cplush math-pkg string-pkg array-pkg parsing-pkg plush-pkg plush-bench cscheme
 
 test: all
 	./run_tests.sh
@@ -60,7 +60,12 @@ plush/%.o: plush/%.cpp plush/*.h
 $(CPLUSH_BIN): $(CPLUSH_OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_OBJECTS)
 
-# Array Library (std/array)
+# String library (std/string)
+string-pkg: $(CPLUSH_BIN) plush-pkg
+	mkdir -p packages/std/string/0
+	./$(CPLUSH_BIN) plush/string.pls > packages/std/string/0/package
+
+# Array library (std/array)
 array-pkg: $(CPLUSH_BIN) plush-pkg
 	mkdir -p packages/std/array/0
 	./$(CPLUSH_BIN) plush/array.pls > packages/std/array/0/package
