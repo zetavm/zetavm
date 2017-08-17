@@ -1,12 +1,14 @@
 #language "lang/plush/0"
 
 var parsing = import "std/parsing/0";
+var string = import "std/string/0";
 
 var parseCell = function (input)
 {
     // Eat preceding whitespace
     input:eatWS();
 
+    // If we find a quotation mark
     if (input:next('"'))
     {
         var str = input:parseStringLit('"');
@@ -33,8 +35,8 @@ var parseCell = function (input)
         str += ch;
     }
 
-    // TODO: need to strip trailing whitespace in str
-    // use string.strip when available
+    // Trim trailing whitespace
+    str = string.rtrim(str);
 
     return str;
 };
@@ -66,7 +68,7 @@ var parseRow = function (input)
 /**
 Read a CSV file (comma separated values)
 */
-var readCSV = function (fileName)
+var parseFile = function (fileName)
 {
     var input = parsing.fileInput(fileName);
 
@@ -78,4 +80,4 @@ var readCSV = function (fileName)
     return rows;
 };
 
-exports.readCSV = readCSV;
+exports.parseFile = parseFile;

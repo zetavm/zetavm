@@ -19,7 +19,7 @@ exports.main = function (args)
 
     var fileName = args[1];
 
-    var rows = csv.readCSV(fileName);
+    var rows = csv.parseFile(fileName);
 
     // Serialize the rows into a readable format
     print(vm.serialize(rows, false));
