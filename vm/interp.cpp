@@ -1260,8 +1260,10 @@ void checkArgCount(
     }
 }
 
-/// Perform a user function call
-__attribute__((always_inline)) inline void funCall(
+/**
+Perform a user function call (call to user-implemented Zeta function)
+*/
+__attribute__((always_inline)) inline void userCall(
     uint8_t* callInstr,
     Object fun,
     CallInfo& callInfo
@@ -1337,7 +1339,9 @@ __attribute__((always_inline)) inline void funCall(
     instrPtr = entryVer->startPtr;
 }
 
-/// Perform a host function call
+/**
+Perform a host function call (call to internal Zeta function)
+*/
 __attribute__((always_inline)) inline void hostCall(
     uint8_t* callInstr,
     Value fun,
@@ -2183,7 +2187,7 @@ Value execCode()
 
                 if (callee.isObject())
                 {
-                    funCall(
+                    userCall(
                         (uint8_t*)&op,
                         callee,
                         callInfo
@@ -2292,8 +2296,10 @@ Value execCode()
     assert (false);
 }
 
-/// Begin the execution of a function
-/// Note: this may be indirectly called from within a running interpreter
+/**
+Call into a user function from an outside context
+Note: this may be indirectly called from within a running interpreter
+*/
 Value callFun(Object fun, ValueVec args)
 {
     auto params = fun.getFieldArr("params");
