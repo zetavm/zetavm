@@ -1,3 +1,4 @@
+var math = import "std/math/0";
 /// Utility functions for arrays
 
 /// Returns the first index i, where arr[i] == value
@@ -69,6 +70,12 @@ exports.slice = function(arr, st, end)
     return newArr;
 };
 
+// Append one value to an array
+exports.push = function (arr, val)
+{
+    $array_push(arr, val);
+};
+
 /// Concatenates two arrays a and b into new array
 /// and returns it. It does not modify either a or b.
 exports.concat = function(a, b)
@@ -127,4 +134,133 @@ exports.arrayEq = function(a, b)
         }
     }
     return true;
+};
+
+/// Checks if the array 'arr' contains the value
+exports.contains = function(arr, value)
+{
+    return exports.indexOf(arr, value) != -1;
+};
+
+/// Searches through the array, using the binary search algorithm, for a given item.
+/// returning the index of where the item is found within the array.
+exports.binarySearch = function(arr, item)
+{
+    var left = 0;
+    var right = arr.length - 1;
+
+    for (;left <= right;)
+    {
+        var m = math.idiv(left + right, 2);
+        var element = arr[m];
+
+        if (element < item)
+        {
+            left = m + 1;
+        }
+        else if (element > item)
+        {
+            right = m - 1;
+        }
+        else
+        {
+            return m;
+        }
+    }
+    return -1;
+};
+
+// Sorts the given array using a comparison function.
+// The "compare" function takes two arguments, a and b
+//  - Return greater than 0 if a is greater than b
+//  - Return 0 if a equals b
+//  - Return less than 0 if a is less than b
+exports.sort = function(array, compFunc)
+{
+    quickSort(array, 0, array.length - 1, compFunc);
+};
+
+//============================================================================
+// Internal functions below
+//============================================================================
+
+var quickSort = function(array, low, high, comp) 
+{
+    // Hoare partition scheme
+    if (low < high) 
+	{
+        var p = partition(array, low, high, comp);
+        quickSort(array, low, p, comp);
+        quickSort(array, p + 1, high, comp);
+    }
+};
+
+var partition = function(array, low, high, comp) 
+{
+    var pivot = array[low];
+    var i = low - 1;
+    var j = high + 1;
+    
+    for (;;) 
+    {
+        // do while loop equivalent, quite messy.
+        for (;;) 
+        {
+            i += 1;
+            if (!(comp(array[i], pivot) < 0)) // array[i] < pivot
+			{ 
+                break;
+            }
+        }
+
+        for (;;) 
+        {
+            j -= 1;
+            if (!(comp(array[j], pivot) > 0)) // array[j] > pivot
+			{ 
+                break;
+            }
+        }
+        
+        if (i >= j)
+        {
+            return j;
+        }
+
+        swap(array, i, j);
+    }
+};
+
+var swap = function(array, a, b) 
+{
+    var tmp = array[a];
+    array[a] = array[b];
+    array[b] = tmp;
+};
+
+/**
+ * Prototype object containing functions usable as array methods
+ * Note: useful for languages using prototypal inheritance
+*/
+exports.prototype = {
+    indexOf: exports.indexOf,
+    forEach: exports.forEach,
+    map: exports.map,
+    filter: exports.filter,
+    slice: exports.slice,
+    push: exports.push,
+    concat: exports.concat,
+    append: exports.append,
+    replace: exports.replace,
+    eq: exports.arrayEq,
+    contains: exports.contains,
+    binarySearch: exports.binarySearch,
+    sort: exports.sort,
+};
+
+var swap = function(array, a, b) 
+{
+    var tmp = array[a];
+    array[a] = array[b];
+    array[b] = tmp;
 };

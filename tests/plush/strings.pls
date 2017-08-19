@@ -23,7 +23,7 @@ var indexOf = str.indexOf;
 var substring = str.substring;
 var indexofcheck = function(string, needle)
 {
-    var pos = indexOf(string, needle); 
+    var pos = indexOf(string, needle);
     if (pos != -1)
     {
         var sub = substring(string, pos, pos + needle.length);
@@ -45,8 +45,10 @@ var obj = {
     toString : printa,
 };
 
-
 assert(str.toString(obj)== "17");
+// Array toString functionality.
+assert(str.toString( [[1], "A string", 3, 4, 5] ) == "[[1], A string, 3, 4, 5]");
+assert(str.toString([]) == "[]");
 
 //ord/char
 var fromCharCode = str.fromCharCode;
@@ -109,6 +111,10 @@ assert(indexofcheck("Blah", "h"));
 assert(indexofcheck("Blah", "ah"));
 assert(indexofcheck("Banana", "an"));
 
+//contains
+var contains = str.contains;
+assert(contains("foobar", "foo"));
+
 //format
 var format = str.format;
 assert(format("{}, {} and {}", ["numbers", 1, 2]) == "numbers, 1 and 2");
@@ -133,9 +139,14 @@ assert(toUpper("AB CDE") == "AB CDE");
 
 var startsWith = str.startsWith;
 assert(startsWith("Banana", "Ban"));
+assert(startsWith("Banana", ""));
 assert(!startsWith("Banana", "Bun"));
 assert(!startsWith("Ban", "Banana"));
 
+var endsWith = str.endsWith;
+assert (endsWith("Banana", "na"));
+assert (endsWith("Banana", ""));
+assert (!endsWith("Banana", "Bun"));
 
 var intToString = str.intToString;
 assert(intToString(0, 10) == "0");
@@ -172,3 +183,7 @@ catch(e)
 {
     assert(true);
 }
+
+// String methods through prototype object (Plush runtime)
+assert ("foo":contains("oo"));
+assert ("foo":replace("oo", "oobar") == "foobar");

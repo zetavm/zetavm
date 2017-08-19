@@ -8,7 +8,7 @@ assert ("create_window" in window);
 var width = 256;
 var height = 256;
 
-window.create_window("Graphics Test", width, height);
+var handle = window.create_window("Graphics Test", width, height);
 
 var buf = [];
 for (var y = 0; y < height; y += 1)
@@ -23,7 +23,7 @@ for (var y = 0; y < height; y += 1)
 
 for (var i = 0;; i += 1)
 {
-    var result = window.process_events();
+    var result = window.process_events(handle);
 
     if (result == false)
         break;
@@ -32,7 +32,7 @@ for (var i = 0;; i += 1)
     output(i);
     output('\n');
 
-    window.draw_pixels(buf);
+    window.draw_pixels(handle, buf);
 }
 
-window.destroy_window();
+window.destroy_window(handle);

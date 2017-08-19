@@ -4,7 +4,7 @@ var math = import "std/math/0";
  * Returns a string representation of the passed value. Calls obj:toString() on
  * objects.
  */
-exports.toString = function(e)
+exports.toString = function (e)
 {
     var type = typeof e;
     if (type == "object")
@@ -19,6 +19,20 @@ exports.toString = function(e)
     {
         return exports.intToString(e, 10);
     }
+    if (type == "array")
+    {
+        var builder = "[";
+        for (var i = 0;i < e.length;i += 1)
+        {
+            builder += exports.toString(e[i]);
+            if (i != e.length - 1)
+            {
+                builder += ", ";
+            }
+        }
+        builder += "]";
+        return builder;
+    }
     if (e == true)
     {
         return "true";
@@ -27,6 +41,7 @@ exports.toString = function(e)
     {
         return "false";
     }
+
     assert(false, "toString: cannot convert value of type " + type + " to string");
 };
 
@@ -35,7 +50,7 @@ exports.toString = function(e)
  *
  * example: intToString(n, 10) produces n in base 10
  */
-exports.intToString = function(int, base)
+exports.intToString = function (int, base)
 {
     //We run out of letters in this case
     assert(0 <= base && base <= 26);
@@ -83,7 +98,7 @@ exports.intToString = function(int, base)
  * example: parseInt("123", 10) == 123;
  * example: parseInt("a", 16) == 10;
  */
-exports.parseInt = function(string, radix)
+exports.parseInt = function (string, radix)
 {
     string = exports.toLower(string);
     assert(radix > 1 && radix < 26);
@@ -136,7 +151,7 @@ exports.parseInt = function(string, radix)
 
     if (negative)
     {
-        return -num; 
+        return -num;
     }
     else
     {
@@ -151,7 +166,7 @@ exports.parseInt = function(string, radix)
  * example: format("{1}, {0}", [1, 2]) == "2, 1";
  * example: format("{x}, {y}", {x:1, y:2}) == "1, 2";
  */
-exports.format = function(fmt, args)
+exports.format = function (fmt, args)
 {
     var accum = "";
     var argcounter = 0;
@@ -199,7 +214,7 @@ exports.format = function(fmt, args)
  *
  * example: toCharCode("a") == 97
  */
-exports.toCharCode = function(char)
+exports.toCharCode = function (char)
 {
     return $get_char_code(char, 0);
 };
@@ -209,9 +224,18 @@ exports.toCharCode = function(char)
  *
  * example: fromCharCode(97) = "a"
  */
-exports.fromCharCode = function(c)
+exports.fromCharCode = function (c)
 {
     return $char_to_str(c);
+};
+
+/**
+ * Returns true iff a character is one of the three whitespace characters ' ',
+ * '\t' or '\n'
+ */
+exports.isSpace = function (ch)
+{
+    return ch == ' ' || ch == '\t' || ch == '\n';
 };
 
 /**
@@ -220,13 +244,30 @@ exports.fromCharCode = function(c)
  *
  * example: indexOf("banana", "na") == 2
  */
-exports.indexOf = function(string, needle)
+exports.indexOf = function (string, needle)
 {
     if (needle.length == 0)
     {
         return 0;
     }
+
     return indexOfInternal(string, needle, 0);
+};
+
+/**
+ * Check if a substring is contained in this string
+ */
+exports.contains = function (string, needle)
+{
+    return exports.indexOf(string, needle) != -1;
+};
+
+/**
+ * Concatenate two strings
+ */
+exports.concat = function (a, b)
+{
+    return $str_cat(a, b);
 };
 
 /**
@@ -236,9 +277,9 @@ exports.indexOf = function(string, needle)
  * example: substring(str, 0, str.length) == str
  * example: substring("banana", 2, 4) == "na"
  */
-exports.substring = function(string, start, end)
+exports.substring = function (string, start, end)
 {
-    var result = ""; 
+    var result = "";
     for (var i = start; i < end; i += 1)
     {
         result += string[i];
@@ -254,9 +295,9 @@ exports.slice = exports.substring;
  *
  * example: split("a b", " ") == ["a", "b"]
  */
-exports.split = function(string, delimiter)
+exports.split = function (string, delimiter)
 {
-    var result = [];     
+    var result = [];
     for(var currentpos = 0; currentpos < string.length;)
     {
         //TODO(mfunk): reuse boyer moore tables, don't recalculate them
@@ -281,7 +322,7 @@ exports.split = function(string, delimiter)
  *
  * example: join(["a", "b"], " ") )) == "a b"
  */
-exports.join = function(arrayofstrings, delimiter)
+exports.join = function (arrayofstrings, delimiter)
 {
     var result = "";
     for (var i = 0; i < arrayofstrings.length - 1; i += 1)
@@ -289,7 +330,7 @@ exports.join = function(arrayofstrings, delimiter)
         result += arrayofstrings[i];
         result += delimiter;
     }
-    result += arrayofstrings[arrayofstrings.length -1]; 
+    result += arrayofstrings[arrayofstrings.length -1];
     return result;
 };
 
@@ -299,7 +340,7 @@ exports.join = function(arrayofstrings, delimiter)
  *
  * example: replace("Banana", "na", "dog") == "Badogdog"
  */
-exports.replace = function(string, needle, replacement)
+exports.replace = function (string, needle, replacement)
 {
     // We can't use split + join
     var result = "";
@@ -322,18 +363,9 @@ exports.replace = function(string, needle, replacement)
 };
 
 /**
- * Returns true iff a character is one of the three whitespace characters ' ',
- * '\t' or '\n'
- */
-exports.isSpace = function (ch)
-{
-    return ch == ' ' || ch == '\t' || ch == '\n';
-};
-
-/**
  * Returns a string with all leading whitespace removed.
  */
-exports.ltrim = function(string)
+exports.ltrim = function (string)
 {
     var i = 0;
     for (; i < string.length; i += 1)
@@ -349,7 +381,7 @@ exports.ltrim = function(string)
 /**
  * Returns a string with all trailing whitespace removed.
  */
-exports.rtrim = function(string)
+exports.rtrim = function (string)
 {
     var i = string.length - 1;
     for (; i >= 0; i -= 1)
@@ -365,7 +397,7 @@ exports.rtrim = function(string)
 /**
  * Returns a string with all trailing and leading whitespace removed.
  */
-exports.trim = function(string)
+exports.trim = function (string)
 {
     return exports.ltrim(exports.rtrim(string));
 };
@@ -373,7 +405,7 @@ exports.trim = function(string)
 /**
  * Returns a string with all ascii characters converted to lower case.
  */
-exports.toLower = function(string)
+exports.toLower = function (string)
 {
     //Assumes ascii
     var result = "";
@@ -395,7 +427,7 @@ exports.toLower = function(string)
 /**
  * Returns a string with all ascii characters converted to upper case.
  */
-exports.toUpper = function(string)
+exports.toUpper = function (string)
 {
     //Assumes ascii
     var result = "";
@@ -417,22 +449,61 @@ exports.toUpper = function(string)
 /**
  * Returns true iff a string starts with another string "needle".
  */
-exports.startsWith = function(string, needle)
+exports.startsWith = function (string, needle)
 {
-    if (string.length < needle.length) 
+    if (string.length < needle.length)
     {
         return false;
     }
+
     return exports.substring(string, 0, needle.length) == needle;
 };
 
 /**
- * Internal functions below
+ * Returns true iff a string ends with another string "needle".
  */
-
-var reverseByteString = function(string)
+exports.endsWith = function (string, needle)
 {
-    var res = ""; 
+    if (string.length < needle.length)
+    {
+        return false;
+    }
+
+    return exports.substring(
+        string,
+        string.length - needle.length,
+        string.length
+    ) == needle;
+};
+
+/**
+ * Prototype object containing functions usable as string methods
+ * Note: useful for languages using prototypal inheritance
+*/
+exports.prototype = {
+    indexOf: exports.indexOf,
+    contains: exports.contains,
+    split: exports.split,
+    replace: exports.replace,
+    concat: exports.concat,
+    substring: exports.substring,
+    slice: exports.slice,
+    ltrim: exports.ltrim,
+    rstrim: exports.rtrim,
+    trim: exports.trim,
+    startsWith: exports.startsWith,
+    toLower: exports.toLower,
+    toUpper: exports.toUpper,
+    format: exports.format,
+};
+
+//============================================================================
+// Internal functions below
+//============================================================================
+
+var reverseByteString = function (string)
+{
+    var res = "";
     for (var i = string.length - 1; i >= 0; i -= 1)
     {
         res += string[i];
@@ -440,7 +511,7 @@ var reverseByteString = function(string)
     return res;
 };
 
-var indexOfChar = function(string, char, start)
+var indexOfChar = function (string, char, start)
 {
     //TODO(mfunk): check if sentinel value version is faster
     for (var i = start; i < string.length; i += 1)
@@ -459,7 +530,7 @@ var indexOfChar = function(string, char, start)
  * implementations on wikipedia
  * https://en.wikipedia.org/wiki/Boyer-Moore_string_search_algorithm
  */
-var indexOfString = function(string, needle, start)
+var indexOfString = function (string, needle, start)
 {
     var charTable = bmMakeChartable(needle);
     var offsetTable = bmMakeOffsettable(needle);
@@ -484,7 +555,7 @@ var indexOfString = function(string, needle, start)
 /**
  * Is needle[p:end] a prefix of needle?
  */
-var bmIsPrefix = function(needle, p)
+var bmIsPrefix = function (needle, p)
 {
     var i = p;
     var j = 0;
@@ -505,7 +576,7 @@ var bmIsPrefix = function(needle, p)
  * Creates a table that contains the distances of character c from the end of
  * the needle string.
  */
-var bmMakeChartable = function(needle)
+var bmMakeChartable = function (needle)
 {
     var alphabetsize = 256; // we just look at bytes here
     var table = [];
@@ -523,14 +594,14 @@ var bmMakeChartable = function(needle)
 /**
  * Returns the maximum length of the substring that ends at p and is a suffix of needle.
  */
-var bmSuffixLength = function(needle, p)
+var bmSuffixLength = function (needle, p)
 {
     var len = 0;
     var i = p;
     var j = needle.length - 1;
     for (; i >= 0 && needle[i] == needle[j];)
     {
-        len += 1; 
+        len += 1;
         i -= 1;
         j -= 1;
     }
@@ -551,7 +622,7 @@ var bmSuffixLength = function(needle, p)
  * the suffix starting at i does accur elsewhere in needle. Thus we may shift
  * from the other occurence to this one.
  */
-var bmMakeOffsettable = function(needle)
+var bmMakeOffsettable = function (needle)
 {
     //Returns a combination of the H/L tables
     var table = [];
@@ -574,7 +645,7 @@ var bmMakeOffsettable = function(needle)
     return table;
 };
 
-var indexOfInternal = function(string, needle, start)
+var indexOfInternal = function (string, needle, start)
 {
     if (needle.length == 1)
     {

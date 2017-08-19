@@ -80,6 +80,7 @@ set -x
 ./zeta tests/plush/obj_field_names.pls
 ./zeta tests/plush/obj_ext.pls
 ./zeta tests/plush/import.pls
+./zeta tests/plush/strings.pls
 ./zeta tests/plush/circular3.pls
 ./zeta tests/plush/peval.pls
 ./zeta tests/plush/random.pls
