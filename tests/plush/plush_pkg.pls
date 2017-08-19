@@ -8,7 +8,7 @@ var testParse = function (str)
 
     try
     {
-        return parseString(str, "parser_test");
+        return parseString(str, "parser_test", {});
     }
 
     catch (e)
@@ -27,7 +27,7 @@ var testParseFail = function (str)
 
     try
     {
-        parseString(str, "parser_fail_test");
+        parseString(str, "parser_fail_test", {});
     }
 
     catch (e)

@@ -1027,28 +1027,6 @@ var parseUnit = function (input)
     return FunExpr::{ name: "unit", body: blockStmt, argExprs: [] };
 };
 
-/**
-Parse a source string as a unit
-*/
-var parseString = function (str, srcName)
-{
-    var input = Input::{
-        srcName: srcName,
-        srcString: str
-    };
-
-    return parseUnit(input);
-};
-
-/**
-Parse a source file as a unit
-*/
-var parseFile = function (fileName)
-{
-    var input = parsing.fileInput(fileName);
-    return parseUnit(input);
-};
-
 //============================================================================
 // Code generation
 //============================================================================
@@ -2208,13 +2186,6 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
 //============================================================================
 
 /**
-Function to parse a source string
-Note: this is used for parser tests.
-The output is a Plush AST.
-*/
-exports.parseString = parseString;
-
-/**
 Exported function to parse from an input object
 Note: this is called by zeta to parse Plush files.
 The output is a Zeta package object.
@@ -2248,6 +2219,24 @@ exports.parse_input = function (input)
     };
 
     // Generate code for the unit
+    var unitFn = genUnit(ast, globalObj);
+
+    return unitFn;
+};
+
+/**
+Function to parse a source string
+Note: this is used for parser tests and by the REPL
+*/
+exports.parseString = function (str, srcName, globalObj)
+{
+    var input = Input::{
+        srcName: srcName,
+        srcString: str
+    };
+
+    var ast = parseUnit(input);
+
     var unitFn = genUnit(ast, globalObj);
 
     return unitFn;
@@ -2288,21 +2277,10 @@ exports.main = function ()
             break;
         }
 
-        var input = Input::{
-            srcName: "console",
-            srcString: line,
-            strIdx: 0,
-            lineNo: 1,
-            colNo: 1
-        };
-
         try
         {
             // Parse the unit
-            var ast = parseUnit(input);
-
-            // Generate code for the unit
-            var unit = genUnit(ast, globalObj);
+            var unit = exports.parseString(line, "console", globalObj);
 
             // Run the unit function
             unit.init();
