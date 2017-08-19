@@ -23,7 +23,7 @@ var indexOf = str.indexOf;
 var substring = str.substring;
 var indexofcheck = function(string, needle)
 {
-    var pos = indexOf(string, needle); 
+    var pos = indexOf(string, needle);
     if (pos != -1)
     {
         var sub = substring(string, pos, pos + needle.length);
@@ -44,7 +44,6 @@ var obj = {
     a : 17,
     toString : printa,
 };
-
 
 assert(str.toString(obj)== "17");
 
@@ -108,6 +107,10 @@ assert(indexofcheck("BBBB", "B"));
 assert(indexofcheck("Blah", "h"));
 assert(indexofcheck("Blah", "ah"));
 assert(indexofcheck("Banana", "an"));
+
+//contains
+var contains = str.contains;
+assert(contains("foobar", "foo"));
 
 //format
 var format = str.format;
