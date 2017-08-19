@@ -2,16 +2,24 @@
 
 var audio = import "core/audio/0";
 var math = import "std/math/0";
-var dev = audio.open_output_device(2);
+var string = import "std/string/0";
 
+// Audio output sample rate
 var sampleRate = 44100;
-var bufSize = 16384;
-var freq = 200;
-var sinCoeff = freq * 2 * math.PI / sampleRate;
 
-var genSamples = function ()
+// Audio output buffer size
+var bufSize = 16384;
+
+/**
+Generate audio samples to play back
+*/
+var genSamples = function (bufSize)
 {
     var samples = [];
+
+    // Sine wave frequency
+    var freq = 300;
+    var sinCoeff = freq * 2 * math.PI / sampleRate;
 
     for (var i = 0;; i = i + 1)
     {
@@ -27,19 +35,41 @@ var genSamples = function ()
     return samples;
 };
 
-var samples = genSamples();
-
-for (;;)
+/**
+Main function, called when the program is run
+*/
+exports.main = function (args)
 {
-    var queueSize = audio.get_queue_size(dev);
+    assert (args.length <= 2);
 
-    if (queueSize < 8192)
+    // Minimum number of samples queued for playback
+    var minQueueSize = 4400;
+    if (args.length == 2)
     {
-        audio.queue_samples(dev, samples);
-
-        var newQueueSz = audio.get_queue_size(dev);
-        output(queueSize);
-        output(' => ');
-        print(newQueueSz);
+        minQueueSize = string.parseInt(args[1], 10);
+        assert (minQueueSize > 2048 && minQueueSize < 65536);
     }
-}
+    print(string.format('minQueueSize={}', [minQueueSize]));
+
+    // Open a mono (sigle-channel) audio device
+    var dev = audio.open_output_device(1);
+
+    // Generate a series of samples
+    var samples = genSamples(minQueueSize);
+    print(string.format('samples.length={}', [samples.length]));
+
+    for (;;)
+    {
+        var queueSize = audio.get_queue_size(dev);
+
+        if (queueSize < minQueueSize)
+        {
+            audio.queue_samples(dev, samples);
+
+            var newQueueSz = audio.get_queue_size(dev);
+            output(queueSize);
+            output(' => ');
+            print(newQueueSz);
+        }
+    }
+};
