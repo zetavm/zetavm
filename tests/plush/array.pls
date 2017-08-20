@@ -122,6 +122,20 @@ var testArrayEq = function(a, b)
     assert(!array.arrayEq(a, b));
 };
 
+var testContains = function(arr) 
+{
+	assert(array.contains(arr, 14));
+	assert(array.contains(arr, 23));
+	assert(!array.contains(arr, -10));
+};
+
+var testBinarySearch = function(arr) {
+	assert(array.binarySearch(arr, 4) == -1); // Should not be found
+	assert(array.binarySearch(arr, 14)==14); // Should be found
+	assert(array.binarySearch(arr, 23)==23); // Should be found
+	assert(array.binarySearch(arr, 18)==18); // Should be found
+};
+
 testIndexOf(getArray());
 testMap(getArray());
 testForEach(getArray());
@@ -131,5 +145,7 @@ testAppend(getArray(), getArray());
 testReplace(getArray());
 testFilter(getArray());
 testArrayEq(getArray(), getArray());
+testContains(getArray());
+testBinarySearch(getArray());
 
 print("std/array -> All tests passed");
