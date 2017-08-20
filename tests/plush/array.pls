@@ -129,7 +129,11 @@ var testContains = function(arr)
 	assert(!array.contains(arr, -10));
 };
 
-var testBinarySearch = function(arr) {
+var testBinarySearch = function() {
+	
+	// Array has to be in order for binary search to work.
+	var arr = [14,15,16,18,23];
+
 	assert(array.binarySearch(arr, 4) == -1); // Should not be found
 	assert(array.binarySearch(arr, 14)==14); // Should be found
 	assert(array.binarySearch(arr, 23)==23); // Should be found
@@ -146,6 +150,6 @@ testReplace(getArray());
 testFilter(getArray());
 testArrayEq(getArray(), getArray());
 testContains(getArray());
-testBinarySearch(getArray());
+testBinarySearch();
 
 print("std/array -> All tests passed");
