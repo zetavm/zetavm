@@ -453,6 +453,7 @@ exports.prototype = {
     startsWith: exports.startsWith,
     toLower: exports.toLower,
     toUpper: exports.toUpper,
+    format: exports.format,
 };
 
 //============================================================================

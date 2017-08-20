@@ -175,3 +175,7 @@ catch(e)
 {
     assert(true);
 }
+
+// String methods through prototype object (Plush runtime)
+assert ("foo":contains("oo"));
+assert ("foo":replace("oo", "oobar") == "foobar");

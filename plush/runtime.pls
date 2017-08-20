@@ -626,6 +626,12 @@ var rt_getProp = function (base, name)
         {
             return $str_len(base);
         }
+
+        // Lazily import the string library
+        var string = import "std/string/0";
+
+        // Lookup the property on the string prototype object
+        return string.prototype[name];
     }
 
     assert (
