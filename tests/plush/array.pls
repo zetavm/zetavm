@@ -135,9 +135,9 @@ var testBinarySearch = function() {
     var arr = [14, 15, 16, 18, 23];
 
     assert(array.binarySearch(arr, 4) == -1); // Should not be found
-    assert(array.binarySearch(arr, 14) == 14); // Should be found
-    assert(array.binarySearch(arr, 23) == 23); // Should be found
-    assert(array.binarySearch(arr, 18) == 18); // Should be found
+    assert(array.binarySearch(arr, 14) == 0); // Should be found
+    assert(array.binarySearch(arr, 23) == 4); // Should be found
+    assert(array.binarySearch(arr, 18) == 3); // Should be found
 };
 
 testIndexOf(getArray());

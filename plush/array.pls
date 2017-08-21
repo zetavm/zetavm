@@ -137,6 +137,7 @@ exports.contains = function(arr, value)
 };
 
 /// Searches through the array, using the binary search algorithm, for a given item.
+/// returning the index of where the item is found within the array.
 exports.binarySearch = function(arr, item) 
 {
     var left = 0;
@@ -157,7 +158,7 @@ exports.binarySearch = function(arr, item)
         }
         else
         {
-            return element;
+            return m;
         }
     }
     
