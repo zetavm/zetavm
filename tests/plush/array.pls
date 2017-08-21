@@ -129,8 +129,8 @@ var testContains = function(arr)
     assert(!array.contains(arr, -10));
 };
 
-var testBinarySearch = function() {
-    
+var testBinarySearch = function()
+{   
     // Array has to be in order for binary search to work.
     var arr = [14, 15, 16, 18, 23];
 
