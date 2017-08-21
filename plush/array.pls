@@ -1,3 +1,4 @@
+var math = import "std/math/0";
 /// Utility functions for arrays
 
 /// Returns the first index i, where arr[i] == value
@@ -132,36 +133,34 @@ exports.arrayEq = function(a, b)
 /// Checks if the array 'arr' contains the value 
 exports.contains = function(arr, value) 
 {
-	return exports.indexOf(arr, value) != -1;
+    return exports.indexOf(arr, value) != -1;
 };
 
 /// Searches through the array, using the binary search algorithm, for a given item.
 exports.binarySearch = function(arr, item) 
 {
-	var left = 0;
-	var right = arr.length - 1;
-	
-	for (;left <= right;) 
-	{
-		// Possible issue with dynamic typing as this needs to be an integer.
-		// floor it?
-		var m = $f32_to_i32( (left + right) / 2 ); // <-- Change this to math.floor(...);?
-		var element = arr[m];
-		
-		if (element < item) 
-		{
-			left = m + 1;
-		} 
-		else if (element > item)
-		{
-			right = m - 1;
-		}
-		else
-		{
-			return element;
-		}
-	}
-		
-	// Not found. Currently unsure whether returning -1 is a good idea.
-	return -1;
+    var left = 0;
+    var right = arr.length - 1;
+    
+    for (;left <= right;) 
+    {
+        var m = math.idiv(left + right, 2);
+        var element = arr[m];
+        
+        if (element < item) 
+        {
+            left = m + 1;
+        } 
+        else if (element > item)
+        {
+            right = m - 1;
+        }
+        else
+        {
+            return element;
+        }
+    }
+    
+	// Item not found.
+    return -1;
 };
