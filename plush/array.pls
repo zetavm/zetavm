@@ -162,6 +162,6 @@ exports.binarySearch = function(arr, item)
         }
     }
     
-	// Item not found.
+    // Item not found.
     return -1;
 };
