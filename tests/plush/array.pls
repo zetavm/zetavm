@@ -122,7 +122,7 @@ var testArrayEq = function(a, b)
     assert(!array.arrayEq(a, b));
 };
 
-var testContains = function(arr) 
+var testContains = function(arr)
 {
     assert(array.contains(arr, 14));
     assert(array.contains(arr, 23));
@@ -130,7 +130,7 @@ var testContains = function(arr)
 };
 
 var testBinarySearch = function()
-{   
+{
     // Array has to be in order for binary search to work.
     var arr = [14, 15, 16, 18, 23];
 
@@ -151,5 +151,8 @@ testFilter(getArray());
 testArrayEq(getArray(), getArray());
 testContains(getArray());
 testBinarySearch();
+
+// Array methods (Plush runtime)
+assert (['a', 'b', 'c']:contains('b'));
 
 print("std/array -> All tests passed");
