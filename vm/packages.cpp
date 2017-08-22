@@ -387,16 +387,22 @@ namespace core_audio_0
     bool paused = true;
 
     Value open_output_device(
+        Value sample_rate_val,
         Value num_channels
     )
     {
-        assert(num_channels.isInt32());
+        assert (sample_rate_val.isInt32());
+        assert (num_channels.isInt32());
+
+        auto sampleRate = (int32_t)sample_rate_val;
+        if (sampleRate != 44100)
+            throw RunError("sample rate is currently fixed to 44100");
 
         SDL_Init(SDL_INIT_AUDIO);
         SDL_AudioSpec want, have;
 
         SDL_zero(want);
-        want.freq = 44100;
+        want.freq = sampleRate;
         want.format = AUDIO_F32;
         want.channels = (uint8_t)(int32_t)num_channels;
         want.samples = 4096;
@@ -486,7 +492,7 @@ namespace core_audio_0
     {
 #ifdef HAVE_SDL2
         auto exports = Object::newObject(32);
-        setHostFn(exports, "open_output_device" , 1, (void*)open_output_device);
+        setHostFn(exports, "open_output_device" , 2, (void*)open_output_device);
         setHostFn(exports, "close_output_device", 1, (void*)close_output_device);
         setHostFn(exports, "queue_samples"      , 2, (void*)queue_samples);
         setHostFn(exports, "get_queue_size"     , 1, (void*)get_queue_size);

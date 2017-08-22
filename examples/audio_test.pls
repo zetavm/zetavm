@@ -52,7 +52,7 @@ exports.main = function (args)
     print(string.format('minQueueSize={}', [minQueueSize]));
 
     // Open a mono (sigle-channel) audio device
-    var dev = audio.open_output_device(1);
+    var dev = audio.open_output_device(44100, 1);
 
     // Generate a series of samples
     var samples = genSamples(minQueueSize);

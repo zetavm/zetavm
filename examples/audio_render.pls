@@ -8,12 +8,12 @@ var curry = peval.curry;
 var curry2 = peval.curry2;
 var curry3 = peval.curry3;
 
-var dev = audio.open_output_device(1);
+var sampleRate = 44100;
+var dev = audio.open_output_device(44100, 1);
 
 /// Produce sample a by sampling a function of time
 var genSamples = function (sampleFun, numSeconds)
 {
-    var sampleRate = 44100;
     var numSamples = numSeconds * sampleRate;
     var samples = [];
 
