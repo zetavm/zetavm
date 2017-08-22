@@ -1,3 +1,4 @@
+var math = import "std/math/0";
 /// Utility functions for arrays
 
 /// Returns the first index i, where arr[i] == value
@@ -127,4 +128,40 @@ exports.arrayEq = function(a, b)
         }
     }
     return true;
+};
+
+/// Checks if the array 'arr' contains the value 
+exports.contains = function(arr, value) 
+{
+    return exports.indexOf(arr, value) != -1;
+};
+
+/// Searches through the array, using the binary search algorithm, for a given item.
+/// returning the index of where the item is found within the array.
+exports.binarySearch = function(arr, item) 
+{
+    var left = 0;
+    var right = arr.length - 1;
+    
+    for (;left <= right;) 
+    {
+        var m = math.idiv(left + right, 2);
+        var element = arr[m];
+        
+        if (element < item) 
+        {
+            left = m + 1;
+        } 
+        else if (element > item)
+        {
+            right = m - 1;
+        }
+        else
+        {
+            return m;
+        }
+    }
+    
+    // Item not found.
+    return -1;
 };
