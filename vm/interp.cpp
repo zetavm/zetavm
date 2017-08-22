@@ -151,6 +151,9 @@ public:
 /// Struct to associate information with a return address
 struct RetEntry
 {
+    /// Associated call instruction
+    refptr callInstr;
+
     /// Return block version
     BlockVersion* retVer;
 
@@ -342,7 +345,8 @@ void initInterp()
 BlockVersion* getBlockVersion(
     Object fun,
     Object block,
-    uint16_t numTmps
+    uint16_t numTmps,
+    bool forceNew = false
 )
 {
     auto blockPtr = (refptr)block;
@@ -353,7 +357,7 @@ BlockVersion* getBlockVersion(
     {
         versionMap[blockPtr] = VersionList();
     }
-    else
+    else if (!forceNew)
     {
         auto versions = versionItr->second;
         assert (versions.size() > 0);
@@ -400,7 +404,10 @@ void genCall(
     // a return value or exception is pushed on the stack
     numTmps -= numArgs;
 
+    // Create a return address entry unique to this call instruction
+    // and this block version
     RetEntry retEntry;
+    retEntry.callInstr = (refptr)callInstr;
 
     // Store the number of temporaries when the call is performed
     // Note: this excludes the arguments and the function object
@@ -408,9 +415,10 @@ void genCall(
     retEntry.numTmps = numTmps - 1;
 
     // Get a version for the call continuation block
+    // Note: we force the creation of a new version unique to this call site
     static ICache retToCache("ret_to");
     auto retToBB = retToCache.getObj(callInstr);
-    auto retVer = getBlockVersion(version->fun, retToBB, numTmps);
+    auto retVer = getBlockVersion(version->fun, retToBB, numTmps, true);
     retEntry.retVer = retVer;
 
     if (callInstr.hasField("throw_to"))
