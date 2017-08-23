@@ -249,6 +249,14 @@ exports.contains = function (string, needle)
 };
 
 /**
+ * Concatenate two strings
+ */
+exports.concat = function (a, b)
+{
+    return $str_cat(a, b);
+};
+
+/**
  * Returns a substring of a string starting at start (inclusive) and ending at
  * end (exclusive).
  *
@@ -445,6 +453,7 @@ exports.prototype = {
     contains: exports.contains,
     split: exports.split,
     replace: exports.replace,
+    concat: exports.concat,
     substring: exports.substring,
     slice: exports.slice,
     ltrim: exports.ltrim,
