@@ -14,7 +14,6 @@ var abs = math.abs;
 
 var width = 400;
 var height = 400;
-window.create_window("Zeta Logo", width, height);
 
 var length = function (x, y)
 {
@@ -174,16 +173,18 @@ for (var y = 0; y < height; y += 1)
     }
 }
 
-window.draw_pixels(buf);
+var handle = window.create_window("Zeta Logo", width, height);
+
+window.draw_pixels(handle, buf);
 
 //writePPM('zeta_logo.ppm', buf, width, height);
 
 // Wait until the window is closed
 for (var i = 0;; i += 1)
 {
-    var result = window.process_events();
+    var result = window.process_events(handle);
     if (result == false)
         break;
 }
 
-window.destroy_window();
+window.destroy_window(handle);
