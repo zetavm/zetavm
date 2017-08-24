@@ -441,7 +441,25 @@ exports.startsWith = function (string, needle)
     {
         return false;
     }
+
     return exports.substring(string, 0, needle.length) == needle;
+};
+
+/**
+ * Returns true iff a string ends with another string "needle".
+ */
+exports.endsWith = function (string, needle)
+{
+    if (string.length < needle.length)
+    {
+        return false;
+    }
+
+    return exports.substring(
+        string,
+        string.length - needle.length,
+        string.length
+    ) == needle;
 };
 
 /**
