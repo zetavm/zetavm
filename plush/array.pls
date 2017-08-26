@@ -172,6 +172,74 @@ exports.binarySearch = function(arr, item)
     return -1;
 };
 
+// Sorts the given array using a comparison function.
+// The "compare" function takes two arguments, a and b
+//  - Return greater than 0 if a is greater than b
+//  - Return 0 if a equals b
+//  - Return less than 0 if a is less than b
+exports.sort = function(array, compFunc)
+{
+    quickSort(array, 0, array.length - 1, compFunc);
+};
+
+//============================================================================
+// Internal functions below
+//============================================================================
+
+var quickSort = function(array, low, high, comp) 
+{
+    // Hoare partition scheme
+    if (low < high) 
+	{
+        var p = partition(array, low, high, comp);
+        quickSort(array, low, p, comp);
+        quickSort(array, p + 1, high, comp);
+    }
+};
+
+var partition = function(array, low, high, comp) 
+{
+    var pivot = array[low];
+    var i = low - 1;
+    var j = high + 1;
+    
+    for (;;) 
+    {
+        // do while loop equivalent, quite messy.
+        for (;;) 
+        {
+            i += 1;
+            if (!(comp(array[i], pivot) < 0)) // array[i] < pivot
+			{ 
+                break;
+            }
+        }
+
+        for (;;) 
+        {
+            j -= 1;
+            if (!(comp(array[j], pivot) > 0)) // array[j] > pivot
+			{ 
+                break;
+            }
+        }
+        
+        if (i >= j)
+        {
+            return j;
+        }
+
+        swap(array, i, j);
+    }
+};
+
+var swap = function(array, a, b) 
+{
+    var tmp = array[a];
+    array[a] = array[b];
+    array[b] = tmp;
+};
+
 /**
  * Prototype object containing functions usable as array methods
  * Note: useful for languages using prototypal inheritance

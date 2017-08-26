@@ -140,6 +140,43 @@ var testBinarySearch = function()
     assert(array.binarySearch(arr, 18) == 3); // Should be found
 };
 
+var testSort = function() 
+{
+    var sortMe = [2, 8, 6, 4, 2, 1, 0];
+    array.sort(sortMe, 
+        function(a, b) 
+        {
+            return a - b;
+        }
+    );
+    assert(sortMe[0] == 0);
+    assert(sortMe[1] == 1);
+    assert(sortMe[2] == 2);
+    assert(sortMe[3] == 2);
+    assert(sortMe[4] == 4);
+    assert(sortMe[5] == 6);
+    assert(sortMe[6] == 8);
+    
+    var smallArray = [-5];
+    array.sort(smallArray, 
+        function(a, b) 
+        {
+            return a - b;
+        }
+    );
+    assert(smallArray[0] == -5);
+    
+    var emptyArray = [];
+    array.sort(emptyArray, 
+        function(a, b) 
+        {
+            return a - b;
+        }
+    );
+	// Check the array didn't change in size from the sort.
+    assert(emptyArray.length == 0);
+};
+
 testIndexOf(getArray());
 testMap(getArray());
 testForEach(getArray());
@@ -151,6 +188,7 @@ testFilter(getArray());
 testArrayEq(getArray(), getArray());
 testContains(getArray());
 testBinarySearch();
+testSort();
 
 // Array methods (Plush runtime)
 assert (['a', 'b', 'c']:contains('b'));
