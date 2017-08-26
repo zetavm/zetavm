@@ -140,6 +140,20 @@ var testBinarySearch = function() {
     assert(array.binarySearch(arr, 18) == 3); // Should be found
 };
 
+var testSort = function() {
+    var sortMe = [2, 8, 6, 4, 2, 1, 0];
+    array.sort(sortMe, function(a, b) {
+        return a - b;
+    });
+    assert(sortMe[0] == 0);
+    assert(sortMe[1] == 1);
+    assert(sortMe[2] == 2);
+    assert(sortMe[3] == 2);
+    assert(sortMe[4] == 4);
+    assert(sortMe[5] == 6);
+    assert(sortMe[6] == 8);
+};
+
 testIndexOf(getArray());
 testMap(getArray());
 testForEach(getArray());
@@ -151,5 +165,6 @@ testFilter(getArray());
 testArrayEq(getArray(), getArray());
 testContains(getArray());
 testBinarySearch();
+testSort();
 
 print("std/array -> All tests passed");

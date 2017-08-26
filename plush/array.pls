@@ -130,28 +130,28 @@ exports.arrayEq = function(a, b)
     return true;
 };
 
-/// Checks if the array 'arr' contains the value 
-exports.contains = function(arr, value) 
+/// Checks if the array 'arr' contains the value
+exports.contains = function(arr, value)
 {
     return exports.indexOf(arr, value) != -1;
 };
 
 /// Searches through the array, using the binary search algorithm, for a given item.
 /// returning the index of where the item is found within the array.
-exports.binarySearch = function(arr, item) 
+exports.binarySearch = function(arr, item)
 {
     var left = 0;
     var right = arr.length - 1;
-    
-    for (;left <= right;) 
+
+    for (;left <= right;)
     {
         var m = math.idiv(left + right, 2);
         var element = arr[m];
-        
-        if (element < item) 
+
+        if (element < item)
         {
             left = m + 1;
-        } 
+        }
         else if (element > item)
         {
             right = m - 1;
@@ -161,7 +161,63 @@ exports.binarySearch = function(arr, item)
             return m;
         }
     }
-    
+
 	// Item not found.
     return -1;
+};
+
+// Sorts the given array using a comparison function.
+// The "compare" function takes two arguments, a and b
+//  - Return greater than 0 if a is greater than b
+//  - Return 0 if a equals b
+//  - Return less than 0 if a is less than b
+exports.sort = function(array, compFunc)
+{
+};
+
+//============================================================================
+// Internal functions below
+//============================================================================
+
+var quickSort = function(array, low, high, comp) {
+    // Hoare partition scheme
+    if (low < high) {
+        var p = partition(array, low, high, comp);
+        quickSort(array, low, p, comp);
+    }
+};
+
+var partition = function(array, low, high, comp) {
+    var pivot = array[low];
+    var i = low - 1;
+    var j = high + 1;
+    
+    for (;;) {
+        // do while loop equivalent, quite messy.
+        for (;;) {
+            i += 1;
+            if (comp(array[i], pivot) >= 0) { // array[i] < pivot
+                break;
+            }
+        }
+
+        for (;;) {
+            j -= 1;
+            if (comp(array[j], pivot) <= 0) { // array[j] > pivot
+                break;
+            }
+        }
+        
+        if (i >= j) {
+            return j;
+        }
+
+        swap(array, i, j);
+    }
+};
+
+var swap = function(array, a, b) {
+    var tmp = array[a];
+    array[a] = array[b];
+    array[b] = tmp;
 };
