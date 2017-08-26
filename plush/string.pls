@@ -249,6 +249,14 @@ exports.contains = function (string, needle)
 };
 
 /**
+ * Concatenate two strings
+ */
+exports.concat = function (a, b)
+{
+    return $str_cat(a, b);
+};
+
+/**
  * Returns a substring of a string starting at start (inclusive) and ending at
  * end (exclusive).
  *
@@ -433,7 +441,25 @@ exports.startsWith = function (string, needle)
     {
         return false;
     }
+
     return exports.substring(string, 0, needle.length) == needle;
+};
+
+/**
+ * Returns true iff a string ends with another string "needle".
+ */
+exports.endsWith = function (string, needle)
+{
+    if (string.length < needle.length)
+    {
+        return false;
+    }
+
+    return exports.substring(
+        string,
+        string.length - needle.length,
+        string.length
+    ) == needle;
 };
 
 /**
@@ -445,6 +471,7 @@ exports.prototype = {
     contains: exports.contains,
     split: exports.split,
     replace: exports.replace,
+    concat: exports.concat,
     substring: exports.substring,
     slice: exports.slice,
     ltrim: exports.ltrim,

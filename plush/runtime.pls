@@ -614,10 +614,19 @@ var rt_getProp = function (base, name)
             return $array_len(base);
         }
 
+        // TODO: replace by array library method
+        // Note: may need to optimize `import` with caching
+        //       in order to avoid a perf impact
         if (name == "push")
         {
             return rt_push;
         }
+
+        // Lazily import the array library
+        var array = import "std/array/0";
+
+        // Lookup the property on the array prototype object
+        return array.prototype[name];
     }
 
     if (typeof base == "string")

@@ -136,9 +136,14 @@ assert(toUpper("AB CDE") == "AB CDE");
 
 var startsWith = str.startsWith;
 assert(startsWith("Banana", "Ban"));
+assert(startsWith("Banana", ""));
 assert(!startsWith("Banana", "Bun"));
 assert(!startsWith("Ban", "Banana"));
 
+var endsWith = str.endsWith;
+assert (endsWith("Banana", "na"));
+assert (endsWith("Banana", ""));
+assert (!endsWith("Banana", "Bun"));
 
 var intToString = str.intToString;
 assert(intToString(0, 10) == "0");

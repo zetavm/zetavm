@@ -298,11 +298,15 @@ namespace core_window_0
 
         SDL_ShowWindow(window);
 
-        return Value::UNDEF;
+        // Return the window handle, hidden in a raw pointer value
+        return Value((refptr)window, TAG_RAWPTR);
     }
 
-    Value destroy_window()
+    Value destroy_window(Value handle)
     {
+        // For now, only one window is supported
+        assert (handle == Value((refptr)window, TAG_RAWPTR));
+
         SDL_DestroyTexture(texture);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
@@ -313,11 +317,10 @@ namespace core_window_0
         return Value::UNDEF;
     }
 
-    Value process_events()
+    Value process_events(Value handle)
     {
-        // FIXME
-        // How do we know when quit happened? Return false then?
-        // Maybe change go let users do the polling, write our own loop?
+        // For now, only one window is supported
+        assert (handle == Value((refptr)window, TAG_RAWPTR));
 
         SDL_Event event;
 
@@ -326,7 +329,6 @@ namespace core_window_0
             switch (event.type)
             {
                 case SDL_QUIT:
-                //quit = true;
                 return Value::FALSE;
                 break;
 
@@ -338,8 +340,11 @@ namespace core_window_0
         return Value::TRUE;
     }
 
-    Value draw_pixels(Value pixelsArray)
+    Value draw_pixels(Value handle, Value pixelsArray)
     {
+        // For now, only one window is supported
+        assert (handle == Value((refptr)window, TAG_RAWPTR));
+
         auto pixels = (Array)pixelsArray;
 
         assert (pixels.length() == width * height * 3);
@@ -367,9 +372,9 @@ namespace core_window_0
 #ifdef HAVE_SDL2
         auto exports = Object::newObject(32);
         setHostFn(exports, "create_window"  , 3, (void*)create_window);
-        setHostFn(exports, "destroy_window" , 0, (void*)destroy_window);
-        setHostFn(exports, "process_events" , 0, (void*)process_events);
-        setHostFn(exports, "draw_pixels"    , 1, (void*)draw_pixels);
+        setHostFn(exports, "destroy_window" , 1, (void*)destroy_window);
+        setHostFn(exports, "process_events" , 1, (void*)process_events);
+        setHostFn(exports, "draw_pixels"    , 2, (void*)draw_pixels);
         return exports;
 #else
         return Value::UNDEF;
@@ -387,16 +392,22 @@ namespace core_audio_0
     bool paused = true;
 
     Value open_output_device(
+        Value sample_rate_val,
         Value num_channels
     )
     {
-        assert(num_channels.isInt32());
+        assert (sample_rate_val.isInt32());
+        assert (num_channels.isInt32());
+
+        auto sampleRate = (int32_t)sample_rate_val;
+        if (sampleRate != 44100)
+            throw RunError("sample rate is currently fixed to 44100");
 
         SDL_Init(SDL_INIT_AUDIO);
         SDL_AudioSpec want, have;
 
         SDL_zero(want);
-        want.freq = 44100;
+        want.freq = sampleRate;
         want.format = AUDIO_F32;
         want.channels = (uint8_t)(int32_t)num_channels;
         want.samples = 4096;
@@ -486,7 +497,7 @@ namespace core_audio_0
     {
 #ifdef HAVE_SDL2
         auto exports = Object::newObject(32);
-        setHostFn(exports, "open_output_device" , 1, (void*)open_output_device);
+        setHostFn(exports, "open_output_device" , 2, (void*)open_output_device);
         setHostFn(exports, "close_output_device", 1, (void*)close_output_device);
         setHostFn(exports, "queue_samples"      , 2, (void*)queue_samples);
         setHostFn(exports, "get_queue_size"     , 1, (void*)get_queue_size);
