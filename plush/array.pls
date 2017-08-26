@@ -180,37 +180,46 @@ exports.sort = function(array, compFunc)
 // Internal functions below
 //============================================================================
 
-var quickSort = function(array, low, high, comp) {
+var quickSort = function(array, low, high, comp) 
+{
     // Hoare partition scheme
-    if (low < high) {
+    if (low < high) 
+	{
         var p = partition(array, low, high, comp);
         quickSort(array, low, p, comp);
-        quickSort(array, p+1, high, comp);
+        quickSort(array, p + 1, high, comp);
     }
 };
 
-var partition = function(array, low, high, comp) {
+var partition = function(array, low, high, comp) 
+{
     var pivot = array[low];
     var i = low - 1;
     var j = high + 1;
     
-    for (;;) {
+    for (;;) 
+    {
         // do while loop equivalent, quite messy.
-        for (;;) {
+        for (;;) 
+        {
             i += 1;
-            if (!(comp(array[i], pivot) < 0)) { // array[i] < pivot
+            if (!(comp(array[i], pivot) < 0)) // array[i] < pivot
+			{ 
                 break;
             }
         }
 
-        for (;;) {
+        for (;;) 
+        {
             j -= 1;
-            if (!(comp(array[j], pivot) > 0)) { // array[j] > pivot
+            if (!(comp(array[j], pivot) > 0)) // array[j] > pivot
+			{ 
                 break;
             }
         }
         
-        if (i >= j) {
+        if (i >= j)
+        {
             return j;
         }
 
@@ -218,7 +227,8 @@ var partition = function(array, low, high, comp) {
     }
 };
 
-var swap = function(array, a, b) {
+var swap = function(array, a, b) 
+{
     var tmp = array[a];
     array[a] = array[b];
     array[b] = tmp;
