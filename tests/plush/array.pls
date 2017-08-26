@@ -129,8 +129,13 @@ var testContains = function(arr)
     assert(!array.contains(arr, -10));
 };
 
+<<<<<<< HEAD
 var testBinarySearch = function() {
     
+=======
+var testBinarySearch = function()
+{   
+>>>>>>> refs/remotes/zetavm/master
     // Array has to be in order for binary search to work.
     var arr = [14, 15, 16, 18, 23];
 

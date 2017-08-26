@@ -162,6 +162,10 @@ exports.binarySearch = function(arr, item)
         }
     }
     
+<<<<<<< HEAD
 	// Item not found.
+=======
+    // Item not found.
+>>>>>>> refs/remotes/zetavm/master
     return -1;
 };
