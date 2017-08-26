@@ -257,4 +257,5 @@ exports.prototype = {
     eq: exports.arrayEq,
     contains: exports.contains,
     binarySearch: exports.binarySearch,
+    sort: exports.sort,
 };
