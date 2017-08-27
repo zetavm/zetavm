@@ -4,7 +4,7 @@
 var isSpace = function (ch)
 {
     // Note: we don't allow other whitespace characters
-    return (ch == ' ' || ch == '\t' || ch == '\n');
+    return (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r');
 };
 
 /// Check if a character is a digit
