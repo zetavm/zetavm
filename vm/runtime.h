@@ -323,9 +323,6 @@ public:
 
     /// Append a value to the array
     void push(Value val);
-
-    /// Concatenate two arrays
-    //static Array concat(Array a, Array b);
 };
 
 /**

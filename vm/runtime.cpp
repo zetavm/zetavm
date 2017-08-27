@@ -19,6 +19,7 @@ const Value Value::TWO(Word(int64_t(2)), TAG_INT32);
 
 // Global virtual machine instance
 VM vm;
+
 // Global string pool
 StringPool stringPool;
 
@@ -69,7 +70,6 @@ bool Value::isPointer() const
     }
 }
 
-
 Value::operator std::string () const
 {
     assert (isString());
@@ -77,10 +77,6 @@ Value::operator std::string () const
 }
 
 VM::VM()
-{
-}
-
-StringPool::StringPool()
 {
 }
 
@@ -310,24 +306,6 @@ void Array::push(Value val)
     // Increment the length
     *(uint32_t*)(ptr + OF_LEN) = len + 1;
 }
-
-/*
-Array Array::concat(Array a, Array b)
-{
-    auto lenA = a.length();
-    auto lenB = b.length();
-
-    Array c(lenA + lenB);
-
-    for (size_t i = 0; i < lenA; ++i)
-        c.setElem(i, a.getElem(i));
-
-    for (size_t i = 0; i < lenB; ++i)
-        c.setElem(lenA + i, b.getElem(i));
-
-    return c;
-}
-*/
 
 /// Allocate a new empty object
 Object Object::newObject(size_t cap)
@@ -655,6 +633,9 @@ int64_t murmurHash2(const void* key, size_t len, uint64_t seed)
     return h;
 }
 
+StringPool::StringPool()
+{
+}
 
 Value StringPool::getString(std::string str)
 {

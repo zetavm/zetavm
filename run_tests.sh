@@ -90,6 +90,7 @@ set -x
 ./zeta tests/plush/cmdline_args.pls -- foo bar
 
 # Regression tests
+./zeta tests/plush/regress_cr_char.pls
 ./zeta tests/plush/regress_exc_var.pls
 ./zeta tests/plush/regress_exc_idx.pls
 ./zeta tests/plush/regress_throw_str.pls | grep -q "foobar"

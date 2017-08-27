@@ -45,6 +45,22 @@ exports.filter = function(arr, predicate)
     return newArr;
 };
 
+// Returns an array where each element is replaced by the result of calling
+// mapper function on that element.
+// The flatMap operation has the effect of applying one-to-many
+// transformation to the elements of the array, and then flattening
+// the resulting elements into a new array.
+exports.flatMap = function(arr, mapper)
+{
+    var newArr = [];
+    var len = arr.length;
+    for (var i = 0; i < len; i += 1)
+    {
+        newArr:append(mapper(arr[i]));
+    }
+    return newArr;
+};
+
 /// For each element in arr it calls consumer
 /// It does not modify arr.
 exports.forEach = function(arr, consumer)
@@ -188,7 +204,7 @@ var quickSort = function(array, low, high, comp)
 {
     // Hoare partition scheme
     if (low < high) 
-	{
+     {
         var p = partition(array, low, high, comp);
         quickSort(array, low, p, comp);
         quickSort(array, p + 1, high, comp);
@@ -208,7 +224,7 @@ var partition = function(array, low, high, comp)
         {
             i += 1;
             if (!(comp(array[i], pivot) < 0)) // array[i] < pivot
-			{ 
+            { 
                 break;
             }
         }
@@ -217,7 +233,7 @@ var partition = function(array, low, high, comp)
         {
             j -= 1;
             if (!(comp(array[j], pivot) > 0)) // array[j] > pivot
-			{ 
+            { 
                 break;
             }
         }
@@ -256,11 +272,5 @@ exports.prototype = {
     contains: exports.contains,
     binarySearch: exports.binarySearch,
     sort: exports.sort,
-};
-
-var swap = function(array, a, b) 
-{
-    var tmp = array[a];
-    array[a] = array[b];
-    array[b] = tmp;
+    flatMap: exports.flatMap,
 };
