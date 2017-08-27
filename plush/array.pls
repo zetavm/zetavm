@@ -45,6 +45,22 @@ exports.filter = function(arr, predicate)
     return newArr;
 };
 
+// Returns an array where each element is replaced by the result of calling
+// mapper function on that element.
+// The flatMap operation has the effect of applying one-to-many
+// transformation to the elements of the array, and then flattening
+// the resulting elements into a new array.
+exports.flatMap = function(arr, mapper)
+{
+    var newArr = [];
+    var len = arr.length;
+    for (var i = 0; i < len; i += 1)
+    {
+        newArr:append(mapper(arr[i]));
+    }
+    return newArr;
+};
+
 /// For each element in arr it calls consumer
 /// It does not modify arr.
 exports.forEach = function(arr, consumer)
@@ -258,4 +274,5 @@ exports.prototype = {
     contains: exports.contains,
     binarySearch: exports.binarySearch,
     sort: exports.sort,
+    flatMap: exports.flatMap,
 };

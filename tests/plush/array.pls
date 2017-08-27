@@ -47,6 +47,28 @@ var testMap = function(arr)
     }
 };
 
+var testFlatMap = function()
+{
+    var sentence = "Life, Universe and Everything";
+    var out = "Life,UniverseandEverything";
+    var wordToCharArray = function(word)
+    {
+        var arr = [];
+        for (var i = 0; i < word.length; i += 1)
+        {
+            arr:push(word[i]);
+        }
+        return arr;
+    };
+    var words = sentence:split(" ");
+    var arr = words:flatMap(wordToCharArray);
+    assert(arr.length == 26);
+    for (var i = 0; i < arr.length; i += 1)
+    {
+        assert(arr[i] == out[i]);
+    }
+};
+
 var testForEach = function(arr)
 {
     var add = function(elem)
@@ -179,6 +201,7 @@ var testSort = function()
 
 testIndexOf(getArray());
 testMap(getArray());
+testFlatMap();
 testForEach(getArray());
 testSlice(getArray());
 testConcat(getArray());
