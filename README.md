@@ -42,7 +42,7 @@ ZetaVM is a Virtual machine and JIT compiler for dynamic programming languages.
 It implements a basic core runtime environment on top of which programming
 dynamic languages can be implemented with relatively little effort.
 
-Features of the VM will include:
+Features of the VM include:
 
 - Built-in support for dynamic typing
 
@@ -64,7 +64,7 @@ Features of the VM will include:
 
 - Built-in graphical and audio libraries
 
-- Built-in package manager
+- Coming soon: built-in package manager
 
 Zeta image files (.zim) are JSON-like, human-readable text files containing
 objects, data and bytecodes to be executed by ZetaVM.
@@ -82,6 +82,8 @@ For more information, see the documentation in the [docs](docs) directory:
 - [Design and Guiding Principles of ZetaVM](docs/design.md)
 
 - [Packages included with ZetaVM](docs/packages.md)
+
+- [Execution Model and Semantics](docs/exec_model.md)
 
 - [Creating your own Language with ZetaVM](docs/new_language.md)
 
