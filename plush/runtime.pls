@@ -9,7 +9,8 @@ var rt_add = function (x, y)
 {
     if (typeof x == "int32")
     {
-        if (typeof y == "float32") {
+        if (typeof y == "float32")
+        {
             return $add_f32( $i32_to_f32(x), y);
         }
         if (typeof y == "int32")
@@ -24,7 +25,8 @@ var rt_add = function (x, y)
         {
             return $add_f32(x, y);
         }
-        if (typeof y == "int32") {
+        if (typeof y == "int32")
+        {
             return $add_f32(x, $i32_to_f32(y));
         }
     }
@@ -37,16 +39,6 @@ var rt_add = function (x, y)
         }
     }
 
-    /*
-    if (typeof x == "array")
-    {
-        if (typeof y == "array")
-        {
-            return $array_cat(x, y);
-        }
-    }
-    */
-
     assert (
         false,
         "unhandled type in addition"
@@ -58,8 +50,9 @@ var rt_sub = function (x, y)
 {
     if (typeof x == "int32")
     {
-        if (typeof y == "float32") {
-            return $sub_f32( $i32_to_f32(x), y);
+        if (typeof y == "float32")
+        {
+            return $sub_f32($i32_to_f32(x), y);
         }
         if (typeof y == "int32")
         {
@@ -105,7 +98,8 @@ var rt_mul = function (x, y)
         {
             return $mul_f32(x, y);
         }
-        if (typeof y == "int32") {
+        if (typeof y == "int32")
+        {
             return $mul_f32(x, $i32_to_f32(y));
         }
     }
@@ -757,7 +751,7 @@ var output = function (x)
     
     if (typeof x == "array")
     {
-        // lazily import string package.
+        // Lazily import the std/string package
         var str = import "std/string/0";
         io.print_str(str.toString(x));
     }
