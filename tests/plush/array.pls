@@ -67,6 +67,31 @@ var testFlatMap = function()
     {
         assert(arr[i] == out[i]);
     }
+
+    // Test corner cases
+    // Function which wraps input value in monadic context.
+    var ret = function (elem)
+    {
+        var arr = [elem];
+        return arr;
+    };
+
+    var eat = function(elem)
+    {
+        return [];
+    };
+
+    var inp = [];
+    var out = inp:flatMap(ret);
+    assert(out.length == 0);
+    inp:push(4);
+    out = inp:flatMap(ret);
+    assert(out.length == 1);
+    assert(out[0] == 4);
+    out = inp:flatMap(eat);
+    assert(out.length == 0);
+    assert(inp.length == 1);
+    assert(inp[0] == 4);
 };
 
 var testForEach = function(arr)
