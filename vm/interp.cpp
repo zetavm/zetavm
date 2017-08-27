@@ -2039,8 +2039,10 @@ Value execCode()
 
             case NEW_ARRAY:
             {
-                auto len = popInt32();
-                auto array = Array(len);
+                // Note: capacity refers to preallocated slots,
+                // the new array will have length 0
+                auto capacity = popInt32();
+                auto array = Array(capacity);
                 pushVal(array);
             }
             break;
