@@ -183,8 +183,6 @@ exports.binarySearch = function(arr, item)
             return m;
         }
     }
-
-    // Item not found.
     return -1;
 };
 
@@ -206,7 +204,7 @@ var quickSort = function(array, low, high, comp)
 {
     // Hoare partition scheme
     if (low < high) 
-	{
+     {
         var p = partition(array, low, high, comp);
         quickSort(array, low, p, comp);
         quickSort(array, p + 1, high, comp);
@@ -226,7 +224,7 @@ var partition = function(array, low, high, comp)
         {
             i += 1;
             if (!(comp(array[i], pivot) < 0)) // array[i] < pivot
-			{ 
+            { 
                 break;
             }
         }
@@ -235,7 +233,7 @@ var partition = function(array, low, high, comp)
         {
             j -= 1;
             if (!(comp(array[j], pivot) > 0)) // array[j] > pivot
-			{ 
+            { 
                 break;
             }
         }

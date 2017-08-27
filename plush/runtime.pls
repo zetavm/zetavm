@@ -754,6 +754,13 @@ var output = function (x)
         io.print_float32(x);
         return;
     }
+    
+    if (typeof x == "array")
+    {
+        // lazily import string package.
+        var str = import "std/string/0";
+        io.print_str(str.toString(x));
+    }
 
     if (x == true)
     {

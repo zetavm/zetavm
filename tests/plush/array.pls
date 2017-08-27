@@ -241,7 +241,4 @@ testSort();
 // Array methods (Plush runtime)
 assert (['a', 'b', 'c']:contains('b'));
 
-// Array methods (Plush runtime)
-assert (['a', 'b', 'c']:contains('b'));
-
 print("std/array -> All tests passed");
