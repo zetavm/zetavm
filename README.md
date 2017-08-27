@@ -73,7 +73,7 @@ executable programs, or libraries/packages.
 
 ## More Information
 
-A recording of [talk about ZetaVM](https://eventil.com/presentations/5dszyA) given at PolyConf in July 2017 is available.
+A recording of a [talk about ZetaVM](https://eventil.com/presentations/5dszyA) given at PolyConf 2017 is available.
 
 For more information, see the documentation in the [docs](docs) directory:
 
