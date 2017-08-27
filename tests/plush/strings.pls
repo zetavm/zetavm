@@ -46,6 +46,9 @@ var obj = {
 };
 
 assert(str.toString(obj)== "17");
+// Array toString functionality.
+assert(str.toString( [[1], "A string", 3, 4, 5] ) == "[[1], A string, 3, 4, 5]");
+assert(str.toString([]) == "[]");
 
 //ord/char
 var fromCharCode = str.fromCharCode;

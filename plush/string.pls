@@ -19,6 +19,20 @@ exports.toString = function (e)
     {
         return exports.intToString(e, 10);
     }
+    if (type == "array")
+    {
+        var builder = "[";
+        for (var i = 0;i < e.length;i += 1)
+        {
+            builder += exports.toString(e[i]);
+            if (i != e.length - 1)
+            {
+                builder += ", ";
+            }
+        }
+        builder += "]";
+        return builder;
+    }
     if (e == true)
     {
         return "true";
