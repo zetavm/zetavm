@@ -54,7 +54,7 @@ var drawSound = function(samples)
     var width = 400;
     var height = 100;
 
-    window.create_window("Sound Wave", width, height);
+    var handle = window.create_window("Sound Wave", width, height);
 
     print('drawing sound wave');
 
@@ -87,17 +87,17 @@ var drawSound = function(samples)
 
     print('done drawing');
 
-    window.draw_pixels(pixels);
+    window.draw_pixels(handle, pixels);
 
     // Wait until the user closes the window
     for (;;)
     {
-        var result = window.process_events();
+        var result = window.process_events(handle);
         if (result == false)
             break;
     }
 
-    window.destroy_window();
+    window.destroy_window(handle);
 };
 
 var silent = function (t)
