@@ -35,7 +35,7 @@ block_238 = {
 block_240 = {
   instrs: [
     { op:'push', val:'assertion failed' },
-    { op:'abort' },
+    { op:'throw' },
     { op:'jump', to:@block_241 },
   ]
 };

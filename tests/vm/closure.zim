@@ -85,7 +85,7 @@ main_succeed = {
 main_fail = {
   instrs: [
     { op:'push', val:'closure returned the wrong value' },
-    { op:'abort' },
+    { op:'throw' },
   ]
 };
 main = {

@@ -99,10 +99,7 @@ enum Opcode : uint16_t
     IF_TRUE,
     CALL,
     RET,
-    THROW,
-
-    // Abort instruction
-    ABORT
+    THROW
 };
 
 class CodeFragment
@@ -1086,18 +1083,6 @@ void compile(BlockVersion* version)
                 numTmps
             );
 
-            continue;
-        }
-
-        if (op == "abort")
-        {
-            numTmps -= 1;
-
-            // Store a mapping of this instruction to the block version
-            // Needed to retrieve the source code position
-            instrMap[codeHeapAlloc] = version;
-
-            writeCode(ABORT);
             continue;
         }
 
@@ -2272,28 +2257,6 @@ Value execCode()
                 // Pop the exception value
                 auto excVal = popVal();
                 throwExc((uint8_t*)&op, excVal);
-            }
-            break;
-
-            case ABORT:
-            {
-                auto errMsg = (std::string)popStr();
-
-                auto srcPos = getSrcPos((uint8_t*)&op);
-                if (srcPos != Value::UNDEF)
-                    std::cout << posToString(srcPos) << " - ";
-
-                if (errMsg != "")
-                {
-                    std::cout << "aborting execution due to error: ";
-                    std::cout << errMsg << std::endl;
-                }
-                else
-                {
-                    std::cout << "aborting execution due to error" << std::endl;
-                }
-
-                exit(-1);
             }
             break;
 

@@ -683,7 +683,11 @@ var parseAtom = function (input)
         var opName = input:parseIdent();
         input:expect("(");
         var argExprs = parseExprList(input, ")");
-        return IRExpr::{ opName:opName, argExprs:argExprs };
+
+        return IRExpr::{
+            instr: { op: opName},
+            argExprs: argExprs
+        };
     }
 
     // Parsing failed
@@ -1000,13 +1004,24 @@ var parseStmt = function (input)
         input:expectWS(")");
         input:expectWS(";");
 
+        // This expression pushes the source position
+        // of the assert on the stack
+        var srcPosExpr = IRExpr::{
+            instr: {op: "push", val: srcPos },
+            argExprs: []
+        };
+
+        // This expression creates the exception object
+        var excExpr = ObjectExpr::{
+            names: ['msg', 'src_pos'],
+            exprs: [errMsg, srcPosExpr]
+        };
+
+        // If the test condition fails, throw the exception object
         return IfStmt::{
             testExpr: testExpr,
             thenStmt: BlockStmt::{ stmts:[] },
-            elseStmt: IRStmt::{
-                instr: {op: "abort", src_pos: srcPos },
-                argExprs:[errMsg]
-            }
+            elseStmt: ThrowStmt::{ expr: excExpr }
         };
     }
 
@@ -1787,7 +1802,7 @@ var genExpr = function (ctx, expr)
         for (var i = 0; i < args.length; i += 1)
             genExpr(ctx, args[i]);
 
-        ctx:addOp(expr.opName);
+        ctx:addInstr(expr.instr);
 
         return;
     }
