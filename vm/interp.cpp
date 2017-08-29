@@ -1140,6 +1140,7 @@ void throwExc(
     Value excVal
 )
 {
+    Array stacktrace {10};
     // Get the current function
     auto itr = instrMap.find(throwInstr);
     assert (itr != instrMap.end());
@@ -1195,6 +1196,21 @@ void throwExc(
             {
                 errMsg = excVal.toString();
             }
+            for (size_t i = 0; i < stacktrace.length(); ++i)
+            {
+                Object entry = stacktrace.getElem(i);
+                errMsg += "\nin ";
+                errMsg += (std::string)entry.getField("fun_name");
+                errMsg += " at ";
+                if (entry.hasField("src_pos"))
+                {
+                    errMsg += posToString(entry.getField("src_pos"));
+                }
+                else 
+                {
+                    errMsg += "unknown location";
+                }
+            }
 
             throw RunError(errMsg);
         }
@@ -1202,6 +1218,24 @@ void throwExc(
         // Find the info associated with the return address
         assert (retAddrMap.find(retVer) != retAddrMap.end());
         auto retEntry = retAddrMap[retVer];
+      
+        Object stackEntry = Object::newObject(2);
+        
+        Object fun = retEntry.retVer->fun;
+        if (!fun.hasField("name"))
+        {
+            stackEntry.setField("fun_name", String("unnamed function"));
+        }
+        else
+        {
+            stackEntry.setField("fun_name", fun.getField("name"));
+        }
+        Object callInstr = (Object)Value((refptr)retEntry.callInstr, TAG_OBJECT);
+        if (callInstr.hasField("src_pos"))
+        {
+            stackEntry.setField("src_pos", callInstr.getField("src_pos"));
+        }
+        stacktrace.push(stackEntry);
 
         // Get the function associated with the return address
         curFun = retEntry.retVer->fun;

@@ -979,9 +979,10 @@ var parseStmt = function (input)
     // Throw statement
     if (input:keyword("throw"))
     {
+        var srcPos = input:getPos();
         var expr = parseExpr(input);
         input:expectWS(";");
-        return ThrowStmt::{ expr: expr };
+        return ThrowStmt::{ expr: expr, srcPos: srcPos};
     }
 
     // Get the current position in the input
@@ -1077,11 +1078,12 @@ Block.addInstr = function (block, instr)
 
 var Function = {};
 
-Function.new = function (params, entryBlock)
+Function.new = function (name, params, entryBlock)
 {
     // Note: functions always have at least 1 local
     // to store the hidden function/closure argument
     return Function::{
+        name: name,
         params: params,
         num_locals: 1,
         entry: entryBlock,
@@ -1275,7 +1277,7 @@ var genUnit = function (unitAST, globalObj)
 {
     var entryBlock = Block.new();
 
-    var unitFun = Function.new([], entryBlock);
+    var unitFun = Function.new("top-level", [], entryBlock);
 
     // Register variable declarations
     registerDecls(unitFun, unitAST.body, true);
@@ -1694,6 +1696,7 @@ var genExpr = function (ctx, expr)
         var entryBlock = Block.new();
 
         var fun = Function.new(
+            expr.name,
             expr.params,
             entryBlock
         );
@@ -1860,6 +1863,11 @@ var genStmt = function (ctx, stmt)
 
     if (stmt instanceof VarStmt)
     {
+        if (stmt.initExpr instanceof FunExpr && stmt.initExpr.name == '')
+        {
+            stmt.initExpr.name = stmt.identName;
+        }
+
         if (ctx.fun:hasLocal(stmt.identName))
         {
             genExpr(ctx, stmt.initExpr);
@@ -2136,6 +2144,11 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
             parseError(false, "cannot assign to exports variable");
         }
 
+        if (rhsExpr instanceof FunExpr && rhs.name == '')
+        {
+            rhs.name = lhsExpr.name;
+        }
+
         if (ctx.fun:hasLocal(lhsExpr.name))
         {
             var localIdx = ctx.fun:getLocalIdx(lhsExpr.name);
@@ -2151,7 +2164,7 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
             ctx:addInstr({ op:'dup', idx:2 });
             ctx:addOp("set_field");
         }
-
+        
         return;
     }
 
