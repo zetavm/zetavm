@@ -1782,12 +1782,17 @@ var genExpr = function (ctx, expr)
 
         var contBlock = Block.new();
 
-        ctx:addInstr({
+        var callInstr = {
             op: "call",
-            ret_to:contBlock,
             num_args: args.length+1,
-            src_pos: expr.srcPos
-        });
+            src_pos: expr.srcPos,
+            ret_to: contBlock
+        };
+
+        if (ctx.catchBlock != false)
+            callInstr.throw_to = ctx.catchBlock;
+
+        ctx:addInstr(callInstr);
 
         ctx:merge(contBlock);
 
