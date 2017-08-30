@@ -9,7 +9,7 @@ it is incomplete and breaking changes may happen often.**
 
 - GNU Make
 - GCC 5.4+ (linux) or clang (OSX), or cygwin (Windows)
-- Optional: autoconf, if needing to edit the configure file
+- Optional: autoconf and pkg-config, if needing to edit the configure file
 - Optional: sdl2, if wanting to use audio and graphics capabilities
 - Optional: Python 2 is needed to run the benchmark.py script
 

@@ -94,6 +94,7 @@ set -x
 ./zeta tests/plush/regress_exc_var.pls
 ./zeta tests/plush/regress_exc_idx.pls
 ./zeta tests/plush/regress_throw_str.pls | grep -q "foobar"
+./zeta tests/plush/regress_method_exc.pls
 
 # Check that source position is reported on errors
 ./zeta tests/plush/assert.pls | grep -q "3:1"
