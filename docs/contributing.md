@@ -1,16 +1,18 @@
 Contributing to ZetaVM
 ======================
 
-This document is meant to regroup useful information specifically for those
-wanting to contribute to the ZetaVM project.
+This document is meant to regroup useful information for those
+who want to contribute to the ZetaVM project.
 
 
 What to Contribute?
 -------------------
 
 If you are wanting to get involved, but do not know what your contribution
-could be, we encourage you to check the issues page on GitHub for a listing
-of tasks that are needing to be completed. You can also join the Gitter chat
+could be, we encourage you to check the
+[issues page](https://github.com/zetavm/zetavm/issues) on GitHub for a listing
+of tasks that are needing to be completed. You can also join the
+[Gitter chat](https://gitter.im/zeta-vm-org/Lobby)
 and tell us that you are interested, and we can find you something to work on.
 
 For those that are new to coding or not yet comfortable with the codebase,
@@ -29,7 +31,7 @@ for the purpose of asking us a question, and we will respond.
 
 Lastly, another potential contribution you can make is writing fun programs
 that can serve as examples of code running on ZetaVM, or even for testing
-and benchmarking purposes. See the programs under the [/examples](/examples)
+and benchmarking purposes. See the programs under the [examples](/examples)
 directory of this repo.
 
 Style Guide
@@ -38,7 +40,9 @@ Style Guide
 For indentation, 4 spaces are to be used instead of tabs. The main reason not
 to use tabs is so the code looks the same everywhere. Mixing spaces and tabs
 will result in badly-aligned code when rendered on systems that choose to
-represent tabs as having a different width from your text editor.
+represent tabs as having a different width from your text editor. We also
+recommend that you try to keep the horizontal width of your code within
+80 characters.
 
 Curly braces are to go on their own line, because we are civilized folks:
 
@@ -86,7 +90,7 @@ commits in the chain. Squashing commits can be achieved with the
 This website has a useful [in-browser tool](http://learngitbranching.js.org/?NODEMO) to help you practice your git-fu.
 You can ask us for help on the Gitter chat if you need help.
 
-Lastly, before submitting a pull request, you should look at the "files changed"
+Lastly, before submitting a pull request, you should look at the "Files changed"
 tab and take the time to review your changes. You should check, for instance, if
 you've added random spurious newlines through the code, and that you aren't
 committing changes you didn't mean to.
