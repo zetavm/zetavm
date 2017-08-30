@@ -85,6 +85,8 @@ For more information, see the documentation in the [docs](docs) directory:
 
 - [Execution Model and Semantics](docs/exec_model.md)
 
+- [Contributing to ZetaVM](docs/contributing.md)
+
 - [Creating your own Language with ZetaVM](docs/new_language.md)
 
 There are also a few blog post about [Zeta](https://pointersgonewild.com/category/zeta/) and its design.
