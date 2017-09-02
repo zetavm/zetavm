@@ -137,3 +137,24 @@ exports.floor = function (x)
         "unhandled type in floor function"
     );
 };
+
+exports.ceil = function (x)
+{
+    if (typeof x == "int32")
+    {
+        return x;
+    }
+
+    if (typeof x == "float32")
+    {
+        var xi = $f32_to_i32(x);
+        if (x <= xi)
+            return xi;
+        return xi + 1;
+    }
+
+    assert(
+        false,
+        "unhandled type in floor function"
+    );
+};

@@ -57,6 +57,9 @@ set -x
 ./plush.sh tests/plush/throw_exc.pls
 ./plush.sh tests/plush/throw_exc2.pls
 
+# map requires self hosted plush. Doesn't work with cplush
+./zeta tests/plush/map.pls
+
 ##############################################################################
 # Plush language package tests (plush/plush_pkg.pls)
 ##############################################################################

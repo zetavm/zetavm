@@ -76,4 +76,13 @@ assert (math.isNaN($str_to_f32("10e777f")));
 assert (math.floor(3.7f) == 3);
 assert (math.floor(0.0f) == 0);
 assert (math.floor(-3.3f) == -4);
+
+assert (math.ceil(3.7f) == 4);
+assert (math.ceil(4.0f) == 4);
+assert (math.ceil(4.0f) == 4);
+assert (math.ceil(4.99999999f) == 5);
+assert (math.ceil(0.0f) == 0);
+assert (math.ceil(-3.3f) == -3);
+assert (math.ceil(-3.0f) == -3);
+
 assert (math.idiv(5, 2) == 2);
