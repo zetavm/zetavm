@@ -155,6 +155,6 @@ exports.ceil = function (x)
 
     assert(
         false,
-        "unhandled type in floor function"
+        "unhandled type in ceil function"
     );
 };
