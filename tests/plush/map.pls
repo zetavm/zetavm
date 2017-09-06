@@ -9,9 +9,17 @@ var mymap = map.new();
 var keyArr = ["name", 42, "type"];
 var count = 0;
 
-var sanityTest = function() {
+// Asserts that calling the `fun` throws some exception
+var assertThrows = function(fun)
+{
+    try { fun(); } catch (e) { return; }
+    assert(false);
+};
+
+var sanityTest = function()
+{
     assert(mymap:size() == 0);
-    try { mymap:get(42); assert(false); } catch(e) {}
+    assertThrows(function() { mymap:get(42); });
     assert(!mymap:has("zeta"));
 
     /// map:set
@@ -33,11 +41,11 @@ var sanityTest = function() {
     assert(mymap:get("name") == "plush");
     assert(mymap:get(42) == "Answer to life, universe and everything");
 
-    try { mymap:get(48); assert(false); } catch(e) {}
+    assertThrows(function() { mymap:get(48); });
 
     /// map:remove
     mymap:remove("package");
-    try { mymap:get("package"); assert(false); } catch(e) {}
+    assertThrows(function() { mymap:get("package"); });
     assert(mymap:size() == 3);
 
 
@@ -69,7 +77,8 @@ var bigMap = map.new();
 bigMap:reserve(300);
 
 
-var regressionTest = function() {
+var regressionTest = function()
+{
     var fileName = "tests/plush/a_lot_of_strings";
     var io = import "core/io/0";
 

@@ -18,12 +18,12 @@ var minloadFactor = 0.25f;
 ///                   of size 2 where first element is key and second is value.
 /// _size          -> Number of elements in the table
 /// _capacity      -> Size of _arr (capacity of hashtable);
-/// _reserved      -> Reserved capacity (can not shrink beyond this)
+/// _minCapacity   -> Reserved capacity (can not shrink beyond this)
 var HashMap = {
     _arr: [],
     _size: 0,
     _capacity: 8,
-    _reserved: 8
+    _minCapacity: 8
 };
 
 
@@ -66,7 +66,7 @@ HashMap._resizeArrToCapacity = function(self)
 
 
 // Resizes the hashmap to newCapacity
-HashMap._resize = function(self, newCapacity)
+HashMap._reserve = function(self, newCapacity)
 {
     // print(strings.format("Resizing : {}", [newCapacity]));
     var oldArr = self._arr;
@@ -118,7 +118,7 @@ HashMap.set = function(self, key, value)
     var load = (self._size / self._capacity);
     if (load >= maxloadFactor)
     {
-        self:_resize(self._capacity * 2);
+        self:_reserve(self._capacity * 2);
     }
 };
 
@@ -147,15 +147,18 @@ HashMap.get = function(self, key)
 /// returns provided value
 HashMap.getOrDefault = function(self, key, defaultValue)
 {
-
-    try
+    var index = self._hash(key, self._capacity);
+    var bucket = self._arr[index];
+    var len = bucket.length;
+    for (var i = 0; i < len; i += 1)
     {
-        return HashMap.get(self, key);
+        var entry = bucket[i];
+        if (entry[0] == key)
+        {
+            return entry[1];
+        }
     }
-    catch (e)
-    {
-        return defaultValue;
-    }
+    return defaultValue;
 };
 
 
@@ -199,9 +202,9 @@ HashMap.remove = function(self, key)
             var load = (self._size / self._capacity);
             var newCapacity = math.idiv(self._capacity,  2);
             // Only shrink if newcapacity is larger than reserved;
-            if (load < minloadFactor && newCapacity >= self._reserved)
+            if (load < minloadFactor && newCapacity >= self._minCapacity)
             {
-                self:_resize(newCapacity);
+                self:_reserve(newCapacity);
             }
         }
     }
@@ -264,8 +267,8 @@ HashMap.keys = function(self)
 HashMap.reserve = function(self, n)
 {
     var newCapacity = math.ceil(n / 0.75f);
-    self._reserved = newCapacity;
-    self:_resize(newCapacity);
+    self._minCapacity = newCapacity;
+    self:_reserve(newCapacity);
 };
 
 /// Returns new instance of the hashmap
