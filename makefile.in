@@ -8,7 +8,7 @@ PKGS_DIR=\"$(CURDIR)/packages/\"
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zeta cplush math-pkg string-pkg array-pkg parsing-pkg plush-pkg plush-bench cscheme
+all: zeta cplush math-pkg string-pkg array-pkg map-pkg parsing-pkg plush-pkg plush-bench cscheme
 
 test: all
 	./run_tests.sh
@@ -17,7 +17,7 @@ clean:
 	rm -rf *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log *.0 plush/*.o vm/*.o
 
 # Tells make which targets are not files
-.PHONY: all test clean math-pkg parsing-pkg plush-pkg plush-bench
+.PHONY: all test clean math-pkg parsing-pkg array-pkg map-pkg plush-pkg plush-bench
 
 ##############################################################################
 # ZetaVM
@@ -69,6 +69,11 @@ string-pkg: $(CPLUSH_BIN) plush-pkg
 array-pkg: $(CPLUSH_BIN) plush-pkg
 	mkdir -p packages/std/array/0
 	./$(CPLUSH_BIN) plush/array.pls > packages/std/array/0/package
+
+# Map library (std/map)
+map-pkg: $(CPLUSH_BIN) plush-pkg
+	mkdir -p packages/std/map/0
+	./$(CPLUSH_BIN) plush/map.pls > packages/std/map/0/package
 
 # Math library (std/math)
 math-pkg: $(CPLUSH_BIN) plush-pkg
