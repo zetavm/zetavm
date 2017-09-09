@@ -317,27 +317,34 @@ namespace core_window_0
         return Value::UNDEF;
     }
 
-    Value process_events(Value handle)
+    /**
+    Get the next event to process, if any
+    */
+    Value get_next_event(Value handle)
     {
         // For now, only one window is supported
         assert (handle == Value((refptr)window, TAG_RAWPTR));
 
         SDL_Event event;
 
-        while (SDL_PollEvent(&event))
+        if (!SDL_PollEvent(&event))
         {
-            switch (event.type)
-            {
-                case SDL_QUIT:
-                return Value::FALSE;
-                break;
-
-                default:
-                break;
-            }
+            // No event to process
+            return Value::FALSE;
         }
 
-        return Value::TRUE;
+        switch (event.type)
+        {
+            case SDL_QUIT:
+            {
+                auto obj = Object::newObject();
+                obj.setField("type", String("quit"));
+                return obj;
+            }
+
+            default:
+            return Value::FALSE;
+        }
     }
 
     Value draw_pixels(Value handle, Value pixelsArray)
@@ -373,7 +380,7 @@ namespace core_window_0
         auto exports = Object::newObject(32);
         setHostFn(exports, "create_window"  , 3, (void*)create_window);
         setHostFn(exports, "destroy_window" , 1, (void*)destroy_window);
-        setHostFn(exports, "process_events" , 1, (void*)process_events);
+        setHostFn(exports, "get_next_event" , 1, (void*)get_next_event);
         setHostFn(exports, "draw_pixels"    , 2, (void*)draw_pixels);
         return exports;
 #else

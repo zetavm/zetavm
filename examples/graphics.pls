@@ -23,10 +23,14 @@ for (var y = 0; y < height; y += 1)
 
 for (var i = 0;; i += 1)
 {
-    var result = window.process_events(handle);
+    var event = window.get_next_event(handle);
 
-    if (result == false)
-        break;
+    // If there is an event to process
+    if (event != false)
+    {
+        if (event.type == "quit")
+            break;
+    }
 
     output('frame ');
     output(i);

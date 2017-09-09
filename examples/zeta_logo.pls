@@ -1,7 +1,7 @@
 #language "lang/plush/0"
 
 /**
-Drawing of a zeta logo using signed distance functions in 2D
+Drawing of a Zeta logo using signed distance functions in 2D
 Note: currently needs to be improved
 */
 
@@ -177,14 +177,19 @@ var handle = window.create_window("Zeta Logo", width, height);
 
 window.draw_pixels(handle, buf);
 
+// TODO: command-line argument to produce PPM output
 //writePPM('zeta_logo.ppm', buf, width, height);
 
 // Wait until the window is closed
-for (var i = 0;; i += 1)
+for (;;)
 {
-    var result = window.process_events(handle);
-    if (result == false)
-        break;
+    var event = window.get_next_event(handle);
+
+    if (event != false)
+    {
+        if (event.type == "quit")
+            break;
+    }
 }
 
 window.destroy_window(handle);

@@ -38,8 +38,6 @@ var playSound = function (sampleFun, numSeconds)
 
     audio.queue_samples(dev, samples);
 
-    drawSound(samples);
-
     // Wait until the sound is done playing
     for (;;)
     {
@@ -47,57 +45,6 @@ var playSound = function (sampleFun, numSeconds)
         if (queueSize == 0)
             break;
     }
-};
-
-var drawSound = function(samples)
-{
-    var width = 400;
-    var height = 100;
-
-    var handle = window.create_window("Sound Wave", width, height);
-
-    print('drawing sound wave');
-
-    var pixels = [];
-
-    for (var y = 0; y < height; y += 1)
-    {
-        for (var x = 0; x < width; x += 1)
-        {
-            pixels:push(0);
-            pixels:push(0);
-            pixels:push(0);
-        }
-    }
-
-    for (var i = 0; i < samples.length; i += 1)
-    {
-        var s = samples[i];
-        s = math.min(s, 1.0f);
-        s = math.max(s, -1.0f);
-
-        var sy = math.floor((height - 1) * ((s + 1) / 2));
-        var sx = math.floor(width * i / samples.length);
-
-        var bufIdx = (3 * sy * width) + (3 * sx);
-        pixels[bufIdx + 0] = 255;
-        pixels[bufIdx + 1] = 255;
-        pixels[bufIdx + 2] = 255;
-    }
-
-    print('done drawing');
-
-    window.draw_pixels(handle, pixels);
-
-    // Wait until the user closes the window
-    for (;;)
-    {
-        var result = window.process_events(handle);
-        if (result == false)
-            break;
-    }
-
-    window.destroy_window(handle);
 };
 
 var silent = function (t)
