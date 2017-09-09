@@ -160,5 +160,12 @@ var sampleFun = repeat(
     )
 );
 
-// Render 10 seconds of audio
-genSamples(sampleFun, 10.0f);
+exports.main = function (args)
+{
+    var string = import "std/string/0";
+    var numSecs = string.parseInt(args[1], 10);
+
+    genSamples(sampleFun, numSecs);
+
+    return 0;
+};

@@ -21,4 +21,12 @@ var fill = function (len)
     }
 };
 
-fill(sampleRate * 10);
+exports.main = function (args)
+{
+    var string = import "std/string/0";
+    var numSecs = string.parseInt(args[1], 10);
+
+    fill(sampleRate * numSecs);
+
+    return 0;
+};

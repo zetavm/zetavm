@@ -55,9 +55,9 @@ def runBenchs():
         'benchmarks/fib36.zim',
         'benchmarks/plush_parser.zim',
         'benchmarks/img_fill.pls -- 256',
-        'benchmarks/saw_wave.pls',
-        'benchmarks/sine_wave.pls',
-        'benchmarks/func_audio.pls',
+        'benchmarks/saw_wave.pls -- 10',
+        'benchmarks/sine_wave.pls -- 10',
+        'benchmarks/func_audio.pls -- 10',
         'benchmarks/rand_floats.pls -- 20',
         'benchmarks/zsdf.pls -- 512',
     ]

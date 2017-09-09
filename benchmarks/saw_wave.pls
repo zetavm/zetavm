@@ -18,4 +18,12 @@ var fill = function (len)
     }
 };
 
-fill(44100 * 10);
+exports.main = function (args)
+{
+    var string = import "std/string/0";
+    var numSecs = string.parseInt(args[1], 10);
+
+    fill(44100 * numSecs);
+
+    return 0;
+};
