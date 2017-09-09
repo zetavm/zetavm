@@ -54,19 +54,19 @@ def runBenchs():
         'benchmarks/fib29.pls',
         'benchmarks/fib36.zim',
         'benchmarks/plush_parser.zim',
-        'benchmarks/img_fill.pls',
+        'benchmarks/img_fill.pls -- 256',
         'benchmarks/saw_wave.pls',
         'benchmarks/sine_wave.pls',
         'benchmarks/func_audio.pls',
-        'benchmarks/rand_floats_1m.pls',
-        'benchmarks/zsdf.pls',
+        'benchmarks/rand_floats.pls -- 20',
+        'benchmarks/zsdf.pls -- 512',
     ]
 
     timeVals = []
 
     for benchPath in benchList:
 
-        sys.stdout.write(benchPath.ljust(35))
+        sys.stdout.write(benchPath.ljust(40))
         sys.stdout.flush()
 
         timeMs = bench(benchPath)
@@ -75,8 +75,8 @@ def runBenchs():
         sys.stdout.write('%6d ms\n' % timeMs)
 
     meanTime = geoMean(timeVals)
-    sys.stdout.write(44 * '-' + '\n')
-    sys.stdout.write('geometric mean'.ljust(35))
+    sys.stdout.write(49 * '-' + '\n')
+    sys.stdout.write('geometric mean'.ljust(40))
     sys.stdout.write('%6d ms\n' % meanTime)
 
 # TODO: trigger make clean, make -j4 to make sure we have a fresh build

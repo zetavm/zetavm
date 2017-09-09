@@ -128,8 +128,15 @@ python espresso/main.py test
 ./espresso.sh tests/espresso/test.espr
 
 ##############################################################################
-# Example programs
+# Benchmarks & example programs
 ##############################################################################
 
+# Benchmarks
+./zeta benchmarks/img_fill.pls -- 32
+./zeta benchmarks/plush_parser.zim
+./zeta benchmarks/rand_floats.pls -- 10
+./zeta benchmarks/zsdf.pls -- 16
+
+# Example programs
 ./zeta examples/line_count.pls -- examples/line_count.pls | grep -q "54"
 ./zeta examples/csv_parsing.pls -- examples/GOOG.csv | grep -q "rows: 23"

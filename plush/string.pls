@@ -196,11 +196,14 @@ exports.format = function (fmt, args)
         else
         {
             var property = 0;
-            try {
+            try
+            {
                 property = exports.parseInt(str, 10);
-            } catch (e) {
-                //Number parsing failed, so its probably not an int, try to
-                //acces the object property
+            }
+            catch (e)
+            {
+                // Number parsing failed, so its probably not an int, try to
+                // access the object property
                 property = str;
             }
             accum += exports.toString(args[property]);

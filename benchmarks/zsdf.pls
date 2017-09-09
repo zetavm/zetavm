@@ -10,9 +10,6 @@ var max = math.max;
 var min = math.min;
 var abs = math.abs;
 
-var width = 512;
-var height = 512;
-
 var length = function (x, y)
 {
     return math.sqrt(x * x + y * y);
@@ -48,8 +45,9 @@ var union = min;
 
 var dstFn = function (x, y)
 {
-    // TODO: make x,y range from 0 to 1, so that
-    // drawing logic can be resolution-independent
+    // Scale the points, input is in [0,1]
+    x *= 512;
+    y *= 512;
 
     var dRoundBox = roundBox(
         x - 256,
@@ -126,22 +124,31 @@ var dstFn = function (x, y)
     );
 };
 
-// Render the function
-var buf = [];
-for (var y = 0; y < height; y += 1)
+exports.main = function (args)
 {
-    for (var x = 0; x < width; x += 1)
+    var string = import "std/string/0";
+    var size = string.parseInt(args[1], 10);
+    var width = size;
+    var height = size;
+
+    // Render the function
+    var buf = [];
+    for (var y = 0; y < height; y += 1)
     {
-        var dst = dstFn(x, y);
+        for (var x = 0; x < width; x += 1)
+        {
+            var dst = dstFn(1.0f * x / width, 1.0f * y / height);
 
-        dst = math.max(0, -dst);
-        dst = math.min(dst / 3, 1);
+            dst = math.max(0, -dst);
+            dst = math.min(dst / 0.006f, 1);
 
-        //var c = 255 - math.floor(255 * dst);
-        var c = math.floor(255 * dst);
+            var c = math.floor(255 * dst);
 
-        buf:push(c);
-        buf:push(c);
-        buf:push(c);
+            buf:push(c);
+            buf:push(c);
+            buf:push(c);
+        }
     }
-}
+
+    return 0;
+};
