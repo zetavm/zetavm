@@ -43,9 +43,8 @@ will result in badly-aligned code when rendered on systems that choose to
 represent tabs as having a different width from your text editor.
 
 With respect to formatting, we also recommend that you try to keep the
-horizontal width of your code and comments within 80 characters.
-
-There should be exactly one blank line between global function and
+horizontal width of your code and comments within 80 characters. There
+should be exactly one blank line between global function and
 variable definitions. No more, no less.
 
 Comments placed above functions, for documentation purposes, should
@@ -88,7 +87,7 @@ assert (foo);
 
 // Bad
 var f = function(x, y, z);
-assert (foo);
+assert(foo);
 ```
 
 Creating Pull Requests
