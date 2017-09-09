@@ -158,3 +158,48 @@ exports.ceil = function (x)
         "unhandled type in ceil function"
     );
 };
+
+
+exports.pow = function (base, exp) 
+{
+    // Anything to the power of zero is one.
+    if (exp == 0)
+    {
+        return 1;
+    }
+    
+    if (typeof base == "int32" && typeof exp == "int32")
+    {
+        var recip = false;
+        var result = 1;
+        if (exp < 0)
+        {
+            exp = -exp; // Make positive.
+            recip = true;
+        }
+        
+        for (;exp != 0;)
+        {
+            if ( (exp & 1) != 0)
+            {
+                result *= base;
+            }
+            exp >>= 1;
+            base *= base;
+        }
+           
+        if (recip)
+        {
+            return 1.0f / result;
+        }
+        else
+        {
+            return result;
+        }
+    }
+    
+    assert(
+        false,
+        "unhandled type in pow function"
+    );
+};
