@@ -47,11 +47,12 @@ def runBenchs():
 
     benchList = [
         'benchmarks/loop_cnt_100m.zim',
+        'benchmarks/fcalls_10m.zim',
+        'benchmarks/loop_cnt.pls -- 7',
         'benchmarks/incr_field_1m.pls',
         'benchmarks/get_field_1m.pls',
         'benchmarks/set_field_1m.pls',
-        'benchmarks/fcalls_10m.zim',
-        'benchmarks/fib29.pls',
+        'benchmarks/fib.pls -- 29',
         'benchmarks/fib36.zim',
         'benchmarks/plush_parser.zim',
         'benchmarks/img_fill.pls -- 256',

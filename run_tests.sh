@@ -133,7 +133,9 @@ python espresso/main.py test
 
 # Benchmarks
 ./zeta benchmarks/img_fill.pls -- 32
+./zeta benchmarks/fib.pls -- 29
 ./zeta benchmarks/func_audio.pls -- 1
+./zeta benchmarks/loop_cnt.pls -- 3
 ./zeta benchmarks/plush_parser.zim
 ./zeta benchmarks/rand_floats.pls -- 10
 ./zeta benchmarks/saw_wave.pls -- 10
