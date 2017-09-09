@@ -40,9 +40,26 @@ Style Guide
 For indentation, 4 spaces are to be used instead of tabs. The main reason not
 to use tabs is so the code looks the same everywhere. Mixing spaces and tabs
 will result in badly-aligned code when rendered on systems that choose to
-represent tabs as having a different width from your text editor. We also
-recommend that you try to keep the horizontal width of your code within
-80 characters.
+represent tabs as having a different width from your text editor.
+
+With respect to formatting, we also recommend that you try to keep the
+horizontal width of your code and comments within 80 characters.
+
+There should be exactly one blank line between global function and
+variable definitions. No more, no less.
+
+Comments placed above functions, for documentation purposes, should
+follow the [Javadoc](https://www.tutorialspoint.com/java/java_documentation.htm) style:
+
+```
+/**
+Computes x to the nth power. Expects n to be strictly positive.
+*/
+exports.pow = function (x, y)
+{
+    // ...
+};
+```
 
 Curly braces are to go on their own line, because we are civilized folks:
 
