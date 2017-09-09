@@ -2,12 +2,12 @@
 
 /// HashMap is associative list Implementation using HashTables
 var math = import "std/math/0";
-var strings = import "std/string/0";
-
+var string = import "std/string/0";
 
 /// maxloadfactor -> Upper threshold for load. Capacity should increase
 ///                   if current load is more than this value.
 var maxloadFactor = 0.75f;
+
 /// minloadfactor -> Lower threshold for load. Capacity should decrease
 ///                   if current load is lower that this value.
 ///
@@ -26,7 +26,6 @@ var HashMap = {
     _minCapacity: 8
 };
 
-
 /// Current implementation supports only string and int32
 HashMap._hash = function(key, capacity)
 {
@@ -38,7 +37,7 @@ HashMap._hash = function(key, capacity)
         var len = key.length;
         for (var i = 0; i < len; i += 1)
         {
-            hash = ((hash << 5)  + hash) ^ strings.toCharCode(key[i]);
+            hash = ((hash << 5)  + hash) ^ string.toCharCode(key[i]);
         }
     }
     else if (typeof key == "int32")
@@ -47,13 +46,13 @@ HashMap._hash = function(key, capacity)
     }
     else
     {
-        throw strings.format("{} as a key to HashMap is not supported", [typeof key]);
+        throw string.format("{} as a key to HashMap is not supported", [typeof key]);
     }
+
     /// 2147483647 == 0x7fffffff
     /// Unset MSB (to keep hash positive)
     return (hash & 2147483647) % capacity;
 };
-
 
 HashMap._resizeArrToCapacity = function(self)
 {
@@ -64,11 +63,10 @@ HashMap._resizeArrToCapacity = function(self)
     }
 };
 
-
 // Resizes the hashmap to newCapacity
 HashMap._reserve = function(self, newCapacity)
 {
-    // print(strings.format("Resizing : {}", [newCapacity]));
+    // print(string.format("Resizing : {}", [newCapacity]));
     var oldArr = self._arr;
     var oldCapacity = self._capacity;
     self._capacity = newCapacity;
@@ -86,13 +84,11 @@ HashMap._reserve = function(self, newCapacity)
     }
 };
 
-
 /// Returns the number of entries in hashmap
 HashMap.size = function(self)
 {
     return self._size;
 };
-
 
 /// Inserts key and value in hashmap if key is not present. Otherwise updates
 /// the value of the key with then provided value.
@@ -122,7 +118,6 @@ HashMap.set = function(self, key, value)
     }
 };
 
-
 /// Returns value corresponding to the key if present. Otherwise throws
 /// KeyNotFound exception. Either handle the exception properly or make sure
 /// key is present before calling this function.
@@ -139,9 +134,8 @@ HashMap.get = function(self, key)
             return entry[1];
         }
     }
-    throw strings.format("KeyNotFound: {}", [key]);
+    throw string.format("KeyNotFound: {}", [key]);
 };
-
 
 /// Returns value corresponding to the key if present. Otherwise
 /// returns provided value
@@ -161,7 +155,6 @@ HashMap.getOrDefault = function(self, key, defaultValue)
     return defaultValue;
 };
 
-
 /// Returns true if the key is present in hashmap otherwise false
 HashMap.has = function(self, key)
 {
@@ -178,7 +171,6 @@ HashMap.has = function(self, key)
     }
     return false;
 };
-
 
 /// Removes the entry corresponding to the key if present. Otherwise does nothing.
 HashMap.remove = function(self, key)
@@ -210,7 +202,6 @@ HashMap.remove = function(self, key)
     }
 };
 
-
 /// Calls the consumer function over each entry of the hashmap.
 /// consumer function should take 2 arguments corresponding to the key and
 /// value of the entry.
@@ -227,7 +218,6 @@ HashMap.forEach = function(self, consumer)
         }
     }
 };
-
 
 /// Maps the mapper function over each value of the hashmap.
 /// mapper function should take 2 arguments corresponding to the key and

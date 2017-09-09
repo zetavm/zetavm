@@ -1,0 +1,52 @@
+#zeta-image
+
+# 10 million imports
+
+main_entry = {
+    instrs: [
+        { op: "push", val: 10000000 },
+        { op: "jump", to: @loop_test },
+    ]
+};
+loop_test = {
+    instrs: [
+        { op: "dup", idx:0 },
+        { op: "push", val: 0 },
+        { op: "gt_i32" },
+        { op: "if_true", then: @loop_body, else: @loop_exit },
+    ]
+};
+loop_body = {
+    instrs: [
+        # Decrement the loop counter
+        { op: "push", val: 1 },
+        { op: "sub_i32" },
+
+        # Import instruction
+        { op: "push", val: "./benchmarks/import_10m.zim" },
+        { op: "import", ret_to: @call_cont },
+    ]
+};
+call_cont = {
+    instrs: [
+        # Pop the call return value
+        { op: "pop" },
+        { op: "jump", to: @loop_test },
+    ]
+};
+loop_exit = {
+    instrs: [
+        { op: "pop" },
+        { op: "push", val:0 },
+        { op: "ret" },
+    ]
+};
+main = {
+    name: "main",
+    params: [],
+    num_locals: 1,
+    entry: @main_entry
+};
+
+# Export the main function
+{ main: @main };

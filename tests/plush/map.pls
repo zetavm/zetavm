@@ -76,7 +76,6 @@ var sanityTest = function()
 var bigMap = map.new();
 bigMap:reserve(300);
 
-
 var regressionTest = function()
 {
     var fileName = "tests/plush/a_lot_of_strings";
