@@ -29,7 +29,7 @@ make -j4
 make test
 
 # To run programs, pass the path to a source file to zeta, for example:
-./zeta benchmarks/fib29.pls
+./zeta benchmarks/fib.pls -- 29
 
 # To start up the Plush REPL (interactive shell),
 # you can run the Plush language package as a program:
