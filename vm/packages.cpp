@@ -342,6 +342,33 @@ namespace core_window_0
                 return obj;
             }
 
+            case SDL_MOUSEBUTTONDOWN:
+            case SDL_MOUSEBUTTONUP:
+            {
+                auto eventType = String(
+                    event.type == SDL_MOUSEBUTTONDOWN?
+                    "mouse_down":"mouse_up"
+                );
+
+                int32_t buttonIdx;
+                switch (event.button.button)
+                {
+                    case SDL_BUTTON_LEFT: buttonIdx = 0; break;
+                    case SDL_BUTTON_MIDDLE: buttonIdx = 1; break;
+                    case SDL_BUTTON_RIGHT: buttonIdx = 2; break;
+                    case SDL_BUTTON_X1: buttonIdx = 3; break;
+                    case SDL_BUTTON_X2: buttonIdx = 4; break;
+                    default: assert (false);
+                }
+
+                auto obj = Object::newObject();
+                obj.setField("type", eventType);
+                obj.setField("x", Value::int32(event.button.x));
+                obj.setField("y", Value::int32(event.button.y));
+                obj.setField("button", Value::int32(buttonIdx));
+                return obj;
+            }
+
             default:
             return Value::FALSE;
         }
