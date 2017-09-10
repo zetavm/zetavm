@@ -165,17 +165,17 @@ for (var y = 0; y < height; y += 1)
         dst = math.max(0, -dst);
         dst = math.min(dst / 0.006f, 1);
 
-        var c = math.floor(255 * dst);
+        var v = math.floor(255 * dst);
 
-        buf:push(c);
-        buf:push(c);
+        // Pixels are in ABGR format
+        var c = (v << 24) + (v << 16) + (v << 8);
         buf:push(c);
     }
 }
 
 var handle = window.create_window("Zeta Logo", width, height);
 
-window.draw_pixels(handle, buf);
+window.draw_bitmap(handle, buf);
 
 // TODO: command-line argument to produce PPM output
 //writePPM('zeta_logo.ppm', buf, width, height);

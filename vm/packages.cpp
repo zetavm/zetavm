@@ -257,7 +257,7 @@ namespace core_window_0
     size_t width = 0;
     size_t height = 0;
 
-    std::vector<uint8_t> pixelBuffer;
+    std::vector<uint32_t> pixelBuffer;
 
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
@@ -294,7 +294,7 @@ namespace core_window_0
             height
         );
 
-        pixelBuffer.resize(width * height * 4, 0);
+        pixelBuffer.resize(width * height, 0);
 
         SDL_ShowWindow(window);
 
@@ -347,22 +347,25 @@ namespace core_window_0
         }
     }
 
-    Value draw_pixels(Value handle, Value pixelsArray)
+    /**
+    Display a bitmap (array of pixels) into the window.
+    Pixels are in ABGR format (alpha least significant),
+    with one int32 value per pixel.
+    */
+    Value draw_bitmap(Value handle, Value pixelsArray)
     {
         // For now, only one window is supported
         assert (handle == Value((refptr)window, TAG_RAWPTR));
 
         auto pixels = (Array)pixelsArray;
-
-        assert (pixels.length() == width * height * 3);
+        assert (pixels.length() == width * height);
 
         for (size_t pixIdx = 0; pixIdx < width * height; ++pixIdx)
         {
-            // SDL's RGBA888 is actually ABGR, because of course.
-            pixelBuffer[4*pixIdx+0] = 255;
-            pixelBuffer[4*pixIdx+1] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+2);
-            pixelBuffer[4*pixIdx+2] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+1);
-            pixelBuffer[4*pixIdx+3] = (uint8_t)(int32_t)pixels.getElem(3*pixIdx+0);
+            // Mask out the alpha channel so its content is ignored
+            auto pixVal = (int32_t)pixels.getElem(pixIdx);
+            pixVal = 0xFFFFFF00 & pixVal;
+            pixelBuffer[pixIdx] = pixVal;
         }
 
         SDL_UpdateTexture(texture, NULL, &pixelBuffer[0], width * 4);
@@ -381,7 +384,7 @@ namespace core_window_0
         setHostFn(exports, "create_window"  , 3, (void*)create_window);
         setHostFn(exports, "destroy_window" , 1, (void*)destroy_window);
         setHostFn(exports, "get_next_event" , 1, (void*)get_next_event);
-        setHostFn(exports, "draw_pixels"    , 2, (void*)draw_pixels);
+        setHostFn(exports, "draw_bitmap"    , 2, (void*)draw_bitmap);
         return exports;
 #else
         return Value::UNDEF;

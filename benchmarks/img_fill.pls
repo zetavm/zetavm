@@ -14,9 +14,8 @@ exports.main = function (args)
     {
         for (var x = 0; x < width; x += 1)
         {
-            buf:push(x);
-            buf:push(y);
-            buf:push(0);
+            var c = (x << 24) + (x << 16);
+            buf:push(c);
         }
     }
 

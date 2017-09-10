@@ -15,9 +15,9 @@ for (var y = 0; y < height; y += 1)
 {
     for (var x = 0; x < width; x += 1)
     {
-        buf:push(x);
-        buf:push(y);
-        buf:push(0);
+        // Colors are in ABGR format (alpha least significant)
+        var color = (x << 24) + (y << 16);
+        buf:push(color);
     }
 }
 
@@ -36,7 +36,7 @@ for (var i = 0;; i += 1)
     output(i);
     output('\n');
 
-    window.draw_pixels(handle, buf);
+    window.draw_bitmap(handle, buf);
 }
 
 window.destroy_window(handle);
