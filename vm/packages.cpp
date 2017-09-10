@@ -296,6 +296,11 @@ namespace core_window_0
 
         pixelBuffer.resize(width * height, 0);
 
+        // Clear the window
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        SDL_RenderClear(renderer);
+        SDL_RenderPresent(renderer);
+
         SDL_ShowWindow(window);
 
         // Return the window handle, hidden in a raw pointer value

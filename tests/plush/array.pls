@@ -25,6 +25,15 @@ var getArray = function()
     return arr;
 };
 
+var testNew = function ()
+{
+    var arr = array.new(10, 777);
+
+    assert (arr.length == 10);
+    for (var i = 0; i < arr.length; i += 1)
+        assert (arr[i] == 777);
+};
+
 var testIndexOf = function(arr)
 {
     assert(array.indexOf(arr, 17) == 3);
@@ -187,11 +196,11 @@ var testBinarySearch = function()
     assert(array.binarySearch(arr, 18) == 3); // Should be found
 };
 
-var testSort = function() 
+var testSort = function()
 {
     var sortMe = [2, 8, 6, 4, 2, 1, 0];
-    array.sort(sortMe, 
-        function(a, b) 
+    array.sort(sortMe,
+        function(a, b)
         {
             return a - b;
         }
@@ -203,19 +212,19 @@ var testSort = function()
     assert(sortMe[4] == 4);
     assert(sortMe[5] == 6);
     assert(sortMe[6] == 8);
-    
+
     var smallArray = [-5];
-    array.sort(smallArray, 
-        function(a, b) 
+    array.sort(smallArray,
+        function(a, b)
         {
             return a - b;
         }
     );
     assert(smallArray[0] == -5);
-    
+
     var emptyArray = [];
-    array.sort(emptyArray, 
-        function(a, b) 
+    array.sort(emptyArray,
+        function(a, b)
         {
             return a - b;
         }
@@ -224,6 +233,7 @@ var testSort = function()
     assert(emptyArray.length == 0);
 };
 
+testNew();
 testIndexOf(getArray());
 testMap(getArray());
 testFlatMap();

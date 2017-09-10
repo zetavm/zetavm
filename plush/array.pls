@@ -1,6 +1,18 @@
 var math = import "std/math/0";
 /// Utility functions for arrays
 
+/// Create an array of a given size initialized with a given value
+exports.new = function (size, value)
+{
+    var arr = [];
+
+    // TODO: implement instruction to create initialized array
+    for (var i = 0; i < size; i += 1)
+        arr:push(value);
+
+    return arr;
+};
+
 /// Returns the first index i, where arr[i] == value
 /// if no such index found, returns -1
 exports.indexOf = function (arr, value)
@@ -200,10 +212,10 @@ exports.sort = function(array, compFunc)
 // Internal functions below
 //============================================================================
 
-var quickSort = function(array, low, high, comp) 
+var quickSort = function(array, low, high, comp)
 {
     // Hoare partition scheme
-    if (low < high) 
+    if (low < high)
      {
         var p = partition(array, low, high, comp);
         quickSort(array, low, p, comp);
@@ -211,33 +223,33 @@ var quickSort = function(array, low, high, comp)
     }
 };
 
-var partition = function(array, low, high, comp) 
+var partition = function(array, low, high, comp)
 {
     var pivot = array[low];
     var i = low - 1;
     var j = high + 1;
-    
-    for (;;) 
+
+    for (;;)
     {
         // do while loop equivalent, quite messy.
-        for (;;) 
+        for (;;)
         {
             i += 1;
             if (!(comp(array[i], pivot) < 0)) // array[i] < pivot
-            { 
+            {
                 break;
             }
         }
 
-        for (;;) 
+        for (;;)
         {
             j -= 1;
             if (!(comp(array[j], pivot) > 0)) // array[j] > pivot
-            { 
+            {
                 break;
             }
         }
-        
+
         if (i >= j)
         {
             return j;
@@ -247,7 +259,7 @@ var partition = function(array, low, high, comp)
     }
 };
 
-var swap = function(array, a, b) 
+var swap = function(array, a, b)
 {
     var tmp = array[a];
     array[a] = array[b];
