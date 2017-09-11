@@ -480,6 +480,58 @@ exports.endsWith = function (string, needle)
 };
 
 /**
+ * Pads the beginning of a string with a character for a specified total length
+ */
+exports.lpad = function (string, paddingChar, totalWidth)
+{
+    if (paddingChar.length != 1)
+    {
+        throw "Can only have 1 padding character, you gave " + exports.toString(paddingChar.length);
+    }
+    
+    if (string.length >= totalWidth)
+    {
+        return string;
+    }
+    else
+    {
+        var toPad = totalWidth - string.length;
+        var padding = "";
+        for (;toPad > 0;toPad -= 1)
+        {
+            padding += paddingChar;
+        }
+        return padding + string;
+    }
+};
+
+/**
+ * Pads the end of a string with a character for a specified total length
+ */
+exports.rpad = function (string, paddingChar, totalWidth)
+{
+    if (paddingChar.length != 1)
+    {
+        throw "Can only have 1 padding character, you gave " + exports.toString(paddingChar.length);
+    }
+    
+    if (string.length >= totalWidth)
+    {
+        return string;
+    }
+    else
+    {
+        var toPad = totalWidth - string.length;
+        var padding = "";
+        for (;toPad > 0;toPad -= 1)
+        {
+            padding += paddingChar;
+        }
+        return string + padding;
+    }
+};
+
+/**
  * Prototype object containing functions usable as string methods
  * Note: useful for languages using prototypal inheritance
 */
@@ -498,6 +550,8 @@ exports.prototype = {
     toLower: exports.toLower,
     toUpper: exports.toUpper,
     format: exports.format,
+    lpad: exports.lpad,
+    rpad: exports.rpad,
 };
 
 //============================================================================

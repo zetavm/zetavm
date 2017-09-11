@@ -137,6 +137,56 @@ assert(toUpper("ab cde") == "AB CDE");
 assert(toUpper("AB cde") == "AB CDE");
 assert(toUpper("AB CDE") == "AB CDE");
 
+//lpad
+var lpad = str.lpad;
+assert(lpad("Hello", " ", 7) == "  Hello");
+assert(lpad("Hello", ".", 7) == "..Hello");
+assert(lpad("Hello", " ", 3) == "Hello");
+assert(lpad("Hello", " ", -1) == "Hello");
+try 
+{
+    lpad("Hello", "", 7);
+    assert(false);
+}
+catch(e)
+{
+    assert(true);
+}
+try 
+{
+    lpad("Hello", "abcd", 7);
+    assert(false);
+}
+catch(e)
+{
+    assert(true);
+}
+
+//lpad
+var rpad = str.rpad;
+assert(rpad("Hello", " ", 7) == "Hello  ");
+assert(rpad("Hello", ".", 7) == "Hello..");
+assert(rpad("Hello", " ", 3) == "Hello");
+assert(rpad("Hello", " ", -1) == "Hello");
+try 
+{
+    rpad("Hello", "", 7);
+    assert(false);
+}
+catch(e)
+{
+    assert(true);
+}
+try 
+{
+    rpad("Hello", "abcd", 7);
+    assert(false);
+}
+catch(e)
+{
+    assert(true);
+}
+
 var startsWith = str.startsWith;
 assert(startsWith("Banana", "Ban"));
 assert(startsWith("Banana", ""));
