@@ -1,6 +1,7 @@
 #language "lang/plush/0"
 
 var window = import "core/window/0";
+var time = import "core/time/0";
 var array = import "std/array/0";
 var math = import "std/math/0";
 
@@ -14,6 +15,7 @@ var cellSize = math.idiv(size, gridSize);
 var COLOR_RED = (255 << 24);
 var COLOR_BLACK = 0;
 
+// Window to draw into
 var handle = window.create_window("Clickable Grid UI", width, height);
 
 // Bitmap of pixels to draw
@@ -35,8 +37,17 @@ var toggleCell = function (x, y)
     drawGrid();
 };
 
+var drawSquare = function (startX, endX, startY, endY, color)
+{
+    for (var y = startY; y < endY; y += 1)
+        for (var x = startX; x < endX; x += 1)
+            bitmap[y * width + x] = color;
+};
+
 var drawGrid = function ()
 {
+    var startTime = time.get_time_millis();
+
     for (var j = 0; j < gridSize; j += 1)
     {
         for (var i = 0; i < gridSize; i += 1)
@@ -50,18 +61,38 @@ var drawGrid = function ()
 
             var cellOn = grid[j * gridSize + i];
 
-            var cellColor = COLOR_BLACK;
-            if (cellOn)
-                cellColor = COLOR_RED;
+            // Red outline
+            drawSquare(
+                startX,
+                endX,
+                startY,
+                endY,
+                COLOR_RED
+            );
 
-            for (var y = startY; y < endY; y += 1)
-                for (var x = startX; x < endX; x += 1)
-                    bitmap[y * width + x] = cellColor;
+            if (!cellOn)
+            {
+                // Black center
+                drawSquare(
+                    startX + 2,
+                    endX - 2,
+                    startY + 2,
+                    endY - 2,
+                    COLOR_BLACK
+                );
+            }
         }
     }
 
     window.draw_bitmap(handle, bitmap);
+
+    var endTime = time.get_time_millis();
+
+    print("redraw time: {}ms":format([endTime-startTime]));
 };
+
+// Draw the initial empty grid
+drawGrid();
 
 for (var i = 0;; i += 1)
 {
@@ -80,9 +111,6 @@ for (var i = 0;; i += 1)
             toggleCell(event.x, event.y);
         }
     }
-
-    //drawGrid();
-    //print(i);
 }
 
 window.destroy_window(handle);

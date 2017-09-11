@@ -390,51 +390,53 @@ namespace core_window_0
 
         SDL_Event event;
 
-        if (!SDL_PollEvent(&event))
+        // While there are events to process
+        while (SDL_PollEvent(&event))
         {
-            // No event to process
-            return Value::FALSE;
-        }
-
-        switch (event.type)
-        {
-            case SDL_QUIT:
+            switch (event.type)
             {
-                auto obj = Object::newObject();
-                obj.setField("type", String("quit"));
-                return obj;
-            }
-
-            case SDL_MOUSEBUTTONDOWN:
-            case SDL_MOUSEBUTTONUP:
-            {
-                auto eventType = String(
-                    event.type == SDL_MOUSEBUTTONDOWN?
-                    "mouse_down":"mouse_up"
-                );
-
-                int32_t buttonIdx;
-                switch (event.button.button)
+                case SDL_QUIT:
                 {
-                    case SDL_BUTTON_LEFT: buttonIdx = 0; break;
-                    case SDL_BUTTON_MIDDLE: buttonIdx = 1; break;
-                    case SDL_BUTTON_RIGHT: buttonIdx = 2; break;
-                    case SDL_BUTTON_X1: buttonIdx = 3; break;
-                    case SDL_BUTTON_X2: buttonIdx = 4; break;
-                    default: assert (false);
+                    auto obj = Object::newObject();
+                    obj.setField("type", String("quit"));
+                    return obj;
                 }
 
-                auto obj = Object::newObject();
-                obj.setField("type", eventType);
-                obj.setField("x", Value::int32(event.button.x));
-                obj.setField("y", Value::int32(event.button.y));
-                obj.setField("button", Value::int32(buttonIdx));
-                return obj;
-            }
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:
+                {
+                    auto eventType = String(
+                        event.type == SDL_MOUSEBUTTONDOWN?
+                        "mouse_down":"mouse_up"
+                    );
 
-            default:
-            return Value::FALSE;
+                    int32_t buttonIdx;
+                    switch (event.button.button)
+                    {
+                        case SDL_BUTTON_LEFT: buttonIdx = 0; break;
+                        case SDL_BUTTON_MIDDLE: buttonIdx = 1; break;
+                        case SDL_BUTTON_RIGHT: buttonIdx = 2; break;
+                        case SDL_BUTTON_X1: buttonIdx = 3; break;
+                        case SDL_BUTTON_X2: buttonIdx = 4; break;
+                        default: assert (false);
+                    }
+
+                    auto obj = Object::newObject();
+                    obj.setField("type", eventType);
+                    obj.setField("x", Value::int32(event.button.x));
+                    obj.setField("y", Value::int32(event.button.y));
+                    obj.setField("button", Value::int32(buttonIdx));
+                    return obj;
+                }
+
+                // Process the next event
+                default:
+                continue;
+            }
         }
+
+        // No event to process
+        return Value::FALSE;
     }
 
     /**
