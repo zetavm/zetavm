@@ -57,9 +57,6 @@ set -x
 ./plush.sh tests/plush/throw_exc.pls
 ./plush.sh tests/plush/throw_exc2.pls
 
-# map requires self hosted plush. Doesn't work with cplush
-./zeta tests/plush/map.pls
-
 ##############################################################################
 # Plush language package tests (plush/plush_pkg.pls)
 ##############################################################################
@@ -69,7 +66,6 @@ set -x
 
 # Run Plush code using the Plush language package
 ./zeta tests/plush/trivial.pls
-./zeta tests/plush/math.pls
 ./zeta tests/plush/simple_exprs.pls
 ./zeta tests/plush/identfn.pls
 ./zeta tests/plush/fib.pls
@@ -83,14 +79,20 @@ set -x
 ./zeta tests/plush/obj_field_names.pls
 ./zeta tests/plush/obj_ext.pls
 ./zeta tests/plush/import.pls
-./zeta tests/plush/strings.pls
 ./zeta tests/plush/circular3.pls
-./zeta tests/plush/peval.pls
-./zeta tests/plush/random.pls
 ./zeta tests/plush/throw_exc.pls
 ./zeta tests/plush/throw_exc2.pls
 ./zeta tests/plush/catch_import_missing.pls
 ./zeta tests/plush/cmdline_args.pls -- foo bar
+
+# Packages included with ZetaVM
+./zeta tests/plush/time.pls
+./zeta tests/plush/array.pls
+./zeta tests/plush/map.pls
+./zeta tests/plush/math.pls
+./zeta tests/plush/peval.pls
+./zeta tests/plush/random.pls
+./zeta tests/plush/string.pls
 
 # Regression tests
 ./zeta tests/plush/regress_cr_char.pls

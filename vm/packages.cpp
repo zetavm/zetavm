@@ -248,6 +248,64 @@ namespace core_io_0
 }
 
 //============================================================================
+// core/time/0 package
+//============================================================================
+
+#ifdef _WIN32
+    #include <windows.h>
+#else
+    #include <sys/time.h>
+#endif
+
+namespace core_time_0
+{
+    // Time when the time package was loaded
+    #ifdef _WIN32
+        LARGE_INTEGER startTime;
+    #else
+        timeval startTime;
+    #endif
+
+    /**
+    Get the time in milliseconds since the time library was loaded
+    The value produced is of int32 type
+    */
+    Value get_time_millis()
+    {
+        #ifdef _WIN32
+            LARGE_INTEGER frequency;
+            QueryPerformanceFrequency(&frequency);
+            LARGE_INTEGER time;
+            QueryPerformanceCounter(&time);
+            LARGE_INTEGER delta = time.QuadPart - startTime.QuadPart;
+            int64_t millis = (int64_t)(1000 * (delta / frequency.QuadPart));
+            return Value::int32((int32_t)millis);
+        #else
+            timeval time;
+            gettimeofday(&time, NULL);
+            int64_t delta = 0;
+            delta += (time.tv_sec - startTime.tv_sec) * 1000;
+            delta += (time.tv_usec - startTime.tv_usec) / 1000.0;
+            return Value::int32((int32_t)delta);
+        #endif
+    }
+
+    Value get_pkg()
+    {
+        // Store the time value when the time package is loaded
+        #ifdef _WIN32
+            QueryPerformanceCounter(&startTime);
+        #else
+            gettimeofday(&startTime, NULL);
+        #endif
+
+        auto exports = Object::newObject(32);
+        setHostFn(exports, "get_time_millis", 0, (void*)get_time_millis);
+        return exports;
+    }
+}
+
+//============================================================================
 // core/window/0 package
 //============================================================================
 
@@ -614,6 +672,8 @@ Value getCorePkg(std::string pkgName)
         return core_vm_0::get_pkg();
     if (pkgName == "core/io/0")
         return core_io_0::get_pkg();
+    if (pkgName == "core/time/0")
+        return core_time_0::get_pkg();
     if (pkgName == "core/window/0")
         return core_window_0::get_pkg();
     if (pkgName == "core/audio/0")
