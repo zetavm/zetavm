@@ -37,5 +37,6 @@ As a general rule, you should avoid directly using core VM libraries if a higher
 | --- | --- | --- |
 | [`core/audio/0`](/vm/packages.cpp)  | Audio output                           | [Audio test](/examples/audio_test.pls) |
 | [`core/io/0`](/vm/packages.cpp)     | File input/output                      | [Line count example](/examples/line_count.pls) |
+| [`core/time/0`](/vm/packages.cpp)   | Time-related functions .               | [Package tests](/tests/plush/time.pls) |
 | [`core/vm/0`](/vm/packages.cpp)     | Zeta image parsing and serialization   | [Serialization tests](/tests/plush/serialize.pls) |
 | [`std/window/0`](/vm/packages.cpp)  | 2D graphics, pixel plotting            | [Graphics example](/examples/graphics.pls) |
