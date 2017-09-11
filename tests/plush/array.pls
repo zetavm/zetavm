@@ -27,6 +27,15 @@ var getArray = function()
     return arr;
 };
 
+var testNew = function ()
+{
+    var arr = array.new(10, 777);
+
+    assert (arr.length == 10);
+    for (var i = 0; i < arr.length; i += 1)
+        assert (arr[i] == 777);
+};
+
 var testIndexOf = function(arr)
 {
     assert(array.indexOf(arr, 17) == 3);
@@ -226,6 +235,7 @@ var testSort = function()
     assert(emptyArray.length == 0);
 };
 
+testNew();
 testIndexOf(getArray());
 testMap(getArray());
 testFlatMap();
