@@ -39,6 +39,35 @@ public:
     ~ImportError() {}
 };
 
+/**
+Exception to signal a missing dependency
+*/
+class DepMissing : public ImportError
+{
+public:
+
+    DepMissing(
+        std::string pkgName,
+        std::string libName,
+        std::string confOpt
+    ) : ImportError(
+        "package \"" + pkgName + "\" is not available because a "
+        "dependency is missing. To enable this package, please "
+        "install " + libName + " on your system and then rebuild "
+        "ZetaVM with " + libName + " support as follows:\n"
+        "\n"
+        "  ./configure " + confOpt + "\n"
+        "  make clean\n"
+        "  make"
+    )
+    {
+    }
+
+    virtual ~DepMissing()
+    {
+    }
+};
+
 /// User-facing import function, used to implement the import instruction
 extern HostFn importFn;
 

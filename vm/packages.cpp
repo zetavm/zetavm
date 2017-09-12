@@ -479,7 +479,7 @@ namespace core_window_0
         setHostFn(exports, "draw_bitmap"    , 2, (void*)draw_bitmap);
         return exports;
 #else
-        return Value::UNDEF;
+        throw DepMissing("core/window", "libsdl2", "--with-sdl2");
 #endif
     }
 }
@@ -605,7 +605,7 @@ namespace core_audio_0
         setHostFn(exports, "get_queue_size"     , 1, (void*)get_queue_size);
         return exports;
 #else
-        return Value::UNDEF;
+        throw DepMissing("core/audio", "libsdl2", "--with-sdl2");
 #endif
     }
 }

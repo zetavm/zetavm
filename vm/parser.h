@@ -80,7 +80,6 @@ Parse-time error exception class
 */
 class ParseError : public RunError
 {
-protected:
 public:
 
     ParseError(std::string msg)

@@ -2301,13 +2301,21 @@ exports.main = function ()
         {
             // Parse the unit
             var unit = exports.parseString(line, "console", globalObj);
+        }
+        catch (e)
+        {
+            print("Parse error: " + e.msg);
+            continue;
+        }
 
+        try
+        {
             // Run the unit function
             unit.init();
         }
         catch (e)
         {
-            print("Parse error: " + e.msg);
+            print("Error: " + e.msg);
             continue;
         }
     }
