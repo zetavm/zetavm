@@ -110,6 +110,11 @@ for (var i = 0;; i += 1)
         {
             toggleCell(event.x, event.y);
         }
+
+        if (event.type == "key_down" && event.key == "escape")
+        {
+            break;
+        }
     }
 }
 

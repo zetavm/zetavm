@@ -402,6 +402,60 @@ namespace core_window_0
                     return obj;
                 }
 
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                {
+                    auto eventType = String(
+                        event.type == SDL_KEYDOWN?
+                        "key_down":"key_up"
+                    );
+
+                    auto keyCode = event.key.keysym.sym;
+
+                    std::string keyName;
+
+                    if (keyCode == SDLK_LEFT)
+                        keyName = "left";
+                    else if (keyCode == SDLK_RIGHT)
+                        keyName = "right";
+                    else if (keyCode == SDLK_UP)
+                        keyName = "up";
+                    else if (keyCode == SDLK_DOWN)
+                        keyName = "down";
+                    else if (keyCode == SDLK_SPACE)
+                        keyName = "space";
+                    else if (keyCode == SDLK_RETURN)
+                        keyName = "return";
+                    else if (keyCode == SDLK_ESCAPE)
+                        keyName = "escape";
+                    else if (keyCode >= SDLK_a && keyCode <= SDLK_z)
+                    {
+                        auto idx = keyCode - SDLK_a;
+                        keyName = 'a' + idx;
+                    }
+                    else if (keyCode >= SDLK_0 && keyCode <= SDLK_9)
+                    {
+                        auto idx = keyCode - SDLK_0;
+                        keyName = '0' + idx;
+                    }
+                    else if (keyCode >= SDLK_F1 && keyCode <= SDLK_F12)
+                    {
+                        auto num = keyCode - SDLK_F1 + 1;
+                        keyName = "f" + std::to_string(num);
+                    }
+                    else
+                    {
+                        // Unknown key, ignore this event
+                        continue;
+                    }
+
+                    auto obj = Object::newObject();
+                    obj.setField("type", eventType);
+                    obj.setField("key", String(keyName));
+                    return obj;
+                }
+                break;
+
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP:
                 {
