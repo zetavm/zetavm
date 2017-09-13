@@ -321,6 +321,68 @@ namespace core_window_0
     SDL_Renderer* renderer = nullptr;
     SDL_Texture* texture = nullptr;
 
+    /**
+    Convert an SDL keycode to a key name
+    Note: we intentionally avoid using the SDL function for doing this
+          to hide the underlying implementation
+    */
+    std::string sdlKeyToStr(int keyCode)
+    {
+        // Note: platform-specific keys such as mac command
+        // and windows keys are intentionally not listed here,
+        // to encourage portable application development
+
+        if (keyCode == SDLK_LEFT)
+            return "left";
+        if (keyCode == SDLK_RIGHT)
+            return "right";
+        if (keyCode == SDLK_UP)
+            return "up";
+        if (keyCode == SDLK_DOWN)
+            return "down";
+
+        if (keyCode == SDLK_SPACE)
+            return "space";
+        if (keyCode == SDLK_RETURN)
+            return "return";
+        if (keyCode == SDLK_DELETE)
+            return "delete";
+        if (keyCode == SDLK_ESCAPE)
+            return "escape";
+
+        // Note: not distinguishable on every system, so we
+        // alias left/right control and shift
+        if (keyCode == SDLK_LCTRL || keyCode == SDLK_RCTRL)
+            return "ctrl";
+        if (keyCode == SDLK_LSHIFT || keyCode == SDLK_RSHIFT)
+            return "shift";
+
+        if (keyCode >= SDLK_a && keyCode <= SDLK_z)
+        {
+            auto idx = keyCode - SDLK_a;
+            std::string keyName;
+            keyName = 'a' + idx;
+            return keyName;
+        }
+
+        if (keyCode >= SDLK_0 && keyCode <= SDLK_9)
+        {
+            auto idx = keyCode - SDLK_0;
+            std::string keyName;
+            keyName = '0' + idx;
+            return keyName;
+        }
+
+        if (keyCode >= SDLK_F1 && keyCode <= SDLK_F12)
+        {
+            auto num = keyCode - SDLK_F1 + 1;
+            return "f" + std::to_string(num);
+        }
+
+        // Unknown key
+        return "";
+    }
+
     Value create_window(
         Value titleVal,
         Value widthVal,
@@ -410,44 +472,11 @@ namespace core_window_0
                         "key_down":"key_up"
                     );
 
-                    auto keyCode = event.key.keysym.sym;
+                    std::string keyName = sdlKeyToStr(event.key.keysym.sym);
 
-                    std::string keyName;
-
-                    if (keyCode == SDLK_LEFT)
-                        keyName = "left";
-                    else if (keyCode == SDLK_RIGHT)
-                        keyName = "right";
-                    else if (keyCode == SDLK_UP)
-                        keyName = "up";
-                    else if (keyCode == SDLK_DOWN)
-                        keyName = "down";
-                    else if (keyCode == SDLK_SPACE)
-                        keyName = "space";
-                    else if (keyCode == SDLK_RETURN)
-                        keyName = "return";
-                    else if (keyCode == SDLK_ESCAPE)
-                        keyName = "escape";
-                    else if (keyCode >= SDLK_a && keyCode <= SDLK_z)
-                    {
-                        auto idx = keyCode - SDLK_a;
-                        keyName = 'a' + idx;
-                    }
-                    else if (keyCode >= SDLK_0 && keyCode <= SDLK_9)
-                    {
-                        auto idx = keyCode - SDLK_0;
-                        keyName = '0' + idx;
-                    }
-                    else if (keyCode >= SDLK_F1 && keyCode <= SDLK_F12)
-                    {
-                        auto num = keyCode - SDLK_F1 + 1;
-                        keyName = "f" + std::to_string(num);
-                    }
-                    else
-                    {
-                        // Unknown key, ignore this event
+                    // Unknown key, ignore this event
+                    if (keyName == "")
                         continue;
-                    }
 
                     auto obj = Object::newObject();
                     obj.setField("type", eventType);
