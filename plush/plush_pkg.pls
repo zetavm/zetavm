@@ -2315,7 +2315,20 @@ exports.main = function ()
         }
         catch (e)
         {
-            print("Error: " + e.msg);
+            // The error being caught here happens at run-time, and
+            // can be any value the code throws
+            // FIXME: we probably need an std/error library, with
+            // a function to convert exceptions to strings
+            if (typeof e == "object" && "msg" in e)
+            {
+                print("Error: " + e.msg);
+            }
+            else
+            {
+                var string = import "std/string/0";
+                print("Error: " + string.toString(e));
+            }
+
             continue;
         }
     }

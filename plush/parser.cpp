@@ -1182,7 +1182,7 @@ ASTStmt* parseStmt(Input& input)
         return new IfStmt(
             testExpr,
             new BlockStmt(std::vector<ASTStmt*>()),
-            new IRStmt("abort", errMsg)
+            new ThrowStmt(errMsg)
         );
     }
 
