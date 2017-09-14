@@ -90,6 +90,7 @@ enum Opcode : uint16_t
     NEW_ARRAY,
     ARRAY_LEN,
     ARRAY_PUSH,
+    ARRAY_POP,
     GET_ELEM,
     SET_ELEM,
 
@@ -971,6 +972,13 @@ void compile(BlockVersion* version)
         {
             numTmps -= 2;
             writeCode(ARRAY_PUSH);
+            continue;
+        }
+
+        if (op == "array_pop")
+        {
+            numTmps += 0;
+            writeCode(ARRAY_POP);
             continue;
         }
 
@@ -2044,6 +2052,14 @@ Value execCode()
                 auto val = popVal();
                 auto arr = Array(popVal());
                 arr.push(val);
+            }
+            break;
+
+            case ARRAY_POP:
+            {
+                auto arr = Array(popVal());
+                auto val = arr.pop();
+                pushVal(val);
             }
             break;
 

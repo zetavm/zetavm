@@ -307,6 +307,25 @@ void Array::push(Value val)
     *(uint32_t*)(ptr + OF_LEN) = len + 1;
 }
 
+Value Array::pop()
+{
+    auto ptr = getObjPtr();
+    auto cap = getCap();
+    auto len = length();
+    assert (len > 0);
+
+    auto words = (Word*)(ptr + OF_DATA);
+    auto tags  = (Tag*) (ptr + OF_DATA + cap * sizeof(Word));
+
+    auto word = words[len-1];
+    auto tag = tags[len-1];
+
+    // Increment the length
+    *(uint32_t*)(ptr + OF_LEN) = len - 1;
+
+    return Value(word, tag);
+}
+
 /// Allocate a new empty object
 Object Object::newObject(size_t cap)
 {
@@ -785,10 +804,13 @@ void testRuntime()
     arr3.push(Value::ONE);
     arr3.push(Value::TWO);
     arr3.setElem(0, Value::TRUE);
-    assert(arr3.length() == 3);
-    assert(arr3.getElem(0) == Value::TRUE);
-    assert(arr3.getElem(1) == Value::ONE);
-    assert(arr3.getElem(2) == Value::TWO);
+    assert (arr3.length() == 3);
+    assert (arr3.getElem(0) == Value::TRUE);
+    assert (arr3.getElem(1) == Value::ONE);
+    assert (arr3.getElem(2) == Value::TWO);
+    auto val = arr3.pop();
+    assert (val == Value::TWO);
+    assert (arr3.length() == 2);
 
     // Objects
     auto obj = Object::newObject();

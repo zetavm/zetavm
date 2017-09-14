@@ -323,6 +323,9 @@ public:
 
     /// Append a value to the array
     void push(Value val);
+
+    /// Pop a value off the end of the array
+    Value pop();
 };
 
 /**

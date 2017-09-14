@@ -104,6 +104,15 @@ exports.push = function (arr, val)
     $array_push(arr, val);
 };
 
+// Pop one value from the end of the array
+exports.pop = function (arr)
+{
+    if (arr.length == 0)
+        throw "cannot pop value from empty array";
+
+    return $array_pop(arr);
+};
+
 /// Concatenates two arrays a and b into new array
 /// and returns it. It does not modify either a or b.
 exports.concat = function(a, b)
@@ -277,6 +286,7 @@ exports.prototype = {
     filter: exports.filter,
     slice: exports.slice,
     push: exports.push,
+    pop: exports.pop,
     concat: exports.concat,
     append: exports.append,
     replace: exports.replace,

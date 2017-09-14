@@ -36,6 +36,20 @@ var testNew = function ()
         assert (arr[i] == 777);
 };
 
+var testPushPop = function ()
+{
+    var arr = [];
+    arr:push(3);
+    arr:push(7);
+    assert (arr.length == 2);
+
+    var v1 = arr:pop();
+    var v0 = arr:pop();
+    assert (v1 == 7);
+    assert (v0 == 3);
+    assert (arr.length == 0);
+};
+
 var testIndexOf = function(arr)
 {
     assert(array.indexOf(arr, 17) == 3);
@@ -236,6 +250,7 @@ var testSort = function()
 };
 
 testNew();
+testPushPop();
 testIndexOf(getArray());
 testMap(getArray());
 testFlatMap();
