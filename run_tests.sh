@@ -100,6 +100,7 @@ set -x
 ./zeta tests/plush/regress_exc_idx.pls
 ./zeta tests/plush/regress_throw_str.pls | grep -q "foobar"
 ./zeta tests/plush/regress_method_exc.pls
+./zeta tests/plush/regress_arr_idx.pls | grep -q "index"
 
 # Check that source position is reported on errors
 ./zeta tests/plush/assert.pls | grep -q "3:1"
@@ -147,3 +148,5 @@ python espresso/main.py test
 # Example programs
 ./zeta examples/line_count.pls -- examples/line_count.pls | grep -q "54"
 ./zeta examples/csv_parsing.pls -- examples/GOOG.csv | grep -q "rows: 23"
+
+# TODO: find way to test all example programs using shims/mock packages
