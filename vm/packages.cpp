@@ -73,13 +73,31 @@ void setHostFn(
 
 namespace core_vm_0
 {
+    /**
+    Import a package, initialize it and cache the initialized package
+    */
     Value import(Value pkgName)
     {
-        assert (pkgName.isString());
+        if (!pkgName.isString())
+            throw RunError("import expects package name to be a string");
+
         return ::import(std::string(pkgName));
     }
 
-    /// Parse a string in Zeta image format (ZIM)
+    /**
+    Load a ZIM file into memory, but do not run any initialization code
+    */
+    Value load(Value pkgName)
+    {
+        if (!pkgName.isString())
+            throw RunError("load expects package name to be a string");
+
+        return parseFile(std::string(pkgName));
+    }
+
+    /**
+    Parse a string in Zeta image format (ZIM)
+    */
     Value parse(Value strVal)
     {
         if (!strVal.isString())
@@ -89,7 +107,9 @@ namespace core_vm_0
         return parseString(str, "string");
     }
 
-    /// Serialize data into Zeta image format (ZIM), returns a string
+    /**
+    Serialize data into Zeta image format (ZIM), returns a string
+    */
     Value serialize(Value val, Value indent)
     {
         bool indentBool = (indent == Value::TRUE);
@@ -101,6 +121,7 @@ namespace core_vm_0
     {
         auto exports = Object::newObject(32);
         setHostFn(exports, "import"       , 1, (void*)import);
+        setHostFn(exports, "load"         , 1, (void*)load);
         setHostFn(exports, "parse"        , 1, (void*)parse);
         setHostFn(exports, "serialize"    , 2, (void*)serialize);
         return exports;
