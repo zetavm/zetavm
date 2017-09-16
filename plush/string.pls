@@ -565,6 +565,7 @@ exports.prototype = {
     rstrim: exports.rtrim,
     trim: exports.trim,
     startsWith: exports.startsWith,
+    endsWith: exports.endsWith,
     toLower: exports.toLower,
     toUpper: exports.toUpper,
     format: exports.format,

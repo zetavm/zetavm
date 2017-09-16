@@ -197,6 +197,7 @@ var endsWith = str.endsWith;
 assert (endsWith("Banana", "na"));
 assert (endsWith("Banana", ""));
 assert (!endsWith("Banana", "Bun"));
+assert ("foobar":endsWith("bar"));
 
 var intToString = str.intToString;
 assert(intToString(0, 10) == "0");

@@ -409,7 +409,7 @@ void Object::setField(String name, Value value)
     auto slotIdx = getSlotIdx(ptr, cap, name, true);
 
     // If we've exceeded the object capacity
-    if (slotIdx >= cap)
+    if (slotIdx + 1 >= cap)
     {
         // Create a new object with twice the capacity
         assert (cap > 0);

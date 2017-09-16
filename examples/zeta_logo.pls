@@ -154,42 +154,62 @@ var writePPM = function (fileName, imgData, width, height)
     output('\n');
 };
 
-// Render the function
-var buf = [];
-for (var y = 0; y < height; y += 1)
+var renderFun = function (dstFn, width, height)
 {
-    for (var x = 0; x < width; x += 1)
+    // Render the function
+    var buf = [];
+    for (var y = 0; y < height; y += 1)
     {
-        var dst = dstFn(1.0f * x / width, 1.0f * y / height);
+        for (var x = 0; x < width; x += 1)
+        {
+            var dst = dstFn(1.0f * x / width, 1.0f * y / height);
 
-        dst = math.max(0, -dst);
-        dst = math.min(dst / 0.006f, 1);
+            dst = math.max(0, -dst);
+            dst = math.min(dst / 0.006f, 1);
 
-        var v = math.floor(255 * dst);
+            var v = math.floor(255 * dst);
 
-        // Pixels are in ABGR format
-        var c = (v << 24) + (v << 16) + (v << 8);
-        buf:push(c);
+            // Pixels are in ABGR format
+            var c = (v << 24) + (v << 16) + (v << 8);
+            buf:push(c);
+        }
     }
-}
 
-var handle = window.create_window("Zeta Logo", width, height);
+    return buf;
+};
 
-window.draw_bitmap(handle, buf);
-
-// TODO: command-line argument to produce PPM output
-//writePPM('zeta_logo.ppm', buf, width, height);
-
-// Wait until the window is closed
-for (;;)
+exports.main = function (args)
 {
-    var event = window.get_next_event(handle);
+    var string = import "std/string/0";
 
-    if (event != false)
+    // Parse the render size
+    var size = 512;
+    if (args.length > 1)
+        size = string.parseInt(args[1], 10);
+    var width = size;
+    var height = size;
+
+    var bitmap = renderFun(dstFn, width, height);
+
+    var handle = window.create_window("Zeta Logo", width, height);
+    window.draw_bitmap(handle, bitmap);
+
+    // TODO: command-line argument to produce PPM output
+    //writePPM('zeta_logo.ppm', bitmap, width, height);
+
+    // Wait until the window is closed
+    for (;;)
     {
-        if (event.type == "quit")
-            break;
-    }
-}
+        var event = window.get_next_event(handle);
 
-window.destroy_window(handle);
+        if (event != false)
+        {
+            if (event.type == "quit")
+                break;
+        }
+    }
+
+    window.destroy_window(handle);
+
+    return 0;
+};
