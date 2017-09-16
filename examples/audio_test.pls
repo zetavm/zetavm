@@ -40,8 +40,6 @@ Main function, called when the program is run
 */
 exports.main = function (args)
 {
-    assert (args.length <= 2);
-
     // Minimum number of samples queued for playback
     var minQueueSize = 4400;
     if (args.length == 2)
@@ -51,14 +49,21 @@ exports.main = function (args)
     }
     print(string.format('minQueueSize={}', [minQueueSize]));
 
-    // Open a mono (sigle-channel) audio device
+    // Number of iterations to test for
+    var numItrs = math.INT32_MAX;
+    if (args.length == 3)
+    {
+        numItrs = string.parseInt(args[2], 10);
+    }
+
+    // Open a mono (single-channel) audio device
     var dev = audio.open_output_device(44100, 1);
 
     // Generate a series of samples
     var samples = genSamples(minQueueSize);
     print(string.format('samples.length={}', [samples.length]));
 
-    for (;;)
+    for (var itrCount = 0; itrCount < numItrs;)
     {
         var queueSize = audio.get_queue_size(dev);
 
@@ -70,6 +75,10 @@ exports.main = function (args)
             output(queueSize);
             output(' => ');
             print(newQueueSz);
+
+            itrCount += 1;
         }
     }
+
+    return 0;
 };

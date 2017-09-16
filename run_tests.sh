@@ -149,5 +149,10 @@ python espresso/main.py test
 # Example programs
 ./zeta examples/line_count.pls -- examples/line_count.pls | grep -q "54"
 ./zeta examples/csv_parsing.pls -- examples/GOOG.csv | grep -q "rows: 23"
+./zeta tests/examples/test_harness.pls -- ./examples/audio_render.pls
+./zeta tests/examples/test_harness.pls -- ./examples/graphics.pls
+./zeta tests/examples/test_harness.pls -- ./examples/click_grid.pls
+./zeta tests/examples/test_harness.pls -- ./examples/zeta_logo.pls
+./zeta tests/examples/test_harness.pls -- ./examples/game.pls
 
 # TODO: find way to test all example programs using shims/mock packages
