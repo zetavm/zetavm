@@ -8,9 +8,18 @@ the output of the example programs is valid, but we can at least verify
 that they run without producing compile errors or exceptions.
 */
 
-var vm = import "core/vm/0";
-var window = import "core/window/0";
-var audio = import "core/audio/0";
+try
+{
+    var vm = import "core/vm/0";
+    var window = import "core/window/0";
+    var audio = import "core/audio/0";
+}
+catch (e)
+{
+    // core/window and core/audio will fail to import if sdl2 is missing
+    print("not configured with SDL2, skipping test");
+    return;
+}
 
 var windowCreated = false;
 var getEventCounter = 0;

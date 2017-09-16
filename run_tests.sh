@@ -154,5 +154,3 @@ python espresso/main.py test
 ./zeta tests/examples/test_harness.pls -- ./examples/click_grid.pls
 ./zeta tests/examples/test_harness.pls -- ./examples/zeta_logo.pls
 ./zeta tests/examples/test_harness.pls -- ./examples/game.pls
-
-# TODO: find way to test all example programs using shims/mock packages
