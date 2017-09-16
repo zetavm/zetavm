@@ -143,7 +143,7 @@ assert(lpad("Hello", " ", 7) == "  Hello");
 assert(lpad("Hello", ".", 7) == "..Hello");
 assert(lpad("Hello", " ", 3) == "Hello");
 assert(lpad("Hello", " ", -1) == "Hello");
-try 
+try
 {
     lpad("Hello", "", 7);
     assert(false);
@@ -152,7 +152,7 @@ catch(e)
 {
     assert(true);
 }
-try 
+try
 {
     lpad("Hello", "abcd", 7);
     assert(false);
@@ -168,7 +168,7 @@ assert(rpad("Hello", " ", 7) == "Hello  ");
 assert(rpad("Hello", ".", 7) == "Hello..");
 assert(rpad("Hello", " ", 3) == "Hello");
 assert(rpad("Hello", " ", -1) == "Hello");
-try 
+try
 {
     rpad("Hello", "", 7);
     assert(false);
@@ -177,7 +177,7 @@ catch(e)
 {
     assert(true);
 }
-try 
+try
 {
     rpad("Hello", "abcd", 7);
     assert(false);
@@ -233,6 +233,10 @@ catch(e)
 {
     assert(true);
 }
+
+var parseFloat = str.parseFloat;
+assert (parseFloat("0") == 0.0f);
+assert (parseFloat("0.5") == 0.5f);
 
 // String methods through prototype object (Plush runtime)
 assert ("foo":contains("oo"));

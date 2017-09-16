@@ -92,8 +92,8 @@ exports.intToString = function (int, base)
 };
 
 /**
- * Parses a string into an integer. Throws an exception if string is not a valid
- * integer number of the given radix.
+ * Parses a string into an integer. Throws an exception if string is not a
+ * valid integer number of the given radix.
  *
  * example: parseInt("123", 10) == 123;
  * example: parseInt("a", 16) == 10;
@@ -102,12 +102,15 @@ exports.parseInt = function (string, radix)
 {
     string = exports.toLower(string);
     assert(radix > 1 && radix < 26);
+
     if (string == "")
     {
         throw "argument is empty string";
     }
+
     var negative = false;
     var pos = 0;
+
     if (string == "-")
     {
         throw string + " is not a number";
@@ -118,6 +121,7 @@ exports.parseInt = function (string, radix)
         pos += 1;
     }
     var num = 0;
+
     //Assumes ascii like charcodes
     var zeroCharCode = exports.toCharCode("0");
     var nineCharCode = exports.toCharCode("9");
@@ -157,6 +161,20 @@ exports.parseInt = function (string, radix)
     {
         return num;
     }
+};
+
+/**
+Parse a string into a floating-point number.
+Throws an exception is the string cannot be parsed.
+*/
+exports.parseFloat = function (str)
+{
+    var num = $str_to_f32(str);
+
+    if (num != num)
+        throw "string does not represent a valid floating-point number";
+
+    return num;
 };
 
 /**
@@ -488,7 +506,7 @@ exports.lpad = function (string, paddingChar, totalWidth)
     {
         throw "Can only have 1 padding character, you gave " + exports.toString(paddingChar.length);
     }
-    
+
     if (string.length >= totalWidth)
     {
         return string;
@@ -514,7 +532,7 @@ exports.rpad = function (string, paddingChar, totalWidth)
     {
         throw "Can only have 1 padding character, you gave " + exports.toString(paddingChar.length);
     }
-    
+
     if (string.length >= totalWidth)
     {
         return string;
