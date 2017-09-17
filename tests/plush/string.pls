@@ -1,22 +1,21 @@
 #language "lang/plush/0"
 
 var str = import "std/string/0";
+var array = import "std/array/0";
+var arrayEq = array.arrayEq;
 
-//Utility functions
-var arrayeq = function(a, b)
+var assertThrows = function (fun)
 {
-    if (a.length != b.length)
+    var threw = false;
+    try
     {
-        return false;
+        fun();
     }
-    for (var i = 0; i < a.length; i += 1)
+    catch (e)
     {
-        if (a[i] != b[i])
-        {
-            return false;
-        }
+        threw = true;
     }
-    return true;
+    assert (threw);
 };
 
 var indexOf = str.indexOf;
@@ -82,18 +81,18 @@ assert(replace("test    test", " ", "") == "testtest");
 
 //split
 var split = str.split;
-assert(arrayeq(split("a,b,c,d", ","), ["a", "b", "c", "d"]));
-assert(arrayeq(split("a,,c,d", ","), ["a", "c", "d"]));
-assert(arrayeq(split("a,b,c,", ","), ["a", "b", "c"]));
-assert(arrayeq(split(",b,c,d", ","), ["b", "c", "d"]));
-assert(arrayeq(split("a,,b,,c,,d", ",,"), ["a", "b", "c", "d"]));
-assert(arrayeq(split("a,,,,c,,d", ",,"), ["a", "c", "d"]));
-assert(arrayeq(split("a,,b,,c,,", ",,"), ["a", "b", "c"]));
-assert(arrayeq(split(",,b,,c,,d", ",,"), ["b", "c", "d"]));
-assert(arrayeq(split("", ""), []));
-assert(arrayeq(split("", "abc"), []));
-assert(arrayeq(split("abc", "abc"), []));
-assert(arrayeq(split("abc", "defg"), ["abc"]));
+assert(arrayEq(split("a,b,c,d", ","), ["a", "b", "c", "d"]));
+assert(arrayEq(split("a,,c,d", ","), ["a", "c", "d"]));
+assert(arrayEq(split("a,b,c,", ","), ["a", "b", "c"]));
+assert(arrayEq(split(",b,c,d", ","), ["b", "c", "d"]));
+assert(arrayEq(split("a,,b,,c,,d", ",,"), ["a", "b", "c", "d"]));
+assert(arrayEq(split("a,,,,c,,d", ",,"), ["a", "c", "d"]));
+assert(arrayEq(split("a,,b,,c,,", ",,"), ["a", "b", "c"]));
+assert(arrayEq(split(",,b,,c,,d", ",,"), ["b", "c", "d"]));
+assert(arrayEq(split("", ""), []));
+assert(arrayEq(split("", "abc"), []));
+assert(arrayEq(split("abc", "abc"), []));
+assert(arrayEq(split("abc", "defg"), ["abc"]));
 
 //join
 var join = str.join;
@@ -143,24 +142,8 @@ assert(lpad("Hello", " ", 7) == "  Hello");
 assert(lpad("Hello", ".", 7) == "..Hello");
 assert(lpad("Hello", " ", 3) == "Hello");
 assert(lpad("Hello", " ", -1) == "Hello");
-try
-{
-    lpad("Hello", "", 7);
-    assert(false);
-}
-catch(e)
-{
-    assert(true);
-}
-try
-{
-    lpad("Hello", "abcd", 7);
-    assert(false);
-}
-catch(e)
-{
-    assert(true);
-}
+assertThrows(function () { lpad("Hello", "", 7); });
+assertThrows(function () { lpad("Hello", "abcd", 7); });
 
 //lpad
 var rpad = str.rpad;
@@ -168,24 +151,8 @@ assert(rpad("Hello", " ", 7) == "Hello  ");
 assert(rpad("Hello", ".", 7) == "Hello..");
 assert(rpad("Hello", " ", 3) == "Hello");
 assert(rpad("Hello", " ", -1) == "Hello");
-try
-{
-    rpad("Hello", "", 7);
-    assert(false);
-}
-catch(e)
-{
-    assert(true);
-}
-try
-{
-    rpad("Hello", "abcd", 7);
-    assert(false);
-}
-catch(e)
-{
-    assert(true);
-}
+assertThrows(function () { rpad("Hello", "", 7); });
+assertThrows(function () { rpad("Hello", "abcd", 7); });
 
 var startsWith = str.startsWith;
 assert(startsWith("Banana", "Ban"));
@@ -215,25 +182,8 @@ assert(parseInt("123", 10) == 123);
 assert(parseInt("-123", 10) == -123);
 assert(parseInt("a", 16) == 10);
 assert(parseInt("1010", 2) == 10);
-
-try
-{
-    parseInt("", 10);
-    assert(false);
-}
-catch(e)
-{
-    assert(true);
-}
-try
-{
-    parseInt("123abc", 10);
-    assert(false);
-}
-catch(e)
-{
-    assert(true);
-}
+assertThrows(function () { parseInt("", 10); });
+assertThrows(function () { parseInt("123abc", 10); });
 
 var parseFloat = str.parseFloat;
 assert (parseFloat("0") == 0.0f);
