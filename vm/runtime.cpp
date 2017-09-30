@@ -111,12 +111,14 @@ Value VM::alloc(uint32_t size, Tag tag)
 {
     // FIXME: use an alloc pool of some kind
     auto ptr = (refptr)calloc(1, size);
-    // if (allocated >= limit)
-    // {   
-    //     // std::cout << "allocated: " << allocated << std::endl;
-    //     mark();
-    //     limit = allocated * 2;   
-    // } 
+    values.push_back(ptr);
+    if (allocated >= limit)
+    {   
+        std::cout << "allocated: " << allocated << std::endl;
+        std::cout << "number: " << values.size() << std::endl;
+        mark();
+        limit = allocated * 2;   
+    } 
     //Set the tag in the object header
     *(Tag*)ptr = tag;
     allocated += (size_t)size;

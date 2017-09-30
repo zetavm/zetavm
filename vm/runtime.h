@@ -5,6 +5,7 @@
 #include <string>
 #include <cstring>
 #include <unordered_map>
+#include <vector>
 
 /// Type tag, 8 bits
 typedef uint8_t Tag;
@@ -148,8 +149,8 @@ private:
 
     // TODO: total memory size allocated
     size_t allocated;
-    size_t limit = 30000;
-    Value* head;
+    size_t limit = 300000;
+    std::vector<refptr> values = {};
     // TODO: dynamically grow pools?
 
     // TODO: pools for sizes up to 32 (words)
@@ -162,8 +163,6 @@ public:
     size_t length; // TODO: get rid of this;
     /// Allocate a block of memory on the heap
     Value alloc(uint32_t size, Tag tag);
-    void setHead(Value* value) { head = value; }
-    Value* getHead() const { return head; }
 };
 
 /**

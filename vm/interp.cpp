@@ -229,25 +229,27 @@ Value charStrings[256];
 
 void markValues(Value* root)
 {
-    // size_t i = 0;
-    std::vector<refptr> toMark = { (refptr)root };
+    size_t i = 0;
+    std::vector<refptr> toMark = { (refptr)(*root) };
     while (!toMark.empty())
     {
-        // i++;
         refptr ptr = toMark.back();
+        toMark.pop_back();
         Tag tag = *(Tag*)ptr;
         Value root = Value(ptr, tag);
-        toMark.pop_back();
+        // std::cout << tagToStr(tag) << std::endl;
         if (root.isPointer())
         {
             // If this node was previously visited, skip it
             if (root.isMarked())
                 continue;
+            i++;
             // Mark the node as visited
             root.setMark();
         }
         if (root.getTag() == TAG_OBJECT)
         {
+            // std::cout << "obj" << std::endl;
             Object objRoot = (Object)(root);
             for (auto itr = ObjFieldItr(objRoot); itr.valid(); itr.next())
             {
@@ -261,6 +263,7 @@ void markValues(Value* root)
         else if (root.getTag() == TAG_ARRAY) 
         {   
             Array arrRoot = (Array)(root);
+            // std::cout << "arr" << std::endl;
             auto len = arrRoot.length();
             for(size_t i = 0; i < len; i++)
             {
@@ -271,7 +274,7 @@ void markValues(Value* root)
             }
         }
     }
-    // std::cout << i << std::endl;
+    std::cout << "marked: " << i << std::endl;
 }
 
 void mark() {
