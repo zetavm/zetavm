@@ -68,6 +68,8 @@ private:
     Tag tag;
 
 public:
+    Value* prev = NULL;
+    Value* next = NULL;
     static const Value ZERO;
     static const Value ONE;
     static const Value TWO;
@@ -78,8 +80,8 @@ public:
 
     Value() : Value(UNDEF.word, UNDEF.tag) {}
     Value(refptr p, Tag t) : Value(Word(p), t) {}
-    Value(Word w, Tag t) : word(w), tag(t) {};
-    ~Value() {}
+    Value(Word w, Tag t);
+    ~Value();
     // Static constructors. These are needed because of type ambiguity.
     static Value int32(int32_t v) { return Value(Word((int64_t)v), TAG_INT32); }
     static Value float32(float v) { return Value(Word(v), TAG_FLOAT32); }
@@ -160,6 +162,8 @@ private:
 public:
 
     VM();
+    void sweep();
+    Value* head = NULL;
     size_t length; // TODO: get rid of this;
     /// Allocate a block of memory on the heap
     Value alloc(uint32_t size, Tag tag);

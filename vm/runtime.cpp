@@ -71,6 +71,41 @@ bool Value::isPointer() const
     }
 }
 
+Value::Value(Word w, Tag t) : word(w), tag(t) 
+{
+    if (isPointer())
+    {
+        Value* head = vm.head;
+        this->next = head;        
+        if (head != NULL)
+        {
+            head->prev = this;
+        }
+        vm.head = this;
+    }
+};
+
+Value::~Value() {
+    if (isPointer())
+    {
+        if (this->prev != NULL)
+        {
+            this->prev->next = this->next;
+            if(this->next != NULL)
+            {
+                this->next->prev = this->prev;
+            }
+        }
+        else 
+        {
+            if(this->next != NULL)
+            {
+                vm.setHead(this->next);
+            }
+        }
+    }
+}
+
 bool Value::isMarked() const 
 { 
     assert (isPointer());
@@ -114,9 +149,10 @@ Value VM::alloc(uint32_t size, Tag tag)
     values.push_back(ptr);
     if (allocated >= limit)
     {   
+        mark();
+        sweep();
         std::cout << "allocated: " << allocated << std::endl;
         std::cout << "number: " << values.size() << std::endl;
-        mark();
         limit = allocated * 2;   
     } 
     //Set the tag in the object header
@@ -124,6 +160,18 @@ Value VM::alloc(uint32_t size, Tag tag)
     allocated += (size_t)size;
     // Wrap the pointer in a tagged value
     return Value(ptr, tag);
+}
+
+void VM::sweep() 
+{
+    for (refptr ptr : values) 
+    {
+        auto header = *(uint64_t*)ptr;
+        if (!((header & HEADER_MSK_MARK) == HEADER_MSK_MARK))
+        {
+            free(ptr);
+        }
+    }
 }
 
 void Wrapper::setNextPtr(refptr obj, refptr nextPtr)
