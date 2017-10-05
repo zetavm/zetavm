@@ -98,7 +98,7 @@ public:
     Tag getTag() const { return tag; }
     bool isMarked() const;
     void setMark();
-    void unsetMark();
+    void clearMark();
 
 
     bool isPointer() const;
@@ -162,6 +162,8 @@ private:
 public:
 
     VM();
+    void mark();
+    void markValues(Value& root);
     void sweep();
     Value* head = NULL;
     size_t length; // TODO: get rid of this;

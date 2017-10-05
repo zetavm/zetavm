@@ -76,10 +76,10 @@ Value::Value(Word w, Tag t) : word(w), tag(t)
     if (isPointer())
     {
         Value* head = vm.head;
-        this->next = head;        
+        next = head;        
         if (head != NULL)
         {
-            head->prev = this;
+            vm.head->prev = this;
         }
         vm.head = this;
     }
@@ -88,20 +88,19 @@ Value::Value(Word w, Tag t) : word(w), tag(t)
 Value::~Value() {
     if (isPointer())
     {
-        if (this->prev != NULL)
+        if (prev != NULL)
         {
-            this->prev->next = this->next;
-            if(this->next != NULL)
-            {
-                this->next->prev = this->prev;
-            }
+            std::cout << 1;
+            prev->next = next;
         }
         else 
         {
-            if(this->next != NULL)
-            {
-                vm.setHead(this->next);
-            }
+            vm.head = next;
+        }
+        if (next != NULL)
+        {   
+            std::cout << 3;
+            next->prev = prev;
         }
     }
 }
@@ -120,7 +119,7 @@ void Value::setMark()
     auto header = *(uint64_t*)obj;
     *(uint64_t*)(obj) = header | HEADER_MSK_MARK;
 }
-void Value::unsetMark()
+void Value::clearMark()
 {
     assert (isPointer());
     refptr obj = this->word.ptr;
@@ -149,8 +148,9 @@ Value VM::alloc(uint32_t size, Tag tag)
     values.push_back(ptr);
     if (allocated >= limit)
     {   
+        // std::cout << "number: " << values.size() << std::endl;
         mark();
-        sweep();
+        // sweep();
         std::cout << "allocated: " << allocated << std::endl;
         std::cout << "number: " << values.size() << std::endl;
         limit = allocated * 2;   
@@ -162,14 +162,83 @@ Value VM::alloc(uint32_t size, Tag tag)
     return Value(ptr, tag);
 }
 
+void VM::mark()
+{
+    markStackValues();
+    Value* val = head;
+    while (val != NULL)
+    {
+        std::cout << "hello" << std::endl;
+        markValues(*val);
+        val = val->next;
+    }
+}
+
+void VM::markValues(Value& root)
+{
+    size_t i = 0;
+    if (!(root.isPointer())) return;
+    std::vector<refptr> toMark = { (refptr)(root) };
+    while (!toMark.empty())
+    {
+        refptr ptr = toMark.back();
+        toMark.pop_back();
+        Tag tag = *(Tag*)ptr;
+        Value root = Value(ptr, tag);
+        // std::cout << tagToStr(tag) << std::endl;
+        if (root.isPointer())
+        {
+            // If this node was previously visited, skip it
+            if (root.isMarked())
+                continue;
+            i++;
+            // Mark the node as visited
+            root.setMark();
+        }
+        if (root.getTag() == TAG_OBJECT)
+        {
+            // std::cout << "obj" << std::endl;
+            Object objRoot = (Object)(root);
+            for (auto itr = ObjFieldItr(objRoot); itr.valid(); itr.next())
+            {
+                auto fieldName = itr.get();
+                Value field = objRoot.getField(fieldName);
+                Tag tag = field.getTag();
+                if (tag == TAG_ARRAY || tag == TAG_OBJECT || tag == TAG_STRING)
+                    toMark.push_back((refptr)field);
+            }
+        }
+        else if (root.getTag() == TAG_ARRAY) 
+        {   
+            Array arrRoot = (Array)(root);
+            // std::cout << "arr" << std::endl;
+            auto len = arrRoot.length();
+            for(size_t i = 0; i < len; i++)
+            {
+                Value field = arrRoot.getElem(i);
+                Tag tag = field.getTag();
+                if (tag == TAG_ARRAY || tag == TAG_OBJECT || tag == TAG_STRING) 
+                    toMark.push_back((refptr)field);
+            }
+        }
+    }
+    std::cout << "marked: " << i << std::endl;
+}
+
 void VM::sweep() 
 {
+    // std::vector<refptr> oldValues = values;
+    // values = {};
     for (refptr ptr : values) 
     {
         auto header = *(uint64_t*)ptr;
-        if (!((header & HEADER_MSK_MARK) == HEADER_MSK_MARK))
+        if (!(header & HEADER_MSK_MARK))
         {
             free(ptr);
+        } 
+        else 
+        {
+            // values.push_back(ptr);
         }
     }
 }
