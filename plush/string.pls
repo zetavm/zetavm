@@ -726,7 +726,8 @@ var indexOfInternal = function (string, needle, start)
     }
 };
 
-/** A helper function for joining sublists of lists of strings by a delimiter.
+/** 
+ * A helper function for joining sublists of lists of strings by a delimiter.
  *
  *  This function introduces additional parameters lower and upper to allow
  *  users to specify lower and upper bounds.
