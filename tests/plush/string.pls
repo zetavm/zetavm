@@ -98,6 +98,10 @@ assert(arrayEq(split("abc", "defg"), ["abc"]));
 var join = str.join;
 var a = "a,b,c,d";
 assert(join(split(a, ","), ",") == a);
+assert(join([], ", ") == "");
+assert(join(["foo"], ", ") == "foo");
+assert(join(["foo", "bar"], ", ") == "foo, bar");
+assert(join(["foo", "bar", "baz"], ", ") == "foo, bar, baz");
 
 //indexOf
 assert(indexOf("", "") == 0);
