@@ -345,27 +345,7 @@ exports.split = function (string, delimiter)
  */
 exports.join = function (arrayofstrings, delimiter)
 {
-    var joinSub = function (arrayofstrings, delimiter, lower, upper, f)
-    {
-        var len = upper - lower;
-        if (len == 0)
-        {
-            return "";
-        }
-        else if (len == 1)
-        {
-            return arrayofstrings[lower];
-        }
-        else
-        {
-            var mid = math.idiv(len, 2) + lower;
-            var l = f(arrayofstrings, delimiter, lower, mid, f);
-            var r = f(arrayofstrings, delimiter, mid, upper, f);
-            return l + delimiter + r;
-        }       
-    };
-
-    return joinSub(arrayofstrings, delimiter, 0, arrayofstrings.length, joinSub);
+    return joinSub(arrayofstrings, delimiter, 0, arrayofstrings.length);
 };
 
 /**
@@ -745,3 +725,29 @@ var indexOfInternal = function (string, needle, start)
         return indexOfString(string, needle, start);
     }
 };
+
+/** A helper function for joining sublists of lists of strings by a delimiter.
+ *
+ *  This function introduces additional parameters lower and upper to allow
+ *  users to specify lower and upper bounds.
+ */
+var joinSub = function (arrayofstrings, delimiter, lower, upper)
+{
+    var len = upper - lower;
+    if (len == 0)
+    {
+        return "";
+    }
+    else if (len == 1)
+    {
+        return arrayofstrings[lower];
+    }
+    else
+    {
+        var mid = math.idiv(len, 2) + lower;
+        var l = joinSub(arrayofstrings, delimiter, lower, mid);
+        var r = joinSub(arrayofstrings, delimiter, mid, upper);
+        return l + delimiter + r;
+    }
+};
+
