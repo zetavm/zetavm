@@ -1,4 +1,5 @@
 var math = import "std/math/0";
+var array = import "std/array/0";
 
 /**
  * Returns a string representation of the passed value. Calls obj:toString() on
@@ -345,14 +346,23 @@ exports.split = function (string, delimiter)
  */
 exports.join = function (arrayofstrings, delimiter)
 {
-    var result = "";
-    for (var i = 0; i < arrayofstrings.length - 1; i += 1)
+    var len = arrayofstrings.length;
+    if (len == 0)
     {
-        result += arrayofstrings[i];
-        result += delimiter;
+        return "";
     }
-    result += arrayofstrings[arrayofstrings.length -1];
-    return result;
+    else if (len == 1)
+    {
+        return arrayofstrings[0];
+    }
+    else
+    {
+        var mid = math.idiv(len, 2);
+        var l = exports.join(array.slice(arrayofstrings, 0, mid), delimiter);
+        var r = exports.join(array.slice(arrayofstrings, mid, len), delimiter);
+        var result = exports.concat(l, delimiter);
+        return exports.concat(result, r);
+    }
 };
 
 /**
