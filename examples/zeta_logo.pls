@@ -141,17 +141,33 @@ This function write PPM image output to stdout
 */
 var writePPM = function (fileName, imgData, width, height)
 {
-    print('P3');
-    print($i32_to_str(width) + ' ' + $i32_to_str(height));
-    print('255');
+    var string = import "std/string/0";
+    var io = import "core/io/0";
+
+    print('writing output file: \"' + fileName + '\"');
+
+    var strs = [];
+
+    strs:push('P3\n');
+    strs:push($i32_to_str(width) + ' ' + $i32_to_str(height) + '\n');
+    strs:push('255\n');
 
     for (var i = 0; i < imgData.length; i += 1)
     {
-        output(imgData[i]);
-        output(' ');
+        var p = imgData[i];
+        var r = (p >>  8) & 255;
+        var g = (p >> 16) & 255;
+        var b = (p >> 24) & 255;
+
+        strs:push($i32_to_str(r) + ' ');
+        strs:push($i32_to_str(g) + ' ');
+        strs:push($i32_to_str(b) + ' ');
     }
 
-    output('\n');
+    strs:push('\n');
+
+    var output = string.join(strs, '');
+    io.write_file(fileName, output);
 };
 
 var renderFun = function (dstFn, width, height)
@@ -185,17 +201,21 @@ exports.main = function (args)
     // Parse the render size
     var size = 512;
     if (args.length > 1)
-        size = string.parseInt(args[1], 10);
+        size = string.parseInt(args[args.length-1], 10);
     var width = size;
     var height = size;
 
     var bitmap = renderFun(dstFn, width, height);
 
+    // If the output is to be written to a PPM file
+    if (args.length > 1 && args[1] == "--write_ppm")
+    {
+        writePPM('zeta_logo.ppm', bitmap, width, height);
+        return 0;
+    }
+
     var handle = window.create_window("Zeta Logo", width, height);
     window.draw_bitmap(handle, bitmap);
-
-    // TODO: command-line argument to produce PPM output
-    //writePPM('zeta_logo.ppm', bitmap, width, height);
 
     // Wait until the window is closed
     for (;;)

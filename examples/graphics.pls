@@ -32,10 +32,6 @@ for (var i = 0;; i += 1)
             break;
     }
 
-    output('frame ');
-    output(i);
-    output('\n');
-
     window.draw_bitmap(handle, buf);
 }
 
