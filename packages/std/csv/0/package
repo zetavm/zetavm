@@ -2,6 +2,7 @@
 
 var parsing = import "std/parsing/0";
 var string = import "std/string/0";
+var io = import "core/io/0";
 
 var parseCell = function (input)
 {
@@ -80,4 +81,36 @@ var parseFile = function (fileName)
     return rows;
 };
 
+/**
+Write CSV data to a file
+*/
+var writeFile = function (fileName, rows)
+{
+    var strs = [];
+
+    for (var j = 0; j < rows.length; j += 1)
+    {
+        var row = rows[j];
+
+        for (var i = 0; i < row.length; i += 1)
+        {
+            var cell = row[i];
+
+            // FIXME: need to escape cell strings
+            strs:push('"' + cell + '"');
+
+            if (i < row.length - 1)
+                strs:push(', ');
+        }
+
+        if (j < rows.length - 1)
+            strs:push('\n');
+    }
+
+    var output = string.join(strs, '');
+
+    io.write_file(fileName, output);
+};
+
 exports.parseFile = parseFile;
+exports.writeFile = writeFile;
