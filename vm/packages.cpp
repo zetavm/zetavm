@@ -1,4 +1,5 @@
 #include <cassert>
+#include <ctime>
 #include <iostream>
 #include <regex>
 #include <unordered_map>
@@ -311,6 +312,46 @@ namespace core_time_0
         #endif
     }
 
+    /**
+     * Populates an object with the fields of a <time.h> `tm` struct. A few
+     * fields have been altered to make their values more useful:
+     *
+     * - The year is no longer relative to 1900, we simply add 1900 to the value.
+     *
+     * - Per time.h's specifications, isdst is positive when true, zero when
+     *   false and negative when inconclusive. To model this in plush, we return
+     *   true/false when the answer is known and undefined when it is not.
+     */
+    Value get_local_time()
+    {
+        time_t rawtime;
+        struct tm* timeinfo;
+
+        time(&rawtime);
+        timeinfo = localtime(&rawtime);
+
+        auto obj = Object::newObject();
+        obj.setField("sec", Value::int32(timeinfo->tm_sec));
+        obj.setField("min", Value::int32(timeinfo->tm_min));
+        obj.setField("hour", Value::int32(timeinfo->tm_hour));
+        obj.setField("day", Value::int32(timeinfo->tm_mday));
+        obj.setField("month", Value::int32(timeinfo->tm_mon));
+        obj.setField("year", Value::int32(timeinfo->tm_year + 1900));
+        obj.setField("week_day", Value::int32(timeinfo->tm_wday));
+        obj.setField("year_day", Value::int32(timeinfo->tm_yday));
+
+        const auto &isdst = timeinfo->tm_isdst;
+        if (isdst == 0) {
+          obj.setField("is_dst", Value::TRUE);
+        } else if (isdst > 0) {
+          obj.setField("is_dst", Value::FALSE);
+        } else {
+          obj.setField("is_dst", Value::UNDEF);
+        }
+
+        return obj;
+    }
+
     Value get_pkg()
     {
         // Store the time value when the time package is loaded
@@ -322,6 +363,7 @@ namespace core_time_0
 
         auto exports = Object::newObject(32);
         setHostFn(exports, "get_time_millis", 0, (void*)get_time_millis);
+        setHostFn(exports, "get_local_time", 0, (void*)get_local_time);
         return exports;
     }
 }
