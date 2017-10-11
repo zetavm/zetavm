@@ -4,7 +4,7 @@ This document provides an overview and roadmap for different parts of the ZetaVM
 
 ## ZetaVM Prototype
 
-The current implementation of ZetaVM is at the prototype stage. There is currently an interpeter, but no garbage collector and no JIT compiler. The current goal is to get the system running quickly with a core set of features, so that we can  prototype, properly the system, iron out bugs, and alter the design as necessary.
+The current implementation of ZetaVM is at the prototype stage. There is currently an interpeter, but no garbage collector and no JIT compiler. The current goal is to get the system running quickly with a core set of features, so that we can properly prototype the system, iron out bugs, and alter the design as necessary.
 
 ## Plush
 
