@@ -340,14 +340,13 @@ namespace core_time_0
         obj.setField("week_day", Value::int32(timeinfo->tm_wday));
         obj.setField("year_day", Value::int32(timeinfo->tm_yday));
 
-        const auto &isdst = timeinfo->tm_isdst;
-        if (isdst == 0) {
+        const auto& isdst = timeinfo->tm_isdst;
+        if (isdst > 0)
           obj.setField("is_dst", Value::TRUE);
-        } else if (isdst > 0) {
+        else if (isdst == 0)
           obj.setField("is_dst", Value::FALSE);
-        } else {
+        else
           obj.setField("is_dst", Value::UNDEF);
-        }
 
         return obj;
     }
