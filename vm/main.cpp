@@ -92,9 +92,9 @@ int create()
 
 int main(int argc, char** argv)
 {      
-    create();
-    test();
-    return 0;   
+    // create();
+    // test();
+    // return 0;   
     BoolOpt test('t', "test", false, "runs unit tests");
     BoolOpt help('h', "help", false, "prints this help message.");
     OptParser parser;

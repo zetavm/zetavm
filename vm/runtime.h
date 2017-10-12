@@ -81,6 +81,7 @@ public:
     Value() : Value(UNDEF.word, UNDEF.tag) {}
     Value(refptr p, Tag t) : Value(Word(p), t) {}
     Value(Word w, Tag t);
+    Value(const Value& val);
     ~Value();
     // Static constructors. These are needed because of type ambiguity.
     static Value int32(int32_t v) { return Value(Word((int64_t)v), TAG_INT32); }
@@ -105,6 +106,7 @@ public:
 
     std::string toString() const;
 
+    Value& operator= (const Value& val);
     inline operator bool () const
     {
         assert (tag == TAG_BOOL);

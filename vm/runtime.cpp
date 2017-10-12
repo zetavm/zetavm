@@ -24,6 +24,10 @@ VM vm;
 // Global string pool
 StringPool stringPool;
 
+bool isGCRoot(Tag tag){
+    return tag == TAG_OBJECT || tag == TAG_ARRAY || tag == TAG_STRING;
+}
+
 /// Produce a string representation of a value
 std::string Value::toString() const
 {
@@ -73,7 +77,7 @@ bool Value::isPointer() const
 
 Value::Value(Word w, Tag t) : word(w), tag(t) 
 {
-    if (isPointer())
+    if (isGCRoot(t))
     {
         Value* head = vm.head;
         next = head;        
@@ -86,11 +90,10 @@ Value::Value(Word w, Tag t) : word(w), tag(t)
 };
 
 Value::~Value() {
-    if (isPointer())
+    if (isGCRoot(tag))
     {
         if (prev != NULL)
         {
-            std::cout << 1;
             prev->next = next;
         }
         else 
@@ -99,10 +102,59 @@ Value::~Value() {
         }
         if (next != NULL)
         {   
-            std::cout << 3;
             next->prev = prev;
         }
     }
+}
+
+Value::Value(const Value& val)
+{
+    if (isGCRoot(val.getTag()))
+    {
+        Value* head = vm.head;
+        next = head; 
+        prev = NULL;       
+        if (head != NULL)
+        {
+            vm.head->prev = this;
+        }
+        vm.head = this;
+    }
+    tag = val.getTag();
+    word = val.getWord();
+}
+
+Value& Value::operator= (const Value& val)
+{
+    if (isGCRoot(val.getTag()) && next == NULL && prev == NULL)
+    {
+        Value* head = vm.head;
+        next = head; 
+        prev = NULL;       
+        if (head != NULL)
+        {
+            vm.head->prev = this;
+        }
+        vm.head = this;
+    } 
+    if (!isGCRoot(val.getTag()) && isGCRoot(tag))
+    {
+        if (prev != NULL)
+        {
+            prev->next = next;
+        }
+        else 
+        {
+            vm.head = next;
+        }
+        if (next != NULL)
+        {   
+            next->prev = prev;
+        }
+    } 
+    tag = val.getTag();
+    word = val.getWord();
+    return *this;
 }
 
 bool Value::isMarked() const 
@@ -110,7 +162,7 @@ bool Value::isMarked() const
     assert (isPointer());
     refptr obj = this->word.ptr;
     auto header = *(uint64_t*)obj;
-    return (header & HEADER_MSK_MARK) == HEADER_MSK_MARK;
+    return (header & HEADER_MSK_MARK);
 }
 void Value::setMark() 
 { 
@@ -141,20 +193,28 @@ VM::VM()
 Allocates a block of memory
 Note that this function guarantees that the memory is zeroed out
 */
+
+int marked = 0;
+
 Value VM::alloc(uint32_t size, Tag tag)
 {
     // FIXME: use an alloc pool of some kind
-    auto ptr = (refptr)calloc(1, size);
-    values.push_back(ptr);
     if (allocated >= limit)
     {   
-        // std::cout << "number: " << values.size() << std::endl;
-        mark();
-        // sweep();
-        std::cout << "allocated: " << allocated << std::endl;
+        marked = 0;
         std::cout << "number: " << values.size() << std::endl;
+        mark();
+        sweep();
+        std::cout << "marked: " << marked << std::endl;
+        std::cout << "allocated: " << allocated << std::endl;
+        // std::cout << "number: " << values.size() << std::endl;
         limit = allocated * 2;   
     } 
+    auto ptr = (refptr)calloc(1, size);
+    if (isGCRoot(tag))
+    {
+        values.push_back(ptr);
+    }
     //Set the tag in the object header
     *(Tag*)ptr = tag;
     allocated += (size_t)size;
@@ -168,16 +228,15 @@ void VM::mark()
     Value* val = head;
     while (val != NULL)
     {
-        std::cout << "hello" << std::endl;
         markValues(*val);
         val = val->next;
     }
 }
 
 void VM::markValues(Value& root)
-{
-    size_t i = 0;
-    if (!(root.isPointer())) return;
+{   
+    Tag tag = root.getTag();
+    if (!(isGCRoot(tag))) return;
     std::vector<refptr> toMark = { (refptr)(root) };
     while (!toMark.empty())
     {
@@ -186,12 +245,12 @@ void VM::markValues(Value& root)
         Tag tag = *(Tag*)ptr;
         Value root = Value(ptr, tag);
         // std::cout << tagToStr(tag) << std::endl;
-        if (root.isPointer())
+        if (isGCRoot(root.getTag()))
         {
             // If this node was previously visited, skip it
             if (root.isMarked())
                 continue;
-            i++;
+            marked++;
             // Mark the node as visited
             root.setMark();
         }
@@ -222,14 +281,13 @@ void VM::markValues(Value& root)
             }
         }
     }
-    std::cout << "marked: " << i << std::endl;
 }
 
 void VM::sweep() 
 {
-    // std::vector<refptr> oldValues = values;
-    // values = {};
-    for (refptr ptr : values) 
+    std::vector<refptr> oldValues = values;
+    values = {};
+    for (refptr ptr : oldValues) 
     {
         auto header = *(uint64_t*)ptr;
         if (!(header & HEADER_MSK_MARK))
@@ -238,7 +296,10 @@ void VM::sweep()
         } 
         else 
         {
-            // values.push_back(ptr);
+            Tag tag = *(Tag*)ptr;
+            Value root = Value(ptr, tag);
+            root.clearMark();
+            values.push_back(ptr);
         }
     }
 }
