@@ -8,13 +8,13 @@ PKGS_DIR=\"$(CURDIR)/packages/\"
 # Add a preprocessor definition for the packages directory
 CXXFLAGS:=${CXXFLAGS} -DPKGS_DIR="${PKGS_DIR}"
 
-all: zeta cplush math-pkg string-pkg array-pkg map-pkg parsing-pkg plush-pkg plush-bench cscheme
+all: zeta cplush math-pkg string-pkg array-pkg map-pkg parsing-pkg plush-pkg plush-bench
 
 test: all
 	./run_tests.sh
 
 clean:
-	rm -rf *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) $(CSCHEME_BIN) config.status config.log *.0 plush/*.o vm/*.o
+	rm -rf *.dSYM $(ZETA_BIN) $(CPLUSH_BIN) config.status config.log *.0 plush/*.o vm/*.o
 
 # Tells make which targets are not files
 .PHONY: all test clean math-pkg parsing-pkg array-pkg map-pkg plush-pkg plush-bench
@@ -94,17 +94,3 @@ plush-pkg: $(CPLUSH_BIN) plush/plush_pkg.pls parsing-pkg
 # Plush parser benchmark
 plush-bench: $(CPLUSH_BIN)
 	./$(CPLUSH_BIN) benchmarks/plush_parser.pls > benchmarks/plush_parser.zim
-
-##############################################################################
-# Scheme compiler
-##############################################################################
-
-CSCHEME_BIN=cscheme
-
-CSCHEME_SRCS=       \
-scheme/parser.cpp   \
-scheme/codegen.cpp  \
-scheme/main.cpp     \
-
-$(CSCHEME_BIN): scheme/*.cpp scheme/*.h
-	$(CXX) $(CXXFLAGS) -o $(CSCHEME_BIN) $(CSCHEME_SRCS)
