@@ -13,7 +13,7 @@ else
 fi
 
 # Compile the input
-python espresso/main.py compile ${SRC_FILE} > ${PKG_FILE}
+python2 espresso/main.py compile ${SRC_FILE} > ${PKG_FILE}
 
 # Run the compiled output
 ./zeta ${PKG_FILE}
