@@ -119,7 +119,7 @@ set -x
 # espresso tests
 ##############################################################################
 
-python espresso/main.py test
+python2 espresso/main.py test
 ./espresso.sh tests/espresso/test.espr
 
 ##############################################################################
