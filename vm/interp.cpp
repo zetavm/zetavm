@@ -1414,7 +1414,7 @@ __attribute__((always_inline)) inline void hostCall(
         stackPtr += numArgs;
 
         // Create an exception object
-        auto excVal = Object::newObject();
+        auto excVal = Object();
         auto errStr = String(err.toString());
         excVal.setField("msg", errStr);
 
@@ -1958,7 +1958,7 @@ Value execCode()
             case NEW_OBJECT:
             {
                 auto capacity = popInt32();
-                auto obj = Object::newObject(capacity);
+                auto obj = Object(capacity);
                 pushVal(obj);
             }
             break;

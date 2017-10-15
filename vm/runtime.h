@@ -167,6 +167,14 @@ public:
     void mark();
     void markValues(Value& root);
     void sweep();
+    bool checkIfExists(refptr ptr)
+    {
+        for (auto value : values)
+        {
+            if (value == ptr) return true;
+        }
+        return false;
+    }
     Value* head = NULL;
     size_t length; // TODO: get rid of this;
     /// Allocate a block of memory on the heap
@@ -382,7 +390,7 @@ public:
     }
 
     /// Allocate a new empty object
-    static Object newObject(size_t cap = 0);
+    Object(size_t cap = 0);
 
     Object(Value value);
 
@@ -526,6 +534,7 @@ private:
 public:
     StringPool();
     Value getString(std::string str);
+    void removeString(std::string str);
 };
 
 /// Global virtual machine instance

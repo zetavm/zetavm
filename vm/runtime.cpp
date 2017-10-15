@@ -96,7 +96,7 @@ Value::~Value() {
         {
             prev->next = next;
         }
-        else 
+        else if (vm.head == this)
         {
             vm.head = next;
         }
@@ -137,13 +137,13 @@ Value& Value::operator= (const Value& val)
         }
         vm.head = this;
     } 
-    if (!isGCRoot(val.getTag()) && isGCRoot(tag))
+    else if (!isGCRoot(val.getTag()) && isGCRoot(tag))
     {
         if (prev != NULL)
         {
             prev->next = next;
         }
-        else 
+        else if (vm.head == this)
         {
             vm.head = next;
         }
@@ -206,7 +206,7 @@ Value VM::alloc(uint32_t size, Tag tag)
         mark();
         sweep();
         std::cout << "marked: " << marked << std::endl;
-        std::cout << "allocated: " << allocated << std::endl;
+        // std::cout << "allocated: " << allocated << std::endl;
         // std::cout << "number: " << values.size() << std::endl;
         limit = allocated * 2;   
     } 
@@ -280,6 +280,17 @@ void VM::markValues(Value& root)
                     toMark.push_back((refptr)field);
             }
         }
+        if (root.getTag() == TAG_OBJECT || root.getTag() == TAG_ARRAY)
+        {
+            auto header = *(uint64_t*)ptr;
+            bool hasNextPtr = header & HEADER_MSK_NEXT;
+            if (hasNextPtr)
+            {
+                auto nextPtr = *(refptr*)(ptr + OBJ_OF_NEXT);
+                assert (nextPtr != nullptr);
+                toMark.push_back(nextPtr);
+            }
+        }
     }
 }
 
@@ -292,6 +303,12 @@ void VM::sweep()
         auto header = *(uint64_t*)ptr;
         if (!(header & HEADER_MSK_MARK))
         {
+            Tag tag = *(Tag*)ptr;
+            if (tag == TAG_STRING)
+            {
+                String str = Value(ptr, tag);
+                stringPool.removeString((std::string)str);
+            }
             free(ptr);
         } 
         else 
@@ -535,7 +552,7 @@ Value Array::pop()
 }
 
 /// Allocate a new empty object
-Object Object::newObject(size_t cap)
+Object::Object(size_t cap)
 {
     if (cap < MIN_CAP)
         cap = MIN_CAP;
@@ -544,17 +561,14 @@ Object Object::newObject(size_t cap)
     auto numBytes = memSize(cap);
 
     // Allocate memory
-    auto val = vm.alloc(numBytes, TAG_OBJECT);
+    val = vm.alloc(numBytes, TAG_OBJECT);
     auto ptr = (refptr)val;
 
     // Set the object capacity
     *(uint32_t*)(ptr + OF_CAP) = cap;
-
     // TODO: init object shape, when shapes actually implemented!
 
     // No field initialization necessary
-
-    return val;
 }
 
 Object::Object(Value value)
@@ -623,7 +637,7 @@ void Object::setField(String name, Value value)
         assert (cap > 0);
         auto newCap = 2 * cap;
         //std::cout << "extending object capacity from " << cap << " to " << newCap << std::endl;
-        auto newObj = Object::newObject(newCap);
+        auto newObj = Object(newCap);
 
         // Copy properties to the new object
         for (auto itr = ObjFieldItr(*this); itr.valid(); itr.next())
@@ -874,6 +888,11 @@ Value StringPool::getString(std::string str)
     return iter->second;
 }
 
+void StringPool::removeString(std::string str)
+{
+    pool.erase(str);
+}
+
 Value StringPool::newString(std::string str)
 {
     auto len = str.length();
@@ -1021,7 +1040,7 @@ void testRuntime()
     assert (arr3.length() == 2);
 
     // Objects
-    auto obj = Object::newObject();
+    auto obj = Object();
     assert (!obj.hasField("foo"));
     obj.setField("foo", Value::ONE);
     obj.setField("bar", Value::TWO);
