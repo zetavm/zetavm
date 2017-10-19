@@ -1106,6 +1106,12 @@ ASTStmt* parseStmt(Input& input)
 
         auto initExpr = parseExpr(input);
 
+        if (auto funExpr = dynamic_cast<FunExpr*>(initExpr)) {
+            if (funExpr->name == "") {
+                funExpr->name = ident;
+            }
+        }
+
         input.expectWS(";");
 
         return new VarStmt(ident, initExpr);
