@@ -1145,6 +1145,24 @@ void throwExc(
     auto itr = instrMap.find(throwInstr);
     assert (itr != instrMap.end());
     auto curFun = itr->second->fun;
+   
+    //Get current position information
+    Object stackEntry = Object::newObject(2);
+
+    if (!curFun.hasField("name"))
+    {
+        stackEntry.setField("fun_name", String("unnamed function"));
+    }
+    else
+    {
+        stackEntry.setField("fun_name", curFun.getField("name"));
+    }
+    Value srcPos = getSrcPos(throwInstr);
+    if (srcPos.isObject())
+    {
+        stackEntry.setField("src_pos", getSrcPos(throwInstr));
+    }
+    stacktrace.push(stackEntry);
 
     // Until we are done unwinding the stack
     for (;;)
