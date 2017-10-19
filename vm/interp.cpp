@@ -1137,10 +1137,9 @@ Value getSrcPos(uint8_t* instrPtr)
 /// Implementation of the throw instruction
 void throwExc(
     uint8_t* throwInstr,
-    Value excVal
+    Object excVal
 )
 {
-    Array stacktrace {10};
     // Get the current function
     auto itr = instrMap.find(throwInstr);
     assert (itr != instrMap.end());
@@ -1162,7 +1161,7 @@ void throwExc(
     {
         stackEntry.setField("src_pos", getSrcPos(throwInstr));
     }
-    stacktrace.push(stackEntry);
+    excVal.getFieldArr("stack").push(stackEntry);
 
     // Until we are done unwinding the stack
     for (;;)
@@ -1187,50 +1186,8 @@ void throwExc(
         if (retVer == nullptr)
         {
             //std::cout << "Uncaught exception" << std::endl;
-
-            std::string errMsg;
-
-            if (excVal.isObject())
-            {
-                auto excObj = Object(excVal);
-
-                if (excObj.hasField("src_pos"))
-                {
-                    auto srcPosVal = excObj.getField("src_pos");
-                    errMsg += posToString(srcPosVal) + " - ";
-                }
-
-                if (excObj.hasField("msg"))
-                {
-                    auto errMsgVal = excObj.getField("msg");
-                    errMsg += errMsgVal.toString();
-                }
-                else
-                {
-                    errMsg += "uncaught user exception object";
-                }
-            }
-            else
-            {
-                errMsg = excVal.toString();
-            }
-            for (size_t i = 0; i < stacktrace.length(); ++i)
-            {
-                Object entry = stacktrace.getElem(i);
-                errMsg += "\nin ";
-                errMsg += (std::string)entry.getField("fun_name");
-                errMsg += " at ";
-                if (entry.hasField("src_pos"))
-                {
-                    errMsg += posToString(entry.getField("src_pos"));
-                }
-                else 
-                {
-                    errMsg += "unknown location";
-                }
-            }
-
-            throw RunError(errMsg);
+            
+            throw RunError(excVal);
         }
 
         // Find the info associated with the return address
@@ -1253,7 +1210,7 @@ void throwExc(
         {
             stackEntry.setField("src_pos", callInstr.getField("src_pos"));
         }
-        stacktrace.push(stackEntry);
+        excVal.getFieldArr("stack").push(stackEntry);
 
         // Get the function associated with the return address
         curFun = retEntry.retVer->fun;
@@ -1438,15 +1395,16 @@ __attribute__((always_inline)) inline void hostCall(
         }
     }
 
-    catch (RunError err)
+    catch (RunError& err)
     {
         // Pop the arguments from the stack
         stackPtr += numArgs;
 
-        // Create an exception object
-        auto excVal = Object::newObject();
-        auto errStr = String(err.toString());
-        excVal.setField("msg", errStr);
+        auto excVal = err.getNestedObject();
+
+        Object stackEntry = Object::newObject(1);
+        stackEntry.setField("fun_name", String(hostFn->getName() + " (host function)"));
+        excVal.getFieldArr("stack").push(stackEntry); 
 
         auto retEntry = retAddrMap[retVer];
 
@@ -2324,7 +2282,10 @@ Value execCode()
             {
                 // Pop the exception value
                 auto excVal = popVal();
-                throwExc((uint8_t*)&op, excVal);
+                Object throwObj = Object::newObject(2);
+                throwObj.setField("thrown_value", excVal);
+                throwObj.setField("stack", Array(10));
+                throwExc((uint8_t*)&op, throwObj);
             }
             break;
 

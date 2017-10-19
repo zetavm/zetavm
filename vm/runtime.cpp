@@ -757,6 +757,54 @@ std::string posToString(Value srcPos)
     );
 }
 
+
+std::string RunError::toString() 
+{
+    std::string errMsg;
+    Value thrownValue = val.getField("thrown_value");
+    if (thrownValue.isObject())
+    {
+        auto excObj = Object(thrownValue);
+
+        if (excObj.hasField("src_pos"))
+        {
+            auto srcPosVal = excObj.getField("src_pos");
+            errMsg += posToString(srcPosVal) + " - ";
+        }
+
+        if (excObj.hasField("msg"))
+        {
+            auto errMsgVal = excObj.getField("msg");
+            errMsg += errMsgVal.toString();
+        }
+        else
+        {
+            errMsg += "uncaught user exception object";
+        }
+    }
+    else
+    {
+        errMsg = thrownValue.toString();
+    }
+    Array stacktrace = val.getFieldArr("stack");
+    for (size_t i = 0; i < stacktrace.length(); ++i)
+    {
+        Object entry = stacktrace.getElem(i);
+        errMsg += "\nin ";
+        errMsg += (std::string)entry.getField("fun_name");
+        errMsg += " at ";
+        if (entry.hasField("src_pos"))
+        {
+            errMsg += posToString(entry.getField("src_pos"));
+        }
+        else 
+        {
+            errMsg += "unknown location";
+        }
+    }
+    return errMsg;
+}
+
 /// Unit test for the runtime
 void testRuntime()
 {
@@ -831,3 +879,6 @@ void testRuntime()
         fieldStr += itr.get();
     assert (fieldStr == "foobar");
 }
+
+
+
