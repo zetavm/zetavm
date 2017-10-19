@@ -141,7 +141,7 @@ public:
         out += "  params:" + paramsStr + ",\n";
         out += "  num_locals:" + std::to_string(numLocals) + ",\n";
         if (name != "") {
-            out += "  name: \"" + name + "\",\n";
+            out += "  name: \'" + name + "\',\n";
         }
         out += "};\n\n";
 
