@@ -1140,6 +1140,8 @@ void throwExc(
     Value excVal
 )
 {
+    //std::cout << "Entering throwExc" << std::endl;
+
     // Get the current function
     auto itr = instrMap.find(throwInstr);
     assert (itr != instrMap.end());
@@ -1163,6 +1165,10 @@ void throwExc(
 
         assert (retAddr.getTag() == TAG_RAWPTR);
         auto retVer = (BlockVersion*)retAddr.getWord().ptr;
+
+        // Update the stack and frame pointer
+        stackPtr = (Value*)prevStackPtr.getWord().ptr;
+        framePtr = (Value*)prevFramePtr.getWord().ptr;
 
         // If we are at the top level
         if (retVer == nullptr)
@@ -1205,10 +1211,6 @@ void throwExc(
 
         // Get the function associated with the return address
         curFun = retEntry.retVer->fun;
-
-        // Update the stack and frame pointer
-        stackPtr = (Value*)prevStackPtr.getWord().ptr;
-        framePtr = (Value*)prevFramePtr.getWord().ptr;
 
         // If there is an exception handler
         if (retEntry.excVer)
@@ -2314,8 +2316,8 @@ Value callFun(Object fun, ValueVec args)
     // Store the stack size before the call
     auto preCallSz = stackSize();
 
-    // Save the previous instruction pointer
-    pushVal(Value((refptr)instrPtr, TAG_RAWPTR));
+    // Store the instruction pointer before the call
+    auto prevInstrPtr = instrPtr;
 
     // Save the previous stack and frame pointers
     auto prevStackPtr = stackPtr;
@@ -2358,7 +2360,7 @@ Value callFun(Object fun, ValueVec args)
     auto retVal = execCode();
 
     // Restore the previous instruction pointer
-    instrPtr = (uint8_t*)popVal().getWord().ptr;
+    instrPtr = prevInstrPtr;
 
     // Check that the stack size matches what it was before the call
     if (stackSize() != preCallSz)
