@@ -83,6 +83,8 @@ For more information, see the documentation in the [docs](docs) directory:
 
 - [Packages included with ZetaVM](docs/packages.md)
 
+- [Plush Language Guide](docs/plush_guide.md)
+
 - [Execution Model and Semantics](docs/exec_model.md)
 
 - [Contributing to ZetaVM](docs/contributing.md)
