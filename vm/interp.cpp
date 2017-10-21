@@ -236,6 +236,13 @@ template <typename T> void writeCode(T val)
     assert (codeHeapAlloc <= codeHeapLimit);
 }
 
+/// Deny writing Value objects in the code heap,
+/// because they are managed by the garbage collector
+void writeCode(Value val)
+{
+    assert (false && "don't write Value objects into the code heap");
+}
+
 /// Return a pointer to a value to read from the code stream
 template <typename T> __attribute__((always_inline)) inline T& readCode()
 {
@@ -510,14 +517,15 @@ void compile(BlockVersion* version)
             {
                 i += 1;
                 writeCode(GET_FIELD_IMM);
-                writeCode((String)val);
+                writeCode((refptr)val);
                 writeCode(size_t(0));
                 continue;
             }
 
             numTmps += 1;
             writeCode(PUSH);
-            writeCode(val);
+            writeCode(val.getWord());
+            writeCode(val.getTag());
             continue;
         }
 
@@ -1081,7 +1089,8 @@ void compile(BlockVersion* version)
             // Push the import function on the stack
             numTmps += 1;
             writeCode(PUSH);
-            writeCode(Value((refptr)&importFn, TAG_HOSTFN));
+            writeCode((refptr)&importFn);
+            writeCode(TAG_HOSTFN);
 
             // Call the import function
             genCall(
@@ -1455,8 +1464,9 @@ Value execCode()
         {
             case PUSH:
             {
-                auto val = readCode<Value>();
-                pushVal(val);
+                auto word = readCode<Word>();
+                auto tag = readCode<Tag>();
+                pushVal(Value(word, tag));
             }
             break;
 
@@ -1987,7 +1997,9 @@ Value execCode()
 
             case GET_FIELD_IMM:
             {
-                auto& fieldName = readCode<String>();
+                refptr nameStrPtr = readCode<refptr>();
+                String fieldName = Value(nameStrPtr, TAG_STRING);
+
                 auto obj = popObj();
 
                 // Get the cached slot index
