@@ -81,9 +81,9 @@ For more information, see the documentation in the [docs](docs) directory:
 
 - [Design and Guiding Principles of ZetaVM](docs/design.md)
 
-- [Packages included with ZetaVM](docs/packages.md)
-
 - [Plush Language Guide](docs/plush_guide.md)
+
+- [Packages included with ZetaVM](docs/packages.md)
 
 - [Execution Model and Semantics](docs/exec_model.md)
 

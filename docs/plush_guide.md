@@ -64,13 +64,47 @@ Another important thing to note is that there is no special function type.
 Functions, in ZetaVM, are simply objects containing bytecode. If an object
 contains valid bytecode, it is callable as a function.
 
-## TODO
+## Objects and Prototypal Inheritance
 
-TODO:
-- loops
-- function and method calls
-- objects, prototypal inheritance
-- idiv
-- import, local imports
-- standard library
-- inline instructions
+Objects in Plush work similarly to those of JavaScript, with the differences
+that you cannot delete properties, and objects can only be indexed with
+string keys. Also note that it is not recommended to use objects as hash
+maps, you should use the `std/map` library for this purpose.
+
+Similarly to JS, the Plush language supports prototypal inheritance. However,
+Plush does not have a `new` operator. This [example](tests/plush/obj_ext.pls)
+shows how to create an object which inherits from another object.
+
+## Functions and Method Calls
+
+The first thing to note is that Plush, being very minimalistic, has no
+variadic function calls and no default argument values.
+
+Similarly to the Lua language, Plush uses
+[different syntax](/tests/plush/method_calls.pls) for regular
+function calls and for method calls. It makes the `this` argument explicit,
+and forces you to make function calls explicit as well using the `obj:method()`
+method call operator. This is to avoid the issue that
+JavaScript faces regarding shadowing of the `this` argument.
+
+## The Import Expression
+
+TODO: lazily importing, local imports
+
+## Standard Library
+
+See the [packages](docs/packages.md) documentation for a list and
+description of packages included with ZetaVM.
+
+## Peculiarities
+
+The only kind of loop supported by Plush is the `for` loop. You can
+implement endless loops by writing `for (;;) {}`, as in C.
+
+By default, the division operator produces floating-point values. If you
+wish to perform integer divison, use the `math.idiv(x,y)` function defined
+in the `std/math` package.
+
+## Inline Bytecode Instructions
+
+TODO
