@@ -2,7 +2,6 @@
 
 var time = import "core/time/0";
 var t = time.get_time_millis();
-
 assert (t >= 0);
 
 // test get_local_time outputs
