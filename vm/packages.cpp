@@ -330,7 +330,7 @@ namespace core_time_0
         time(&rawtime);
         timeinfo = localtime(&rawtime);
 
-        auto obj = Object::newObject();
+        auto obj = Object();
         obj.setField("sec", Value::int32(timeinfo->tm_sec));
         obj.setField("min", Value::int32(timeinfo->tm_min));
         obj.setField("hour", Value::int32(timeinfo->tm_hour));

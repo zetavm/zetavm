@@ -104,6 +104,8 @@ Value::~Value() {
         {   
             next->prev = prev;
         }
+        prev = NULL;
+        next = NULL;
     }
 }
 
@@ -151,30 +153,26 @@ Value& Value::operator= (const Value& val)
         {   
             next->prev = prev;
         }
+        prev = NULL;
+        next = NULL;
     } 
     tag = val.getTag();
     word = val.getWord();
     return *this;
 }
 
-bool Value::isMarked() const 
+bool isMarked(refptr obj)
 { 
-    assert (isPointer());
-    refptr obj = this->word.ptr;
     auto header = *(uint64_t*)obj;
     return (header & HEADER_MSK_MARK);
 }
-void Value::setMark() 
+void setMark(refptr obj) 
 { 
-    assert (isPointer());
-    refptr obj = this->word.ptr;
     auto header = *(uint64_t*)obj;
     *(uint64_t*)(obj) = header | HEADER_MSK_MARK;
 }
-void Value::clearMark()
+void clearMark(refptr obj)
 {
-    assert (isPointer());
-    refptr obj = this->word.ptr;
     auto header = *(uint64_t*)obj;
     *(uint64_t*)(obj) = header & (~HEADER_MSK_MARK);
 }
@@ -226,8 +224,9 @@ void VM::mark()
 {
     markStackValues();
     Value* val = head;
+    std::cout << "start" << std::endl;
     while (val != NULL)
-    {
+    {   
         markValues(*val);
         val = val->next;
     }
@@ -243,44 +242,43 @@ void VM::markValues(Value& root)
         refptr ptr = toMark.back();
         toMark.pop_back();
         Tag tag = *(Tag*)ptr;
-        Value root = Value(ptr, tag);
         // std::cout << tagToStr(tag) << std::endl;
-        if (isGCRoot(root.getTag()))
+        if (isGCRoot(tag))
         {
             // If this node was previously visited, skip it
-            if (root.isMarked())
+            if (isMarked(ptr))
                 continue;
             marked++;
             // Mark the node as visited
-            root.setMark();
+            setMark(ptr);
         }
-        if (root.getTag() == TAG_OBJECT)
+        if (tag == TAG_OBJECT)
         {
             // std::cout << "obj" << std::endl;
-            Object objRoot = (Object)(root);
+            Object objRoot = (Object)Value(ptr, tag);;
             for (auto itr = ObjFieldItr(objRoot); itr.valid(); itr.next())
             {
                 auto fieldName = itr.get();
                 Value field = objRoot.getField(fieldName);
                 Tag tag = field.getTag();
-                if (tag == TAG_ARRAY || tag == TAG_OBJECT || tag == TAG_STRING)
+                if (isGCRoot(tag))
                     toMark.push_back((refptr)field);
             }
         }
-        else if (root.getTag() == TAG_ARRAY) 
+        else if (tag == TAG_ARRAY) 
         {   
-            Array arrRoot = (Array)(root);
+            Array arrRoot = (Array)Value(ptr, tag);
             // std::cout << "arr" << std::endl;
             auto len = arrRoot.length();
             for(size_t i = 0; i < len; i++)
             {
                 Value field = arrRoot.getElem(i);
                 Tag tag = field.getTag();
-                if (tag == TAG_ARRAY || tag == TAG_OBJECT || tag == TAG_STRING) 
+                if (isGCRoot(tag)) 
                     toMark.push_back((refptr)field);
             }
         }
-        if (root.getTag() == TAG_OBJECT || root.getTag() == TAG_ARRAY)
+        if (tag == TAG_OBJECT || tag == TAG_ARRAY)
         {
             auto header = *(uint64_t*)ptr;
             bool hasNextPtr = header & HEADER_MSK_NEXT;
@@ -309,13 +307,12 @@ void VM::sweep()
                 String str = Value(ptr, tag);
                 stringPool.removeString((std::string)str);
             }
-            free(ptr);
+            *(uint64_t*)(ptr) = header & (~HEADER_MSK_NEXT);
+            // free(ptr);
         } 
         else 
         {
-            Tag tag = *(Tag*)ptr;
-            Value root = Value(ptr, tag);
-            root.clearMark();
+            clearMark(ptr);
             values.push_back(ptr);
         }
     }

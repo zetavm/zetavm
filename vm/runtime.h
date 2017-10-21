@@ -97,9 +97,6 @@ public:
 
     Word getWord() const { return word; }
     Tag getTag() const { return tag; }
-    bool isMarked() const;
-    void setMark();
-    void clearMark();
 
 
     bool isPointer() const;
