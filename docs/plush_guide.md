@@ -72,7 +72,7 @@ string keys. Also note that it is not recommended to use objects as hash
 maps, you should use the `std/map` library for this purpose.
 
 Similarly to JS, the Plush language supports prototypal inheritance. However,
-Plush does not have a `new` operator. This [example](tests/plush/obj_ext.pls)
+Plush does not have a `new` operator. This [example](/tests/plush/obj_ext.pls)
 shows how to create an object which inherits from another object.
 
 ## Functions and Method Calls
@@ -93,7 +93,7 @@ TODO: lazily importing, local imports
 
 ## Standard Library
 
-See the [packages](docs/packages.md) documentation for a list and
+See the [packages](/docs/packages.md) documentation for a list and
 description of packages included with ZetaVM.
 
 ## Peculiarities
