@@ -107,4 +107,24 @@ in the `std/math` package.
 
 ## Inline Bytecode Instructions
 
-TODO
+Plush allows you to directly use specific bytecode instructions specified by
+ZetaVM in your code. This is useful to access features of Zeta not directly
+exposed by Plush, and to implement higher-level features in terms of
+low-level constructs.
+
+For example, the VM has an instruction to convert `int32` values to `float32`:
+
+```
+var floatVal = $i32_to_f32(35);
+```
+
+A potential pitfall is that Plush semantically distinguishes between
+bytecode instructions used as expressions, versus those used as statements.
+Namely, using a bytecode expression as a statement assumes that the instruction
+produces no output on the temporary stack, whereas using it as an expression
+will pop the value off the temporary stack. The VM will likely crash if
+you get this wrong.
+
+Note that directly using bytecode instructions is not recommended if you
+can avoid it. You should ideally use functions from the standard library
+that provide equivalent functionality if possible.
