@@ -119,11 +119,20 @@ namespace core_vm_0
     }
 
     /**
-    Get the number of garbage collections performed so far
+    Get the number of garbage collections performed so far.
     */
     Value get_gc_count()
     {
         assert (false && "implement me");
+    }
+
+    /**
+    Manually trigger a garbage collection. Used for testing.
+    */
+    Value gc_collect()
+    {
+        assert (false && "implement me");
+        return Value::UNDEF;
     }
 
     Value get_pkg()
@@ -134,6 +143,7 @@ namespace core_vm_0
         setHostFn(exports, "parse"        , 1, (void*)parse);
         setHostFn(exports, "serialize"    , 2, (void*)serialize);
         setHostFn(exports, "get_gc_count" , 0, (void*)get_gc_count);
+        setHostFn(exports, "gc_collect"   , 0, (void*)gc_collect);
         return exports;
     }
 };

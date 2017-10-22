@@ -1,4 +1,6 @@
-var o = {}
+#language "lang/plush/0"
+
+var o = {};
 
 // Extend the object
 o.x = 1;
@@ -7,7 +9,8 @@ o.z = 3;
 o.w = 4;
 
 // Trigger a collection
-$ir_gc_collect(0);
+var vm = import "core/vm/0";
+vm.gc_collect();
 
 assert (
     o.x == 1 &&
