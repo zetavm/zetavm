@@ -48,6 +48,11 @@ var testPushPop = function ()
     assert (v1 == 7);
     assert (v0 == 3);
     assert (arr.length == 0);
+
+    var arr = [0, 1, 2];
+    var v = arr:popFront();
+    assert (v == 0);
+    assert (arr[0] == 1);
 };
 
 var testIndexOf = function(arr)

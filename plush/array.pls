@@ -113,6 +113,22 @@ exports.pop = function (arr)
     return $array_pop(arr);
 };
 
+// Remove a value from the front of an array
+exports.popFront = function (arr)
+{
+    if (arr.length == 0)
+        throw "cannot pop value from empty array";
+
+    var frontVal = arr[0];
+
+    for (var i = 0; i < arr.length - 1; i += 1)
+        arr[i] = arr[i+1];
+
+    var endVal = $array_pop(arr);
+
+    return frontVal;
+};
+
 /// Concatenates two arrays a and b into new array
 /// and returns it. It does not modify either a or b.
 exports.concat = function(a, b)
@@ -287,6 +303,7 @@ exports.prototype = {
     slice: exports.slice,
     push: exports.push,
     pop: exports.pop,
+    popFront: exports.popFront,
     concat: exports.concat,
     append: exports.append,
     replace: exports.replace,
