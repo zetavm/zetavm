@@ -118,6 +118,14 @@ namespace core_vm_0
         return String(str);
     }
 
+    /**
+    Get the number of garbage collections performed so far
+    */
+    Value get_gc_count()
+    {
+        assert (false && "implement me");
+    }
+
     Value get_pkg()
     {
         auto exports = Object::newObject(32);
@@ -125,6 +133,7 @@ namespace core_vm_0
         setHostFn(exports, "load"         , 1, (void*)load);
         setHostFn(exports, "parse"        , 1, (void*)parse);
         setHostFn(exports, "serialize"    , 2, (void*)serialize);
+        setHostFn(exports, "get_gc_count" , 0, (void*)get_gc_count);
         return exports;
     }
 };
