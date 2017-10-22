@@ -1,41 +1,39 @@
-function theLenFunc(str)
+#language "lang/plush/0"
+
+var vm = import "core/vm/0";
+
+var theLenFunc = function (str)
 {
     return str.length;
-}
+};
 
-function test()
+var test = function ()
 {
     var liveObj = { v:3 };
 
     theLenFunc('foo');
 
     // Trigger a collection
-    $ir_gc_collect(0);
+    vm.gc_collect();
 
     theLenFunc('foobar');
 
-    if (typeof liveObj !== 'object')
-        return 1;
+    assert (typeof liveObj == 'object');
 
     // Test that our live object hasn't been corrupted
-    if (liveObj.v !== 3)
-        return 2;
+    assert (liveObj.v == 3);
 
     // Test that the string table still works properly
-    if ('foo' + 'bar' !== 'foobar')
-        return 3;
+    assert ('foo' + 'bar' == 'foobar');
 
     var theNewObj = { x:1 };
 
     // Test that new objects can still be created and manipulated
-    if (theNewObj.x !== 1)
-        return 4;
+    assert (theNewObj.x == 1);
 
     // Test that linked strings are preserved
     var len = theLenFunc('foobarbif');
-    if (len !== 9)
-        return 5;
+    assert (len == 9);
+};
 
-    return 0;
-}
-
+test();

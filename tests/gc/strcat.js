@@ -1,4 +1,4 @@
-function test()
+var test = function ()
 {
     $rt_shrinkHeap(40000);
 
@@ -12,9 +12,8 @@ function test()
     {
         var str = strI + (n++) + strI;
 
-        if (typeof str !== 'string')
-            return 1;
+        assert (typeof str == 'string');
     }
 
     return 0;
-}
+};
