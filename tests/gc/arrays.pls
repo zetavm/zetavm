@@ -11,5 +11,5 @@ var gcCount = vm.get_gc_count();
 
 for (; vm.get_gc_count() < gcCount + 2; )
 {
-    var arr = array.new(ARR_LEN);
+    var arr = array.new(ARR_LEN, 0);
 }

@@ -87,9 +87,25 @@ and forces you to make function calls explicit as well using the `obj:method()`
 method call operator. This is to avoid the issue that
 JavaScript faces regarding shadowing of the `this` argument.
 
+There are no closures in Plush. This is again done to minimize
+implementation complexity. However, Plush does have function expressions,
+and the `std/peval` library can be used to do [currying and partial
+evaluation](/tests/plush/peval.pls), which can be used to create functions with bound variables
+which act like closures.
+
 ## The Import Expression
 
-TODO: lazily importing, local imports
+In Plush, `import "package_name"` is an expression. This makes it possible
+to import code lazily, that is, when needed, as opposed to always at the
+beginning of source files. This is useful in some cases to minimize overhead.
+
+Plush will try to find packages in its own [/packages](/packages]
+directory by default. It's also possible to perform relative to the current
+working directory by preceding the package path with `./`, for example:
+
+```
+var myPackage = import "./local/package/file.pls";
+```
 
 ## Standard Library
 
