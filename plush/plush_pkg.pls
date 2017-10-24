@@ -496,13 +496,6 @@ function (x,y,z) <body_expr>
 */
 var parseFunExpr = function (input)
 {
-    // If a function name was specified
-    var name = '';
-    if (!input:nextWS("("))
-    {
-        name = input:parseIdent();
-    }
-
     input:expectWS("(");
 
     var params = [];
@@ -530,7 +523,7 @@ var parseFunExpr = function (input)
     input:expectWS("{");
     var body = parseBlockStmt(input, "}");
 
-    return FunExpr::{ name:name, body:body, params:params };
+    return FunExpr::{ body:body, params:params };
 };
 
 /**

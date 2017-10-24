@@ -196,7 +196,6 @@ var testParser = function ()
     // Function expression
     testParse("function () { return 0; }; ");
     testParse("function (x) {return x;};");
-    testParse("function foo(x) { return x; };");
     testParse("function (x,y) { return x; };");
     testParse("function (x,y,) { return x; };");
     testParse("function (x,y) { return x+y; };");

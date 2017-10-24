@@ -736,6 +736,7 @@ std::string tagToStr(Tag tag)
         case TAG_OBJECT:    return "object";
         case TAG_ARRAY:     return "array";
         case TAG_HOSTFN:    return "hostfn";
+        case TAG_RAWPTR:    return "rawptr";
         default:
         assert (false);
     }
