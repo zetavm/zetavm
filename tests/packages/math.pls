@@ -101,3 +101,4 @@ assert(math.pow(-4, 3) == -64);
 assert(math.pow(1, -1) == 1);
 assert(math.pow(2, -1) == 0.5f);
 assert(math.pow(-1, -3) == -1);
+assert(math.pow(2.0f, 3.0f) == 8.0f);
