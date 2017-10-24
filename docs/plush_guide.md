@@ -99,7 +99,7 @@ In Plush, `import "package_name"` is an expression. This makes it possible
 to import code lazily, that is, when needed, as opposed to always at the
 beginning of source files. This is useful in some cases to minimize overhead.
 
-Plush will try to find packages in its own [/packages](/packages]
+Plush will try to find packages in its own [/packages](/packages)
 directory by default. It's also possible to perform relative to the current
 working directory by preceding the package path with `./`, for example:
 
