@@ -92,6 +92,7 @@ fp_assert (math.fmod(1, 1), 0, 'fmod');
 
 assert (math.idiv(5, 2) == 2);
 
+// ints
 assert(math.pow(4, 0) == 1);
 assert(math.pow(-4, 0) == 1);
 assert(math.pow(4, 1) == 4);
@@ -101,4 +102,14 @@ assert(math.pow(-4, 3) == -64);
 assert(math.pow(1, -1) == 1);
 assert(math.pow(2, -1) == 0.5f);
 assert(math.pow(-1, -3) == -1);
-assert(math.pow(2.0f, 3.0f) == 8.0f);
+
+// floats
+assert(math.pow(4.0f, 0.0f) == 1.0f);
+assert(math.pow(-4.0f, 0.0f) == 1.0f);
+assert(math.pow(4.0f, 1.0f) == 4.0f);
+assert(math.pow(-4.0f, 1.0f) == -4.0f);
+assert(math.pow(4.0f, 3.0f) == 64.0f);
+assert(math.pow(-4.0f, 3.0f) == -64.0f);
+assert(math.pow(1.0f, -1.0f) == 1.0f);
+assert(math.pow(2.0f, -1.0f) == 0.5f);
+assert(math.pow(-1.0f, -3.0f) == -1.0f);
