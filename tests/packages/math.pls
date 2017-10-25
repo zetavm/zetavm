@@ -85,6 +85,11 @@ assert (math.ceil(0.0f) == 0);
 assert (math.ceil(-3.3f) == -3);
 assert (math.ceil(-3.0f) == -3);
 
+fp_assert (math.fmod(1.0f, 0.2f), 0, 'fmod');
+fp_assert (math.fmod(1.0f, 0.3f), 0.1f, 'fmod');
+fp_assert (math.fmod(1, 0.2f), 0, 'fmod');
+fp_assert (math.fmod(1, 1), 0, 'fmod');
+
 assert (math.idiv(5, 2) == 2);
 
 assert(math.pow(4, 0) == 1);

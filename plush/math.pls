@@ -99,6 +99,17 @@ exports.fmod = function (x, y)
         var quot = x / y;
         var iquot = $f32_to_i32(quot);
         var fmod = x - iquot * y;
+        return fmod;
+    }
+
+    if (typeof x == "int32")
+    {
+        return exports.fmod($i32_to_f32(x), y);
+    }
+
+    if (typeof y == "int32")
+    {
+        return exports.fmod(x, $i32_to_f32(y));
     }
 
     assert (
@@ -160,14 +171,14 @@ exports.ceil = function (x)
 };
 
 
-exports.pow = function (base, exp) 
+exports.pow = function (base, exp)
 {
     // Anything to the power of zero is one.
     if (exp == 0)
     {
         return 1;
     }
-    
+
     if (typeof base == "int32" && typeof exp == "int32")
     {
         var recip = false;
@@ -177,7 +188,7 @@ exports.pow = function (base, exp)
             exp = -exp; // Make positive.
             recip = true;
         }
-        
+
         for (;exp != 0;)
         {
             if ( (exp & 1) != 0)
@@ -187,7 +198,7 @@ exports.pow = function (base, exp)
             exp >>= 1;
             base *= base;
         }
-           
+
         if (recip)
         {
             return 1.0f / result;
@@ -197,7 +208,7 @@ exports.pow = function (base, exp)
             return result;
         }
     }
-    
+
     assert(
         false,
         "unhandled type in pow function"
