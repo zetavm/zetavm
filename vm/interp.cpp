@@ -1820,7 +1820,13 @@ Value execCode()
             case EXP_F32:
             {
                 float arg = popFloat32();
-                pushVal(Value::float32(exp(arg)));
+                arg = exp(arg);
+
+                if (arg == HUGE_VAL || arg == -HUGE_VAL) {
+                    pushVal(Value::UNDEF);
+                } else {
+                    pushVal(Value::float32(arg));
+                }
             }
             break;
 
