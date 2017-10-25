@@ -13,7 +13,7 @@ Standard Library
 | [`std/parsing/0`](/plush/parsing.pls)             | String and file parsing utilities                  | [Plush package](/plush/plush_pkg.pls), [CSV parser](/packages/std/csv/0/package) |
 | [`std/peval/0`](/packages/std/peval/0/package)    | Functional-style partial evaluation                | [Package tests](/tests/packages/peval.pls), [audio render](/examples/audio_render.pls) |
 | [`std/random/0`]()                                | Random number generation and utilities             | [Package tests](/tests/packages/random.pls) |
-| [`std/string/0`](/plush/string.pls)               | String utility functions                           | [Package tests](/tests/packages/strings.pls) |
+| [`std/string/0`](/plush/string.pls)               | String utility functions                           | [Package tests](/tests/packages/string.pls) |
 
 Language Packages
 -----------------
