@@ -4,10 +4,10 @@
 // source code (.pls files) into Zeta bytecode. The resulting bytecode
 // is not written to a file, but instead generated directly in memory.
 //
-// ZetaVM loads this package and executes it when finds the `language`
-// directive at the beginning of a source file refers to it. Parsing is
-// then delegated to this package by calling the `exports.parse_input`
-// function defined later in this file.
+// ZetaVM loads the Plush package when the `#language` directive at the
+// beginning of a source file refers to it. Parsing is then delegated to
+// this package by calling the `exports.parse_input` function defined
+// later in this file.
 
 // Parsing utilities library
 var parsing = import "std/parsing/0";
