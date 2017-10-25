@@ -211,7 +211,7 @@ exports.pow = function (base, exp)
 
     if (typeof base == "float32" && typeof exp == "float32")
     {
-        return $exp_f32(base);
+        return $pow_f32(base, exp);
     }
     
     assert(

@@ -1747,6 +1747,7 @@ Value execCode()
                 auto arg0 = popFloat32();
                 pushVal(Value::float32(pow(arg0, arg1)));
             }
+            break;
 
             case LT_F32:
             {
