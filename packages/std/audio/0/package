@@ -266,7 +266,7 @@ var C4_NOTE_NO = 71;
 /**
 Mapping from note names to pitch classes
 */
-/*var NOTE_NAME_PC = {
+var NOTE_NAME_PC = {
     'C' : 0,
     'C#': 1,
     'D' : 2,
@@ -279,7 +279,7 @@ Mapping from note names to pitch classes
     'A' : 9,
     'A#': 10,
     'B' : 11
-};*/
+};
 
 /**
 Mapping from pitch classes to note names
@@ -379,26 +379,10 @@ Note.nameToNo = function (name)
 
     var octNo = string.parseInt(numPart, 10);
 
-    /*
-    var keyNo;
-    switch (namePart)
-    {
-        case "C":   keyNo = 0;  break;
-        case "C#":  keyNo = 1;  break;
-        case "D":   keyNo = 2;  break;
-        case "D#":  keyNo = 3;  break;
-        case "E":   keyNo = 4;  break;
-        case "F":   keyNo = 5;  break;
-        case "F#":  keyNo = 6;  break;
-        case "G":   keyNo = 7;  break;
-        case "G#":  keyNo = 8;  break;
-        case "A":   keyNo = 9;  break;
-        case "A#":  keyNo = 10; break;
-        case "B":   keyNo = 11; break;
-        default:
-        error('invalid key name: ' + namePart);
-    }
-    */
+    if (!(namePart in NOTE_NAME_PC))
+        throw 'invalid key name';
+
+    var keyNo = NOTE_NAME_PC[namePart];
 
     // Compute the note number
     var noteNo = (octNo + 1) * NOTES_PER_OCTAVE + keyNo;

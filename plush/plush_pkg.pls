@@ -463,15 +463,27 @@ var parseObjExpr = function (input)
             break;
         }
 
-        // Parse the property name
-        var ident = input:parseIdent();
+        // Parse the field name
+        var fieldName = false;
+        if (input:matchWS('"'))
+        {
+            fieldName = input:parseStringLit('"');
+        }
+        else if (input:matchWS('\''))
+        {
+            fieldName = input:parseStringLit('\'');
+        }
+        else
+        {
+            fieldName = input:parseIdent();
+        }
+
+        fieldNames:push(fieldName);
 
         input:expectWS(":");
 
         // Parse an expression
         var expr = parseExpr(input);
-
-        fieldNames:push(ident);
         valExprs:push(expr);
 
         // If this is the end of the list

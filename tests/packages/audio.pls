@@ -11,4 +11,7 @@ var C4 = audio.Note.get(71);
 assert (C4:getPC() == 11);
 assert (C4:getOctNo() == 4);
 
-// TODO: test consonance(C4, C4)
+var A4 = audio.Note.get('A4');
+assert (A4:getOctNo() == 4);
+
+//assert (audio.consonance(A4, A4) > 0);
