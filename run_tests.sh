@@ -40,7 +40,6 @@ set -x
 ./cplush --test
 
 ./plush.sh tests/plush/trivial.pls
-./plush.sh tests/plush/math.pls
 ./plush.sh tests/plush/simple_exprs.pls
 ./plush.sh tests/plush/identfn.pls
 ./plush.sh tests/plush/fib.pls
@@ -50,7 +49,6 @@ set -x
 ./plush.sh tests/plush/for_loop_break.pls
 ./plush.sh tests/plush/line_count.pls
 ./plush.sh tests/plush/array_push.pls
-./plush.sh tests/plush/array.pls
 ./plush.sh tests/plush/fun_locals.pls
 ./plush.sh tests/plush/method_calls.pls
 ./plush.sh tests/plush/obj_ext.pls
@@ -86,15 +84,6 @@ set -x
 ./zeta tests/plush/catch_import_missing.pls
 ./zeta tests/plush/cmdline_args.pls -- foo bar
 
-# Packages included with ZetaVM
-./zeta tests/plush/time.pls
-./zeta tests/plush/array.pls
-./zeta tests/plush/map.pls
-./zeta tests/plush/math.pls
-./zeta tests/plush/peval.pls
-./zeta tests/plush/random.pls
-./zeta tests/plush/string.pls
-
 # Regression tests
 ./zeta tests/plush/regress_cr_char.pls
 ./zeta tests/plush/regress_exc_var.pls
@@ -115,6 +104,18 @@ set -x
 
 # Image parsing and serialization tests
 ./zeta tests/plush/serialize.pls
+
+##############################################################################
+# Packages included with ZetaVM
+##############################################################################
+
+./zeta tests/packages/time.pls
+./zeta tests/packages/array.pls
+./zeta tests/packages/map.pls
+./zeta tests/packages/math.pls
+./zeta tests/packages/peval.pls
+./zeta tests/packages/random.pls
+./zeta tests/packages/string.pls
 
 ##############################################################################
 # espresso tests
