@@ -116,6 +116,7 @@ set -x
 ./zeta tests/packages/peval.pls
 ./zeta tests/packages/random.pls
 ./zeta tests/packages/string.pls
+./zeta tests/packages/audio.pls
 
 ##############################################################################
 # espresso tests

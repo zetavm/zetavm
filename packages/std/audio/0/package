@@ -1,0 +1,529 @@
+#language "lang/plush/0"
+
+var math = import "std/math/0";
+var array = import "std/array/0";
+
+//============================================================================
+// Audio output device and sampling
+//============================================================================
+
+var AudioOut = {
+};
+
+AudioOut.new = function (sampleRate, numChannels)
+{
+    var audio = import "core/audio/0";
+
+    var dev = audio.open_output_device(sampleRate, numChannels);
+
+    return AudioOut::{
+        sampleRate: sampleRate,
+        numChannels: numChannels,
+        dev: dev
+    };
+};
+
+AudioOut.queueSamples = function (this, samples)
+{
+    var audio = import "core/audio/0";
+    audio.queue_samples(this.dev, samples);
+};
+
+AudioOut.getQueueSize = function (this)
+{
+    var audio = import "core/audio/0";
+    return audio.get_queue_size(this.dev);
+};
+
+/// Play back audio samples (blocking)
+AudioOut.playSamples = function (this, samples)
+{
+    // Queue all the samples at once
+    this:queueSamples(samples);
+
+    // Wait until the sound is done playing
+    for (;;)
+    {
+        var queueSize = this:getQueueSize();
+        if (queueSize == 0)
+            break;
+    }
+};
+
+/// Play back samples produced by an audio generation function
+AudioOut.playFn = function (this, genFn, numSeconds)
+{
+    assert (
+        this.numChannels == 1,
+        "playFn is only available for monophonic audio output"
+    );
+
+    var samples = genSamples(genFn, this.sampleRate, numSeconds);
+
+    return this:playSamples(samples);
+};
+
+/// Produce sample a by sampling an audio generation function
+var genSamples = function (genFn, sampleRate, numSeconds)
+{
+    var numSamples = numSeconds * sampleRate;
+    var samples = [];
+
+    for (var i = 0; i < numSamples; i += 1)
+    {
+        var t = numSeconds * (1.0f * i / numSamples);
+
+        var s = genFn(t);
+        samples:push(s);
+    }
+
+    return samples;
+};
+
+/*
+// Generate a note by sampling a function
+var genNote = function (sampleFun, note, sampleRate, numSeconds)
+{
+    var peval = import "std/peval/0";
+
+    // TODO
+    //if (typeof note == "string")
+
+    var freq = noteToFreq(note, 0);
+
+    var f = peval.curry(sampleFun, freq);
+
+    return genSamples(f, numSeconds);
+};
+*/
+
+exports.AudioOut = AudioOut;
+exports.genSamples = genSamples;
+
+//============================================================================
+// Audio synthesis utilities
+//============================================================================
+
+/// Saw wave oscillator
+var sawOsc = function (time, freq)
+{
+    //var pos = time * freq;
+    //var ipos = $f32_to_i32(pos);
+    //var rem = pos - ipos;
+
+    var rem = math.fmod(time, freq);
+    return -1 + 2.0f * rem;
+};
+
+// Sine wave oscillator
+var sinOsc = function (time, freq)
+{
+    return math.sin(time * freq * 2 * math.PI);
+};
+
+// TODO: pulse wave
+// TODO: vintage-style waveforms (eg: Moog-like)
+
+/// Attack-decay envelope
+var ADEnv = function (time, attack, decay)
+{
+    if (time < attack)
+    {
+        return time / attack;
+    }
+
+    time = time - attack;
+
+    if (time < decay)
+    {
+        return 1 - (time / decay);
+    }
+
+    return 0;
+};
+
+/*
+/// Attack-decay-sustain-release envelope
+var ADSREnv = function (time, attack, decay, sustain, release)
+{
+    if (time < attack)
+    {
+        return time / attack;
+    }
+
+    time -= attack;
+
+    if (time < decay)
+    {
+        // Interpolating between 1 and sustain value
+        return sustain + (1 - time) * (1 - sustain);
+    }
+
+    // TODO: need sustain time or total play time
+};
+*/
+
+/**
+IIR, 2-pole, resonant Low Pass Filter (LPF)
+*/
+var Filter = {
+    s0: 0,
+    s1: 0,
+};
+
+Filter.new = function ()
+{
+    return Filter::{};
+};
+
+Filter.apply = function (this, s, cutoff, resonance)
+{
+    var c = math.pow(0.5f, (1 - cutoff) / 0.125f);
+    var r = math.pow(0.5f, (resonance + 0.125f) / 0.125f);
+
+    var mrc = 1 - r * c;
+
+    var v0 = this.s0;
+    var v1 = this.s1;
+
+    // Apply the filter to the sample
+    v0 = (mrc * v0) - (c * v1) + (c * s);
+    v1 = (mrc * v1) + (c * v0);
+    s = v1;
+
+    this.s0 = v0;
+    this.s1 = v1;
+
+    return s;
+};
+
+/**
+Delay line, implemented as a circular buffer
+*/
+var Delay = {
+};
+
+Delay.new = function (numSamples)
+{
+    return Delay::{
+        buffer: array.new(numSamples, 0.0f),
+        readIdx: 0,
+        avail: 0
+    };
+};
+
+Delay.write = function (this, s)
+{
+    assert (this.avail < this.buffer.length);
+    var idx = (this.readIdx + this.avail) % this.buffer.length;
+    this.buffer[idx] = s;
+    this.avail += 1;
+};
+
+Delay.read = function (this)
+{
+    assert (this.avail >= 0);
+
+    if (this.avail < this.buffer.length)
+        return 0.0f;
+
+    var s = this.buffer[this.readIdx];
+    this.readIdx = (this.readIdx + 1) % this.buffer.length;
+    this.avail -= 1;
+
+    return s;
+};
+
+exports.sawOsc = sawOsc;
+exports.sinOsc = sinOsc;
+exports.ADEnv = ADEnv;
+//exports.ADSREnv = ADSREnv;
+exports.Filter = Filter;
+exports.Delay = Delay;
+
+//============================================================================
+// Music and notes
+//============================================================================
+
+/// Number of MIDI notes available
+var NUM_NOTES = 128;
+
+/// Number of notes per octave
+var NOTES_PER_OCTAVE = 12;
+
+/// Number of cents per octave
+var CENTS_PER_OCTAVE = 1200;
+
+/// Frequency of the A4 note
+var A4_NOTE_FREQ = 440;
+
+/// Note number of the A4 note
+var A4_NOTE_NO = 69;
+
+/// Note number of the C4 note
+var C4_NOTE_NO = 71;
+
+/**
+Mapping from note names to pitch classes
+*/
+/*var NOTE_NAME_PC = {
+    'C' : 0,
+    'C#': 1,
+    'D' : 2,
+    'D#': 3,
+    'E' : 4,
+    'F' : 5,
+    'F#': 6,
+    'G' : 7,
+    'G#': 8,
+    'A' : 9,
+    'A#': 10,
+    'B' : 11
+};*/
+
+/**
+Mapping from pitch classes to note names
+*/
+var PC_NOTE_NAME = [
+    'C',
+    'C#',
+    'D',
+    'D#',
+    'E',
+    'F',
+    'F#',
+    'G',
+    'G#',
+    'A',
+    'A#',
+    'B'
+];
+
+/**
+@class Represents note values.
+
+Midi note numbers go from 0 to 127.
+
+A4 is tuned to 440Hz, and corresponds to midi note 69.
+
+F(n) = 440 * (2^(1/12))^(n - 69)
+     = 440 * 2 ^ ((n-69)/12)
+*/
+var Note = {
+};
+
+/**
+Array of note numbers to note objects
+*/
+Note.notesByNo = array.new(NUM_NOTES, false);
+
+/**
+Find the note object corresponding to a note number or name
+*/
+Note.get = function (val)
+{
+    // If we got a note name, convert it to a note number
+    if (typeof val == 'string')
+        val = Note.nameToNo(val);
+
+    assert (
+        typeof val == 'int32',
+        'note number should be an integer'
+    );
+
+    assert (
+        val >= 0 && val < NUM_NOTES,
+        'invalid MIDI note number'
+    );
+
+    if (Note.notesByNo[val] != false)
+        return Note.notesByNo[val];
+
+    // Create a note object
+    var note = Note::{ noteNo: val };
+
+    // Store the note object in the note table
+    Note.notesByNo[val] = note;
+
+    return note;
+};
+
+/**
+Get the MIDI note number corresponding to a note name
+*/
+Note.nameToNo = function (name)
+{
+    var string = import "std/string/0";
+
+    assert (
+        typeof name == 'string',
+        'note name should be string'
+    );
+
+    var namePart = '';
+
+    for (var i = 0; i < name.length; i += 1)
+    {
+        var ch = name[i];
+
+        if (!((ch >= 'A' && ch <= 'G') || ch == '#'))
+            break;
+
+        namePart += ch;
+    }
+
+    var numPart = name:slice(i, name.length);
+
+    if (numPart.length == 0)
+        throw 'invalid number part in note name: ' + name;
+
+    var octNo = string.parseInt(numPart, 10);
+
+    /*
+    var keyNo;
+    switch (namePart)
+    {
+        case "C":   keyNo = 0;  break;
+        case "C#":  keyNo = 1;  break;
+        case "D":   keyNo = 2;  break;
+        case "D#":  keyNo = 3;  break;
+        case "E":   keyNo = 4;  break;
+        case "F":   keyNo = 5;  break;
+        case "F#":  keyNo = 6;  break;
+        case "G":   keyNo = 7;  break;
+        case "G#":  keyNo = 8;  break;
+        case "A":   keyNo = 9;  break;
+        case "A#":  keyNo = 10; break;
+        case "B":   keyNo = 11; break;
+        default:
+        error('invalid key name: ' + namePart);
+    }
+    */
+
+    // Compute the note number
+    var noteNo = (octNo + 1) * NOTES_PER_OCTAVE + keyNo;
+
+    if (noteNo < 0 || noteNo >= NUM_NOTES)
+        throw 'invalid note name';
+
+    return noteNo;
+};
+
+/**
+Get the pitch class
+*/
+Note.getPC = function (this)
+{
+    return this.noteNo % NOTES_PER_OCTAVE;
+};
+
+/**
+Get the octave number
+*/
+Note.getOctNo = function (this)
+{
+    return math.floor(this.noteNo / NOTES_PER_OCTAVE) - 1;
+};
+
+/**
+Get the name for a note
+*/
+Note.getName = function (this)
+{
+    var string = import "std/string/0";
+
+    // Compute the octave number of the note
+    var octNo = this:getOctNo();
+
+    // Get the pitch class for this note
+    var pc = this:getPC();
+
+    var name = PC_NOTE_NAME[pc];
+
+    // Add the octave number to the note name
+    name += string.toString(octNo);
+
+    return name;
+};
+
+/**
+The string representation of a note is its name
+*/
+Note.toString = Note.getName;
+
+/**
+Get the frequency for a note
+@param offset detuning offset in cents
+*/
+Note.getFreq = function (this, offset)
+{
+    // F(n) = 440 * 2 ^ ((n-69)/12)
+    var noteExp = (this.noteNo - A4_NOTE_NO) / NOTES_PER_OCTAVE;
+
+    // b = a * 2 ^ (o / 1200)
+    var offsetExp = offset / CENTS_PER_OCTAVE;
+
+    // Compute the note frequency
+    return A4_NOTE_FREQ * math.pow(
+        2,
+        noteExp + offsetExp
+    );
+};
+
+/**
+Offset a note by a number of semitones
+*/
+Note.offset = function (this, numSemis)
+{
+    var offNo = this.noteNo + numSemis;
+
+    assert (
+        offNo >= 0 && offNo < NUM_NOTES,
+        'invalid note number after offset'
+    );
+
+    return Note.get(offNo);
+};
+
+/**
+Shift a note to higher or lower octaves
+*/
+Note.shift = function (this, numOcts)
+{
+    return this:offset(numOcts * NOTES_PER_OCTAVE);
+};
+
+/**
+Consonance rating function for two notes
+*/
+var consonance = function (n1, n2)
+{
+    // Interval consonance table
+    var intervCons = [
+         3, // 0: Unison
+        -3, // 1: Minor second
+        -1, // 2: Major second
+
+         3, // 3: Minor third
+         3, // 4: Major third
+         1, // 5: Perfect fourth
+
+        -1, // 6: Tritone
+         3, // 7: Perfect fifth
+         1, // 8: Minor sixth
+
+         2, // 9: Major sixth
+        -1, // 10: Minor seventh
+        -2  // 11: Major seventh
+    ];
+
+    var diff = math.max(n1 - n2, n2 - n1);
+
+    // Compute the simple interval between the two notes
+    var interv = diff % 12;
+
+    return intervCons[interv];
+};
+
+exports.Note = Note;
+exports.consonance = consonance;
