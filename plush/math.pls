@@ -209,32 +209,22 @@ exports.pow = function (base, exp)
         }
     }
 
-    if (typeof base == "float32" && typeof exp == "float32")
-    {
-        var recip = false;
-        if (typeof exp == "int32")
-        {
-            exp = $i32_to_f32(exp);
-        }
-
-        if (exp < 0)
-        {
-            exp = -exp;
-            recip = true;
-        }
-
-        if (!exports.isNaN(base) && !exports.isNaN(exp))
-        {
-            var result = $pow_f32(base, exp);
-
-            if (recip) {
-                result = 1.0f / result;
-            }
-
-            return result;
-        }
+    if (typeof base == "int32") {
+        base = $i32_to_f32(base);
     }
-    
+
+    if (typeof exp == "int32") {
+        exp = $i32_to_f32(exp);
+    }
+
+    if (typeof base == "float32" &&
+        typeof exp == "float32" &&
+        !exports.isNaN(base) &&
+        !exports.isNaN(exp))
+    {
+        return $pow_f32(base, exp);
+    }
+
     assert(
         false,
         "unhandled type in pow function"
