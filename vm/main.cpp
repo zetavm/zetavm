@@ -64,37 +64,8 @@ int runPkgMain(
     return (int32_t)retVal;
 }
 
-int test()
-{
-    Value* ptr = vm.head;
-    int i = 0;
-    while (ptr != NULL) {
-        ptr = ptr->next;
-        i++;
-    }
-    std::cout <<"count: " <<  i << std::endl;
-}
-
-Value create_val()
-{
-    return Value((int64_t)1, (Tag)8);
-}
-
-int create()
-{
-    Value val1 = create_val();
-    Value val2 = create_val();
-    Value val3 = create_val();
-    Value val4 = create_val();
-    Value val5 = create_val();
-    test();
-}
-
 int main(int argc, char** argv)
-{      
-    // create();
-    // test();
-    // return 0;   
+{        
     BoolOpt test('t', "test", false, "runs unit tests");
     BoolOpt help('h', "help", false, "prints this help message.");
     OptParser parser;

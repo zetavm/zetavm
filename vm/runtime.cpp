@@ -25,7 +25,7 @@ VM vm;
 StringPool stringPool;
 
 bool isGCRoot(Tag tag){
-    return tag == TAG_OBJECT || tag == TAG_ARRAY || tag == TAG_STRING;
+    return tag == TAG_OBJECT || tag == TAG_ARRAY || tag == TAG_STRING || tag == TAG_IMGREF;
 }
 
 /// Produce a string representation of a value
@@ -192,20 +192,14 @@ Allocates a block of memory
 Note that this function guarantees that the memory is zeroed out
 */
 
-int marked = 0;
 
 Value VM::alloc(uint32_t size, Tag tag)
 {
     // FIXME: use an alloc pool of some kind
     if (allocated >= limit)
     {   
-        marked = 0;
-        std::cout << "number: " << values.size() << std::endl;
         mark();
         sweep();
-        std::cout << "marked: " << marked << std::endl;
-        // std::cout << "allocated: " << allocated << std::endl;
-        // std::cout << "number: " << values.size() << std::endl;
         limit = allocated * 2;   
     } 
     auto ptr = (refptr)calloc(1, size);
@@ -224,7 +218,6 @@ void VM::mark()
 {
     markStackValues();
     Value* val = head;
-    std::cout << "start" << std::endl;
     while (val != NULL)
     {   
         markValues(*val);
@@ -232,7 +225,7 @@ void VM::mark()
     }
 }
 
-void VM::markValues(Value& root)
+void VM::markValues(Value root)
 {   
     Tag tag = root.getTag();
     if (!(isGCRoot(tag))) return;
@@ -248,7 +241,6 @@ void VM::markValues(Value& root)
             // If this node was previously visited, skip it
             if (isMarked(ptr))
                 continue;
-            marked++;
             // Mark the node as visited
             setMark(ptr);
         }
@@ -281,13 +273,18 @@ void VM::markValues(Value& root)
         if (tag == TAG_OBJECT || tag == TAG_ARRAY)
         {
             auto header = *(uint64_t*)ptr;
-            bool hasNextPtr = header & HEADER_MSK_NEXT;
-            if (hasNextPtr)
+            if (header & HEADER_MSK_NEXT)
             {
                 auto nextPtr = *(refptr*)(ptr + OBJ_OF_NEXT);
                 assert (nextPtr != nullptr);
                 toMark.push_back(nextPtr);
             }
+        }
+        if (tag == TAG_IMGREF)
+        {
+            ImgRef imgRef = (ImgRef)Value(ptr, tag);
+            refptr strPtr = imgRef.getStringPtr();
+            toMark.push_back(strPtr);
         }
     }
 }
@@ -308,7 +305,7 @@ void VM::sweep()
                 stringPool.removeString((std::string)str);
             }
             *(uint64_t*)(ptr) = header & (~HEADER_MSK_NEXT);
-            // free(ptr);
+            free(ptr);
         } 
         else 
         {
@@ -353,13 +350,13 @@ refptr Wrapper::getObjPtr()
 
 String::String(std::string str)
 {
-    this->val = stringPool.getString(str);
+    val = stringPool.getString(str);
 }
 
 String::String(Value value)
 {
     assert (value.isString());
-    this->val = value;
+    val = value;
 }
 
 uint32_t String::length() const
@@ -652,8 +649,8 @@ void Object::setField(String name, Value value)
 
         ptr = getObjPtr();
         cap = getCap();
-    }
 
+    }
     // Write the new property
     assert (slotIdx + 1 < cap);
     auto values = (Value*)(ptr + OF_FIELDS);
@@ -816,6 +813,13 @@ ImgRef::ImgRef(Value val)
     this->val = val;
 }
 
+refptr ImgRef::getStringPtr() const {
+    auto ptr = (refptr)val;
+    assert (ptr != nullptr);
+
+    return *(refptr*)(ptr + OF_SYM);
+}
+
 std::string ImgRef::getName() const
 {
     auto ptr = (refptr)val;
@@ -882,7 +886,7 @@ Value StringPool::getString(std::string str)
     {
         return newString(str);
     }
-    return iter->second;
+    return Value(iter->second, TAG_STRING);
 }
 
 void StringPool::removeString(std::string str)
@@ -905,7 +909,7 @@ Value StringPool::newString(std::string str)
 
     // Copy the string data
     strcpy((char*)(ptr + String::OF_DATA), str.c_str());
-    pool.insert({str, val});
+    pool.insert({str, ptr});
     return val;
 }
 

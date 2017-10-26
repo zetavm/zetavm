@@ -34,7 +34,7 @@ const size_t HEADER_SIZE = sizeof(intptr_t);
 const size_t HEADER_IDX_NEXT = 15;
 const size_t HEADER_MSK_NEXT = 1 << HEADER_IDX_NEXT;
 
-const size_t HEADER_IDX_MARK = 31;
+const size_t HEADER_IDX_MARK = 14;
 const size_t HEADER_MSK_MARK = 1 << HEADER_IDX_MARK;
 
 /// Offset of the next pointer
@@ -162,7 +162,7 @@ public:
 
     VM();
     void mark();
-    void markValues(Value& root);
+    void markValues(Value root);
     void sweep();
     bool checkIfExists(refptr ptr)
     {
@@ -507,6 +507,7 @@ public:
     ImgRef(String symbol);
     ImgRef(Value val);
 
+    refptr getStringPtr() const;
     std::string getName() const;
 };
 
@@ -525,7 +526,7 @@ private:
             return (size_t)murmurHash2(ptr, len, 1337);
         }
     };
-    std::unordered_map<std::string, Value, StringHasher> pool;
+    std::unordered_map<std::string, refptr, StringHasher> pool;
     Value newString(std::string str);
 
 public:
