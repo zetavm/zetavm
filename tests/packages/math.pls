@@ -133,3 +133,11 @@ fp_assert(math.pow(-4.0f, 3), -64.0f, "math.pow for floats");
 fp_assert(math.pow(1.0f, -1), 1.0f, "math.pow for floats");
 fp_assert(math.pow(2.0f, -1), 0.5f, "math.pow for floats");
 fp_assert(math.pow(-1.0f, -3), -1.0f, "math.pow for floats");
+
+// log/exp
+fp_assert(math.exp(3.0f * math.log(2)), 8.0f, "math.log and math.exp");
+fp_assert(math.exp(3.0f * math.log(2.0f)), 8.0f, "math.log and math.exp");
+assert(typeof math.exp(1) == "float32");
+assert(typeof math.exp(1.0f) == "float32");
+assert(typeof math.log(1) == "float32");
+assert(typeof math.log(1.0f) == "float32");
