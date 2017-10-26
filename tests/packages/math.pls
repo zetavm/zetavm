@@ -104,12 +104,32 @@ assert(math.pow(2, -1) == 0.5f);
 assert(math.pow(-1, -3) == -1);
 
 // floats
-assert(math.pow(4.0f, 0.0f) == 1.0f);
-assert(math.pow(-4.0f, 0.0f) == 1.0f);
-assert(math.pow(4.0f, 1.0f) == 4.0f);
-assert(math.pow(-4.0f, 1.0f) == -4.0f);
-assert(math.pow(4.0f, 3.0f) == 64.0f);
-assert(math.pow(-4.0f, 3.0f) == -64.0f);
-assert(math.pow(1.0f, -1.0f) == 1.0f);
-assert(math.pow(2.0f, -1.0f) == 0.5f);
-assert(math.pow(-1.0f, -3.0f) == -1.0f);
+fp_assert(math.pow(4.0f, 0.0f), 1.0f, "math.pow for floats");
+fp_assert(math.pow(-4.0f, 0.0f), 1.0f, "math.pow foor floats");
+fp_assert(math.pow(4.0f, 1.0f), 4.0f, "math.pow foor floats");
+fp_assert(math.pow(-4.0f, 1.0f), -4.0f, "math.pow foor floats");
+fp_assert(math.pow(4.0f, 3.0f), 64.0f, "math.pow foor floats");
+fp_assert(math.pow(-4.0f, 3.0f), -64.0f, "math.pow foor floats");
+fp_assert(math.pow(1.0f, -1.0f), 1.0f, "math.pow foor floats");
+fp_assert(math.pow(2.0f, -1.0f), 0.5f, "math.pow foor floats");
+fp_assert(math.pow(-1.0f, -3.0f), -1.0f, "math.pow foor floats");
+
+// mixed floats and ints
+fp_assert(math.pow(4, 0.0f), 1.0f, "math.pow for floats");
+fp_assert(math.pow(-4, 0.0f), 1.0f, "math.pow for floats");
+fp_assert(math.pow(4, 1.0f), 4.0f, "math.pow for floats");
+fp_assert(math.pow(-4, 1.0f), -4.0f, "math.pow for floats");
+fp_assert(math.pow(4, 3.0f), 64.0f, "math.pow for floats");
+fp_assert(math.pow(-4, 3.0f), -64.0f, "math.pow for floats");
+fp_assert(math.pow(1, -1.0f), 1.0f, "math.pow for floats");
+fp_assert(math.pow(2, -1.0f), 0.5f, "math.pow for floats");
+fp_assert(math.pow(-1, -3.0f), -1.0f, "math.pow for floats");
+fp_assert(math.pow(4.0f, 0), 1.0f, "math.pow for floats");
+fp_assert(math.pow(-4.0f, 0), 1.0f, "math.pow for floats");
+fp_assert(math.pow(4.0f, 1), 4.0f, "math.pow for floats");
+fp_assert(math.pow(-4.0f, 1), -4.0f, "math.pow for floats");
+fp_assert(math.pow(4.0f, 3), 64.0f, "math.pow for floats");
+fp_assert(math.pow(-4.0f, 3), -64.0f, "math.pow for floats");
+fp_assert(math.pow(1.0f, -1), 1.0f, "math.pow for floats");
+fp_assert(math.pow(2.0f, -1), 0.5f, "math.pow for floats");
+fp_assert(math.pow(-1.0f, -3), -1.0f, "math.pow for floats");
