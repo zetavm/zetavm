@@ -209,8 +209,64 @@ exports.pow = function (base, exp)
         }
     }
 
+    if (typeof base == "int32") {
+        base = $i32_to_f32(base);
+    }
+
+    if (typeof exp == "int32") {
+        exp = $i32_to_f32(exp);
+    }
+
+    if (typeof base == "float32" &&
+        typeof exp == "float32" &&
+        !exports.isNaN(base) &&
+        !exports.isNaN(exp))
+    {
+        return $pow_f32(base, exp);
+    }
+
     assert(
         false,
         "unhandled type in pow function"
     );
 };
+
+
+exports.log = function (x)
+{
+    assert(x > 0, "log input must be greater than zero");
+
+    if (typeof x == "int32")
+    {
+        x = $i32_to_f32(x);
+    }
+
+    if (typeof x == "float32")
+    {
+        return $log_f32(x);
+    }
+
+    assert(
+        false,
+        "unhandled type in log function"
+    );
+};
+
+exports.exp = function (x)
+{
+    if (typeof x == "int32")
+    {
+        x = $i32_to_f32(x);
+    }
+
+    if (typeof x == "float32")
+    {
+        return $exp_f32(x);
+    }
+
+    assert(
+        false,
+        "unhandled type in exp function"
+    );
+};
+

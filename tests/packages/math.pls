@@ -92,6 +92,7 @@ fp_assert (math.fmod(1, 1), 0, 'fmod');
 
 assert (math.idiv(5, 2) == 2);
 
+// ints
 assert(math.pow(4, 0) == 1);
 assert(math.pow(-4, 0) == 1);
 assert(math.pow(4, 1) == 4);
@@ -101,3 +102,42 @@ assert(math.pow(-4, 3) == -64);
 assert(math.pow(1, -1) == 1);
 assert(math.pow(2, -1) == 0.5f);
 assert(math.pow(-1, -3) == -1);
+
+// floats
+fp_assert(math.pow(4.0f, 0.0f), 1.0f, "math.pow for floats");
+fp_assert(math.pow(-4.0f, 0.0f), 1.0f, "math.pow foor floats");
+fp_assert(math.pow(4.0f, 1.0f), 4.0f, "math.pow foor floats");
+fp_assert(math.pow(-4.0f, 1.0f), -4.0f, "math.pow foor floats");
+fp_assert(math.pow(4.0f, 3.0f), 64.0f, "math.pow foor floats");
+fp_assert(math.pow(-4.0f, 3.0f), -64.0f, "math.pow foor floats");
+fp_assert(math.pow(1.0f, -1.0f), 1.0f, "math.pow foor floats");
+fp_assert(math.pow(2.0f, -1.0f), 0.5f, "math.pow foor floats");
+fp_assert(math.pow(-1.0f, -3.0f), -1.0f, "math.pow foor floats");
+
+// mixed floats and ints
+fp_assert(math.pow(4, 0.0f), 1.0f, "math.pow for floats");
+fp_assert(math.pow(-4, 0.0f), 1.0f, "math.pow for floats");
+fp_assert(math.pow(4, 1.0f), 4.0f, "math.pow for floats");
+fp_assert(math.pow(-4, 1.0f), -4.0f, "math.pow for floats");
+fp_assert(math.pow(4, 3.0f), 64.0f, "math.pow for floats");
+fp_assert(math.pow(-4, 3.0f), -64.0f, "math.pow for floats");
+fp_assert(math.pow(1, -1.0f), 1.0f, "math.pow for floats");
+fp_assert(math.pow(2, -1.0f), 0.5f, "math.pow for floats");
+fp_assert(math.pow(-1, -3.0f), -1.0f, "math.pow for floats");
+fp_assert(math.pow(4.0f, 0), 1.0f, "math.pow for floats");
+fp_assert(math.pow(-4.0f, 0), 1.0f, "math.pow for floats");
+fp_assert(math.pow(4.0f, 1), 4.0f, "math.pow for floats");
+fp_assert(math.pow(-4.0f, 1), -4.0f, "math.pow for floats");
+fp_assert(math.pow(4.0f, 3), 64.0f, "math.pow for floats");
+fp_assert(math.pow(-4.0f, 3), -64.0f, "math.pow for floats");
+fp_assert(math.pow(1.0f, -1), 1.0f, "math.pow for floats");
+fp_assert(math.pow(2.0f, -1), 0.5f, "math.pow for floats");
+fp_assert(math.pow(-1.0f, -3), -1.0f, "math.pow for floats");
+
+// log/exp
+fp_assert(math.exp(3.0f * math.log(2)), 8.0f, "math.log and math.exp");
+fp_assert(math.exp(3.0f * math.log(2.0f)), 8.0f, "math.log and math.exp");
+assert(typeof math.exp(1) == "float32");
+assert(typeof math.exp(1.0f) == "float32");
+assert(typeof math.log(1) == "float32");
+assert(typeof math.log(1.0f) == "float32");
