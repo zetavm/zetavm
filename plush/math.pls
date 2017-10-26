@@ -170,7 +170,6 @@ exports.ceil = function (x)
     );
 };
 
-
 exports.pow = function (base, exp)
 {
     // Anything to the power of zero is one.
@@ -209,19 +208,19 @@ exports.pow = function (base, exp)
         }
     }
 
-    if (typeof base == "int32") {
+    if (typeof base == "int32")
         base = $i32_to_f32(base);
-    }
 
-    if (typeof exp == "int32") {
+    if (typeof exp == "int32")
         exp = $i32_to_f32(exp);
-    }
 
-    if (typeof base == "float32" &&
-        typeof exp == "float32" &&
-        !exports.isNaN(base) &&
-        !exports.isNaN(exp))
+    if (typeof base == "float32" && typeof exp == "float32")
     {
+        assert (
+            base >= 0 && exp >= 0,
+            "negative values in floating-point pow unsupported"
+        );
+
         return $pow_f32(base, exp);
     }
 
@@ -231,11 +230,8 @@ exports.pow = function (base, exp)
     );
 };
 
-
 exports.log = function (x)
 {
-    assert(x > 0, "log input must be greater than zero");
-
     if (typeof x == "int32")
     {
         x = $i32_to_f32(x);
@@ -243,6 +239,8 @@ exports.log = function (x)
 
     if (typeof x == "float32")
     {
+        assert(x > 0, "log input must be greater than zero");
+
         return $log_f32(x);
     }
 
@@ -269,4 +267,3 @@ exports.exp = function (x)
         "unhandled type in exp function"
     );
 };
-

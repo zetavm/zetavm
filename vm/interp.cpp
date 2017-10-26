@@ -46,7 +46,6 @@ enum Opcode : uint16_t
     SUB_F32,
     MUL_F32,
     DIV_F32,
-    POW_F32,
     LT_F32,
     LE_F32,
     GT_F32,
@@ -57,6 +56,7 @@ enum Opcode : uint16_t
     SQRT_F32,
     LOG_F32,
     EXP_F32,
+    POW_F32,
 
     // Conversion operations
     I32_TO_F32,
@@ -743,13 +743,6 @@ void compile(BlockVersion* version)
             continue;
         }
 
-        if (op == "pow_f32")
-        {
-            numTmps -= 1;
-            writeCode(POW_F32);
-            continue;
-        }
-
         if (op == "lt_f32")
         {
             numTmps -= 1;
@@ -817,6 +810,13 @@ void compile(BlockVersion* version)
         {
             numTmps += 0;
             writeCode(EXP_F32);
+            continue;
+        }
+
+        if (op == "pow_f32")
+        {
+            numTmps -= 1;
+            writeCode(POW_F32);
             continue;
         }
 
@@ -1741,14 +1741,6 @@ Value execCode()
             }
             break;
 
-            case POW_F32:
-            {
-                auto arg1 = popFloat32();
-                auto arg0 = popFloat32();
-                pushVal(Value::float32(pow(arg0, arg1)));
-            }
-            break;
-
             case LT_F32:
             {
                 auto arg1 = popFloat32();
@@ -1820,13 +1812,16 @@ Value execCode()
             case EXP_F32:
             {
                 float arg = popFloat32();
-                arg = exp(arg);
+                auto r = exp(arg);
+                pushVal(Value::float32(r));
+            }
+            break;
 
-                if (arg == HUGE_VAL || arg == -HUGE_VAL) {
-                    pushVal(Value::UNDEF);
-                } else {
-                    pushVal(Value::float32(arg));
-                }
+            case POW_F32:
+            {
+                auto arg1 = popFloat32();
+                auto arg0 = popFloat32();
+                pushVal(Value::float32(pow(arg0, arg1)));
             }
             break;
 

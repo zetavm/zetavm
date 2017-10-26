@@ -13,5 +13,6 @@ assert (C4:getOctNo() == 4);
 
 var A4 = audio.Note.get('A4');
 assert (A4:getOctNo() == 4);
+assert (A4:getFreq(0) == 440);
 
 //assert (audio.consonance(A4, A4) > 0);

@@ -66,7 +66,6 @@ AudioOut.playFn = function (this, genFn, numSeconds)
     );
 
     var samples = genSamples(genFn, this.sampleRate, numSeconds);
-
     return this:playSamples(samples);
 };
 
@@ -87,25 +86,24 @@ var genSamples = function (genFn, sampleRate, numSeconds)
     return samples;
 };
 
-/*
 // Generate a note by sampling a function
-var genNote = function (sampleFun, note, sampleRate, numSeconds)
+var genNote = function (genFn, note, sampleRate, numSeconds)
 {
     var peval = import "std/peval/0";
 
     // TODO
     //if (typeof note == "string")
 
-    var freq = noteToFreq(note, 0);
+    var freq = note:getFreq(0);
 
-    var f = peval.curry(sampleFun, freq);
+    var f = peval.curry(genFn, freq);
 
-    return genSamples(f, numSeconds);
+    return genSamples(f, sampleRate, numSeconds);
 };
-*/
 
 exports.AudioOut = AudioOut;
 exports.genSamples = genSamples;
+exports.genNote = genNote;
 
 //============================================================================
 // Audio synthesis utilities
@@ -114,11 +112,7 @@ exports.genSamples = genSamples;
 /// Saw wave oscillator
 var sawOsc = function (time, freq)
 {
-    //var pos = time * freq;
-    //var ipos = $f32_to_i32(pos);
-    //var rem = pos - ipos;
-
-    var rem = math.fmod(time, freq);
+    var rem = math.fmod(time * freq, 1);
     return -1 + 2.0f * rem;
 };
 
@@ -221,7 +215,11 @@ Delay.new = function (numSamples)
 
 Delay.write = function (this, s)
 {
-    assert (this.avail < this.buffer.length);
+    assert (
+        this.avail < this.buffer.length,
+        'delay line is full, cannot write'
+    );
+
     var idx = (this.readIdx + this.avail) % this.buffer.length;
     this.buffer[idx] = s;
     this.avail += 1;
@@ -229,7 +227,10 @@ Delay.write = function (this, s)
 
 Delay.read = function (this)
 {
-    assert (this.avail >= 0);
+    assert (
+        this.avail >= 0,
+        'delay line is empty, cannot read'
+    );
 
     if (this.avail < this.buffer.length)
         return 0.0f;
