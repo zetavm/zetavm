@@ -35,12 +35,9 @@ AudioOut.getQueueSize = function (this)
     return audio.get_queue_size(this.dev);
 };
 
-/// Play back audio samples (blocking)
-AudioOut.playSamples = function (this, samples)
+/// Wait until all samples are done playing
+AudioOut.wait = function (this)
 {
-    // Queue all the samples at once
-    this:queueSamples(samples);
-
     // Wait until the sound is done playing
     for (;;)
     {
@@ -48,6 +45,16 @@ AudioOut.playSamples = function (this, samples)
         if (queueSize == 0)
             break;
     }
+};
+
+/// Play back audio samples (blocking)
+AudioOut.playSamples = function (this, samples)
+{
+    // Queue all the samples at once
+    this:queueSamples(samples);
+
+    // Wait until the sound is done playing
+    this:wait();
 };
 
 /// Play back samples produced by an audio generation function
