@@ -93,15 +93,17 @@ fp_assert (math.fmod(1, 1), 0, 'fmod');
 // Integer divison
 assert (math.idiv(5, 2) == 2);
 
-assert(math.pow(4, 0) == 1);
-assert(math.pow(-4, 0) == 1);
-assert(math.pow(4, 1) == 4);
-assert(math.pow(-4, 1) == -4);
-assert(math.pow(4, 3) == 64);
-assert(math.pow(-4, 3) == -64);
-assert(math.pow(1, -1) == 1);
-assert(math.pow(2, -1) == 0.5f);
-assert(math.pow(-1, -3) == -1);
+assert (math.pow(0, 0) == 1);
+assert (math.pow(4, 0) == 1);
+assert (math.pow(-4, 0) == 1);
+assert (math.pow(4, 1) == 4);
+assert (math.pow(-4, 1) == -4);
+assert (math.pow(4, 3) == 64);
+assert (math.pow(-4, 3) == -64);
+assert (math.pow(1, -1) == 1);
+assert (math.pow(2, -1) == 0.5f);
+assert (math.pow(-1, -3) == -1);
+assert (math.pow(0.0f, 0.0f) == 1.0f);
 fp_assert(math.pow(4.0f, 0.0f), 1.0f, "math.pow for floats");
 fp_assert(math.pow(4, 1.0f), 4.0f, "math.pow for floats");
 fp_assert(math.pow(4, 0.5f), 2.0f, "math.pow for floats");

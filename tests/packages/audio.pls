@@ -14,5 +14,7 @@ assert (C4:getOctNo() == 4);
 var A4 = audio.Note.get('A4');
 assert (A4:getOctNo() == 4);
 assert (A4:getFreq(0) == 440);
-
 assert (A4:consonance(A4) > 0);
+
+var G4 = audio.Note.get('G4');
+assert (G4:getFreq(0) > 391 && G4:getFreq(0) < 392);

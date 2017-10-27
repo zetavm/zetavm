@@ -217,8 +217,8 @@ exports.pow = function (base, exp)
     if (typeof base == "float32" && typeof exp == "float32")
     {
         assert (
-            base >= 0 && exp >= 0,
-            "negative values in floating-point pow unsupported"
+            base >= 0,
+            "negative bases in floating-point pow unsupported"
         );
 
         var logBase = $log_f32(base);

@@ -19,7 +19,7 @@ var genNotes = function (numNotes)
 
     var notes = [];
 
-    for (; notes.length < 16;)
+    for (; notes.length < numNotes;)
     {
         print(curNote:toString());
         notes:push(curNote);

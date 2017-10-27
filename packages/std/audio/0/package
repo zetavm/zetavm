@@ -91,9 +91,6 @@ var genNote = function (genFn, note, sampleRate, numSeconds)
 {
     var peval = import "std/peval/0";
 
-    // TODO
-    //if (typeof note == "string")
-
     var freq = note:getFreq(0);
 
     var f = peval.curry(genFn, freq);
