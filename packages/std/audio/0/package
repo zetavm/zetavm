@@ -488,7 +488,7 @@ Note.shift = function (this, numOcts)
 /**
 Consonance rating function for two notes
 */
-var consonance = function (n1, n2)
+Note.consonance = function (n1, n2)
 {
     // Interval consonance table
     var intervCons = [
@@ -509,7 +509,7 @@ var consonance = function (n1, n2)
         -2  // 11: Major seventh
     ];
 
-    var diff = math.max(n1 - n2, n2 - n1);
+    var diff = math.max(n1.noteNo - n2.noteNo, n2.noteNo - n1.noteNo);
 
     // Compute the simple interval between the two notes
     var interv = diff % 12;
@@ -518,4 +518,3 @@ var consonance = function (n1, n2)
 };
 
 exports.Note = Note;
-exports.consonance = consonance;

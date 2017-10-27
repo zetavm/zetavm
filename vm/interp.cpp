@@ -56,7 +56,6 @@ enum Opcode : uint16_t
     SQRT_F32,
     LOG_F32,
     EXP_F32,
-    POW_F32,
 
     // Conversion operations
     I32_TO_F32,
@@ -810,13 +809,6 @@ void compile(BlockVersion* version)
         {
             numTmps += 0;
             writeCode(EXP_F32);
-            continue;
-        }
-
-        if (op == "pow_f32")
-        {
-            numTmps -= 1;
-            writeCode(POW_F32);
             continue;
         }
 
@@ -1805,6 +1797,10 @@ Value execCode()
             case LOG_F32:
             {
                 float arg = popFloat32();
+
+                if (arg <= 0)
+                    throw RunError("log input must be strictly positive");
+
                 pushVal(Value::float32(log(arg)));
             }
             break;
@@ -1814,14 +1810,6 @@ Value execCode()
                 float arg = popFloat32();
                 auto r = exp(arg);
                 pushVal(Value::float32(r));
-            }
-            break;
-
-            case POW_F32:
-            {
-                auto arg1 = popFloat32();
-                auto arg0 = popFloat32();
-                pushVal(Value::float32(pow(arg0, arg1)));
             }
             break;
 

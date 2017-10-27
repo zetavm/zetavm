@@ -12,14 +12,13 @@ var delay = audio.Delay.new(10000);
 
 var synthFn = function (time, freq)
 {
-    var v = audio.sawOsc(time, freq) * audio.ADEnv(time, 0.01f, 0.25f);
-
-    //var v2 = delay:read();
+    var env = audio.ADEnv(time, 0.01f, 0.25f);
+    var v = audio.sawOsc(time, freq) * env;
 
     v = filter:apply(v, 0.6f, 0.0f);
 
+    //var v2 = delay:read();
     //v = v * 0.75f + v2 * 0.25f;
-
     //delay:write(v);
 
     return v;
@@ -29,8 +28,6 @@ var genFn = function (time)
 {
     return synthFn(time, 200);
 };
-
-//var samples = dev:playFn(genFn,  1.0f);
 
 
 
@@ -59,7 +56,7 @@ for (var i = 0; i < 16; i += 1)
             continue;
         }
 
-        if (audio.consonance(newNote.noteNo, curNote.noteNo) >= 1)
+        if (newNote:consonance(curNote) >= 1)
         {
             curNote = newNote;
             break;

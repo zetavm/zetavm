@@ -221,7 +221,8 @@ exports.pow = function (base, exp)
             "negative values in floating-point pow unsupported"
         );
 
-        return $pow_f32(base, exp);
+        var logBase = $log_f32(base);
+        return $exp_f32(logBase * exp);
     }
 
     assert(
