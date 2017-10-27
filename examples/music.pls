@@ -21,7 +21,7 @@ var genNotes = function (numNotes)
 
     for (; notes.length < numNotes;)
     {
-        print(curNote:toString());
+        print(curNote);
         notes:push(curNote);
 
         for (;;)

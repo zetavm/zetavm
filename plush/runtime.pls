@@ -11,7 +11,7 @@ var rt_add = function (x, y)
     {
         if (typeof y == "float32")
         {
-            return $add_f32( $i32_to_f32(x), y);
+            return $add_f32($i32_to_f32(x), y);
         }
         if (typeof y == "int32")
         {
@@ -545,7 +545,13 @@ var rt_in = function (x, y)
     {
         if (typeof y == "object")
         {
-            return $has_field(y, x);
+            if ($has_field(y, x))
+                return true;
+
+            if ($has_field(y, 'proto') && typeof y.proto == "object")
+                return rt_in(x, y.proto);
+
+            return false;
         }
     }
 
@@ -748,12 +754,13 @@ var output = function (x)
         io.print_float32(x);
         return;
     }
-    
-    if (typeof x == "array")
+
+    if (typeof x == "array" || typeof x == "object")
     {
         // Lazily import the std/string package
-        var str = import "std/string/0";
-        io.print_str(str.toString(x));
+        var string = import "std/string/0";
+        io.print_str(string.toString(x));
+        return;
     }
 
     if (x == true)

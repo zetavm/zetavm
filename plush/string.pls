@@ -7,18 +7,25 @@ var math = import "std/math/0";
 exports.toString = function (e)
 {
     var type = typeof e;
+
     if (type == "object")
     {
-        return e:toString();
+        if ('toString' in e)
+            return e:toString();
+
+        return "object";
     }
+
     if (type == "string")
     {
         return e;
     }
+
     if (type == "int32")
     {
         return exports.intToString(e, 10);
     }
+
     if (type == "array")
     {
         var builder = "[";
@@ -33,10 +40,12 @@ exports.toString = function (e)
         builder += "]";
         return builder;
     }
+
     if (e == true)
     {
         return "true";
     }
+
     if (e == false)
     {
         return "false";
@@ -726,7 +735,7 @@ var indexOfInternal = function (string, needle, start)
     }
 };
 
-/** 
+/**
  * A helper function for joining sublists of lists of strings by a delimiter.
  *
  *  This function introduces additional parameters lower and upper to allow
@@ -751,4 +760,3 @@ var joinSub = function (arrayofstrings, delimiter, lower, upper)
         return l + delimiter + r;
     }
 };
-

@@ -16,6 +16,9 @@ assert (b:foo() == 3);
 assert (b instanceof a);
 assert (!({} instanceof a));
 
+assert ('x' in a);
+assert ('y' in b);
+
 // Test the get_field_list instruction
 var c = { x:1, y:2, z:3 };
 var field_list = $get_field_list(c);
