@@ -84,7 +84,6 @@ enum Opcode : uint16_t
     SET_FIELD,
     GET_FIELD,
     GET_FIELD_IMM,
-
     GET_FIELD_LIST,
     EQ_OBJ,
 
@@ -95,6 +94,7 @@ enum Opcode : uint16_t
     ARRAY_POP,
     GET_ELEM,
     SET_ELEM,
+    EQ_ARRAY,
 
     // Branch instructions
     JUMP,
@@ -1017,6 +1017,13 @@ void compile(BlockVersion* version)
         {
             numTmps -= 1;
             writeCode(GET_ELEM);
+            continue;
+        }
+
+        if (op == "eq_array")
+        {
+            numTmps -= 1;
+            writeCode(EQ_ARRAY);
             continue;
         }
 
@@ -2142,6 +2149,14 @@ Value execCode()
                 }
 
                 pushVal(arr.getElem(idx));
+            }
+            break;
+
+            case EQ_ARRAY:
+            {
+                Value arg1 = popVal();
+                Value arg0 = popVal();
+                pushBool(arg0 == arg1);
             }
             break;
 

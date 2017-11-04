@@ -122,6 +122,15 @@ var sinOsc = function (time, freq)
 // TODO: pulse wave
 // TODO: vintage-style waveforms (eg: Moog-like)
 
+/// Linear interpolation between two values
+var lerp = function (time, y0, y1)
+{
+    if (time >= 1)
+        return y1;
+
+    return y0 + time * (y1 - y0);
+};
+
 /// Attack-decay envelope
 var ADEnv = function (time, attack, decay)
 {
@@ -241,6 +250,7 @@ Delay.read = function (this)
 
 exports.sawOsc = sawOsc;
 exports.sinOsc = sinOsc;
+exports.lerp = lerp;
 exports.ADEnv = ADEnv;
 //exports.ADSREnv = ADSREnv;
 exports.Filter = Filter;

@@ -11,6 +11,43 @@ var math = import "std/math/0";
 
 var Note = audio.Note;
 var rng = random.newRNG(31333);
+var dev = audio.AudioOut.new(44100, 1);
+
+
+
+
+var filter = audio.Filter.new();
+
+var drumFn = function (time)
+{
+    var env = audio.ADEnv(time, 0.005f, 0.3f);
+    //var fenv = audio.ADEnv(time, 0, 0.4f);
+
+    var f = audio.lerp(time, 167, 52);
+    var v = audio.sinOsc(time, f) * env;
+
+    var f = audio.lerp(time, 750, 161);
+    var v1 = audio.sinOsc(time, f) * env;
+
+    v = 0.5f * (v + v1);
+
+    v = filter:apply(v, 0.35f, 0);
+
+    return v;
+};
+
+
+dev:playFn(drumFn, 0.5f);
+
+return;
+
+
+
+
+
+
+
+
 
 var genNotes = function (numNotes)
 {
@@ -46,7 +83,6 @@ var genNotes = function (numNotes)
 
 var notes = genNotes(16);
 
-var dev = audio.AudioOut.new(44100, 1);
 var filter = audio.Filter.new();
 var delay = audio.Delay.new(5000);
 

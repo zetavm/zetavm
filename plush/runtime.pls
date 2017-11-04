@@ -339,6 +339,16 @@ var rt_eq = function (x, y)
         return false;
     }
 
+    if (typeof x == "array")
+    {
+        if (typeof y == "array")
+        {
+            return $eq_array(x, y);
+        }
+
+        return false;
+    }
+
     if (typeof x == "bool")
     {
         if (typeof y == "bool")

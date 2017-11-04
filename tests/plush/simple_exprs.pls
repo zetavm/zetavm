@@ -10,6 +10,9 @@ assert (!false == true);
 assert (1 < 2);
 assert (1 <= 2);
 assert (undef == undef);
+assert ([] != []);
+var a1 = [];
+assert (a1 == a1);
 
 // Integer and bitwise arithmetic
 assert (1 + 2 == 3);
