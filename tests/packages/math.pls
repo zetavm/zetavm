@@ -94,6 +94,8 @@ fp_assert (math.fmod(1, 1), 0, 'fmod');
 assert (math.idiv(5, 2) == 2);
 
 assert (math.pow(0, 0) == 1);
+assert (math.pow(0.0f, 0.0f) == 1);
+assert (math.pow(0.0f, 2) == 0);
 assert (math.pow(4, 0) == 1);
 assert (math.pow(-4, 0) == 1);
 assert (math.pow(4, 1) == 4);

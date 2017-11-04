@@ -20,18 +20,18 @@ var filter = audio.Filter.new();
 
 var drumFn = function (time)
 {
-    var env = audio.ADEnv(time, 0.005f, 0.3f);
+    var env = audio.ADEnv(time, 0.005f, 0.25f);
     //var fenv = audio.ADEnv(time, 0, 0.4f);
 
-    var f = audio.lerp(time, 167, 52);
-    var v = audio.sinOsc(time, f) * env;
+    //var f = audio.lerp(time, 200, 0);
+    var v = audio.sinOsc(time, 210 * env) * env;
 
-    var f = audio.lerp(time, 750, 161);
-    var v1 = audio.sinOsc(time, f) * env;
+    //var f = audio.lerp(time, 750, 161);
+    //var v1 = audio.sinOsc(time, f) * env;
 
-    v = 0.5f * (v + v1);
+    //v = 0.5f * (v + v1);
 
-    v = filter:apply(v, 0.35f, 0);
+    //v = filter:apply(v, 0.35f, 0);
 
     return v;
 };
@@ -81,12 +81,11 @@ var genNotes = function (numNotes)
     return notes;
 };
 
-var notes = genNotes(16);
+var notes = genNotes(8);
+var duration = 4;
 
 var filter = audio.Filter.new();
 var delay = audio.Delay.new(5000);
-
-var duration = 6;
 
 var synthFn = function (time)
 {

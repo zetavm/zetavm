@@ -123,12 +123,24 @@ var sinOsc = function (time, freq)
 // TODO: vintage-style waveforms (eg: Moog-like)
 
 /// Linear interpolation between two values
-var lerp = function (time, y0, y1)
+var lerp = function (x, y0, y1)
 {
-    if (time >= 1)
+    if (x >= 1)
         return y1;
 
-    return y0 + time * (y1 - y0);
+    return y0 + x * (y1 - y0);
+};
+
+// Exponential interpolation function:
+// x ranges from 0 to 1
+var interp = function (x, yL, yR, exp)
+{
+    if (x >= 1)
+    {
+        return 0;
+    }
+
+    return yL + math.pow(x, exp) * (yR - yL);
 };
 
 /// Attack-decay envelope
@@ -136,14 +148,16 @@ var ADEnv = function (time, attack, decay)
 {
     if (time < attack)
     {
-        return time / attack;
+        return interp(time/attack, 0, 1, 0.66f);
     }
 
     time = time - attack;
 
     if (time < decay)
     {
-        return 1 - (time / decay);
+        //return 1 - (time / decay);
+
+        return interp(time/decay, 1, 0, 0.66f);
     }
 
     return 0;

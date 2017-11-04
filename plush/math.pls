@@ -172,10 +172,14 @@ exports.ceil = function (x)
 
 exports.pow = function (base, exp)
 {
-    // Anything to the power of zero is one.
     if (exp == 0)
     {
         return 1;
+    }
+
+    if (base == 0)
+    {
+        return 0;
     }
 
     if (typeof base == "int32" && typeof exp == "int32")
