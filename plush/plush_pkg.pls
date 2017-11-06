@@ -2153,9 +2153,9 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
             parseError(false, "cannot assign to exports variable");
         }
 
-        if (rhsExpr instanceof FunExpr && rhs.name == '')
+        if (rhsExpr instanceof FunExpr && rhsExpr.name == '')
         {
-            rhs.name = lhsExpr.name;
+            rhsExpr.name = lhsExpr.name;
         }
 
         if (ctx.fun:hasLocal(lhsExpr.name))
