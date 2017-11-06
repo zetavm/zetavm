@@ -1230,7 +1230,7 @@ void throwExc(
             stackPtr += retEntry.numTmps;
 
             // Push the exception value on the stack
-            pushVal(excVal);
+            pushVal(excVal.getField("thrown_value"));
 
             // Compile exception handler if needed
             if (!retEntry.excVer->startPtr)
