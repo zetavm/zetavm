@@ -1030,7 +1030,7 @@ var parseStmt = function (input)
         return IfStmt::{
             testExpr: testExpr,
             thenStmt: BlockStmt::{ stmts:[] },
-            elseStmt: ThrowStmt::{ expr: excExpr }
+            elseStmt: ThrowStmt::{ expr: excExpr, srcPos: srcPos }
         };
     }
 

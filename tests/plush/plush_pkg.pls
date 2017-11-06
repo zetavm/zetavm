@@ -15,7 +15,7 @@ var testParse = function (str)
     {
         assert (
             false,
-            e.msg
+            e
         );
     }
 };
