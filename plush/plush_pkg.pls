@@ -2209,7 +2209,7 @@ var genAssign = function (ctx, lhsExpr, rhsExpr)
             // Evaluate the rhs value
             genExpr(ctx, rhsExpr);
 
-            runtimeCall(ctx, rt_setElem);
+            runtimeCall(ctx, rt_setElem, lhsExpr.srcPos);
 
             return;
         }
