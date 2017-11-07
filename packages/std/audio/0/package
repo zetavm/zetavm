@@ -109,14 +109,25 @@ exports.genNote = genNote;
 /// Saw wave oscillator
 var sawOsc = function (time, freq)
 {
-    var rem = math.fmod(time * freq, 1);
+    var cyclePos = math.fmod(time * freq, 1);
     return -1 + 2.0f * rem;
 };
 
-// Sine wave oscillator
+/// Sine wave oscillator
 var sinOsc = function (time, freq)
 {
     return math.sin(time * freq * 2 * math.PI);
+};
+
+/// Triangle wave oscillator
+var triOsc = function (time, freq)
+{
+    var cyclePos = math.fmod(time * freq, 1);
+
+    if (cyclePos < 0.5f)
+        return (4 * cyclePos) - 1;
+
+    return 1 - (4 * (cyclePos - 0.5f));
 };
 
 // TODO: pulse wave
@@ -131,9 +142,9 @@ var lerp = function (x, y0, y1)
     return y0 + x * (y1 - y0);
 };
 
-// Exponential interpolation function:
+// Exponential interpolation function
 // x ranges from 0 to 1
-var interp = function (x, yL, yR, exp)
+var eerp = function (x, yL, yR, exp)
 {
     if (x >= 1)
     {
@@ -148,16 +159,14 @@ var ADEnv = function (time, attack, decay)
 {
     if (time < attack)
     {
-        return interp(time/attack, 0, 1, 0.66f);
+        return eerp(time/attack, 0, 1, 0.66f);
     }
 
     time = time - attack;
 
     if (time < decay)
     {
-        //return 1 - (time / decay);
-
-        return interp(time/decay, 1, 0, 0.66f);
+        return eerp(time/decay, 1, 0, 0.66f);
     }
 
     return 0;
@@ -264,7 +273,9 @@ Delay.read = function (this)
 
 exports.sawOsc = sawOsc;
 exports.sinOsc = sinOsc;
+exports.triOsc = triOsc;
 exports.lerp = lerp;
+exports.eerp = eerp;
 exports.ADEnv = ADEnv;
 //exports.ADSREnv = ADSREnv;
 exports.Filter = Filter;

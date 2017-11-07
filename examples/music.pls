@@ -18,28 +18,43 @@ var dev = audio.AudioOut.new(44100, 1);
 
 var filter = audio.Filter.new();
 
-var drumFn = function (time)
+var kickFn = function (time)
 {
-    var env = audio.ADEnv(time, 0.005f, 0.25f);
-    //var fenv = audio.ADEnv(time, 0, 0.4f);
+    var env = audio.ADEnv(time, 0.005f, 0.20f);
 
-    //var f = audio.lerp(time, 200, 0);
-    var v = audio.sinOsc(time, 210 * env) * env;
+    var f = audio.eerp(time / 0.20f, 220, 80, 0.3f);
+    var v = audio.sinOsc(time, f) * env;
 
-    //var f = audio.lerp(time, 750, 161);
-    //var v1 = audio.sinOsc(time, f) * env;
-
-    //v = 0.5f * (v + v1);
-
-    //v = filter:apply(v, 0.35f, 0);
+    //v = filter:apply(v, 0.5f, 0);
 
     return v;
 };
 
+var snareFn = function (time)
+{
+    var env = audio.ADEnv(time, 0.005f, 0.10f);
+    var f = audio.eerp(time / 0.20f, 220, 80, 0.15f);
+    var v = audio.sinOsc(time, f) * env;
 
-dev:playFn(drumFn, 0.5f);
 
-return;
+
+    var env = audio.ADEnv(time, 0.005f, 0.35f);
+    var noise = rng:float(-1, 1);
+    noise = filter:apply(noise, 0.75f, 0.1f) * env;
+
+    v = 0.5f * noise + 0.5f * v;
+
+
+
+    return v;
+};
+
+dev:playFn(kickFn, 0.4f);
+dev:playFn(snareFn, 0.4f);
+//dev:playFn(kickFn, 0.4f);
+//dev:playFn(snareFn, 0.4f);
+
+//return;
 
 
 
@@ -51,7 +66,7 @@ return;
 
 var genNotes = function (numNotes)
 {
-    var rootNote = Note.get('A4');
+    var rootNote = Note.get('A3');
     var curNote = rootNote;
 
     var notes = [];
@@ -82,7 +97,7 @@ var genNotes = function (numNotes)
 };
 
 var notes = genNotes(8);
-var duration = 4;
+var duration = 1.6f;
 
 var filter = audio.Filter.new();
 var delay = audio.Delay.new(5000);
@@ -95,10 +110,10 @@ var synthFn = function (time)
 
     var time = math.fmod(time, duration / notes.length);
 
-    var env = audio.ADEnv(time, 0.01f, 0.25f);
-    var v = audio.sawOsc(time, freq) * env;
+    var env = audio.ADEnv(time, 0.005f, 0.14f);
+    var v = audio.triOsc(time, freq) * env;
 
-    v = filter:apply(v, 0.6f, 0.0f);
+    v = filter:apply(v, 0.7f, 0.1f);
 
     //var v2 = delay:read();
     //v = v * 0.5f + v2 * 0.5f;
@@ -114,3 +129,4 @@ var endTime = time.get_time_millis();
 print('Audio generation time: {} ms':format([endTime - startTime]));
 
 dev:playSamples(samples);
+dev:playFn(function (time) { return 0.0f; }, 0.2f);
