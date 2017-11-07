@@ -110,7 +110,7 @@ exports.genNote = genNote;
 var sawOsc = function (time, freq)
 {
     var cyclePos = math.fmod(time * freq, 1);
-    return -1 + 2.0f * rem;
+    return -1 + 2.0f * cyclePos;
 };
 
 /// Sine wave oscillator

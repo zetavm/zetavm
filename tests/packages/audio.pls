@@ -5,6 +5,7 @@ var audio = import "std/audio/0";
 audio.sawOsc(0, 100);
 audio.sawOsc(0.0f, 100.0f);
 audio.sinOsc(0.0f, 100.0f);
+audio.triOsc(0.0f, 100.0f);
 audio.ADEnv(0.5f, 0.5f, 1.0f);
 
 var C4 = audio.Note.get(71);
