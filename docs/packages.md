@@ -6,7 +6,7 @@ Standard Library
 
 | Name  | Description | Example Usage |
 | --- | --- | --- |
-| [`std/array/0`](/packages/std/array/source)                 | Array utility functions                            | [Package tests](/tests/packages/array.pls) |
+| [`std/array/0`](/packages/std/array/0/source)                 | Array utility functions                            | [Package tests](/tests/packages/array.pls) |
 | [`std/csv/0`](/packages/std/csv/0/package)        | CSV spreadsheet parsing                            | [CSV example](/examples/csv_parsing.pls) |
 | [`std/map/0`](/packages/std/map/0/source)                     | Hash map implementation                            | [Package tests](/tests/packages/map.pls) |
 | [`std/math/0`](/packages/std/math/0/source)                   | Collection of useful constants and math functions  | [Float tests](/tests/plush/floats.pls), [audio test](/examples/audio_test.pls) |
