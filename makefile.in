@@ -60,30 +60,16 @@ plush/%.o: plush/%.cpp plush/*.h
 $(CPLUSH_BIN): $(CPLUSH_OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_OBJECTS)
 
-# String library (std/string)
-string-pkg: $(CPLUSH_BIN) plush-pkg
-	mkdir -p packages/std/string/0
-	./$(CPLUSH_BIN) plush/string.pls > packages/std/string/0/package
+# Rule to build packages from source
+packages/%/package :: packages/%/source
+	./$(CPLUSH_BIN) $< > $@
 
-# Array library (std/array)
-array-pkg: $(CPLUSH_BIN) plush-pkg
-	mkdir -p packages/std/array/0
-	./$(CPLUSH_BIN) plush/array.pls > packages/std/array/0/package
-
-# Map library (std/map)
-map-pkg: $(CPLUSH_BIN) plush-pkg
-	mkdir -p packages/std/map/0
-	./$(CPLUSH_BIN) plush/map.pls > packages/std/map/0/package
-
-# Math library (std/math)
-math-pkg: $(CPLUSH_BIN) plush-pkg
-	mkdir -p packages/std/math/0
-	./$(CPLUSH_BIN) plush/math.pls > packages/std/math/0/package
-
-# Parsing library (std/parsing)
-parsing-pkg: $(CPLUSH_BIN) plush/parsing.pls
-	mkdir -p packages/std/parsing/0
-	./$(CPLUSH_BIN) plush/parsing.pls > packages/std/parsing/0/package
+# Packages included with ZetaVM
+string-pkg: packages/std/string/0/package
+array-pkg: packages/std/array/0/package
+map-pkg: packages/std/map/0/package
+math-pkg: packages/std/math/0/package
+parsing-pkg: packages/std/parsing/0/package
 
 # Plush language package (lang/plush)
 plush-pkg: $(CPLUSH_BIN) plush/plush_pkg.pls parsing-pkg
