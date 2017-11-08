@@ -61,7 +61,7 @@ $(CPLUSH_BIN): $(CPLUSH_OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(CPLUSH_BIN) $(CPLUSH_OBJECTS)
 
 # Rule to build packages from source
-packages/%/package :: packages/%/source
+packages/%/package :: packages/%/source cplush
 	./$(CPLUSH_BIN) $< > $@
 
 # Packages included with ZetaVM
