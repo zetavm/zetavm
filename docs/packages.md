@@ -6,14 +6,14 @@ Standard Library
 
 | Name  | Description | Example Usage |
 | --- | --- | --- |
-| [`std/array/0`](/plush/array.pls)                 | Array utility functions                            | [Package tests](/tests/packages/array.pls) |
+| [`std/array/0`](/packages/std/array/source)                 | Array utility functions                            | [Package tests](/tests/packages/array.pls) |
 | [`std/csv/0`](/packages/std/csv/0/package)        | CSV spreadsheet parsing                            | [CSV example](/examples/csv_parsing.pls) |
-| [`std/map/0`](/plush/map.pls)                     | Hash map implementation                            | [Package tests](/tests/packages/map.pls) |
-| [`std/math/0`](/plush/math.pls)                   | Collection of useful constants and math functions  | [Float tests](/tests/plush/floats.pls), [audio test](/examples/audio_test.pls) |
+| [`std/map/0`](/packages/std/map/0/source)                     | Hash map implementation                            | [Package tests](/tests/packages/map.pls) |
+| [`std/math/0`](/packages/std/math/0/source)                   | Collection of useful constants and math functions  | [Float tests](/tests/plush/floats.pls), [audio test](/examples/audio_test.pls) |
 | [`std/parsing/0`](/plush/parsing.pls)             | String and file parsing utilities                  | [Plush package](/plush/plush_pkg.pls), [CSV parser](/packages/std/csv/0/package) |
 | [`std/peval/0`](/packages/std/peval/0/package)    | Functional-style partial evaluation                | [Package tests](/tests/packages/peval.pls), [audio render](/examples/audio_render.pls) |
 | [`std/random/0`]()                                | Random number generation and utilities             | [Package tests](/tests/packages/random.pls) |
-| [`std/string/0`](/plush/string.pls)               | String utility functions                           | [Package tests](/tests/packages/string.pls) |
+| [`std/string/0`](/packages/std/string/0/source)               | String utility functions                           | [Package tests](/tests/packages/string.pls) |
 
 Language Packages
 -----------------

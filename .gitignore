@@ -9,8 +9,6 @@ makefile
 # Compiled binaries
 zeta
 cplush
-cjs
-cscheme
 *.dSYM
 *.exe
 *.dll
@@ -29,8 +27,6 @@ packages/std/parsing/0/package
 packages/std/math/0/package
 packages/std/string/0/package
 packages/std/map/0/package
-packages/lang/p/*
-parseOut.txt
 
 # Moronic MacOS metadata
 .DS_Store
