@@ -41,7 +41,7 @@ const size_t OBJ_OF_NEXT = HEADER_SIZE;
 */
 union Word
 {
-    Word(refptr p) { ptr = p; }
+    Word(refptr p) { int64 = 0; ptr = p; }
     Word(int64_t v) { int64 = v; }
     Word(float v) { float32 = v; }
     Word() {}

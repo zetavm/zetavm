@@ -519,7 +519,7 @@ void compile(BlockVersion* version)
             {
                 i += 1;
                 writeCode(GET_FIELD_IMM);
-                writeCode((Word)(refptr)val);
+                writeCode((refptr)val);
                 writeCode(size_t(0));
                 continue;
             }
