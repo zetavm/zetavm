@@ -1112,8 +1112,8 @@ void compile(BlockVersion* version)
             // Push the import function on the stack
             numTmps += 1;
             writeCode(PUSH);
-            writeCode((refptr)&importFn);
-            writeCode(TAG_HOSTFN);
+            writeCode((Word)(refptr)&importFn);
+            writeCode((Tag)TAG_HOSTFN);
 
             // Call the import function
             genCall(
