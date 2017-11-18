@@ -544,7 +544,7 @@ std::string OptParser::helpString()
 
 static char* testStrdup(const std::string &s)
 {
-    auto *temp = new char[s.length()];
+    auto *temp = new char[s.length() + 1];
     strcpy(temp, s.c_str());
     return temp;
 }
