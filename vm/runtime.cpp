@@ -99,18 +99,18 @@ Value VM::alloc(uint32_t size, Tag tag)
 void Wrapper::setNextPtr(refptr obj, refptr nextPtr)
 {
     // Get the object header
-    auto header = *(uint64_t*)obj;
+    auto header = *(intptr_t*)obj;
 
     // Set the next pointer
     *(refptr*)(obj + OBJ_OF_NEXT) = nextPtr;
 
     // Set the next pointer flag bit in the object header
-    *(uint64_t*)(obj) = header | HEADER_MSK_NEXT;
+    *(intptr_t*)(obj) = header | HEADER_MSK_NEXT;
 }
 
 refptr Wrapper::getNextPtr(refptr obj, refptr notFound)
 {
-    auto header = *(uint64_t*)obj;
+    auto header = *(intptr_t*)obj;
     bool hasNextPtr = header & HEADER_MSK_NEXT;
 
     if (!hasNextPtr)
