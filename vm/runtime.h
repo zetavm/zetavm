@@ -12,6 +12,9 @@ typedef uint8_t Tag;
 /// Heap pointer type
 typedef uint8_t* refptr;
 
+/// Type of object header
+typedef uintptr_t obj_header;
+
 /// Type tag constants
 const Tag TAG_UNDEF     = 0;
 const Tag TAG_BOOL      = 1;
@@ -27,7 +30,7 @@ const Tag TAG_RAWPTR    = 10;
 const Tag TAG_IMGREF    = 11;
 
 /// Object header size
-const size_t HEADER_SIZE = sizeof(intptr_t);
+const size_t HEADER_SIZE = sizeof(obj_header);
 
 /// Bit flag indicating the next pointer is set
 const size_t HEADER_IDX_NEXT = 15;
