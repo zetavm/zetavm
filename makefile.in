@@ -1,4 +1,4 @@
-CXXFLAGS=@CXXFLAGS@
+CXXFLAGS:= ${CXXFLAGS} @CXXFLAGS@
 LDFLAGS=@LDFLAGS@
 
 # TODO: change this when doing make install? Move to configure script?

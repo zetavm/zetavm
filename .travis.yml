@@ -29,6 +29,7 @@ install:
 
 script:
     - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm ./configure ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm make -j4 ; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm make test ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm make -j4 test ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm make clean ; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker exec zetavm "CXXFLAGS=-m32 make -j4 test"; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then ./configure && make -j4 && make test ; fi
