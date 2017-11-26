@@ -13,7 +13,7 @@ it is incomplete and breaking changes may happen often.**
 - Optional: sdl2, if wanting to use audio and graphics capabilities
 - Optional: Python 2 is needed to run the benchmark.py script
 
-## Installation and Basic Usage
+## Installation
 
 ```
 # Clone this repository
@@ -27,7 +27,11 @@ make -j4
 
 # Optionally run tests to check that everything works properly
 make test
+```
 
+## Basic Usage
+
+```
 # To run programs, pass the path to a source file to zeta, for example:
 ./zeta benchmarks/fib.pls -- 29
 
@@ -81,9 +85,11 @@ For more information, see the documentation in the [docs](docs) directory:
 
 - [Design and Guiding Principles of ZetaVM](docs/design.md)
 
+- [Packages included with ZetaVM](docs/packages.md)
+
 - [Plush Language Guide](docs/plush_guide.md)
 
-- [Packages included with ZetaVM](docs/packages.md)
+- [Plush Bootstrap Process](docs/bootstrap.md)
 
 - [Execution Model and Semantics](docs/exec_model.md)
 
