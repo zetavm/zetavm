@@ -2,9 +2,9 @@
 
 ## Motivation
 
-The [Plush language](docs/plush_guide.md) package is itself written in Plush.
+The [Plush language](/docs/plush_guide.md) package is itself written in Plush.
 As of this writing (2017-11-21), the Plush package is compiled into
-[Zeta bytecode](docs/exec_model.md) by an external compiler written in C++
+[Zeta bytecode](/docs/exec_model.md) by an external compiler written in C++
 (cplush). The external compiler is also used to precompile packages shipping
 with Zeta. Having two Plush implementations is problematic because it means
 language features must be implemented twice, and these two implementations
