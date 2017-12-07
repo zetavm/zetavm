@@ -15,12 +15,10 @@ matrix:
     - os: osx
     # works on Precise and Trusty
     - os: linux
-      env:
-         - CXX="g++" BUILD_ARCH="x86"
+      env: CXX="g++" BUILD_ARCH="x86"
     
     - os: linux
-      env:
-         - CXX="g++" BUILD_ARCH="x64"
+      env: CXX="g++" BUILD_ARCH="x64"
 
     # works on Precise and Trusty
     - os: linux
