@@ -1186,6 +1186,12 @@ ASTStmt* parseStmt(Input& input)
         else
             errMsg = new StringExpr("assertion failed");
 
+        //Pretend to be similar to the self hosted implementation
+        //by wrapping the msg in an object
+        errMsg = new ObjectExpr(
+            {"msg"}, {errMsg}
+            );
+
         input.expectWS(")");
         input.expectWS(";");
 
