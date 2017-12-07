@@ -1137,7 +1137,7 @@ Value getSrcPos(uint8_t* instrPtr)
 /// Implementation of the throw instruction
 void throwExc(
     uint8_t* throwInstr,
-    Object excVal
+    Value excVal
 )
 {
     // Get the current function
@@ -1161,7 +1161,11 @@ void throwExc(
     {
         stackEntry.setField("src_pos", getSrcPos(throwInstr));
     }
-    excVal.getFieldArr("stack").push(stackEntry);
+    if (excVal.isObject())
+    {
+        Object excObject = excVal;
+        excObject.getFieldArr("stack").push(stackEntry);
+    }
 
     // Until we are done unwinding the stack
     for (;;)
@@ -1186,8 +1190,14 @@ void throwExc(
         if (retVer == nullptr)
         {
             //std::cout << "Uncaught exception" << std::endl;
-            
-            throw RunError(excVal);
+            if (excVal.isObject())
+            {
+                throw RunError((Object)excVal);
+            }
+            else
+            {
+                throw RunError(excVal);
+            }
         }
 
         // Find the info associated with the return address
@@ -1210,7 +1220,12 @@ void throwExc(
         {
             stackEntry.setField("src_pos", callInstr.getField("src_pos"));
         }
-        excVal.getFieldArr("stack").push(stackEntry);
+        if (excVal.isObject())
+        {
+            Object excObject = (Object)excVal;
+            excObject.getFieldArr("stack").push(stackEntry);
+            excVal = excObject;
+        }
 
         // Get the function associated with the return address
         curFun = retEntry.retVer->fun;
@@ -1229,8 +1244,7 @@ void throwExc(
             // Clear the temporary stack
             stackPtr += retEntry.numTmps;
 
-            // Push the exception value on the stack
-            pushVal(excVal.getField("thrown_value"));
+            pushVal(excVal);
 
             // Compile exception handler if needed
             if (!retEntry.excVer->startPtr)
@@ -2282,10 +2296,29 @@ Value execCode()
             {
                 // Pop the exception value
                 auto excVal = popVal();
-                Object throwObj = Object::newObject(2);
-                throwObj.setField("thrown_value", excVal);
-                throwObj.setField("stack", Array(10));
-                throwExc((uint8_t*)&op, throwObj);
+                if (excVal.isObject())
+                {
+                    Object throwObj = Object::newObject(3);
+                    Object excObj = (Object)excVal;
+                    if (excObj.hasField("stack"))
+                    {
+                        throwObj.setField("caused_by", excObj);
+                    }
+                    if (excObj.hasField("thrown_value"))
+                    {
+                        throwObj.setField("thrown_value", excObj.getField("thrown_value"));
+                    }
+                    else
+                    {
+                        throwObj.setField("thrown_value", excObj);
+                    }
+                    throwObj.setField("stack", Array(10));
+                    throwExc((uint8_t*)&op, throwObj);
+                }
+                else
+                {
+                    throwExc((uint8_t*)&op, excVal);
+                }
             }
             break;
 

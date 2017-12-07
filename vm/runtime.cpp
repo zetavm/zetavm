@@ -3,6 +3,7 @@
 #include <cstring>
 #include <iostream>
 #include "runtime.h"
+#include "serialize.h"
 
 /// Undefined value constant
 /// Note: zeroed memory is automatically undefined
@@ -761,7 +762,20 @@ std::string posToString(Value srcPos)
 std::string RunError::toString() 
 {
     std::string errMsg;
-    Value thrownValue = val.getField("thrown_value");
+    Value thrownValue;
+    if (val.hasField("thrown_value"))
+    {
+        thrownValue = val.getField("thrown_value");
+    }
+    else if (val.hasField("msg"))
+    {
+        thrownValue = val.getField("msg");
+    }
+    else
+    {
+        thrownValue = val;
+    }
+    
     if (thrownValue.isObject())
     {
         auto excObj = Object(thrownValue);
@@ -801,6 +815,12 @@ std::string RunError::toString()
         {
             errMsg += "unknown location";
         }
+    }
+    if (val.hasField("caused_by"))
+    {
+        Object caused_by = val.getField("caused_by");
+        errMsg += "\n\ncaused by: \n";
+        errMsg += RunError(caused_by).toString();
     }
     return errMsg;
 }
