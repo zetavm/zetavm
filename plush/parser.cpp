@@ -296,7 +296,8 @@ BlockStmt* parseBlockStmt(Input& input, std::string endStr);
 Parse a number
 */
 
-FloatExpr* parseFloatingPart(Input& input, bool neg, char literal[64]) {
+FloatExpr* parseFloatingPart(Input& input, bool neg, char literal[64])
+{
     int length = strlen(literal);
     for (int i = 0;;i++)
     {
@@ -336,7 +337,8 @@ ASTExpr* parseNum(Input& input, bool neg)
             break;
     }
 
-    if (input.peekCh() == '.' || input.peekCh() == 'e') {
+    if (input.peekCh() == '.' || input.peekCh() == 'e')
+    {
         return parseFloatingPart(input, neg, literal);
     }
     int intVal = atoi(literal);
@@ -1106,8 +1108,10 @@ ASTStmt* parseStmt(Input& input)
 
         auto initExpr = parseExpr(input);
 
-        if (auto funExpr = dynamic_cast<FunExpr*>(initExpr)) {
-            if (funExpr->name == "") {
+        if (auto funExpr = dynamic_cast<FunExpr*>(initExpr))
+        {
+            if (funExpr->name == "")
+            {
                 funExpr->name = ident;
             }
         }
