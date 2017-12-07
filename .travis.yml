@@ -22,8 +22,8 @@ matrix:
 
     # works on Precise and Trusty
     - os: linux
-      env:
-         - CXX="clang++"
+      env: CXX="clang++" BUILD_ARCH="x64"
+
 
 
 install:
