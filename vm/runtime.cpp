@@ -48,7 +48,7 @@ std::string Value::toString() const
         return "array";
 
         case TAG_OBJECT:
-        return "object";
+        return serialize(*this, true);
 
         default:
         assert (false);
