@@ -1400,7 +1400,7 @@ __attribute__((always_inline)) inline void hostCall(
         // Pop the arguments from the stack
         stackPtr += numArgs;
 
-        auto excVal = err.getNestedObject();
+        auto excVal = err.getExcVal();
 
         Object stackEntry = Object::newObject(1);
         stackEntry.setField("fun_name", String(hostFn->getName() + " (host function)"));

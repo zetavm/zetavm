@@ -391,7 +391,7 @@ public:
 
     virtual std::string toString();
 
-    Object getNestedObject() const
+    Object getExcVal() const
     {
         return val;
     }
