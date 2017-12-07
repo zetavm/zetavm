@@ -25,6 +25,7 @@ matrix:
       env:
          - CXX="clang++"
 
+
 install:
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$BUILD_ARCH" == "x64" ]]; then docker build -t zetavm/testing -f Dockerfile . ; fi
     - if [[ "$TRAVIS_OS_NAME" == "linux" && "$BUILD_ARCH" == "x86" ]]; then docker build -t zetavm/testing -f Dockerfile-32 . ; fi
