@@ -193,6 +193,14 @@ var parseFloat = str.parseFloat;
 assert (parseFloat("0") == 0.0f);
 assert (parseFloat("0.5") == 0.5f);
 
+var escapeStr = str.escape;
+assert (escapeStr("hello") == "\"hello\"");
+assert (escapeStr("hello\r\n\t") == "\"hello\\r\\n\\t\"");
+assert (escapeStr("\x4") == "\"\\x04\"");
+assert (escapeStr("\xFF") == "\"\\xff\"");
+assert (escapeStr("\\") == "\"\\\\\"");
+assert (escapeStr("\"\'") == "\"\\\"\\\'\"");
+
 // String methods through prototype object (Plush runtime)
 assert ("foo":contains("oo"));
 assert ("foo":replace("oo", "oobar") == "foobar");

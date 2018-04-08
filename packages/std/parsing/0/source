@@ -464,7 +464,9 @@ Input.parseInt = function (input, radix)
         intVal = newIntVal;
 
         // If the next character is not a digit, stop
-        if (!isDigit(input:peekCh()))
+        var peekedChar = input:peekCh();
+        var isValidChar = (peekedChar >= '0' && peekedChar <= '9') || (peekedChar >= 'A' && peekedChar <= 'F');
+        if (!isValidChar) 
         {
             break;
         }
