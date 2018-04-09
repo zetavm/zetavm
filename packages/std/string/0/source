@@ -552,6 +552,69 @@ exports.rpad = function (string, paddingChar, totalWidth)
 };
 
 /**
+ * Escape formats the provided string with backslash marker characters before special characters such as new line and tab.
+ */
+exports.escape = function (string)
+{
+    var out = "\"";
+    
+    for (var i = 0;i < string.length;i += 1) 
+    {
+        var ch = string[i];
+        
+        if (ch == '\n')
+        {
+            out += "\\n";
+            continue;
+        }
+        
+        if (ch == '\r')
+        {
+            out += "\\r";
+            continue;
+        }
+        
+        if (ch == '\t')
+        {
+            out += "\\t";
+            continue;
+        }
+        
+        if (ch == '\\')
+        {
+            out += "\\\\";
+            continue;
+        }
+        
+        if (ch == '\"')
+        {
+            out += "\\\"";
+            continue;
+        }
+        
+        if (ch == '\'')
+        {
+            out += "\\\'";
+            continue;
+        }
+        
+        var charCode = $get_char_code(string, i);
+        
+        if (charCode >= 32 && charCode <= 126)
+        {
+            out += ch;
+            continue;
+        }
+        
+        // Pad left to 2 characters for the hex string.
+        var hexStr = exports.lpad(exports.intToString(charCode, 16), '0', 2);
+        out += "\\x" + hexStr;
+    }
+    
+    return out + "\"";
+};
+
+/**
  * Prototype object containing functions usable as string methods
  * Note: useful for languages using prototypal inheritance
 */
@@ -573,6 +636,7 @@ exports.prototype = {
     format: exports.format,
     lpad: exports.lpad,
     rpad: exports.rpad,
+    escape: exports.escape,
 };
 
 //============================================================================
