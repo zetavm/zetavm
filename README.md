@@ -8,7 +8,7 @@ it is incomplete and breaking changes may happen often.**
 ## Requirements:
 
 - GNU Make
-- GCC 5.4+ (linux) or clang (OSX), or cygwin (Windows)
+- GCC 5.4+ (Linux) or clang (OSX), or cygwin (Windows)
 - Optional: autoconf and pkg-config, if needing to edit the configure file
 - Optional: sdl2, if wanting to use audio and graphics capabilities
 - Optional: Python 2 is needed to run the benchmark.py script
@@ -17,27 +17,27 @@ it is incomplete and breaking changes may happen often.**
 
 ```
 # Clone this repository
-git clone git@github.com:maximecb/zetavm.git
+$ git clone git@github.com:maximecb/zetavm.git
 
 # Run the configure script and compile zetavm
 # Note: run configure with `--with-sdl2` to build audio and graphics support
-cd zetavm
-./configure
-make -j4
+$ cd zetavm
+$ ./configure
+$ make -j4
 
 # Optionally run tests to check that everything works properly
-make test
+$ make test
 ```
 
 ## Basic Usage
 
 ```
 # To run programs, pass the path to a source file to zeta, for example:
-./zeta benchmarks/fib.pls -- 29
+$ ./zeta benchmarks/fib.pls -- 29
 
 # To start up the Plush REPL (interactive shell),
 # you can run the Plush language package as a program:
-./zeta lang/plush/0
+$ ./zeta lang/plush/0
 ```
 
 ## About ZetaVM
